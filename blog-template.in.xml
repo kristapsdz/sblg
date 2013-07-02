@@ -22,7 +22,7 @@
 	<body>
 		<header>
 			<h1>sblg</h1>
-			<div>simple off-line blog utility</div>
+			<div>&#8211; simple off-line blog utility</div>
 		</header>
 		<nav class="noshow" id="nav"></nav>
 		<div id="navtop">
@@ -42,19 +42,20 @@
 				Want simplified HTML markup, in-line LaTeX editing, smartphone auto-templating, or <q>modules</q>?  
 				Neither do we.
 				<span class="name">sblg</span> is simple and for people who can already write proper HTML and CSS, version their
-				sources into CVS, use an editor, and install into some sort of htdocs directory.
+				sources into CVS, configure a Makefile, and install into some sort of static htdocs directory.
 			</p>
 			<p>
 				<span class="name">sblg</span> links against <a href="http://expat.sourceforge.net/">libexpat</a>, which is
 				bundled on most UNIX operating systems, and is otherwise ISO C under the open-source ISC license.
-				If you're interested, download the <a href="sblg.tar.gz">sblg.tar.gz</a> sources, <code>make install</code> into
-				the <code>PREFIX</code> of your choice, and enjoy!
+				If you're interested, download the <a href="sblg.tar.gz">sblg.tar.gz</a> sources (version <b>@VERSION@</b>,
+				dated <b>@VDATE@</b>), <code>make install</code> into the <code>PREFIX</code> of your choice, and enjoy!
 			</p>
 			<article>
 				<article>
 					This will go away.
 				</article>
 			</article>
+			<article />
 			<article />
 		</section>
 		<footer>
