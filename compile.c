@@ -77,7 +77,7 @@ compile(XML_Parser p, const char *templ,
 	struct article	 article;
 
 	rc = 0;
-	buf = NULL;
+	buf = out = NULL;
 	fd = -1;
 	f = NULL;
 
