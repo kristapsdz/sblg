@@ -21,7 +21,7 @@ sblg: $(OBJS)
 www: $(HTMLS) sblg.tar.gz
 
 installwww: www
-	mkdir -p $(PREFIX)
+	mkdir -p $(WWWDIR)
 	install -m 0444 sblg.tar.gz Makefile $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(WWWDIR)
 	install -m 0444 sblg.tar.gz $(WWWDIR)/sblg-$(VERSION).tar.gz
 
