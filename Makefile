@@ -9,6 +9,7 @@ XMLGENS = blog-template.xml
 HTMLS = article1.html article2.html article3.html blog.html sblg.1.html
 CSSS = article.css blog.css shared.css
 BINDIR = $(PREFIX)/bin
+WWWDIR = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
 MANDIR = $(PREFIX)/man
 DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml
 VERSION = 0.0.5
@@ -21,8 +22,8 @@ www: $(HTMLS) sblg.tar.gz
 
 installwww: www
 	mkdir -p $(PREFIX)
-	install -m 0444 sblg.tar.gz Makefile $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(PREFIX)
-	install -m 0444 sblg.tar.gz $(PREFIX)/sblg-$(VERSION).tar.gz
+	install -m 0444 sblg.tar.gz Makefile $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(WWWDIR)
+	install -m 0444 sblg.tar.gz $(WWWDIR)/sblg-$(VERSION).tar.gz
 
 install:
 	mkdir -p $(DESTDIR)$(BINDIR)
