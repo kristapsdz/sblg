@@ -1,0 +1,51 @@
+.SUFFIXES: .xml .html
+
+CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
+OBJS = main.o compile.o linkall.o grok.o util.o
+SRCS = main.c compile.c linkall.c grok.c util.c
+XMLS = article1.xml article2.xml article-template.xml blog-template.xml
+HTMLS = article1.html article2.html blog.html
+CSSS = article.css blog.css shared.css
+BINDIR = $(PREFIX)/bin
+MANDIR = $(PREFIX)/man
+DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS)
+VERSION = 0.0.5
+
+sblg: $(OBJS)
+	$(CC) -o $@ $(OBJS) -lexpat
+
+www: $(HTMLS) sblg.tar.gz
+
+installwww: www
+	mkdir -p $(PREFIX)
+	install -m 0444 sblg.tar.gz Makefile $(HTMLS) $(XMLS) $(CSSS) $(PREFIX)
+	install -m 0444 sblg.tar.gz $(PREFIX)/sblg-$(VERSION).tar.gz
+
+install:
+	mkdir -p $(DESTDIR)$(BINDIR)
+	mkdir -p $(DESTDIR)$(MANDIR)/man1
+	install -m 0755 sblg $(DESTDIR)$(BINDIR)
+
+sblg.tar.gz:
+	mkdir -p .dist/sblg-$(VERSION)/
+	install -m 0644 $(DOTAR) .dist/sblg-$(VERSION)
+	( cd .dist/ && tar zcf ../$@ ./ )
+	rm -rf .dist/
+
+main.o compile.o linkall.o grok.o: extern.h
+
+blog.html article1.html article2.html: sblg
+
+blog.html: blog-template.xml
+
+article1.html article2.html: article-template.xml
+
+blog.html: article1.html article2.html
+	./sblg -o $@ article1.html article2.html
+
+.xml.html:
+	./sblg -c -o $@ $<
+
+clean:
+	rm -f sblg $(OBJS) $(HTMLS) sblg.tar.gz
+	rm -rf *.dSYM

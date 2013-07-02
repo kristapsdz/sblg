@@ -1,0 +1,20 @@
+@import "shared.css";
+
+nav		{ border-left: thin solid #aaaaaa;
+		  border-right: thin solid #aaaaaa; }
+nav > ul	{ margin: 0;
+		  padding-bottom: 1ex;
+		  padding-top: 1ex;
+		  padding-left: 3ex; }
+#navq		{ font-size: smaller;
+		  color: #eeeeee;
+	  	  margin-left: 2ex; }
+#navq:hover	{ border-bottom: 0; 
+		  color: #ffffff; }
+#navtop		{ background-color: #aaaaaa; 
+		  position: absolute;
+		  padding-top: 0.5ex;
+		  padding-bottom: 0.5ex;
+		  width: 100%;
+		  border-bottom-right-radius: 1.5ex; 
+		  border-bottom-left-radius: 1.5ex; }
