@@ -80,6 +80,7 @@ compile(XML_Parser p, const char *templ,
 	buf = out = NULL;
 	fd = -1;
 	f = NULL;
+	sz = 0;
 
 	if ( ! grok(p, src, &article))
 		goto out;
@@ -98,6 +99,7 @@ compile(XML_Parser p, const char *templ,
 		cp = strrchr(out, '.');
 		cp[1] = '\0';
 		strlcat(out, "html", sz + 2);
+		sz = 0;
 	} else
 		out = xstrdup(dst);
 
