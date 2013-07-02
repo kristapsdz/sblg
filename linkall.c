@@ -63,6 +63,7 @@ linkin(FILE *f, const char *src)
 	int		 fd, rc;
 	struct linkin	 arg;
 
+	rc = 0;
 	memset(&arg, 0, sizeof(struct linkin));
 
 	if (NULL == (p = XML_ParserCreate(NULL))) {
@@ -102,6 +103,7 @@ linkall(XML_Parser p, const char *templ,
 	struct linkall	 larg;
 	struct article	*sarg;
 
+	ssz = 0;
 	rc = 0;
 	buf = NULL;
 	fd = -1;
