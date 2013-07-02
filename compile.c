@@ -76,6 +76,8 @@ compile(XML_Parser p, const char *templ,
 	struct pargs	 arg;
 	struct article	 article;
 
+	memset(&arg, 0, sizeof(struct pargs));
+
 	rc = 0;
 	buf = out = NULL;
 	fd = -1;
@@ -132,6 +134,7 @@ out:
 		fclose(f);
 
 	free(out);
+	free(article.title);
 	return(rc);
 }
 
