@@ -1,4 +1,4 @@
-<div>
+<article>
 	<header>
 		<h1>How should one write articles?</h1>
 		<p>Posted on <time datetime="2013-06-30">30 June, 2013</time></p>
@@ -8,12 +8,12 @@
 		The simplest article is structured as follows:
 	</p>
 	<div class="code">
-		<div>&lt;div&gt;</div>
+		<div>&lt;article&gt;</div>
 		<div class="tab">&lt;header&gt;</div>
 		<div class="dtab">&lt;h1&gt;Title&lt;/h1&gt;</div>
 		<div class="dtab">&lt;time datetime="2013-01-01"&gt;1 January, 2013&lt;/time&gt;</div>
 		<div class="tab">&lt;/header&gt;</div>
-		<div>&lt;/div&gt;</div>
+		<div>&lt;/article&gt;</div>
 	</div>
 	<p>
 		The article publication time is parsed from the <code>datetime</code> attribute of the last <code>time</code> tag in the first
@@ -36,4 +36,4 @@
 		The <code>article</code> tags are replaced by ordered article data, with a little <q>permanent link</q> thing following.
 		The rest is up to you.
 	</p>
-</div>
+</article>

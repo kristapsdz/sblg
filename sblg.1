@@ -1,0 +1,159 @@
+.Dd $Mdocdate$
+.Dt SBLG 1
+.Os
+.Sh NAME
+.Nm sblg
+.Nd simple off-line blog utility
+.Sh SYNOPSIS
+.Nm sblg
+.Op Fl o Ar file
+.Op Fl t Ar templ
+.Op Fl c
+.Ar
+.Sh DESCRIPTION
+The
+.Nm
+utility knits together HTML5 articles into a blog-like collection of
+HTML5 files.
+The calling conventions follow that of
+.Xr cc 1
+for easier integration into Makefiles: specifying
+.Fl c
+produces a stand-alone, formatted HTML5 article page from input files;
+whereas running without
+.Fl c
+will link together previously-formatted HTML5 articles to create a front
+page.
+.Pp
+When producing standalone files with
+.Fl c ,
+input is assumed to be an HTML5 fragment suffixed with
+.Li .xml ;
+when running without
+.Fl c ,
+input should be a fully-formed
+.Li .html
+file usually as produced with
+.Fl c .
+.Pp
+The arguments are as follows:
+.Bl -tag -width Ds
+.It Fl o Ar file
+Output file.
+If unspecified, standalone articles have their
+.Li .xml
+suffixes transformed into
+.Li .html
+unless multiple input files are specified, in which case
+.Fl o
+is ignored.
+If unspecified for front pages,
+.Ar blog.html
+is used by default.
+.It Fl t Ar templ
+Template for standalone or front-page file.
+If unspecified, defaults to
+.Ar article-template.xml
+and
+.Ar blog-template.xml ,
+respectively.
+.It Fl c
+Create standalone articles instead of merging together articles into a
+front page.
+.It Ar
+Input files.
+In standalone mode with
+.Fl c ,
+input
+.Li .xml
+files are merged with templates into
+.Li html
+files.
+Otherwise, input
+.Li html
+files are merged into a single front page.
+.El
+.Pp
+Article input files consist of XML-syntax HTML5 fragments.
+They usually consist of the following:
+.Bd -literal
+<article>
+  <header>
+    <h1>Article Name</h1>
+    <time datetime="2013-06-29">29 June, 2013</time>
+  </header>
+  <p>Some text.</p>
+</article>
+.Ed
+.Pp
+When processed with
+.Nm ,
+the article title is extracted from the last hn (header 1\(en4) element
+within the header element.
+Article publication date is extracted from the last time element within
+the header element.
+If unspecified, these default to
+.Qq Untitled article
+and the document's ctime.
+.Pp
+The standalone template file must be a well-formed HTML5 file where the
+first article element is replaced by the article text.
+All of this element's children are removed.
+.Bd -literal
+<body>
+  <header>This consists of a single blog entry.</header>
+  <article>This is removed.</article>
+  <footer>Something.</footer>
+</body>
+.Ed
+.Pp
+The front page template file must also be a well-formed HTML5 file where
+each article element is replaced by ordered (newest to oldest) article
+text.
+If there aren't enough articles, the element is removed.
+Furthermore, any nav elements are replaced by a list of all available
+articles in an unordered list consisting of article dates followed by
+the title, linked to the page itself.
+.Bd -literal
+<body>
+  <header>This consists of two blog entries.</header>
+  <nav></nav>
+  <article>Blog one.</article>
+  <article>Blog two.</article>
+  <footer>Something.</footer>
+</body>
+.Ed
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa article-template.xml
+Default template for creating articles with
+.Fl c .
+.It Pa blog-template.xml
+Default template for creating a front page.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+First, create standalone HTML5 files from article fragments.
+A
+.Pa article-template.xml
+file is assumed to exist.
+.Pp
+.Dl % sblg -c article1.xml article2.xml
+.Pp
+Next, merge formatted files into a front page.
+A
+.Pa blog-template.xml
+file is assumed to exist.
+.Pp
+.Dl % sblg -o index.html article1.html article2.html
+.Sh STANDARDS
+Input files must be properly-formed HTML5 files using XML syntax.
+In other words, all tags must be properly closed.
+Output files are guranteed to be HTML5 conforming.
+.Sh AUTHORS
+The
+.Nm
+utility was written by
+.Ar Kristaps Dzonsons ,
+.Mt kristaps@bsd.lv .

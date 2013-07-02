@@ -1,4 +1,4 @@
-<div>
+<article>
 	<header>
 		<h1>How does it work?</h1>
 		<p>Posted on <time datetime="2013-07-01">01 July, 2013</time></p>
@@ -42,4 +42,4 @@
 		The remaining files are <a href="article1.xml">article1.xml</a>, <a href="article2.xml">article2.xml</a>, <a
 			href="blog.css">blog.css</a>, <a href="article.css">article.css</a>, and <a href="shared.css">shared.css</a>.
 	</p>
-</div>
+</article>

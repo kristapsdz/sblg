@@ -30,6 +30,7 @@ struct	pargs {
 	FILE		*f;
 	XML_Parser	 p;
 	size_t		 stack;
+	struct article	 article;
 };
 
 static	void	elem_begin(void *userdata, const XML_Char *name, 
@@ -74,7 +75,6 @@ compile(XML_Parser p, const char *templ,
 	int		 fd, rc;
 	FILE		*f;
 	struct pargs	 arg;
-	struct article	 article;
 
 	memset(&arg, 0, sizeof(struct pargs));
 
@@ -84,7 +84,7 @@ compile(XML_Parser p, const char *templ,
 	f = NULL;
 	sz = 0;
 
-	if ( ! grok(p, src, &article))
+	if ( ! grok(p, src, &arg.article))
 		goto out;
 
 	if (NULL == dst) {
@@ -134,7 +134,7 @@ out:
 		fclose(f);
 
 	free(out);
-	free(article.title);
+	free(arg.article.title);
 	return(rc);
 }
 
@@ -152,10 +152,14 @@ elem_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
 	struct pargs	*arg = userdata;
 
-	xmlprint(arg->f, name, atts);
-
-	if (strcasecmp(name, "article"))
+	if (0 == strcasecmp(name, "title")) {
+		xmlprint(arg->f, name, atts);
+		fprintf(arg->f, "%s", arg->article.title);
 		return;
+	} else if (strcasecmp(name, "article")) {
+		xmlprint(arg->f, name, atts);
+		return;
+	}
 
 	fputc('\n', arg->f);
 
@@ -187,7 +191,6 @@ elem_end(void *userdata, const XML_Char *name)
 	else if (arg->stack-- > 0)
 		return;
 
-	fprintf(arg->f, "</%s>", name);
 	XML_SetElementHandler(arg->p, NULL, NULL);
 	XML_SetDefaultHandler(arg->p, elem_text);
 }

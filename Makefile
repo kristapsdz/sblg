@@ -1,10 +1,11 @@
-.SUFFIXES: .xml .html
+.SUFFIXES: .xml .html .1.html .1
 
+PREFIX = /usr/local
 CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
 OBJS = main.o compile.o linkall.o grok.o util.o
 SRCS = main.c compile.c linkall.c grok.c util.c
-XMLS = article1.xml article2.xml article-template.xml blog-template.xml
-HTMLS = article1.html article2.html blog.html
+XMLS = article1.xml article2.xml article3.xml article-template.xml blog-template.xml
+HTMLS = article1.html article2.html article3.html blog.html sblg.1.html
 CSSS = article.css blog.css shared.css
 BINDIR = $(PREFIX)/bin
 MANDIR = $(PREFIX)/man
@@ -34,17 +35,20 @@ sblg.tar.gz:
 
 main.o compile.o linkall.o grok.o: extern.h
 
-blog.html article1.html article2.html: sblg
+blog.html article1.html article2.html article3.html: sblg
 
 blog.html: blog-template.xml
 
-article1.html article2.html: article-template.xml
+article1.html article2.html article3.html: article-template.xml
 
-blog.html: article1.html article2.html
-	./sblg -o $@ article1.html article2.html
+blog.html: article1.html article2.html article3.html
+	./sblg -o $@ article1.html article2.html article3.html
 
 .xml.html:
 	./sblg -c -o $@ $<
+
+.1.1.html:
+	mandoc -Thtml $< >$@
 
 clean:
 	rm -f sblg $(OBJS) $(HTMLS) sblg.tar.gz
