@@ -4,7 +4,7 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<meta charset='utf-8' /> 
 		<link rel="stylesheet" href="blog.css" type="text/css" />
-		<title>A Blog</title>
+		<title>simple off-line blog utility</title>
 		<script>
 			var v = 0;
 			function toggle() {
@@ -30,13 +30,13 @@
 		</div>
 		<section>
 			<p>
-				The <span class="name">sblg</span> utility is designed to take a bunch of <a
-					href="https://xkcd.com/148/">blag</a> entries and do the following:
+				The <span class="name">sblg</span> utility, <a href="sblg.1.html">sblg(1)</a>, accepts a bunch of <a
+					href="https://xkcd.com/148/">blag</a> entries and performs the following:
 			</p>
 			<ul>
-				<li>merge individual entries with a template</li>
-				<li>merge entries together into some sort of front page</li>
-				<li>be simple (no Ruby, no template languages, no crap)</li>
+				<li>merges individual entries with a template</li>
+				<li>merges entries together into some sort of front page</li>
+				<li>is simple (no Ruby, no template languages, no crap)</li>
 			</ul>
 			<p>
 				Want simplified HTML markup, in-line LaTeX editing, smartphone auto-templating, or <q>modules</q>?  
