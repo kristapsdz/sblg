@@ -1,0 +1,45 @@
+<div>
+	<header>
+		<h1>How does it work?</h1>
+		<p>Posted on <time datetime="2013-07-01">01 July, 2013</time></p>
+	</header>
+	<p>
+		It works within a <a href="Makefile">Makefile</a>, such as the one building this page (and the code).
+		Click on file links to see them&#8212;you'll get the point.
+	</p>
+	<div class="code">
+		<div>all: <a href="blog.html">blog.html</a></div>
+		<div>install: all</div>
+		<div class="tab">install -m 0644 
+			<a href="blog.html">blog.html</a> 
+			<a href="article1.html">article1.html</a> 
+			<a href="article2.html">article2.html</a> $(PREFIX)</div>
+		<div>clean:</div>
+		<div class="tab">rm -f
+			<a href="blog.html">blog.html</a> 
+			<a href="article1.html">article1.html</a> 
+			<a href="article2.html">article2.html</a></div>
+		<div><a href="blog.html">blog.html</a>: 
+			<a href="blog-template.xml">blog-template.xml</a></div>
+		<div><a href="article1.html">article1.html</a> 
+			<a href="article2.html">article2.html</a>: 
+			<a href="article-template.xml">article-template.xml</a></div>
+		<div><a href="blog.html">blog.html</a>: 
+			<a href="article1.html">article1.html</a>
+			<a href="article2.html">article2.html</a></div>
+		<div class="tab">sblg -o $@
+			<a href="article1.html">article1.html</a>
+			<a href="article2.html">article2.html</a></div>
+		<div>.xml.html:</div>
+		<div class="tab">sblg -c -o $@ $&lt;</div>
+	</div>
+	<p>
+		Or in words, first build individual articles from a template.
+		Then knit together individuals into a front page.
+		The rest is just dependencies.
+	</p>
+	<p>
+		The remaining files are <a href="article1.xml">article1.xml</a>, <a href="article2.xml">article2.xml</a>, <a
+			href="blog.css">blog.css</a>, <a href="article.css">article.css</a>, and <a href="shared.css">shared.css</a>.
+	</p>
+</div>

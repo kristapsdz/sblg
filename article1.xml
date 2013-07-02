@@ -1,0 +1,39 @@
+<div>
+	<header>
+		<h1>How should one write articles?</h1>
+		<p>Posted on <time datetime="2013-06-30">30 June, 2013</time></p>
+	</header>
+	<p>
+		Articles are fragments of HTML5 documents.
+		The simplest article is structured as follows:
+	</p>
+	<div class="code">
+		<div>&lt;div&gt;</div>
+		<div class="tab">&lt;header&gt;</div>
+		<div class="dtab">&lt;h1&gt;Title&lt;/h1&gt;</div>
+		<div class="dtab">&lt;time datetime="2013-01-01"&gt;1 January, 2013&lt;/time&gt;</div>
+		<div class="tab">&lt;/header&gt;</div>
+		<div>&lt;/div&gt;</div>
+	</div>
+	<p>
+		The article publication time is parsed from the <code>datetime</code> attribute of the last <code>time</code> tag in the first
+		<code>header</code>.
+		The title is similarly parsed from the last <code>hn</code> tag (where <var>n</var> = 1&#8211;4).
+		These are used to order articles on the main page and title the article page.
+		Both of these are optional &#8212; the system will default to <q>Untitled article</q> and the file's <code>ctime</code>, if no
+		information is otherwise provided.
+	</p>
+	<p>
+		Articles are linked into a front page as follows (and omitting the surrounding HTML stuff):
+	</p>
+	<div class="code">
+		<div>&lt;body&gt;</div>
+		<div class="tab">&lt;article /&gt;</div>
+		<div class="tab">&lt;article /&gt;</div>
+		<div>&lt;/body&gt;</div>
+	</div>
+	<p>
+		The <code>article</code> tags are replaced by ordered article data, with a little <q>permanent link</q> thing following.
+		The rest is up to you.
+	</p>
+</div>

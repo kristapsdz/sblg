@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta charset='utf-8' /> 
+		<link rel="stylesheet" href="article.css" type="text/css" />
+		<title>An Example Article</title>
+	</head>
+	<body>
+		<header>
+			<h1>sblg</h1>
+			<div>simple off-line blog utility</div>
+		</header>
+		<section>
+			<p>
+				This is an example of an individual article.
+				It consists of a template (<a href="article-template.xml">article-template.xml</a>) merged with article contents.
+			</p>
+			<article>
+				<article>
+					This will go away.
+				</article>
+			</article>
+		</section>
+		<footer>
+			&#169; 2013, <a href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
+		</footer>
+	</body>
+</html>

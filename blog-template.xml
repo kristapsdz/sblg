@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta charset='utf-8' /> 
+		<link rel="stylesheet" href="blog.css" type="text/css" />
+		<title>A Blog</title>
+		<script>
+			var v = 0;
+			function toggle() {
+				if (0 == v) {
+					document.getElementById('nav').className='';
+					document.getElementById('navq').innerHTML='Hide Navigation';
+				} else {
+					document.getElementById('nav').className='noshow';
+					document.getElementById('navq').innerHTML='Show Navigation';
+				}
+				v = !v;
+			}
+		</script>
+	</head>
+	<body>
+		<header>
+			<h1>sblg</h1>
+			<div>simple off-line blog utility</div>
+		</header>
+		<nav class="noshow" id="nav"></nav>
+		<div id="navtop">
+			<a href="#" onclick="toggle();" id="navq">Show Navigation</a>
+		</div>
+		<section>
+			<p>
+				The <span class="name">sblg</span> utility is designed to take a bunch of <a
+					href="https://xkcd.com/148/">blag</a> entries and do the following:
+			</p>
+			<ul>
+				<li>merge individual entries with a template</li>
+				<li>merge entries together into some sort of front page</li>
+				<li>be simple (no Ruby, no template languages, no crap)</li>
+			</ul>
+			<p>
+				Want simplified HTML markup, in-line LaTeX editing, smartphone auto-templating, or <q>modules</q>?  
+				Neither do we.
+				<span class="name">sblg</span> is simple and for people who can already write proper HTML and CSS, version their
+				sources into CVS, use an editor, and install into some sort of htdocs directory.
+			</p>
+			<p>
+				<span class="name">sblg</span> links against <a href="http://expat.sourceforge.net/">libexpat</a>, which is
+				bundled on most UNIX operating systems, and is otherwise ISO C under the open-source ISC license.
+				If you're interested, download the <a href="sblg.tar.gz">sblg.tar.gz</a> sources, <code>make install</code> into
+				the <code>PREFIX</code> of your choice, and enjoy!
+			</p>
+			<article>
+				<article>
+					This will go away.
+				</article>
+			</article>
+			<article />
+		</section>
+		<footer>
+			&#169; 2013, <a href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
+		</footer>
+	</body>
+</html>

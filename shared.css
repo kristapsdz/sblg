@@ -1,0 +1,67 @@
+html, body		{ margin: 0;
+			  padding: 0; }
+body			{ color: #333333; }
+article			{ display: block;
+		  	  padding: 0ex 1ex;
+		  	  border: 2px dashed orange;
+		  	  border-radius: 1em; }
+body			{ background-color: #eeeeee; }
+body > section		{ background-color: #ffffff;
+			  border-bottom-left-radius: 2ex;
+			  border-bottom-right-radius: 2ex;
+			  padding: 1.12em 2% 1.12em 2%; }
+body > section > article + div
+			{ font-size: smaller;
+			  margin-top: 1ex;
+			  margin-left: 2ex;
+			  margin-bottom: 2em; }
+body > section > article + div > a
+			{ color: #336699; }
+body > section > article + div > a:hover
+			{ border-bottom: thin dashed #336699; }
+body > section > p:last-child 	
+			{ margin-bottom: 0; 
+			  padding-bottom: 1.12em; }
+body > footer		{ padding: 2em 2% 2em 2%; 
+			  font-size: smaller;
+		 	  color: #999999; }
+body > footer a		{ color: #999999; }
+body > footer a:hover	{ border-bottom: thin solid #666666;
+			  color: #666666; }
+.code			{ font-family: monospace; 
+			  background-color: #eeeeee;
+			  border-radius: 0.5ex;
+			  padding: 0.5ex;
+			  border: thin dashed #cccccc;
+		 	  width: 95%;
+		 	  margin: 1.12em 0; 
+			  margin-left: auto;
+			  margin-right: auto; }
+.code > div		{ margin: 0.35em 0; }
+.code > div:first-child	{ margin-top: 0.1em; }
+.code > div:last-child	{ margin-bottom: 0.1em; }
+.code > .tab		{ padding-left: 4ex; }
+.code > .dtab		{ padding-left: 8ex; }
+a			{ text-decoration: none; 
+		 	  font-weight: bold; 
+		 	  color: #0000ff; }
+a:hover			{ border-bottom: thin dashed #0000ee; }
+.name			{ font-weight: bolder; }
+body > header		{ padding: 1.5em 1% 1em 1%; 
+			  color: #dddddd;
+			  background-color: #336699; }
+body > header h1 	{ color: #eeeeee; 
+			  font-size: large;
+			  display: inline; }
+body > header div 	{ font-size: large;
+			  display: inline; }
+body > section > article header h1
+			{ margin-bottom: 0; }
+body > section > article header p 
+			{ margin-top: 0;
+			  font-size: smaller;
+			  color: #999999; }
+body > section > article header time
+			{ color: #666666; 
+			  font-weight: bold; }
+.noshow			{ display: none; }
