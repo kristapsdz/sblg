@@ -14,7 +14,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#include <err.h>
+#include <assert.h>
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -33,13 +33,17 @@ struct	pargs {
 	struct article	 article;
 };
 
-static	void	elem_begin(void *userdata, const XML_Char *name, 
+static	void	article_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
-static	void	elem_bbegin(void *userdata, const XML_Char *name, 
+static	void	article_end(void *userdata, const XML_Char *name);
+static	void	template_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
-static	void	elem_end(void *userdata, const XML_Char *name);
-static	void	elem_eend(void *userdata, const XML_Char *name);
-static	void	elem_text(void *userdata, const XML_Char *s, int len);
+static	void	template_end(void *userdata, const XML_Char *name);
+static	void	template_text(void *userdata, 
+			const XML_Char *s, int len);
+static	void	title_begin(void *userdata, const XML_Char *name, 
+			const XML_Char **atts);
+static	void	title_end(void *userdata, const XML_Char *name);
 
 static int
 output(FILE *f, const char *src)
@@ -49,7 +53,7 @@ output(FILE *f, const char *src)
 	int		 fd;
 
 	if (-1 == (fd = open(src, O_RDONLY, 0))) {
-		warn("%s", src);
+		perror(src);
 		return(0);
 	}
 
@@ -57,7 +61,7 @@ output(FILE *f, const char *src)
 		fwrite(buf, (size_t)ssz, 1, f);
 
 	if (ssz < 0) {
-		warn("%s", src);
+		perror(src);
 		close(fd);
 		return(0);
 	}
@@ -89,10 +93,10 @@ compile(XML_Parser p, const char *templ,
 
 	if (NULL == dst) {
 		if (NULL == (cp = strrchr(src, '.'))) {
-			warnx("bad filename: %s", src);
+			fprintf(f, "%s: bad filename\n", src);
 			goto out;
 		} else if (strcasecmp(++cp, "xml")) {
-			warnx("bad suffix: %s", src);
+			fprintf(f, "%s: bad suffix\n", src);
 			goto out;
 		}
 		sz = strlen(src);
@@ -106,7 +110,7 @@ compile(XML_Parser p, const char *templ,
 		out = xstrdup(dst);
 
 	if (NULL == (f = fopen(out, "w"))) {
-		warn("%s", out);
+		perror(out);
 		goto out;
 	} else if ( ! mmap_open(templ, &fd, &buf, &sz))
 		goto out;
@@ -116,12 +120,14 @@ compile(XML_Parser p, const char *templ,
 	arg.p = p;
 
 	XML_ParserReset(p, NULL);
-	XML_SetElementHandler(p, elem_begin, elem_eend);
-	XML_SetDefaultHandler(p, elem_text);
+	XML_SetElementHandler(p, template_begin, template_end);
+	XML_SetDefaultHandler(p, template_text);
 	XML_SetUserData(p, &arg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
-		warnx("%s: %s", templ, 
+		fprintf(stderr, "%s:%zu:%zu: %s\n", templ, 
+			XML_GetCurrentLineNumber(p),
+			XML_GetCurrentColumnNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));
 		goto out;
 	} 
@@ -134,27 +140,39 @@ out:
 		fclose(f);
 
 	free(out);
-	free(arg.article.title);
+	grok_free(&arg.article);
 	return(rc);
 }
 
 static void
-elem_bbegin(void *userdata, const XML_Char *name, const XML_Char **atts)
+article_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
 	struct pargs	*arg = userdata;
 
-	if (0 == strcasecmp(name, "article"))
-		arg->stack++;
+	arg->stack += 0 == strcasecmp(name, "article");
 }
 
 static void
-elem_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
+title_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
 	struct pargs	*arg = userdata;
+
+	arg->stack += 0 == strcasecmp(name, "title");
+}
+
+static void
+template_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
+{
+	struct pargs	*arg = userdata;
+
+	assert(0 == arg->stack);
 
 	if (0 == strcasecmp(name, "title")) {
 		xmlprint(arg->f, name, atts);
 		fprintf(arg->f, "%s", arg->article.title);
+		arg->stack++;
+		XML_SetElementHandler(arg->p, title_begin, title_end);
+		XML_SetDefaultHandler(arg->p, NULL);
 		return;
 	} else if (strcasecmp(name, "article")) {
 		xmlprint(arg->f, name, atts);
@@ -162,18 +180,15 @@ elem_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 	}
 
 	fputc('\n', arg->f);
-
-	XML_SetElementHandler(arg->p, elem_bbegin, elem_end);
+	arg->stack++;
+	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandler(arg->p, NULL);
-
-	fprintf(arg->f, "<!-- sblg writing fragment... -->\n");
 	if ( ! output(arg->f, arg->src))
 		XML_StopParser(arg->p, 0);
-	fprintf(arg->f, "<!-- ...sblg finished fragment -->\n");
 }
 
 static void
-elem_eend(void *userdata, const XML_Char *name)
+template_end(void *userdata, const XML_Char *name)
 {
 	struct pargs	*arg = userdata;
 
@@ -182,21 +197,30 @@ elem_eend(void *userdata, const XML_Char *name)
 }
 
 static void
-elem_end(void *userdata, const XML_Char *name)
+title_end(void *userdata, const XML_Char *name)
 {
 	struct pargs	*arg = userdata;
 
-	if (strcasecmp(name, "article"))
-		return;
-	else if (arg->stack-- > 0)
-		return;
-
-	XML_SetElementHandler(arg->p, NULL, NULL);
-	XML_SetDefaultHandler(arg->p, elem_text);
+	if (0 == strcasecmp(name, "title") && 0 == --arg->stack) {
+		fprintf(arg->f, "</%s>", name);
+		XML_SetElementHandler(arg->p, template_begin, template_end);
+		XML_SetDefaultHandler(arg->p, template_text);
+	}
 }
 
 static void
-elem_text(void *userdata, const XML_Char *s, int len)
+article_end(void *userdata, const XML_Char *name)
+{
+	struct pargs	*arg = userdata;
+
+	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
+		XML_SetElementHandler(arg->p, NULL, NULL);
+		XML_SetDefaultHandler(arg->p, template_text);
+	}
+}
+
+static void
+template_text(void *userdata, const XML_Char *s, int len)
 {
 	struct pargs	*arg = userdata;
 

@@ -15,7 +15,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 #include <assert.h>
-#include <err.h>
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -26,7 +25,7 @@
 
 #include "extern.h"
 
-struct	linkin {
+struct	input {
 	FILE		*f;
 	XML_Parser	 p;
 	size_t		 stack;
@@ -43,28 +42,38 @@ struct	linkall {
 	size_t		 stack;
 };
 
-static	void	linkall_text(void *userdata, const XML_Char *s, int len);
-static	void	linkall_begin(void *userdata, const XML_Char *name, 
+static	void	article_begin(void *userdata, 
+			const XML_Char *name, const XML_Char **atts);
+static	void	article_end(void *userdata, const XML_Char *name);
+static	void	empty_end(void *userdata, const XML_Char *name);
+static	void	input_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
-static	void	linkall_end(void *userdata, const XML_Char *name);
-static	void	linkall_eend(void *userdata, const XML_Char *name);
-static	void	linkin_begin(void *userdata, const XML_Char *name, 
-			const XML_Char **atts);
-static	void	linkin_end(void *userdata, const XML_Char *name);
-static	void	linkin_text(void *userdata, const XML_Char *s, int len);
+static	void	data_begin(void *userdata, 
+			const XML_Char *name, const XML_Char **atts);
+static	void	data_end(void *userdata, const XML_Char *name);
+static	void	data_text(void *userdata, 
+			const XML_Char *s, int len);
+static	void	nav_begin(void *userdata, 
+			const XML_Char *name, const XML_Char **atts);
+static	void	nav_end(void *userdata, const XML_Char *name);
 static	int	scmp(const void *p1, const void *p2);
+static	void	tmpl_begin(void *userdata, const XML_Char *name, 
+			const XML_Char **atts);
+static	void	tmpl_end(void *userdata, const XML_Char *name);
+static	void	tmpl_text(void *userdata, 
+			const XML_Char *s, int len);
 
 static int
-linkin(FILE *f, const char *src)
+input(FILE *f, const char *src)
 {
 	char		*buf;
 	XML_Parser	 p;
 	size_t		 sz;
 	int		 fd, rc;
-	struct linkin	 arg;
+	struct input	 arg;
 
 	rc = 0;
-	memset(&arg, 0, sizeof(struct linkin));
+	memset(&arg, 0, sizeof(struct input));
 
 	if (NULL == (p = XML_ParserCreate(NULL))) {
 		perror(NULL);
@@ -75,11 +84,13 @@ linkin(FILE *f, const char *src)
 	arg.f = f;
 	arg.p = p;
 
-	XML_SetElementHandler(p, linkin_begin, NULL);
+	XML_SetElementHandler(p, input_begin, NULL);
 	XML_SetUserData(p, &arg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
-		warnx("%s: %s", src, 
+		fprintf(stderr, "%s:%zu:%zu: %s\n", src, 
+			XML_GetCurrentLineNumber(p),
+			XML_GetCurrentColumnNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));
 		goto out;
 	} 
@@ -119,7 +130,7 @@ linkall(XML_Parser p, const char *templ,
 	qsort(sarg, sz, sizeof(struct article), scmp);
 
 	if (NULL == (f = fopen(dst, "w"))) {
-		warn("%s", dst);
+		perror(dst);
 		goto out;
 	} else if ( ! mmap_open(templ, &fd, &buf, &ssz))
 		goto out;
@@ -131,12 +142,14 @@ linkall(XML_Parser p, const char *templ,
 	larg.f = f;
 
 	XML_ParserReset(p, NULL);
-	XML_SetDefaultHandler(p, linkall_text);
-	XML_SetElementHandler(p, linkall_begin, NULL);
+	XML_SetDefaultHandler(p, tmpl_text);
+	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 	XML_SetUserData(p, &larg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
-		warnx("%s: %s", templ,
+		fprintf(stderr, "%s:%zu:%zu: %s\n", templ, 
+			XML_GetCurrentLineNumber(p),
+			XML_GetCurrentColumnNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));
 		goto out;
 	} 
@@ -144,8 +157,8 @@ linkall(XML_Parser p, const char *templ,
 	fputc('\n', f);
 	rc = 1;
 out:
-	for (i = 0; i < sz; i++)
-		free(sarg[i].title);
+	for (i = 0; i < sz; i++) 
+		grok_free(&sarg[i]);
 	mmap_close(fd, buf, ssz);
 	if (NULL != f)
 		fclose(f);
@@ -155,7 +168,7 @@ out:
 }
 
 static void
-linkall_text(void *userdata, const XML_Char *s, int len)
+tmpl_text(void *userdata, const XML_Char *s, int len)
 {
 	struct linkall	*arg = userdata;
 
@@ -163,42 +176,40 @@ linkall_text(void *userdata, const XML_Char *s, int len)
 }
 
 static void
-linkin_text(void *userdata, const XML_Char *s, int len)
+data_text(void *userdata, const XML_Char *s, int len)
 {
-	struct linkin	*arg = userdata;
+	struct input	*arg = userdata;
 
 	fprintf(arg->f, "%.*s", len, s);
 }
 
 static void
-linkin_bbegin(void *userdata, 
+data_begin(void *userdata, 
 	const XML_Char *name, const XML_Char **atts)
 {
-	struct linkin	*arg = userdata;
+	struct input	*arg = userdata;
 
 	arg->stack += 0 == strcasecmp(name, "article");
 	xmlprint(arg->f, name, atts);
 }
 
 static void
-linkin_begin(void *userdata, 
+input_begin(void *userdata, 
 	const XML_Char *name, const XML_Char **atts)
 {
-	struct linkin	*arg = userdata;
+	struct input	*arg = userdata;
 
-	if (strcasecmp(name, "article"))
-		return;
-
-	arg->stack++;
-
-	XML_SetElementHandler(arg->p, linkin_bbegin, linkin_end);
-	XML_SetDefaultHandler(arg->p, linkin_text);
+	if (0 == strcasecmp(name, "article")) {
+		arg->stack++;
+		XML_SetElementHandler(arg->p, data_begin, data_end);
+		XML_SetDefaultHandler(arg->p, data_text);
+	}
 }
 
 static void
-linkin_end(void *userdata, const XML_Char *name)
+data_end(void *userdata, const XML_Char *name)
 {
-	struct linkin	*arg = userdata;
+	struct input	*arg = userdata;
 	
 	if (strcasecmp(name, "article")) {
 		if ( ! xmlvoid(name))
@@ -214,7 +225,7 @@ linkin_end(void *userdata, const XML_Char *name)
 }
 
 static void
-linkall_bbegin(void *userdata, 
+article_begin(void *userdata, 
 	const XML_Char *name, const XML_Char **atts)
 {
 	struct linkall	*arg = userdata;
@@ -223,16 +234,38 @@ linkall_bbegin(void *userdata,
 }
 
 static void
-linkall_begin(void *userdata, 
+nav_begin(void *userdata, 
+	const XML_Char *name, const XML_Char **atts)
+{
+	struct linkall	*arg = userdata;
+
+	arg->stack += 0 == strcasecmp(name, "nav");
+}
+
+static void
+nav_end(void *userdata, const XML_Char *name)
+{
+	struct linkall	*arg = userdata;
+
+	if (0 == strcasecmp(name, "nav") && 0 == --arg->stack) {
+		fprintf(arg->f, "</%s>", name);
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandler(arg->p, tmpl_text);
+	}
+}
+
+static void
+tmpl_begin(void *userdata, 
 	const XML_Char *name, const XML_Char **atts)
 {
 	struct linkall	*arg = userdata;
 	size_t		 i;
 	char		 buf[1024];
 
+	assert(0 == arg->stack);
+
 	if (0 == strcasecmp(name, "nav")) {
 		xmlprint(arg->f, name, atts);
-		fprintf(arg->f, "\n<!-- sblg writing navigation... -->\n");
 		fprintf(arg->f, "<ul>\n");
 		for (i = 0; i < (size_t)arg->sposz; i++) {
 			strftime(buf, sizeof(buf), "%Y-%m-%d", 
@@ -245,7 +278,9 @@ linkall_begin(void *userdata,
 			fprintf(arg->f, "</li>\n");
 		}
 		fprintf(arg->f, "</ul>\n");
-		fprintf(arg->f, "<!-- ...sblg finished navigation -->\n");
+		arg->stack++;
+		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetElementHandler(arg->p, nav_begin, nav_end);
 		return;
 	} else if (strcasecmp(name, "article")) {
 		xmlprint(arg->f, name, atts);
@@ -253,57 +288,53 @@ linkall_begin(void *userdata,
 	}
 
 	if (arg->sposz <= arg->spos) {
-		warnx("%s: not enough articles", arg->src);
-		assert(0 == arg->stack);
 		arg->stack++;
 		XML_SetDefaultHandler(arg->p, NULL);
-		XML_SetElementHandler(arg->p, linkall_bbegin, linkall_eend);
+		XML_SetElementHandler(arg->p, article_begin, empty_end);
 		return;
 	}
 
 	xmlprint(arg->f, name, atts);
-	assert(0 == arg->stack);
 	arg->stack++;
 	XML_SetDefaultHandler(arg->p, NULL);
-	XML_SetElementHandler(arg->p, linkall_bbegin, linkall_end);
-	fprintf(arg->f, "<!-- sblg writing article... -->\n");
-	if ( ! linkin(arg->f, arg->sargs[arg->spos++].src))
+	XML_SetElementHandler(arg->p, article_begin, article_end);
+	if ( ! input(arg->f, arg->sargs[arg->spos++].src))
 		XML_StopParser(arg->p, 0);
-	fprintf(arg->f, "<!-- ...sblg finished article -->\n");
 }
 
 static void
-linkall_eend(void *userdata, const XML_Char *name)
+empty_end(void *userdata, const XML_Char *name)
 {
 	struct linkall	*arg = userdata;
 
-	if (strcasecmp(name, "article"))
-		return;
-	else if (--arg->stack > 0)
-		return;
-
-	XML_SetElementHandler(arg->p, linkall_begin, NULL);
-	XML_SetDefaultHandler(arg->p, linkall_text);
+	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandler(arg->p, tmpl_text);
+	}
 }
 
 static void
-linkall_end(void *userdata, const XML_Char *name)
+tmpl_end(void *userdata, const XML_Char *name)
 {
 	struct linkall	*arg = userdata;
 
-	if (strcasecmp(name, "article"))
-		return;
-	else if (--arg->stack > 0)
-		return;
+	if ( ! xmlvoid(name))
+		fprintf(arg->f, "</%s>", name);
+}
 
-	fprintf(arg->f, "</%s>", name);
-	fprintf(arg->f, "<!-- sblg writing permlink... -->\n");
-	fprintf(arg->f, "<div><a href=\"%s\">permanent link"
-		"</a></div>\n", arg->sargs[arg->spos - 1].src);
-	fprintf(arg->f, "<!-- ...sblg finished permlink -->\n");
+static void
+article_end(void *userdata, const XML_Char *name)
+{
+	struct linkall	*arg = userdata;
 
-	XML_SetElementHandler(arg->p, linkall_begin, NULL);
-	XML_SetDefaultHandler(arg->p, linkall_text);
+	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
+		fprintf(arg->f, "</%s>", name);
+		fprintf(arg->f, "<div><a href=\"%s\">"
+				"permanent link</a></div>\n", 
+				arg->sargs[arg->spos - 1].src);
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandler(arg->p, tmpl_text);
+	}
 }
 
 static int

@@ -12,7 +12,6 @@ nav > ul	{ margin: 0;
 #navq:hover	{ border-bottom: 0; 
 		  color: #ffffff; }
 #navtop		{ background-color: #aaaaaa; 
-		  position: absolute;
 		  padding-top: 0.5ex;
 		  padding-bottom: 0.5ex;
 		  width: 100%;
