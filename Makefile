@@ -2,27 +2,29 @@
 
 PREFIX = /usr/local
 CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
-OBJS = main.o compile.o linkall.o grok.o util.o
-SRCS = main.c compile.c linkall.c grok.c util.c
+OBJS = main.o compile.o linkall.o grok.o util.o atom.o
+SRCS = main.c compile.c linkall.c grok.c util.c atom.c
+ARTICLES = article1.html article2.html article3.html article4.html
 XMLS = article1.xml article2.xml article3.xml article-template.xml 
+ATOM = atom.xml
 XMLGENS = blog-template.xml
-HTMLS = article1.html article2.html article3.html blog.html sblg.1.html
+HTMLS = $(ARTICLES) blog.html sblg.1.html
 CSSS = article.css blog.css shared.css
 BINDIR = $(PREFIX)/bin
 WWWDIR = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
 MANDIR = $(PREFIX)/man
-DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml
+DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml
 VERSION = 0.0.5
 VDATE = 2013-07-03
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
 
-www: $(HTMLS) sblg.tar.gz
+www: $(HTMLS) $(ATOM) sblg.tar.gz
 
 installwww: www
 	mkdir -p $(WWWDIR)
-	install -m 0444 sblg.tar.gz Makefile $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(WWWDIR)
+	install -m 0444 sblg.tar.gz Makefile $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(WWWDIR)
 	install -m 0444 sblg.tar.gz $(WWWDIR)/sblg-$(VERSION).tar.gz
 
 install:
@@ -38,7 +40,9 @@ sblg.tar.gz:
 
 main.o compile.o linkall.o grok.o: extern.h
 
-blog.html article1.html article2.html article3.html: sblg
+atom.xml blog.html $(ARTICLES): sblg
+
+atom.xml: atom-template.xml
 
 blog.html: blog-template.xml
 
@@ -46,17 +50,24 @@ blog-template.xml: blog-template.in.xml
 	sed -e "s!@VERSION@!$(VERSION)!g" \
 	    -e "s!@VDATE@!$(VDATE)!g" blog-template.in.xml >$@
 
-article1.html article2.html article3.html: article-template.xml
+article-template.xml: article-template.in.xml
+	sed -e "s!@VERSION@!$(VERSION)!g" \
+	    -e "s!@VDATE@!$(VDATE)!g" article-template.in.xml >$@
 
-blog.html: article1.html article2.html article3.html
-	./sblg -o $@ article1.html article2.html article3.html
+$(ARTICLES): article-template.xml
+
+blog.html: $(ARTICLES)
+	./sblg -o $@ $(ARTICLES)
+
+atom.xml:
+	./sblg -o $@ -a $(ARTICLES)
 
 .xml.html:
-	./sblg -c -o $@ $<
+	./sblg -o $@ -c $<
 
 .1.1.html:
 	mandoc -Thtml $< >$@
 
 clean:
-	rm -f sblg $(OBJS) $(HTMLS) sblg.tar.gz $(XMLGENS)
+	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz $(XMLGENS)
 	rm -rf *.dSYM

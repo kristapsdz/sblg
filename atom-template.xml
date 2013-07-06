@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>sblg Example Feed</title>
+	<link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" />
+	<link href="http://kristaps.bsd.lv/sblg" />
+	<id>http://kristaps.bsd.lv/sblg/atom.xml</id>
+	<updated />
+	<entry />
+	<entry />
+	<entry />
+</feed>

@@ -11,6 +11,9 @@
 			<h1>sblg</h1>
 			<div>simple off-line blog utility</div>
 		</header>
+		<div id="version">
+			<span>Current version: @VERSION@, @VDATE@</span><a href="sblg.tar.gz">Source</a>
+		</div>
 		<section>
 			<p>
 				This is an example of an individual article.

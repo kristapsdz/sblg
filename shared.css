@@ -5,11 +5,15 @@ article			{ display: block;
 		  	  padding: 0ex 1ex;
 		  	  border: 2px dashed orange;
 		  	  border-radius: 1em; }
+address			{ display: inline; 
+			  font-style: normal; }
 body			{ background-color: #eeeeee; }
 body > section		{ background-color: #ffffff;
 			  border-bottom-left-radius: 2ex;
 			  border-bottom-right-radius: 2ex;
 			  padding: 1.12em 2% 1.12em 2%; }
+body > section > p:first-child
+			{ margin-top: 0; }
 body > section > article + div
 			{ font-size: smaller;
 			  margin-top: 1ex;
@@ -57,11 +61,25 @@ body > header div 	{ font-size: large;
 			  display: inline; }
 body > section > article header h1
 			{ margin-bottom: 0; }
-body > section > article header p 
-			{ margin-top: 0;
+body > section > article header div
+			{ margin-top: 1ex;
 			  font-size: smaller;
 			  color: #999999; }
+body > section > article header address,
 body > section > article header time
 			{ color: #666666; 
 			  font-weight: bold; }
 .noshow			{ display: none; }
+#version		{ color: #333333;
+			  background-color: #dddddd;
+			  border-bottom: thin solid #aaaaaa;
+			  border-left: thin solid #aaaaaa;
+			  border-right: thin solid #aaaaaa;
+			  padding: 1ex; 
+		 	  padding-left: 1.5ex; }
+#version > span		{ border-right: thin solid #aaaaaa; 
+			  padding-right: 1ex;
+	 	 	  margin-right: 1ex; }
+#version > a		{ color: #333333; }
+#version > a:hover	{ color: #666666; 
+		 	  border-bottom: 0; }
