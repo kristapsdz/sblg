@@ -1,7 +1,7 @@
 <article>
 	<header>
 		<h1>How does it work?</h1>
-		<p>Posted on <time datetime="2013-07-01">01 July, 2013</time></p>
+		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-07-01">01 July, 2013</time></div>
 	</header>
 	<p>
 		It works within a <a href="Makefile">Makefile</a>, such as the one building this page (and the code).

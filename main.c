@@ -14,7 +14,6 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#include <err.h>
 #include <expat.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -27,7 +26,7 @@
 int
 main(int argc, char *argv[])
 {
-	int		 ch, comp, i, rc;
+	int		 ch, mkcomp, i, rc, mkatom;
 	const char	*progname, *templ, *outfile;
 	XML_Parser	 p;
 
@@ -38,12 +37,15 @@ main(int argc, char *argv[])
 		++progname;
 
 	templ = outfile = NULL;
-	comp = 0;
+	mkcomp = mkatom = 0;
 
-	while (-1 != (ch = getopt(argc, argv, "co:t:")))
+	while (-1 != (ch = getopt(argc, argv, "aco:t:")))
 		switch (ch) {
+		case ('a'):
+			mkatom = 1;
+			break;
 		case ('c'):
-			comp = 1;
+			mkcomp = 1;
 			break;
 		case ('o'):
 			outfile = optarg;
@@ -58,7 +60,7 @@ main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	if (0 == argc)
+	if (0 == argc || (mkcomp && mkatom))
 		goto usage;
 
 	if (NULL == (p = XML_ParserCreate(NULL))) {
@@ -66,17 +68,21 @@ main(int argc, char *argv[])
 		return(EXIT_FAILURE);
 	}
 
-	if (comp) {
+	if (mkcomp) {
 		if (NULL == templ)
 			templ = "article-template.xml";
 		if (argc > 1) {
 			rc = 1;
-			if (NULL != outfile) 
-				warnx("ignoring: -o %s", outfile);
 			for (i = 0; rc && i < argc; i++)
 				rc = compile(p, templ, argv[i], NULL);
 		} else
 			rc = compile(p, templ, argv[0], outfile);
+	} else if (mkatom) {
+		if (NULL == templ)
+			templ = "atom-template.xml";
+		if (NULL == outfile)
+			outfile = "atom.xml";
+		rc = atom(p, templ, argc, argv, outfile);
 	} else {
 		if (NULL == templ)
 			templ = "blog-template.xml";
@@ -89,7 +95,8 @@ main(int argc, char *argv[])
 	return(rc ? EXIT_SUCCESS : EXIT_FAILURE);
 usage:
 	fprintf(stderr, "usage: %s [-o file] [-t templ] -c file...\n"
+			"       %s [-o file] [-t templ] -a file...\n"
 			"       %s [-o file] [-t templ] file...\n",
-			progname, progname);
+			progname, progname, progname);
 	return(EXIT_FAILURE);
 }

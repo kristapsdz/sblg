@@ -1,4 +1,4 @@
-.Dd $Mdocdate$
+.Dd $Mdocdate: July 2 2013 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -8,7 +8,7 @@
 .Nm sblg
 .Op Fl o Ar file
 .Op Fl t Ar templ
-.Op Fl c
+.Op Fl ac
 .Ar
 .Sh DESCRIPTION
 The
@@ -24,6 +24,9 @@ whereas running without
 .Fl c
 will link together previously-formatted HTML5 articles to create a front
 page.
+As an extension,
+.Fl a
+creates an Atom feed file from previously-formatted HTML5 articles.
 .Pp
 When producing standalone files with
 .Fl c ,
@@ -54,9 +57,18 @@ is used by default.
 Template for standalone or front-page file.
 If unspecified, defaults to
 .Ar article-template.xml
+for
+.Fl c ,
+.Ar atom-template.xml
+for
+.Fl a ,
 and
-.Ar blog-template.xml ,
-respectively.
+.Ar blog-template.xml
+otherwise.
+.It Fl a
+Creates an Atom feed instead of a standalone article
+.Pq as with Fl c
+or merging together articles.
 .It Fl c
 Create standalone articles instead of merging together articles into a
 front page.
@@ -80,6 +92,7 @@ They usually consist of the following:
 <article>
   <header>
     <h1>Article Name</h1>
+    <address>Author Name</address>
     <time datetime="2013-06-29">29 June, 2013</time>
   </header>
   <p>Some text.</p>
@@ -89,11 +102,12 @@ They usually consist of the following:
 When processed with
 .Nm ,
 the article title is extracted from the last hn (header 1\(en4) element
-within the header element.
-Article publication date is extracted from the last time element within
-the header element.
+within the header element, article publication date is extracted from
+the last time element within the header element, and author is extracted
+from the address header.
 If unspecified, these default to
-.Qq Untitled article
+.Qq Untitled article ,
+.Qq Unknown author ,
 and the document's ctime.
 .Pp
 The standalone template file must be a well-formed HTML5 file where the
@@ -123,6 +137,26 @@ the title, linked to the page itself.
   <footer>Something.</footer>
 </body>
 .Ed
+.Pp
+The atom template file must be a well-formed XML file where each entry
+element's contents are replaced by ordered (newest to oldest) article
+information.
+If there aren't enough articles, the element is removed.
+.Bd -literal
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Example Feed</title>
+  <link href="http://example.org/feed/" rel="self" />
+  <link href="http://example.org/" />
+  <id>urn:uuid:0123456789abcdef</id>
+  <updated />
+    <entry />
+    <entry />
+    <entry />
+</feed>
+.Ed
+The updated element's contents are replaced with the newest article (or
+the current date, if no articles are listed).
 .Sh FILES
 .Bl -tag -width Ds
 .It Pa article-template.xml

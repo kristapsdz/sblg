@@ -16,7 +16,6 @@
  */
 #include <sys/stat.h>
 
-#include <err.h>
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -34,6 +33,9 @@ struct	parse {
 
 static	void	elem_abegin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
+static	void	elem_addr(struct parse *arg, const XML_Char **atts);
+static	void	elem_aend(void *userdata, const XML_Char *name);
+static	void	elem_aappend(void *userdata, const XML_Char *s, int len);
 static	void	elem_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
 static	void	elem_bbegin(void *userdata, const XML_Char *name, 
@@ -70,7 +72,9 @@ grok(XML_Parser p, const char *src, struct article *arg)
 	XML_SetUserData(p, &parse);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
-		warnx("%s: %s", src, 
+		fprintf(stderr, "%s:%zu:%zu: %s\n", src, 
+			XML_GetCurrentLineNumber(p),
+			XML_GetCurrentColumnNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));
 		goto out;
 	} 
@@ -79,9 +83,13 @@ grok(XML_Parser p, const char *src, struct article *arg)
 		parse.article->title = xstrdup("Untitled article");
 		parse.article->titlesz = strlen(parse.article->title);
 	}
+	if (NULL == parse.article->author) {
+		parse.article->author = xstrdup("Untitled author");
+		parse.article->authorsz = strlen(parse.article->author);
+	}
 	if (0 == parse.article->time) {
 		if (-1 == fstat(fd, &st)) {
-			warn("%s", src);
+			perror(src);
 			goto out;
 		}
 		parse.article->time = st.st_ctime;
@@ -118,6 +126,8 @@ elem_bbegin(void *userdata, const XML_Char *name, const XML_Char **atts)
 
 	if (0 == strcasecmp(name, "time"))
 		elem_time(arg, atts);
+	else if (0 == strcasecmp(name, "address"))
+		elem_addr(arg, atts);
 	else if (0 == strcasecmp(name, "h1"))
 		elem_h(arg, atts);
 	else if (0 == strcasecmp(name, "h2"))
@@ -129,25 +139,51 @@ elem_bbegin(void *userdata, const XML_Char *name, const XML_Char **atts)
 }
 
 static void
+elem_aend(void *userdata, const XML_Char *name)
+{
+	struct parse	*arg = userdata;
+
+	if (0 == strcasecmp(name, "address")) {
+		XML_SetElementHandler(arg->p, elem_bbegin, elem_bend);
+		XML_SetCharacterDataHandler(arg->p, NULL);
+	}
+}
+
+static void
 elem_bend(void *userdata, const XML_Char *name)
 {
 	struct parse	*arg = userdata;
 
-	if (strcasecmp(name, "header"))
-		return;
-
-	XML_SetElementHandler(arg->p, NULL, NULL);
+	if (0 == strcasecmp(name, "header"))
+		XML_SetElementHandler(arg->p, NULL, NULL);
 }
 
 static void
 elem_h(struct parse *arg, const XML_Char **atts)
 {
 
-	if (NULL != arg->article->title)
+	if (NULL == arg->article->title) {
+		XML_SetElementHandler(arg->p, NULL, elem_hend);
+		XML_SetCharacterDataHandler(arg->p, elem_happend);
+	}
+}
+
+static void
+elem_aappend(void *userdata, const XML_Char *s, int len)
+{
+	struct parse	*arg = userdata;
+	size_t		 sz;
+
+	if (len <= 0)
 		return;
 
-	XML_SetElementHandler(arg->p, NULL, elem_hend);
-	XML_SetCharacterDataHandler(arg->p, elem_happend);
+	sz = arg->article->authorsz;
+	arg->article->authorsz += (size_t)len;
+	arg->article->author = xrealloc
+		(arg->article->author, 
+		 arg->article->authorsz + 1);
+	memcpy(arg->article->author + sz, s, len);
+	arg->article->author[arg->article->authorsz] = '\0';
 }
 
 static void
@@ -161,7 +197,6 @@ elem_happend(void *userdata, const XML_Char *s, int len)
 
 	sz = arg->article->titlesz;
 	arg->article->titlesz += (size_t)len;
-
 	arg->article->title = xrealloc
 		(arg->article->title, 
 		 arg->article->titlesz + 1);
@@ -184,6 +219,16 @@ elem_hend(void *userdata, const XML_Char *name)
 }
 
 static void
+elem_addr(struct parse *arg, const XML_Char **atts)
+{
+
+	if (NULL == arg->article->author) {
+		XML_SetElementHandler(arg->p, NULL, elem_aend);
+		XML_SetCharacterDataHandler(arg->p, elem_aappend);
+	}
+}
+
+static void
 elem_time(struct parse *arg, const XML_Char **atts)
 {
 	struct tm	 tm;
@@ -195,5 +240,15 @@ elem_time(struct parse *arg, const XML_Char **atts)
 		if (NULL == strptime(atts[1], "%Y-%m-%d", &tm))
 			continue;
 		arg->article->time = mktime(&tm);
+	}
+}
+
+void
+grok_free(struct article *p)
+{
+
+	if (NULL != p) {
+		free(p->title);
+		free(p->author);
 	}
 }
