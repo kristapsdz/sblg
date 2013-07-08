@@ -5,17 +5,17 @@ CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings
 OBJS = main.o compile.o linkall.o grok.o util.o atom.o
 SRCS = main.c compile.c linkall.c grok.c util.c atom.c
 ARTICLES = article1.html article2.html article3.html article4.html
-XMLS = article1.xml article2.xml article3.xml article-template.xml 
+XMLS = article1.xml article2.xml article3.xml
 ATOM = atom.xml
-XMLGENS = blog-template.xml
+XMLGENS = article-template.xml blog-template.xml
 HTMLS = $(ARTICLES) blog.html sblg.1.html
 CSSS = article.css blog.css shared.css
 BINDIR = $(PREFIX)/bin
 WWWDIR = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
 MANDIR = $(PREFIX)/man
 DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml
-VERSION = 0.0.5
-VDATE = 2013-07-03
+VERSION = 0.0.7
+VDATE = 2013-07-08
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
@@ -31,6 +31,7 @@ install:
 	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	install -m 0755 sblg $(DESTDIR)$(BINDIR)
+	install -m 0444 sblg.1 $(DESTDIR)$(MANDIR)/man1
 
 sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/
@@ -59,7 +60,7 @@ $(ARTICLES): article-template.xml
 blog.html: $(ARTICLES)
 	./sblg -o $@ $(ARTICLES)
 
-atom.xml:
+atom.xml: $(ARTICLES)
 	./sblg -o $@ -a $(ARTICLES)
 
 .xml.html:

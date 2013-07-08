@@ -14,6 +14,8 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+#include <sys/param.h>
+
 #include <assert.h>
 #include <expat.h>
 #include <fcntl.h>
@@ -28,41 +30,53 @@
 struct	atom {
 	FILE		*f;
 	const char	*src;
+	const char	*dst;
 	XML_Parser	 p;
+	char		 domain[MAXHOSTNAMELEN];
+	char		 path[MAXPATHLEN];
 	struct article	*sargs;
 	int		 spos;
 	int		 sposz;
+	int		 hasid;
 	size_t		 stack;
 };
 
+static	void	atomprint(FILE *f, const struct atom *arg, 
+			const struct article *src);
 static	void	entry_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
 static	void	entry_empty(void *userdata, const XML_Char *name);
 static	void	entry_end(void *userdata, const XML_Char *name);
-static	int	scmp(const void *p1, const void *p2);
-static	void	template_begin(void *userdata, const XML_Char *name, 
+static	void	id_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
-static	void	template_end(void *userdata, const XML_Char *name);
-static	void	template_text(void *userdata, 
+static	void	id_end(void *userdata, const XML_Char *name);
+static	int	scmp(const void *p1, const void *p2);
+static	void	tmpl_begin(void *userdata, const XML_Char *name, 
+			const XML_Char **atts);
+static	void	tmpl_end(void *userdata, const XML_Char *name);
+static	void	tmpl_text(void *userdata, 
 			const XML_Char *s, int len);
+static	void	up_begin(void *userdata, const XML_Char *name, 
+			const XML_Char **atts);
+static	void	up_end(void *userdata, const XML_Char *name);
 
-static int
-atomprint(FILE *f, const struct article *src)
+static void
+atomprint(FILE *f, const struct atom *arg, const struct article *src)
 {
 	char		 buf[1024];
 	struct tm	*tm;
 
 	tm = localtime(&src->time);
-	strftime(buf, sizeof(buf), "%FT%TZ", tm);
+	strftime(buf, sizeof(buf), "%F", tm);
 
+	fprintf(f, "<id>tag:%s,%s:%s/%s</id>\n", 
+			arg->domain, buf, arg->path, src->src);
 	fprintf(f, "<title>%s</title>\n", src->title);
-	fprintf(f, "<id>/%s</id>\n", src->src);
-	fprintf(f, "<updated>%s</updated>\n", buf);
+	fprintf(f, "<updated>%sT00:00:00Z</updated>\n", buf);
 	fprintf(f, "<author><name>%s</name></author>\n", src->author);
 	fprintf(f, "<link rel=\"alternate\" "
 			 "type=\"text/html\" "
-			 "href=\"/%s\" />\n", src->src);
-	return(1);
+			 "href=\"%s/%s\" />\n", arg->path, src->src);
 }
 
 int
@@ -85,6 +99,11 @@ atom(XML_Parser p, const char *templ,
 	memset(&larg, 0, sizeof(struct atom));
 	sarg = xcalloc(sz, sizeof(struct article));
 
+	getdomainname(larg.domain, MAXHOSTNAMELEN);
+	if ('\0' == larg.domain[0])
+		strlcpy(larg.domain, "localhost", MAXHOSTNAMELEN);
+	strlcpy(larg.path, "/", MAXPATHLEN);
+
 	for (i = 0; i < sz; i++)
 		if ( ! grok(p, src[i], &sarg[i]))
 			goto out;
@@ -101,11 +120,12 @@ atom(XML_Parser p, const char *templ,
 	larg.sposz = sz;
 	larg.p = p;
 	larg.src = templ;
+	larg.dst = dst;
 	larg.f = f;
 
 	XML_ParserReset(p, NULL);
-	XML_SetDefaultHandler(p, template_text);
-	XML_SetElementHandler(p, template_begin, template_end);
+	XML_SetDefaultHandler(p, tmpl_text);
+	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 	XML_SetUserData(p, &larg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
@@ -130,7 +150,7 @@ out:
 }
 
 static void
-template_text(void *userdata, const XML_Char *s, int len)
+tmpl_text(void *userdata, const XML_Char *s, int len)
 {
 	struct atom	*arg = userdata;
 
@@ -147,13 +167,36 @@ entry_begin(void *userdata,
 }
 
 static void
-template_begin(void *userdata, 
+up_begin(void *userdata, 
 	const XML_Char *name, const XML_Char **atts)
 {
 	struct atom	*arg = userdata;
-	time_t		 t;
-	char		 buf[1024];
-	struct tm	*tm;
+
+	arg->stack += 0 == strcasecmp(name, "updated");
+}
+
+static void
+id_begin(void *userdata, 
+	const XML_Char *name, const XML_Char **atts)
+{
+	struct atom	*arg = userdata;
+
+	arg->stack += 0 == strcasecmp(name, "id");
+}
+
+static void
+tmpl_begin(void *userdata, 
+	const XML_Char *name, const XML_Char **atts)
+{
+	struct atom	 *arg = userdata;
+	time_t		  t;
+	char		  buf[1024];
+	const char	 *start;
+	char		 *cp;
+	struct tm	 *tm;
+	const XML_Char	**attp;
+
+	assert(0 == arg->stack);
 
 	if (0 == strcasecmp(name, "updated")) {
 		t = arg->sposz <= arg->spos ?
@@ -163,26 +206,73 @@ template_begin(void *userdata,
 		strftime(buf, sizeof(buf), "%FT%TZ", tm);
 		xmlprint(arg->f, name, atts);
 		fprintf(arg->f, "%s", buf);
+		arg->stack++;
+		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetElementHandler(arg->p, up_begin, up_end);
+		return;
+	} else if (0 == strcasecmp(name, "id")) {
+		xmlprint(arg->f, name, atts);
+		arg->stack++;
+		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetElementHandler(arg->p, id_begin, id_end);
+		return;
+	} else if (0 == strcasecmp(name, "link")) {
+		if (arg->spos > 0) {
+			fprintf(stderr, "%s: link appears"
+				"after entry\n", arg->src);
+			XML_StopParser(arg->p, 0);
+			return;
+		}
+		xmlprint(arg->f, name, atts);
+		for (attp = atts; NULL != *attp; attp += 2) 
+			if (0 == strcasecmp(attp[0], "rel"))
+				if (0 == strcasecmp(attp[1], "self"))
+					break;
+		if (NULL == *attp)
+			return;
+		for (attp = atts; NULL != *attp; attp += 2) 
+			if (0 == strcasecmp(attp[0], "href"))
+				break;
+		if (NULL == *attp) {
+			fprintf(stderr, "%s: no href\n", arg->src);
+			XML_StopParser(arg->p, 0);
+			return;
+		}
+		if (NULL == (start = strcasestr(attp[1], "://"))) {
+			fprintf(stderr, "%s: bad uri\n", arg->src);
+			XML_StopParser(arg->p, 0);
+			return;
+		}
+		strlcpy(arg->domain, start + 3, MAXHOSTNAMELEN);
+		if (NULL == (cp = strchr(arg->domain, '/'))) {
+			fprintf(stderr, "%s: bad uri\n", arg->src);
+			XML_StopParser(arg->p, 0);
+			return;
+		}
+		strlcpy(arg->path, cp, MAXPATHLEN);
+		*cp = '\0';
+		if (NULL == (cp = strrchr(arg->path, '/'))) {
+			fprintf(stderr, "%s: bad uri\n", arg->src);
+			XML_StopParser(arg->p, 0);
+			return;
+		}
+		*cp = '\0';
 		return;
 	} else if (strcasecmp(name, "entry")) {
 		xmlprint(arg->f, name, atts);
 		return;
 	}
 
-	assert(0 == arg->stack);
 	arg->stack++;
-
-	if (arg->sposz <= arg->spos) {
-		XML_SetDefaultHandler(arg->p, NULL);
-		XML_SetElementHandler(arg->p, entry_begin, entry_empty);
-		return;
-	}
-
-	xmlprint(arg->f, name, atts);
 	XML_SetDefaultHandler(arg->p, NULL);
-	XML_SetElementHandler(arg->p, entry_begin, entry_end);
-	if ( ! atomprint(arg->f, &arg->sargs[arg->spos++]))
-		XML_StopParser(arg->p, 0);
+	if (arg->sposz > arg->spos) {
+		xmlprint(arg->f, name, atts);
+		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetElementHandler(arg->p, entry_begin, entry_end);
+		atomprint(arg->f, arg, &arg->sargs[arg->spos++]);
+	} else {
+		XML_SetElementHandler(arg->p, entry_begin, entry_empty);
+	}
 }
 
 static void
@@ -191,13 +281,13 @@ entry_empty(void *userdata, const XML_Char *name)
 	struct atom	*arg = userdata;
 
 	if (0 == strcasecmp(name, "entry") && 0 == --arg->stack) {
-		XML_SetElementHandler(arg->p, template_begin, template_end);
-		XML_SetDefaultHandler(arg->p, template_text);
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandler(arg->p, tmpl_text);
 	}
 }
 
 static void
-template_end(void *userdata, const XML_Char *name)
+tmpl_end(void *userdata, const XML_Char *name)
 {
 	struct atom	*arg = userdata;
 
@@ -206,16 +296,40 @@ template_end(void *userdata, const XML_Char *name)
 }
 
 static void
+id_end(void *userdata, const XML_Char *name)
+{
+	struct atom	*arg = userdata;
+
+	if (0 == strcasecmp(name, "id") && 0 == --arg->stack) {
+		fprintf(arg->f, "tag:%s,2013:%s/%s</%s>", 
+			arg->domain, arg->path, arg->dst, name);
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandler(arg->p, tmpl_text);
+	}
+}
+
+static void
+up_end(void *userdata, const XML_Char *name)
+{
+	struct atom	*arg = userdata;
+
+	if (0 == strcasecmp(name, "updated") && 0 == --arg->stack) {
+		fprintf(arg->f, "</%s>", name);
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandler(arg->p, tmpl_text);
+	}
+}
+
+static void
 entry_end(void *userdata, const XML_Char *name)
 {
 	struct atom	*arg = userdata;
 
-	if (strcasecmp(name, "entry") || --arg->stack > 0)
-		return;
-
-	fprintf(arg->f, "</%s>", name);
-	XML_SetElementHandler(arg->p, template_begin, template_end);
-	XML_SetDefaultHandler(arg->p, template_text);
+	if (0 == strcasecmp(name, "entry") && 0 ==  --arg->stack) {
+		fprintf(arg->f, "</%s>", name);
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandler(arg->p, tmpl_text);
+	}
 }
 
 static int

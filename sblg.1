@@ -1,4 +1,20 @@
-.Dd $Mdocdate: July 2 2013 $
+.\"	$Id$
+.\"
+.\" Copyright (c) 2013 Kristaps Dzonsons <kristaps@bsd.lv>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate: July 6 2013 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -101,17 +117,24 @@ They usually consist of the following:
 .Pp
 When processed with
 .Nm ,
-the article title is extracted from the last hn (header 1\(en4) element
-within the header element, article publication date is extracted from
-the last time element within the header element, and author is extracted
-from the address header.
+the article title is extracted from the first
+.Aq hn
+.Pq header 1\(en4
+within the
+.Aq header ,
+article publication date is extracted from the last
+.Aq time ,
+and author from the first
+.Aq address .
 If unspecified, these default to
 .Qq Untitled article ,
 .Qq Unknown author ,
 and the document's ctime.
 .Pp
 The standalone template file must be a well-formed HTML5 file where the
-first article element is replaced by the article text.
+first
+.Aq article
+element is replaced by the article text.
 All of this element's children are removed.
 .Bd -literal
 <body>
@@ -122,12 +145,15 @@ All of this element's children are removed.
 .Ed
 .Pp
 The front page template file must also be a well-formed HTML5 file where
-each article element is replaced by ordered (newest to oldest) article
-text.
+each
+.Aq article
+element is replaced by ordered (newest to oldest) article text.
 If there aren't enough articles, the element is removed.
-Furthermore, any nav elements are replaced by a list of all available
-articles in an unordered list consisting of article dates followed by
-the title, linked to the page itself.
+Furthermore, any
+.Aq nav
+elements are replaced by a list of all available articles in an
+unordered list consisting of article dates followed by the title, linked
+to the page itself.
 .Bd -literal
 <body>
   <header>This consists of two blog entries.</header>
@@ -138,9 +164,9 @@ the title, linked to the page itself.
 </body>
 .Ed
 .Pp
-The atom template file must be a well-formed XML file where each entry
-element's contents are replaced by ordered (newest to oldest) article
-information.
+The Atom template file must be a well-formed XML file where each
+.Aq entry
+is replaced by ordered (newest to oldest) article information.
 If there aren't enough articles, the element is removed.
 .Bd -literal
 <?xml version="1.0" encoding="utf-8"?>
@@ -148,15 +174,37 @@ If there aren't enough articles, the element is removed.
   <title>Example Feed</title>
   <link href="http://example.org/feed/" rel="self" />
   <link href="http://example.org/" />
-  <id>urn:uuid:0123456789abcdef</id>
   <updated />
     <entry />
     <entry />
     <entry />
 </feed>
 .Ed
-The updated element's contents are replaced with the newest article (or
-the current date, if no articles are listed).
+.Pp
+The
+.Aq updated
+contents are replaced with the newest article (or the current date, if
+no articles are listed).
+If not included, an
+.Aq id
+is created in the form of
+.Li tag:domain,2013:path ,
+where the domain is initialised to the current domain or extracted from
+the
+.Aq link
+to the self.
+The path is also extracted from the self
+.Aq link ,
+initialised to the root path
+.Sq \&/ .
+.Pp
+Each entry is filled in with a
+.Aq title ,
+.Aq id
+.Pq in tag format ,
+.Aq author ,
+and alternate
+.Aq link .
 .Sh FILES
 .Bl -tag -width Ds
 .It Pa article-template.xml
@@ -182,9 +230,12 @@ file is assumed to exist.
 .Pp
 .Dl % sblg -o index.html article1.html article2.html
 .Sh STANDARDS
-Input files must be properly-formed HTML5 files using XML syntax.
-In other words, all tags must be properly closed.
+Input files and templates must be properly-formed HTML5 files using XML
+syntax
+.Pq Qo void Qc elements must be self-closed .
 Output files are guranteed to be HTML5 conforming.
+The Atom file template must be well-formed; output is guaranteed to
+satisfy the Atom 1.0 and Tag ID standards.
 .Sh AUTHORS
 The
 .Nm
