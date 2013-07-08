@@ -78,8 +78,8 @@ body > section > article header time
 			  padding: 1ex; 
 		 	  padding-left: 1.5ex; }
 #version > span		{ border-right: thin solid #aaaaaa; 
-			  padding-right: 1ex;
-	 	 	  margin-right: 1ex; }
-#version > a		{ color: #333333; }
+			  padding-right: 1ex; }
+#version > a		{ color: #333333; 
+			  white-space: nowrap; }
 #version > a:hover	{ color: #666666; 
 		 	  border-bottom: 0; }

@@ -25,7 +25,8 @@
 			<div>&#8211; simple off-line blog utility</div>
 		</header>
 		<div id="version">
-			<span>Current version: @VERSION@, @VDATE@</span><a href="sblg.tar.gz">Source</a>
+			<span>Current version: @VERSION@, @VDATE@</span>
+			<a href="sblg.tar.gz">Download Source</a>
 		</div>
 		<nav class="noshow" id="nav" />
 		<div id="navtop">
@@ -37,14 +38,15 @@
 					href="https://xkcd.com/148/">blag</a> entries and does the following:
 			</p>
 			<ul>
-				<li>formats entries with a template into standalone HTML5 articles</li>
+				<li>formats entries with a template into standalone <a
+						href="http://www.w3.org/html/wg/drafts/html/master/">HTML5</a> articles</li>
 				<li>merges entries together into an aggregate HTML5 page</li>
-				<li>merges entries together into an Atom feed</li>
+				<li>merges entries together into an <a href="http://www.atomenabled.org/">Atom</a> feed</li>
 				<li>is simple (no Ruby, no format pseudo-languages, no crap)</li>
 			</ul>
 			<p>
-				Want simplified HTML markup, in-line LaTeX editing, smartphone auto-templating, or <q>modules</q>?  
-				Neither do we.
+				Want simplified HTML markup, in-line <a href="http://www.latex-project.org/">LaTeX</a> editing, smartphone
+				auto-templating, or <q>modules</q>?  Neither do we.
 				<span class="name">sblg</span> is simple and for people who can already write proper HTML and CSS, version their
 				sources into CVS, configure a Makefile, and install into some sort of static htdocs directory.
 				<span class="name">sblg</span> links against <a href="http://expat.sourceforge.net/">libexpat</a>, which is

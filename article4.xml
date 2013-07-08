@@ -6,8 +6,9 @@
 	<p>
 		<span class="name">sblg</span> will generate Atom feeds when given the <code>-<b>a</b></code> flag.
 		These are used for syndication (I guess &#8211; I've never used it).
-		All you need to do is provide an Atom template; the <code>entry</code> and <code>updated</code> fields will be automatically
-		filled in.
+		All you need to do is provide an Atom template; the <code>entry</code>, <code>updated</code>, and <code>id</code> (the
+		<code>id</code> field must occur after the <code>link</code>) fields will be
+		automatically filled in.
 	</p>
 	<div class="code">
 		<div>&lt;?xml version="1.0" encoding="utf-8"?&gt;</div>
@@ -15,7 +16,7 @@
 		<div class="tab">&lt;title&gt;sblg Example Feed&lt;/title&gt;</div>
 		<div class="tab">&lt;link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" /&gt;</div>
 		<div class="tab">&lt;link href="http://kristaps.bsd.lv/sblg" /&gt;</div>
-		<div class="tab">&lt;id>http://kristaps.bsd.lv/sblg/atom.xml&lt;/id&gt;</div>
+		<div class="tab">&lt;id /&gt;</div>
 		<div class="tab">&lt;updated /&gt;</div>
 		<div class="tab">&lt;entry /&gt;</div>
 		<div class="tab">&lt;entry /&gt;</div>

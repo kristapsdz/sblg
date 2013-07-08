@@ -16,6 +16,7 @@
  */
 #include <sys/stat.h>
 
+#include <assert.h>
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -29,22 +30,23 @@
 struct	parse {
 	XML_Parser	 p;
 	struct article	*article;
+	size_t		 stack;
 };
 
-static	void	elem_abegin(void *userdata, const XML_Char *name, 
+static	void	addr_data(struct parse *arg, const XML_Char **atts);
+static	void	addr_end(void *userdata, const XML_Char *name);
+static	void	addr_text(void *userdata, const XML_Char *s, int len);
+static	void	article_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
-static	void	elem_addr(struct parse *arg, const XML_Char **atts);
-static	void	elem_aend(void *userdata, const XML_Char *name);
-static	void	elem_aappend(void *userdata, const XML_Char *s, int len);
-static	void	elem_begin(void *userdata, const XML_Char *name, 
+static	void	head_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
-static	void	elem_bbegin(void *userdata, const XML_Char *name, 
+static	void	head_end(void *userdata, const XML_Char *name);
+static	void	input_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
-static	void	elem_bend(void *userdata, const XML_Char *name);
-static	void	elem_time(struct parse *arg, const XML_Char **atts);
-static	void	elem_h(struct parse *arg, const XML_Char **atts);
-static	void	elem_hend(void *userdata, const XML_Char *name);
-static	void	elem_happend(void *userdata, const XML_Char *s, int len);
+static	void	time_data(struct parse *arg, const XML_Char **atts);
+static	void	title_data(struct parse *arg, const XML_Char **atts);
+static	void	title_end(void *userdata, const XML_Char *name);
+static	void	title_text(void *userdata, const XML_Char *s, int len);
 
 int
 grok(XML_Parser p, const char *src, struct article *arg)
@@ -68,7 +70,7 @@ grok(XML_Parser p, const char *src, struct article *arg)
 	parse.p = p;
 
 	XML_ParserReset(p, NULL);
-	XML_SetStartElementHandler(p, elem_abegin);
+	XML_SetStartElementHandler(p, input_begin);
 	XML_SetUserData(p, &parse);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
@@ -102,55 +104,55 @@ out:
 }
 
 static void
-elem_abegin(void *userdata, const XML_Char *name, const XML_Char **atts)
+input_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
 	struct parse	*arg = userdata;
 
 	if (0 == strcasecmp(name, "article"))
-		XML_SetElementHandler(arg->p, elem_begin, NULL);
+		XML_SetElementHandler(arg->p, article_begin, NULL);
 }
 
 static void
-elem_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
+article_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
 	struct parse	*arg = userdata;
 
 	if (0 == strcasecmp(name, "header"))
-		XML_SetElementHandler(arg->p, elem_bbegin, elem_bend);
+		XML_SetElementHandler(arg->p, head_begin, head_end);
 }
 
 static void
-elem_bbegin(void *userdata, const XML_Char *name, const XML_Char **atts)
+head_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
 	struct parse	*arg = userdata;
 
 	if (0 == strcasecmp(name, "time"))
-		elem_time(arg, atts);
+		time_data(arg, atts);
 	else if (0 == strcasecmp(name, "address"))
-		elem_addr(arg, atts);
+		addr_data(arg, atts);
 	else if (0 == strcasecmp(name, "h1"))
-		elem_h(arg, atts);
+		title_data(arg, atts);
 	else if (0 == strcasecmp(name, "h2"))
-		elem_h(arg, atts);
+		title_data(arg, atts);
 	else if (0 == strcasecmp(name, "h3"))
-		elem_h(arg, atts);
+		title_data(arg, atts);
 	else if (0 == strcasecmp(name, "h4"))
-		elem_h(arg, atts);
+		title_data(arg, atts);
 }
 
 static void
-elem_aend(void *userdata, const XML_Char *name)
+addr_end(void *userdata, const XML_Char *name)
 {
 	struct parse	*arg = userdata;
 
-	if (0 == strcasecmp(name, "address")) {
-		XML_SetElementHandler(arg->p, elem_bbegin, elem_bend);
+	if (0 == strcasecmp(name, "address") && 0 == --arg->stack) {
+		XML_SetElementHandler(arg->p, head_begin, head_end);
 		XML_SetCharacterDataHandler(arg->p, NULL);
 	}
 }
 
 static void
-elem_bend(void *userdata, const XML_Char *name)
+head_end(void *userdata, const XML_Char *name)
 {
 	struct parse	*arg = userdata;
 
@@ -159,17 +161,17 @@ elem_bend(void *userdata, const XML_Char *name)
 }
 
 static void
-elem_h(struct parse *arg, const XML_Char **atts)
+title_data(struct parse *arg, const XML_Char **atts)
 {
 
 	if (NULL == arg->article->title) {
-		XML_SetElementHandler(arg->p, NULL, elem_hend);
-		XML_SetCharacterDataHandler(arg->p, elem_happend);
+		XML_SetElementHandler(arg->p, NULL, title_end);
+		XML_SetCharacterDataHandler(arg->p, title_text);
 	}
 }
 
 static void
-elem_aappend(void *userdata, const XML_Char *s, int len)
+addr_text(void *userdata, const XML_Char *s, int len)
 {
 	struct parse	*arg = userdata;
 	size_t		 sz;
@@ -187,7 +189,7 @@ elem_aappend(void *userdata, const XML_Char *s, int len)
 }
 
 static void
-elem_happend(void *userdata, const XML_Char *s, int len)
+title_text(void *userdata, const XML_Char *s, int len)
 {
 	struct parse	*arg = userdata;
 	size_t		 sz;
@@ -205,7 +207,7 @@ elem_happend(void *userdata, const XML_Char *s, int len)
 }
 
 static void
-elem_hend(void *userdata, const XML_Char *name)
+title_end(void *userdata, const XML_Char *name)
 {
 	struct parse	*arg = userdata;
 
@@ -213,23 +215,34 @@ elem_hend(void *userdata, const XML_Char *name)
 			0 == strcasecmp(name, "h2") ||
 			0 == strcasecmp(name, "h3") ||
 			0 == strcasecmp(name, "h4")) {
-		XML_SetElementHandler(arg->p, elem_bbegin, elem_bend);
+		XML_SetElementHandler(arg->p, head_begin, head_end);
 		XML_SetCharacterDataHandler(arg->p, NULL);
 	}
 }
 
 static void
-elem_addr(struct parse *arg, const XML_Char **atts)
+addr_begin(void *userdata, 
+	const XML_Char *name, const XML_Char **atts)
+{
+	struct parse	*arg = userdata;
+
+	arg->stack += 0 == strcasecmp(name, "address");
+}
+
+static void
+addr_data(struct parse *arg, const XML_Char **atts)
 {
 
 	if (NULL == arg->article->author) {
-		XML_SetElementHandler(arg->p, NULL, elem_aend);
-		XML_SetCharacterDataHandler(arg->p, elem_aappend);
+		assert(0 == arg->stack);
+		arg->stack++;
+		XML_SetElementHandler(arg->p, addr_begin, addr_end);
+		XML_SetCharacterDataHandler(arg->p, addr_text);
 	}
 }
 
 static void
-elem_time(struct parse *arg, const XML_Char **atts)
+time_data(struct parse *arg, const XML_Char **atts)
 {
 	struct tm	 tm;
 
