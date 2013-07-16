@@ -2,8 +2,8 @@
 
 PREFIX = /usr/local
 CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
-OBJS = main.o compile.o linkall.o grok.o util.o atom.o
-SRCS = main.c compile.c linkall.c grok.c util.c atom.c
+OBJS = main.o compile.o linkall.o grok.o echo.o util.o atom.o
+SRCS = main.c compile.c linkall.c grok.c echo.c util.c atom.c
 ARTICLES = article1.html article2.html article3.html article4.html
 XMLS = article1.xml article2.xml article3.xml
 ATOM = atom.xml
@@ -39,7 +39,7 @@ sblg.tar.gz:
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
-main.o compile.o linkall.o grok.o: extern.h
+main.o compile.o linkall.o grok.o echo.o: extern.h
 
 atom.xml blog.html $(ARTICLES): sblg
 

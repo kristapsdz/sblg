@@ -134,12 +134,15 @@ and the document's ctime.
 The standalone template file must be a well-formed HTML5 file where the
 first
 .Aq article
-element is replaced by the article text.
+element with an
+.Li data-sblg-article
+attribute is replaced by the article text.
 All of this element's children are removed.
 .Bd -literal
 <body>
   <header>This consists of a single blog entry.</header>
-  <article>This is removed.</article>
+  <article>This is kept.</article>
+  <article data-sblg-article="1">This is removed.</article>
   <footer>Something.</footer>
 </body>
 .Ed
@@ -147,26 +150,37 @@ All of this element's children are removed.
 The front page template file must also be a well-formed HTML5 file where
 each
 .Aq article
-element is replaced by ordered (newest to oldest) article text.
+element with an
+.Li data-sblg-article
+attribute is replaced by ordered (newest to oldest) article text.
 If there aren't enough articles, the element is removed.
 Furthermore, any
 .Aq nav
-elements are replaced by a list of all available articles in an
+elements with an
+.Li data-sblg-nav
+attribute are replaced by a list of all available articles in an
 unordered list consisting of article dates followed by the title, linked
 to the page itself.
+If the
+.Aq nav
+element contains a
+.Li data-sblg-navsz
+attribute, this is used to limit the number of navigation entries.
 .Bd -literal
 <body>
   <header>This consists of two blog entries.</header>
-  <nav></nav>
-  <article>Blog one.</article>
-  <article>Blog two.</article>
+  <nav data-sblg-nav="1" />
+  <article data-sblg-article="1" />
+  <article data-sblg-article="1" />
   <footer>Something.</footer>
 </body>
 .Ed
 .Pp
 The Atom template file must be a well-formed XML file where each
 .Aq entry
-is replaced by ordered (newest to oldest) article information.
+element with an
+.Li data-sblg-entry
+attribute is replaced by ordered (newest to oldest) article information.
 If there aren't enough articles, the element is removed.
 .Bd -literal
 <?xml version="1.0" encoding="utf-8"?>
@@ -174,20 +188,25 @@ If there aren't enough articles, the element is removed.
   <title>Example Feed</title>
   <link href="http://example.org/feed/" rel="self" />
   <link href="http://example.org/" />
-  <updated />
-    <entry />
-    <entry />
-    <entry />
+  <updated data-sblg-updated="1" />
+  <id data-sblg-id="1" />
+  <entry data-sblg-entry="1" />
+  <entry data-sblg-entry="1" />
+  <entry data-sblg-entry="1" />
 </feed>
 .Ed
 .Pp
 The
 .Aq updated
-contents are replaced with the newest article (or the current date, if
-no articles are listed).
-If not included, an
+element with an
+.Li data-sblg-updated
+attribute is replaced with the newest article date (or the current date,
+if no articles are listed).
+The
 .Aq id
-is created in the form of
+element with an
+.Li data-sblg-id
+attributed is replaced with an identifier in the form of
 .Li tag:domain,2013:path ,
 where the domain is initialised to the current domain or extracted from
 the
@@ -198,7 +217,11 @@ The path is also extracted from the self
 initialised to the root path
 .Sq \&/ .
 .Pp
-Each entry is filled in with a
+Each
+.Aq entry
+element with an
+.Li data-sblg-entry
+attribute is filled in with a
 .Aq title ,
 .Aq id
 .Pq in tag format ,
@@ -210,6 +233,9 @@ and alternate
 .It Pa article-template.xml
 Default template for creating articles with
 .Fl c .
+.It Pa atom-template.xml
+Default template for creating atom feeds with
+.Fl a .
 .It Pa blog-template.xml
 Default template for creating a front page.
 .El
@@ -232,7 +258,6 @@ file is assumed to exist.
 .Sh STANDARDS
 Input files and templates must be properly-formed HTML5 files using XML
 syntax
-.Pq Qo void Qc elements must be self-closed .
 Output files are guranteed to be HTML5 conforming.
 The Atom file template must be well-formed; output is guaranteed to
 satisfy the Atom 1.0 and Tag ID standards.

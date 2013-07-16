@@ -4,11 +4,12 @@
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-06-29">29 June, 2013</time></div>
 	</header>
 	<p>
-		<span class="name">sblg</span> will generate Atom feeds when given the <code>-<b>a</b></code> flag.
+		<span class="name">sblg</span> will generate <a href="https://en.wikipedia.org/wiki/Atom_%28standard%29">Atom</a> feeds when
+		given the <code>-<b>a</b></code> flag.
 		These are used for syndication (I guess &#8211; I've never used it).
-		All you need to do is provide an Atom template; the <code>entry</code>, <code>updated</code>, and <code>id</code> (the
-		<code>id</code> field must occur after the <code>link</code>) fields will be
-		automatically filled in.
+		All you need to do is provide an Atom <a href="atom-template.xml">template</a>; the <span class="code">entry</span>, <span
+			class="code">updated</span>, and <span class="code">id</span> (the <span class="code">id</span> field must occur after
+		the <span class="code">link</span>) fields will be automatically filled in.
 	</p>
 	<div class="code">
 		<div>&lt;?xml version="1.0" encoding="utf-8"?&gt;</div>
@@ -16,16 +17,17 @@
 		<div class="tab">&lt;title&gt;sblg Example Feed&lt;/title&gt;</div>
 		<div class="tab">&lt;link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" /&gt;</div>
 		<div class="tab">&lt;link href="http://kristaps.bsd.lv/sblg" /&gt;</div>
-		<div class="tab">&lt;id /&gt;</div>
-		<div class="tab">&lt;updated /&gt;</div>
-		<div class="tab">&lt;entry /&gt;</div>
-		<div class="tab">&lt;entry /&gt;</div>
-		<div class="tab">&lt;entry /&gt;</div>
+		<div class="tab">&lt;id data-sblg-id="1" /&gt;</div>
+		<div class="tab">&lt;updated data-sblg-updated="1" /&gt;</div>
+		<div class="tab">&lt;entry data-sblg-entry="1" /&gt;</div>
+		<div class="tab">&lt;entry data-sblg-entry="1" /&gt;</div>
+		<div class="tab">&lt;entry data-sblg-entry="1" /&gt;</div>
 		<div>&lt;/feed&gt;</div>
 	</div>
 	<p>
-		Entries consist of <code>title</code>, <code>id</code>, <code>updated</code>, <code>author</code>, and alternate
-		<code>link</code> elements.
+		Filled-in entries consist of <span class="code">title</span>, <span class="code">id</span>, <span class="code">updated</span>,
+		<span class="code">author</span>, and alternate <span class="code">link</span> elements.
+		See the <a href="sblg.1.html">sblg(1)</a> manual for details.
 	</p>
 	<p>
 		Remember to link to the feed in your <a href="blog-template.xml">blog-template.xml</a> or <a

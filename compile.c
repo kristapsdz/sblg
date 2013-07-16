@@ -45,31 +45,6 @@ static	void	title_begin(void *userdata, const XML_Char *name,
 			const XML_Char **atts);
 static	void	title_end(void *userdata, const XML_Char *name);
 
-static int
-output(FILE *f, const char *src)
-{
-	char		 buf[BUFSIZ];
-	ssize_t		 ssz;
-	int		 fd;
-
-	if (-1 == (fd = open(src, O_RDONLY, 0))) {
-		perror(src);
-		return(0);
-	}
-
-	while ((ssz = read(fd, buf, BUFSIZ)) > 0)
-		fwrite(buf, (size_t)ssz, 1, f);
-
-	if (ssz < 0) {
-		perror(src);
-		close(fd);
-		return(0);
-	}
-
-	close(fd);
-	return(1);
-}
-
 int
 compile(XML_Parser p, const char *templ, 
 		const char *src, const char *dst)
@@ -88,7 +63,7 @@ compile(XML_Parser p, const char *templ,
 	f = NULL;
 	sz = 0;
 
-	if ( ! grok(p, src, &arg.article))
+	if ( ! grok(p, 0, src, &arg.article))
 		goto out;
 
 	if (NULL == dst) {
@@ -163,7 +138,8 @@ title_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 static void
 template_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
-	struct pargs	*arg = userdata;
+	struct pargs	 *arg = userdata;
+	const XML_Char	**attp;
 
 	assert(0 == arg->stack);
 
@@ -179,11 +155,20 @@ template_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 		return;
 	}
 
-	fputc('\n', arg->f);
+	for (attp = atts; NULL != *attp; attp++)
+		if (0 == strcasecmp(*attp, "data-sblg-article"))
+			break;
+
+	if (NULL == *attp) {
+		xmlprint(arg->f, name, atts);
+		return;
+	}
+
+	xmlprint(arg->f, name, atts);
 	arg->stack++;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandler(arg->p, NULL);
-	if ( ! output(arg->f, arg->src))
+	if ( ! echo(arg->f, 0, arg->src))
 		XML_StopParser(arg->p, 0);
 }
 
@@ -214,6 +199,7 @@ article_end(void *userdata, const XML_Char *name)
 	struct pargs	*arg = userdata;
 
 	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
+		fprintf(arg->f, "</%s>", name);
 		XML_SetElementHandler(arg->p, NULL, NULL);
 		XML_SetDefaultHandler(arg->p, template_text);
 	}
