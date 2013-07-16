@@ -105,7 +105,7 @@ atom(XML_Parser p, const char *templ,
 	strlcpy(larg.path, "/", MAXPATHLEN);
 
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, src[i], &sarg[i]))
+		if ( ! grok(p, 1, src[i], &sarg[i]))
 			goto out;
 
 	qsort(sarg, sz, sizeof(struct article), scmp);
@@ -199,12 +199,17 @@ tmpl_begin(void *userdata,
 	assert(0 == arg->stack);
 
 	if (0 == strcasecmp(name, "updated")) {
+		xmlprint(arg->f, name, atts);
+		for (attp = atts; NULL != *attp; attp++)
+			if (0 == strcasecmp(*attp, "data-sblg-updated"))
+				break;
+		if (NULL == *attp) 
+			return;
 		t = arg->sposz <= arg->spos ?
 			time(NULL) :
 			arg->sargs[arg->spos].time;
 		tm = localtime(&t);
 		strftime(buf, sizeof(buf), "%FT%TZ", tm);
-		xmlprint(arg->f, name, atts);
 		fprintf(arg->f, "%s", buf);
 		arg->stack++;
 		XML_SetDefaultHandler(arg->p, NULL);
@@ -212,6 +217,11 @@ tmpl_begin(void *userdata,
 		return;
 	} else if (0 == strcasecmp(name, "id")) {
 		xmlprint(arg->f, name, atts);
+		for (attp = atts; NULL != *attp; attp++)
+			if (0 == strcasecmp(*attp, "data-sblg-id"))
+				break;
+		if (NULL == *attp) 
+			return;
 		arg->stack++;
 		XML_SetDefaultHandler(arg->p, NULL);
 		XML_SetElementHandler(arg->p, id_begin, id_end);
@@ -259,6 +269,15 @@ tmpl_begin(void *userdata,
 		*cp = '\0';
 		return;
 	} else if (strcasecmp(name, "entry")) {
+		xmlprint(arg->f, name, atts);
+		return;
+	}
+
+	for (attp = atts; NULL != *attp; attp++)
+		if (0 == strcasecmp(*attp, "data-sblg-entry"))
+			break;
+
+	if (NULL == *attp) {
 		xmlprint(arg->f, name, atts);
 		return;
 	}

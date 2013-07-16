@@ -25,13 +25,6 @@
 
 #include "extern.h"
 
-struct	input {
-	FILE		*f;
-	XML_Parser	 p;
-	size_t		 stack;
-	int 		 inparse;
-};
-
 struct	linkall {
 	FILE		*f;
 	const char	*src;
@@ -46,13 +39,6 @@ static	void	article_begin(void *userdata,
 			const XML_Char *name, const XML_Char **atts);
 static	void	article_end(void *userdata, const XML_Char *name);
 static	void	empty_end(void *userdata, const XML_Char *name);
-static	void	input_begin(void *userdata, const XML_Char *name, 
-			const XML_Char **atts);
-static	void	data_begin(void *userdata, 
-			const XML_Char *name, const XML_Char **atts);
-static	void	data_end(void *userdata, const XML_Char *name);
-static	void	data_text(void *userdata, 
-			const XML_Char *s, int len);
 static	void	nav_begin(void *userdata, 
 			const XML_Char *name, const XML_Char **atts);
 static	void	nav_end(void *userdata, const XML_Char *name);
@@ -62,46 +48,6 @@ static	void	tmpl_begin(void *userdata, const XML_Char *name,
 static	void	tmpl_end(void *userdata, const XML_Char *name);
 static	void	tmpl_text(void *userdata, 
 			const XML_Char *s, int len);
-
-static int
-input(FILE *f, const char *src)
-{
-	char		*buf;
-	XML_Parser	 p;
-	size_t		 sz;
-	int		 fd, rc;
-	struct input	 arg;
-
-	rc = 0;
-	memset(&arg, 0, sizeof(struct input));
-
-	if (NULL == (p = XML_ParserCreate(NULL))) {
-		perror(NULL);
-		exit(EXIT_FAILURE);
-	} else if ( ! mmap_open(src, &fd, &buf, &sz))
-		goto out;
-
-	arg.f = f;
-	arg.p = p;
-
-	XML_SetElementHandler(p, input_begin, NULL);
-	XML_SetUserData(p, &arg);
-
-	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
-		fprintf(stderr, "%s:%zu:%zu: %s\n", src, 
-			XML_GetCurrentLineNumber(p),
-			XML_GetCurrentColumnNumber(p),
-			XML_ErrorString(XML_GetErrorCode(p)));
-		goto out;
-	} 
-
-	rc = 1;
-out:
-	mmap_close(fd, buf, sz);
-	if (NULL != p)
-		XML_ParserFree(p);
-	return(rc);
-}
 
 int
 linkall(XML_Parser p, const char *templ, 
@@ -124,7 +70,7 @@ linkall(XML_Parser p, const char *templ,
 	sarg = xcalloc(sz, sizeof(struct article));
 
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, src[i], &sarg[i]))
+		if ( ! grok(p, 1, src[i], &sarg[i]))
 			goto out;
 
 	qsort(sarg, sz, sizeof(struct article), scmp);
@@ -176,55 +122,6 @@ tmpl_text(void *userdata, const XML_Char *s, int len)
 }
 
 static void
-data_text(void *userdata, const XML_Char *s, int len)
-{
-	struct input	*arg = userdata;
-
-	fprintf(arg->f, "%.*s", len, s);
-}
-
-static void
-data_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
-{
-	struct input	*arg = userdata;
-
-	arg->stack += 0 == strcasecmp(name, "article");
-	xmlprint(arg->f, name, atts);
-}
-
-static void
-input_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
-{
-	struct input	*arg = userdata;
-
-	if (0 == strcasecmp(name, "article")) {
-		arg->stack++;
-		XML_SetElementHandler(arg->p, data_begin, data_end);
-		XML_SetDefaultHandler(arg->p, data_text);
-	}
-}
-
-static void
-data_end(void *userdata, const XML_Char *name)
-{
-	struct input	*arg = userdata;
-	
-	if (strcasecmp(name, "article")) {
-		if ( ! xmlvoid(name))
-			fprintf(arg->f, "</%s>", name);
-		return;
-	} if (--arg->stack > 0) {
-		fprintf(arg->f, "</%s>", name);
-		return;
-	}
-
-	XML_SetDefaultHandler(arg->p, NULL);
-	XML_SetElementHandler(arg->p, NULL, NULL);
-}
-
-static void
 article_begin(void *userdata, 
 	const XML_Char *name, const XML_Char **atts)
 {
@@ -258,16 +155,44 @@ static void
 tmpl_begin(void *userdata, 
 	const XML_Char *name, const XML_Char **atts)
 {
-	struct linkall	*arg = userdata;
-	size_t		 i;
-	char		 buf[1024];
+	struct linkall	 *arg = userdata;
+	const XML_Char	**attp;
+	size_t		  i, len;
+	char		  buf[1024];
 
 	assert(0 == arg->stack);
 
 	if (0 == strcasecmp(name, "nav")) {
+		/*
+		 * Only handle if containing the "data-sblg-nav"
+		 * attribute, otherwise continue.
+		 */
 		xmlprint(arg->f, name, atts);
-		fprintf(arg->f, "<ul>\n");
-		for (i = 0; i < (size_t)arg->sposz; i++) {
+		for (attp = atts; NULL != *attp; attp++) 
+			if (0 == strcasecmp(*attp, "data-sblg-nav"))
+				break;
+		if (NULL == *attp)
+			return;
+
+		/*
+		 * Take the number of elements to show to be the min of
+		 * the full count or as user-specified.
+		 */
+		len = arg->sposz;
+		for (attp = atts; NULL != *attp; attp++) {
+			if (strcasecmp(attp[0], "data-sblg-navsz"))
+				continue;
+			len = atoi(attp[1]);
+			if (len > (size_t)arg->sposz)
+				len = arg->sposz;
+		}
+
+		/*
+		 * Print out a list of recent blog postings.
+		 * For now, this is just a simple list.
+		 */
+		fprintf(arg->f, "\n<ul>\n");
+		for (i = 0; i < len; i++) {
 			strftime(buf, sizeof(buf), "%Y-%m-%d", 
 				localtime(&arg->sargs[i].time));
 			fprintf(arg->f, "<li>\n");
@@ -287,18 +212,39 @@ tmpl_begin(void *userdata,
 		return;
 	}
 
+	/*
+	 * Only consider article elements if they contain the magic
+	 * data-sblg-article attribute.
+	 */
+	for (attp = atts; NULL != *attp; attp++) 
+		if (0 == strcasecmp(*attp, "data-sblg-article"))
+			break;
+
+	if (NULL == *attp) {
+		xmlprint(arg->f, name, atts);
+		return;
+	}
+
 	if (arg->sposz <= arg->spos) {
+		/*
+		 * We have no articles left to show.
+		 * Just continue throwing away this article element til
+		 * we receive a matching one.
+		 */
 		arg->stack++;
 		XML_SetDefaultHandler(arg->p, NULL);
 		XML_SetElementHandler(arg->p, article_begin, empty_end);
 		return;
 	}
 
+	/*
+	 * First throw away children, then push out the article itself.
+	 */
 	xmlprint(arg->f, name, atts);
 	arg->stack++;
 	XML_SetDefaultHandler(arg->p, NULL);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
-	if ( ! input(arg->f, arg->sargs[arg->spos++].src))
+	if ( ! echo(arg->f, 1, arg->sargs[arg->spos++].src))
 		XML_StopParser(arg->p, 0);
 }
 
@@ -328,9 +274,9 @@ article_end(void *userdata, const XML_Char *name)
 	struct linkall	*arg = userdata;
 
 	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
-		fprintf(arg->f, "</%s>", name);
+		fprintf(arg->f, "</%s>\n", name);
 		fprintf(arg->f, "<div><a href=\"%s\">"
-				"permanent link</a></div>\n", 
+				"permanent link</a></div>", 
 				arg->sargs[arg->spos - 1].src);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 		XML_SetDefaultHandler(arg->p, tmpl_text);

@@ -20,7 +20,7 @@
 				This is an example of an individual article.
 				It consists of a template (<a href="article-template.xml">article-template.xml</a>) merged with article contents.
 			</p>
-			<article>
+			<article data-sblg-article="1" >
 				<article>
 					This will go away.
 				</article>
