@@ -3,9 +3,9 @@
 	<title>sblg Example Feed</title>
 	<link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" />
 	<link href="http://kristaps.bsd.lv/sblg" />
-	<id />
-	<updated />
-	<entry />
-	<entry />
-	<entry />
+	<id data-sblg-id="1" />
+	<updated data-sblg-updated="1" />
+	<entry data-sblg-entry="1" />
+	<entry data-sblg-entry="1" />
+	<entry data-sblg-entry="1" />
 </feed>

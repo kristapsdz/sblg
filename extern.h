@@ -17,8 +17,9 @@ struct	article {
 #define	xmalloc	malloc
 #define	xstrdup	strdup
 
-int	grok(XML_Parser p, const char *src,
-		struct article *data);
+int	grok(XML_Parser p, int linked,
+		const char *src, struct article *data);
+int	echo(FILE *f, int linked, const char *src);
 void	grok_free(struct article *p);
 int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);

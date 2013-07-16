@@ -24,11 +24,11 @@
 			<h1>sblg</h1>
 			<div>&#8211; simple off-line blog utility</div>
 		</header>
-		<div id="version">
+		<div class="version">
 			<span>Current version: @VERSION@, @VDATE@</span>
 			<a href="sblg.tar.gz">Download Source</a>
 		</div>
-		<nav class="noshow" id="nav" />
+		<nav class="noshow" id="nav" data-sblg-nav="" />
 		<div id="navtop">
 			<a href="#" onclick="toggle();" id="navq">Show Navigation</a>
 		</div>
@@ -54,13 +54,21 @@
 				To deploy, download the <a href="sblg.tar.gz">sources</a>, <code>make install</code> into the
 				<code>PREFIX</code> of your choice, and enjoy!
 			</p>
-			<article>
-				<article>
-					This will go away.
-				</article>
+			<article class="version">
+				<header>
+					Last version: <span>0.0.8</span>
+				</header>
+				<p>
+					Make <span class="name">sblg</span> operate on <q>default-deny</q> principles: unless an element (such
+					as an article or navigation header) is specifically noted for processing, ignore it.
+					This requires that templates add a <code>data-sblg-article</code> attribute (with any value) for article
+					replacement and <code>data-sblg-nav</code> for navigation replacement.
+					The same follows for Atom feeds.
+				</p>
 			</article>
-			<article />
-			<article />
+			<article data-sblg-article="1" />
+			<article data-sblg-article="1" />
+			<article data-sblg-article="1" />
 		</section>
 		<footer>
 			&#169; 2013, <a href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>

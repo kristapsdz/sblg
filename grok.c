@@ -31,6 +31,7 @@ struct	parse {
 	XML_Parser	 p;
 	struct article	*article;
 	size_t		 stack;
+	int		 linked;
 };
 
 static	void	addr_data(struct parse *arg, const XML_Char **atts);
@@ -49,7 +50,7 @@ static	void	title_end(void *userdata, const XML_Char *name);
 static	void	title_text(void *userdata, const XML_Char *s, int len);
 
 int
-grok(XML_Parser p, const char *src, struct article *arg)
+grok(XML_Parser p, int linked, const char *src, struct article *arg)
 {
 	char		*buf;
 	size_t		 sz;
@@ -68,6 +69,7 @@ grok(XML_Parser p, const char *src, struct article *arg)
 	arg->src = src;
 	parse.article = arg;
 	parse.p = p;
+	parse.linked = linked;
 
 	XML_ParserReset(p, NULL);
 	XML_SetStartElementHandler(p, input_begin);
@@ -106,9 +108,17 @@ out:
 static void
 input_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
-	struct parse	*arg = userdata;
+	struct parse	 *arg = userdata;
+	const XML_Char	**attp;
 
-	if (0 == strcasecmp(name, "article"))
+	if (strcasecmp(name, "article"))
+		return;
+
+	for (attp = atts; NULL != *attp; attp++)
+		if (0 == strcasecmp(*attp, "data-sblg-article"))
+			break;
+
+	if (0 == arg->linked || NULL != *attp)
 		XML_SetElementHandler(arg->p, article_begin, NULL);
 }
 
@@ -157,7 +167,7 @@ head_end(void *userdata, const XML_Char *name)
 	struct parse	*arg = userdata;
 
 	if (0 == strcasecmp(name, "header"))
-		XML_SetElementHandler(arg->p, NULL, NULL);
+		XML_SetElementHandler(arg->p, article_begin, NULL);
 }
 
 static void

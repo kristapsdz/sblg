@@ -2,8 +2,21 @@ html, body		{ margin: 0;
 			  padding: 0; }
 body			{ color: #333333; }
 article			{ display: block;
-		  	  padding: 0ex 1ex;
-		  	  border: 2px dashed orange;
+			  padding: 0ex 1ex; }
+article.version		{ background-color: #336699; 
+			  border: 2px solid #333333;
+			  padding: 0ex;
+			  border-radius: 1ex; 
+			  margin-bottom: 1.1em;
+			  color: #eeeeee; }
+article.version header	{ border-bottom: thin dashed #cccccc; 
+			  padding: 1ex;}
+article.version header span 
+			{ color: #ffffff; }
+article.version p 	{ margin-bottom: 0; 
+			  padding: 1ex; }
+article[data-sblg-article]
+			{ border: 2px dashed orange;
 		  	  border-radius: 1em; }
 address			{ display: inline; 
 			  font-style: normal; }
@@ -14,14 +27,14 @@ body > section		{ background-color: #ffffff;
 			  padding: 1.12em 2% 1.12em 2%; }
 body > section > p:first-child
 			{ margin-top: 0; }
-body > section > article + div
+body > section > article[data-sblg-article] + div
 			{ font-size: smaller;
 			  margin-top: 1ex;
 			  margin-left: 2ex;
 			  margin-bottom: 2em; }
-body > section > article + div > a
+body > section > article[data-sblg-article] + div > a
 			{ color: #336699; }
-body > section > article + div > a:hover
+body > section > article[data-sblg-article] + div > a:hover
 			{ border-bottom: thin dashed #336699; }
 body > section > p:last-child 	
 			{ margin-bottom: 0; 
@@ -41,6 +54,8 @@ body > footer a:hover	{ border-bottom: thin solid #666666;
 		 	  margin: 1.12em 0; 
 			  margin-left: auto;
 			  margin-right: auto; }
+span.code		{ padding-bottom: 0.25ex; 
+			  padding-top: 0.25ex; }}
 .code > div		{ margin: 0.35em 0; }
 .code > div:first-child	{ margin-top: 0.1em; }
 .code > div:last-child	{ margin-bottom: 0.1em; }
@@ -59,27 +74,27 @@ body > header h1 	{ color: #eeeeee;
 			  display: inline; }
 body > header div 	{ font-size: large;
 			  display: inline; }
-body > section > article header h1
+body > section > article[data-sblg-article] header h1
 			{ margin-bottom: 0; }
-body > section > article header div
+body > section > article[data-sblg-article] header div
 			{ margin-top: 1ex;
 			  font-size: smaller;
 			  color: #999999; }
-body > section > article header address,
-body > section > article header time
+body > section > article[data-sblg-article] header address,
+body > section > article[data-sblg-article] header time
 			{ color: #666666; 
 			  font-weight: bold; }
 .noshow			{ display: none; }
-#version		{ color: #333333;
+div.version		{ color: #333333;
 			  background-color: #dddddd;
 			  border-bottom: thin solid #aaaaaa;
 			  border-left: thin solid #aaaaaa;
 			  border-right: thin solid #aaaaaa;
 			  padding: 1ex; 
 		 	  padding-left: 1.5ex; }
-#version > span		{ border-right: thin solid #aaaaaa; 
+div.version > span	{ border-right: thin solid #aaaaaa; 
 			  padding-right: 1ex; }
-#version > a		{ color: #333333; 
+div.version > a		{ color: #333333; 
 			  white-space: nowrap; }
-#version > a:hover	{ color: #666666; 
+div.version > a:hover	{ color: #666666; 
 		 	  border-bottom: 0; }
