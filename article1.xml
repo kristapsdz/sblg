@@ -14,23 +14,27 @@
 		<div class="dtab">&lt;address&gt;Kristaps Dzonsons&lt;/address&gt;</div>
 		<div class="dtab">&lt;time datetime="2013-01-01"&gt;1 January, 2013&lt;/time&gt;</div>
 		<div class="tab">&lt;/header&gt;</div>
+		<div class="tab">&lt;aside&gt;</div>
+		<div class="dtab">The article's &lt;b&gt;summary&lt;/b&gt;</div>
+		<div class="tab">&lt;/aside&gt;</div>
 		<div>&lt;/article&gt;</div>
 	</div>
 	<p>
-		The article publication time is parsed from the <span class="code">datetime</span> attribute of the last <span
+		The article publication time is parsed from the <span class="code">datetime</span> attribute of the first <span
 			class="code">time</span> tag in the first <span class="code">header</span>.
 		The title is parsed from the first <span class="code">hn</span> tag (where <var>n</var> = 1&#8211;4), as is the author from the
 		<span class="code">address</span> tag.
 		These are used to order articles on the main page and title the article page.
 		Both of these are optional &#8212; the system will default to <q>Untitled article</q>, <q>Unknown author</q>, and the file's
 		<span class="code">ctime</span>, if no information is otherwise provided.
+		Furthermore, the first <span class="code">aside</span> element is used for the <a href="article4.html">Atom</a> summary.
 	</p>
 	<p>
 		Articles are linked into a front page as follows (and omitting the surrounding HTML stuff):
 	</p>
 	<div class="code">
 		<div>&lt;body&gt;</div>
-		<div class="tab">&lt;nav data-sblg-nav="" data-sblg-navsz="1" /&gt;</div>
+		<div class="tab">&lt;nav data-sblg-nav="1" data-sblg-navsz="1" /&gt;</div>
 		<div class="tab">&lt;article data-sblg-article="1" /&gt;</div>
 		<div class="tab">&lt;article data-sblg-article="1" /&gt;</div>
 		<div>&lt;/body&gt;</div>

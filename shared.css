@@ -1,6 +1,7 @@
 html, body		{ margin: 0;
 			  padding: 0; }
 body			{ color: #333333; }
+aside			{ display: none; }
 article			{ display: block;
 			  padding: 0ex 1ex; }
 article.version		{ background-color: #336699; 
@@ -8,13 +9,15 @@ article.version		{ background-color: #336699;
 			  padding: 0ex;
 			  border-radius: 1ex; 
 			  margin-bottom: 1.1em;
-			  color: #eeeeee; }
+			  color: #ffffff; }
 article.version header	{ border-bottom: thin dashed #cccccc; 
 			  padding: 1ex;}
 article.version header span 
 			{ color: #ffffff; }
 article.version p 	{ margin-bottom: 0; 
 			  padding: 1ex; }
+article.version a	{ color: lightblue; }
+article.version a:hover	{ border-bottom: thin dashed lightblue; }
 article[data-sblg-article]
 			{ border: 2px dashed orange;
 		  	  border-radius: 1em; }
@@ -27,14 +30,14 @@ body > section		{ background-color: #ffffff;
 			  padding: 1.12em 2% 1.12em 2%; }
 body > section > p:first-child
 			{ margin-top: 0; }
-body > section > article[data-sblg-article] + div
+body > section > div[data-sblg-permlink]
 			{ font-size: smaller;
 			  margin-top: 1ex;
 			  margin-left: 2ex;
 			  margin-bottom: 2em; }
-body > section > article[data-sblg-article] + div > a
+body > section > div[data-sblg-permlink] > a
 			{ color: #336699; }
-body > section > article[data-sblg-article] + div > a:hover
+body > section > div[data-sblg-permlink] > a:hover
 			{ border-bottom: thin dashed #336699; }
 body > section > p:last-child 	
 			{ margin-bottom: 0; 

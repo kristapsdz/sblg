@@ -155,11 +155,11 @@ template_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 		return;
 	}
 
-	for (attp = atts; NULL != *attp; attp++)
+	for (attp = atts; NULL != *attp; attp += 2)
 		if (0 == strcasecmp(*attp, "data-sblg-article"))
 			break;
 
-	if (NULL == *attp) {
+	if (NULL == *attp || ! xmlbool(attp[1])) {
 		xmlprint(arg->f, name, atts);
 		return;
 	}

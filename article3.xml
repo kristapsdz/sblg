@@ -3,6 +3,9 @@
 		<h1>Historical article</h1>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-06-28">28 June, 2013</time></div>
 	</header>
+	<aside>
+		Here is an aside.  <b>That has subelements</b>.
+	</aside>
 	<p>
 		This article doesn't appear anywhere on the front page, which only displays the two most recent.
 	</p>

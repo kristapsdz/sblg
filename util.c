@@ -108,6 +108,13 @@ xmlprint(FILE *f, const XML_Char *s, const XML_Char **atts)
 }
 
 int
+xmlbool(const XML_Char *s)
+{
+
+	return(0 == strcasecmp(s, "1") || 0 == strcasecmp(s, "true"));
+}
+
+int
 xmlvoid(const XML_Char *s)
 {
 	const char	**cp;
