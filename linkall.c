@@ -168,10 +168,10 @@ tmpl_begin(void *userdata,
 		 * attribute, otherwise continue.
 		 */
 		xmlprint(arg->f, name, atts);
-		for (attp = atts; NULL != *attp; attp++) 
+		for (attp = atts; NULL != *attp; attp += 2) 
 			if (0 == strcasecmp(*attp, "data-sblg-nav"))
 				break;
-		if (NULL == *attp)
+		if (NULL == *attp || ! xmlbool(attp[1]))
 			return;
 
 		/*
@@ -179,7 +179,7 @@ tmpl_begin(void *userdata,
 		 * the full count or as user-specified.
 		 */
 		len = arg->sposz;
-		for (attp = atts; NULL != *attp; attp++) {
+		for (attp = atts; NULL != *attp; attp += 2) {
 			if (strcasecmp(attp[0], "data-sblg-navsz"))
 				continue;
 			len = atoi(attp[1]);
@@ -216,11 +216,11 @@ tmpl_begin(void *userdata,
 	 * Only consider article elements if they contain the magic
 	 * data-sblg-article attribute.
 	 */
-	for (attp = atts; NULL != *attp; attp++) 
+	for (attp = atts; NULL != *attp; attp += 2) 
 		if (0 == strcasecmp(*attp, "data-sblg-article"))
 			break;
 
-	if (NULL == *attp) {
+	if (NULL == *attp || ! xmlbool(attp[1])) {
 		xmlprint(arg->f, name, atts);
 		return;
 	}
@@ -275,7 +275,7 @@ article_end(void *userdata, const XML_Char *name)
 
 	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
 		fprintf(arg->f, "</%s>\n", name);
-		fprintf(arg->f, "<div><a href=\"%s\">"
+		fprintf(arg->f, "<div data-sblg-permlink=\"1\"><a href=\"%s\">"
 				"permanent link</a></div>", 
 				arg->sargs[arg->spos - 1].src);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);

@@ -28,7 +28,7 @@
 			<span>Current version: @VERSION@, @VDATE@</span>
 			<a href="sblg.tar.gz">Download Source</a>
 		</div>
-		<nav class="noshow" id="nav" data-sblg-nav="" />
+		<nav class="noshow" id="nav" data-sblg-nav="1" />
 		<div id="navtop">
 			<a href="#" onclick="toggle();" id="navq">Show Navigation</a>
 		</div>
@@ -54,16 +54,23 @@
 				To deploy, download the <a href="sblg.tar.gz">sources</a>, <code>make install</code> into the
 				<code>PREFIX</code> of your choice, and enjoy!
 			</p>
+			<p>
+				This page itself is created from a template of the contained articles of how to use <span
+					class="name">sblg</span>.
+				Click on the links below to see templates and input files (they're a big complicated, but you'll get the point)
+				or, better yet, study the <a href="sblg.1.html">sblg(1)</a> manual.
+			</p>
 			<article class="version">
 				<header>
-					Last version: <span>0.0.8</span>
+					Last version: <span>0.0.9</span>
 				</header>
 				<p>
-					Make <span class="name">sblg</span> operate on <q>default-deny</q> principles: unless an element (such
-					as an article or navigation header) is specifically noted for processing, ignore it.
-					This requires that templates add a <code>data-sblg-article</code> attribute (with any value) for article
-					replacement and <code>data-sblg-nav</code> for navigation replacement.
-					The same follows for Atom feeds.
+					First, fix the <a href="article4.html">Atom feed</a> generator so that it doesn't emit non-standard
+					attributes.
+					Second, allow the first <code>aside</code> elements in articles be used for feed summaries.
+					Lastly, fix attribute scanning (harmless bug) and make sure that Boolean XML values are properly
+					considered as such (i.e., specifying <code>data-sblg-nav="0"</code> will not trigger the navigation
+					writer).
 				</p>
 			</article>
 			<article data-sblg-article="1" />

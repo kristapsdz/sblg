@@ -95,16 +95,15 @@ input_begin(void *userdata,
 	 * Only handle articles with the magic attribute of
 	 * data-sblg-article, else skip over them.
 	 */
-	for (attp = atts; NULL != *attp; attp++)
+	for (attp = atts; NULL != *attp; attp += 2)
 		if (0 == strcasecmp(*attp, "data-sblg-article"))
 			break;
 
-	if (1 == arg->linked && NULL == *attp)
-		return;
-
-	arg->stack++;
-	XML_SetElementHandler(arg->p, data_begin, data_end);
-	XML_SetDefaultHandler(arg->p, data_text);
+	if (0 == arg->linked || (NULL != *attp && xmlbool(attp[1]))) {
+		arg->stack++;
+		XML_SetElementHandler(arg->p, data_begin, data_end);
+		XML_SetDefaultHandler(arg->p, data_text);
+	}
 }
 
 static void

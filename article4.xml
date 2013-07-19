@@ -11,6 +11,9 @@
 			class="code">updated</span>, and <span class="code">id</span> (the <span class="code">id</span> field must occur after
 		the <span class="code">link</span>) fields will be automatically filled in.
 	</p>
+	<p>
+		This site has a dummy <a href="atom.xml">atom.xml</a> for Each of this page's <q>articles</q>.
+	</p>
 	<div class="code">
 		<div>&lt;?xml version="1.0" encoding="utf-8"?&gt;</div>
 		<div>&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;</div>
@@ -27,6 +30,7 @@
 	<p>
 		Filled-in entries consist of <span class="code">title</span>, <span class="code">id</span>, <span class="code">updated</span>,
 		<span class="code">author</span>, and alternate <span class="code">link</span> elements.
+		If specified in the original article, a <span class="code">summary</span> element will consist of an HTML article summary.
 		See the <a href="sblg.1.html">sblg(1)</a> manual for details.
 	</p>
 	<p>
