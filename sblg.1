@@ -111,6 +111,9 @@ They usually consist of the following:
     <address>Author Name</address>
     <time datetime="2013-06-29">29 June, 2013</time>
   </header>
+  <aside>
+    This is used as a feed <b>summary</b>.
+  </aside>
   <p>Some text.</p>
 </article>
 .Ed
@@ -122,7 +125,7 @@ the article title is extracted from the first
 .Pq header 1\(en4
 within the
 .Aq header ,
-article publication date is extracted from the last
+article publication date is extracted from the first
 .Aq time ,
 and author from the first
 .Aq address .
@@ -130,6 +133,9 @@ If unspecified, these default to
 .Qq Untitled article ,
 .Qq Unknown author ,
 and the document's ctime.
+The first
+.Aq aside ,
+if provided, is used for the feed summary.
 .Pp
 The standalone template file must be a well-formed HTML5 file where the
 first
@@ -175,6 +181,15 @@ attribute, this is used to limit the number of navigation entries.
   <footer>Something.</footer>
 </body>
 .Ed
+.Pp
+Each
+.Aq article
+will be followed by a
+.Pq permanent link
+anchor within a
+.Aq div
+with the custom class
+.Qq data-sblg-permlink .
 .Pp
 The Atom template file must be a well-formed XML file where each
 .Aq entry
@@ -226,6 +241,9 @@ attribute is filled in with a
 .Aq id
 .Pq in tag format ,
 .Aq author ,
+HTML
+.Aq summary
+.Pq if specified in the article as an Ao aside Ac ,
 and alternate
 .Aq link .
 .Sh FILES

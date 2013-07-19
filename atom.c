@@ -74,9 +74,11 @@ atomprint(FILE *f, const struct atom *arg, const struct article *src)
 	fprintf(f, "<title>%s</title>\n", src->title);
 	fprintf(f, "<updated>%sT00:00:00Z</updated>\n", buf);
 	fprintf(f, "<author><name>%s</name></author>\n", src->author);
-	fprintf(f, "<link rel=\"alternate\" "
-			 "type=\"text/html\" "
+	fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
 			 "href=\"%s/%s\" />\n", arg->path, src->src);
+	if (NULL != src->aside)
+		fprintf(f, "<summary type=\"html\">"
+			"%s</summary>", src->aside);
 }
 
 int
@@ -199,12 +201,14 @@ tmpl_begin(void *userdata,
 	assert(0 == arg->stack);
 
 	if (0 == strcasecmp(name, "updated")) {
-		xmlprint(arg->f, name, atts);
-		for (attp = atts; NULL != *attp; attp++)
+		for (attp = atts; NULL != *attp; attp += 2)
 			if (0 == strcasecmp(*attp, "data-sblg-updated"))
 				break;
-		if (NULL == *attp) 
+		if (NULL == *attp || ! xmlbool(attp[1])) {
+			xmlprint(arg->f, name, atts);
 			return;
+		}
+		fprintf(arg->f, "<%s>", name);
 		t = arg->sposz <= arg->spos ?
 			time(NULL) :
 			arg->sargs[arg->spos].time;
@@ -216,12 +220,14 @@ tmpl_begin(void *userdata,
 		XML_SetElementHandler(arg->p, up_begin, up_end);
 		return;
 	} else if (0 == strcasecmp(name, "id")) {
-		xmlprint(arg->f, name, atts);
-		for (attp = atts; NULL != *attp; attp++)
+		for (attp = atts; NULL != *attp; attp += 2)
 			if (0 == strcasecmp(*attp, "data-sblg-id"))
 				break;
-		if (NULL == *attp) 
+		if (NULL == *attp || ! xmlbool(attp[1])) {
+			xmlprint(arg->f, name, atts);
 			return;
+		}
+		fprintf(arg->f, "<%s>", name);
 		arg->stack++;
 		XML_SetDefaultHandler(arg->p, NULL);
 		XML_SetElementHandler(arg->p, id_begin, id_end);
@@ -273,11 +279,11 @@ tmpl_begin(void *userdata,
 		return;
 	}
 
-	for (attp = atts; NULL != *attp; attp++)
+	for (attp = atts; NULL != *attp; attp += 2)
 		if (0 == strcasecmp(*attp, "data-sblg-entry"))
 			break;
 
-	if (NULL == *attp) {
+	if (NULL == *attp || ! xmlbool(attp[1])) {
 		xmlprint(arg->f, name, atts);
 		return;
 	}
@@ -285,7 +291,7 @@ tmpl_begin(void *userdata,
 	arg->stack++;
 	XML_SetDefaultHandler(arg->p, NULL);
 	if (arg->sposz > arg->spos) {
-		xmlprint(arg->f, name, atts);
+		fprintf(arg->f, "<%s>", name);
 		XML_SetDefaultHandler(arg->p, NULL);
 		XML_SetElementHandler(arg->p, entry_begin, entry_end);
 		atomprint(arg->f, arg, &arg->sargs[arg->spos++]);

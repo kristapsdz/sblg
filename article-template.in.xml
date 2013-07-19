@@ -11,7 +11,7 @@
 			<h1>sblg</h1>
 			<div>simple off-line blog utility</div>
 		</header>
-		<div id="version">
+		<div class="version">
 			<span>Current version: @VERSION@, @VDATE@</span>
 			<a href="sblg.tar.gz">Download Source</a>
 		</div>

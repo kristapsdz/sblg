@@ -7,6 +7,8 @@ struct	article {
 	const char	*src;
 	char		*title;
 	size_t		 titlesz;
+	char		*aside;
+	size_t		 asidesz;
 	char		*author;
 	size_t		 authorsz;
 	time_t	 	 time;
@@ -29,6 +31,7 @@ int	linkall(XML_Parser p, const char *templ,
 		int sz, char *src[], const char *dst);
 int	atom(XML_Parser p, const char *templ,
 		int sz, char *src[], const char *dst);
+int	xmlbool(const XML_Char *s);
 void	xmlprint(FILE *f, const XML_Char *s, const XML_Char **atts);
 int	xmlvoid(const XML_Char *s);
 
