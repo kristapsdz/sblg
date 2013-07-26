@@ -57,22 +57,23 @@
 			<p>
 				This page itself is created from a template of the contained articles of how to use <span
 					class="name">sblg</span>.
-				Click on the links below to see templates and input files (they're a big complicated, but you'll get the point)
+				Click on the links below to see templates and input files (they're a bit complicated, but you'll get the point)
 				or, better yet, study the <a href="sblg.1.html">sblg(1)</a> manual.
 			</p>
 			<article class="version">
 				<header>
-					Last version: <span>0.0.9</span>
+					Last version: <span>0.0.10</span>
 				</header>
 				<p>
-					First, fix the <a href="article4.html">Atom feed</a> generator so that it doesn't emit non-standard
-					attributes.
-					Second, allow the first <code>aside</code> elements in articles be used for feed summaries.
-					Lastly, fix attribute scanning (harmless bug) and make sure that Boolean XML values are properly
-					considered as such (i.e., specifying <code>data-sblg-nav="0"</code> will not trigger the navigation
-					writer).
+					Expand the <a href="article4.html">Atom feed</a> generator to recognise the <q>data-sblg-content</q>
+					Boolean attribute, which has the article content inlined in the feed; and the <q>data-sblg-altlink</q>,
+					which controls whether an alternative link is included.
+					I use these to have a feed of release versions for some systems (e.g., the <a
+						href="http://www.kcons.eu/birdnest">birdnest</a> simulator).
+					See the <a href="sblg.1.html">sblg(1)</a> manual for details.
 				</p>
 			</article>
+			<article data-sblg-article="1" />
 			<article data-sblg-article="1" />
 			<article data-sblg-article="1" />
 			<article data-sblg-article="1" />

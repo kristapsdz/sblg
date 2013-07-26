@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: July 16 2013 $
+.Dd $Mdocdate: July 19 2013 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -54,6 +54,13 @@ input should be a fully-formed
 .Li .html
 file usually as produced with
 .Fl c .
+.Po
+It's possible to run without
+.Fl c
+on unformatted
+.Li .xml
+files\(emsee below for details.
+.Pc
 .Pp
 The arguments are as follows:
 .Bl -tag -width Ds
@@ -120,7 +127,10 @@ They usually consist of the following:
 .Pp
 When processed with
 .Nm ,
-the article title is extracted from the first
+all data outside of the first
+.Aq article
+element is discarded.
+Then the article title is extracted from the first
 .Aq hn
 .Pq header 1\(en4
 within the
@@ -136,11 +146,28 @@ and the document's ctime.
 The first
 .Aq aside ,
 if provided, is used for the feed summary.
+All other content (i.e., outside of the
+.Aq header
+and
+.Aq aside ) ,
+is recorded in case the
+.Li data-sblg-content
+Boolean value is used in an Atom feed.
+.Pp
+If you're passing article fragments directly into the link or feed
+.Pq Fl a
+operation of
+.Nm ,
+include the
+.Li data-sblg-article
+Boolean XML attribute in the
+.Aq article
+declaration.
 .Pp
 The standalone template file must be a well-formed HTML5 file where the
 first
 .Aq article
-element with an
+element with a Boolean
 .Li data-sblg-article
 attribute is replaced by the article text.
 All of this element's children are removed.
@@ -156,20 +183,20 @@ All of this element's children are removed.
 The front page template file must also be a well-formed HTML5 file where
 each
 .Aq article
-element with an
+element with a Boolean
 .Li data-sblg-article
 attribute is replaced by ordered (newest to oldest) article text.
 If there aren't enough articles, the element is removed.
 Furthermore, any
 .Aq nav
-elements with an
+elements with a Boolean
 .Li data-sblg-nav
 attribute are replaced by a list of all available articles in an
 unordered list consisting of article dates followed by the title, linked
 to the page itself.
 If the
 .Aq nav
-element contains a
+element contains a positive integer
 .Li data-sblg-navsz
 attribute, this is used to limit the number of navigation entries.
 .Bd -literal
@@ -189,11 +216,14 @@ will be followed by a
 anchor within a
 .Aq div
 with the custom class
-.Qq data-sblg-permlink .
+.Qq data-sblg-permlink
+unless a Boolean
+.Qq data-sblg-permlink
+attribute is set to false.
 .Pp
 The Atom template file must be a well-formed XML file where each
 .Aq entry
-element with an
+element with a Boolean
 .Li data-sblg-entry
 attribute is replaced by ordered (newest to oldest) article information.
 If there aren't enough articles, the element is removed.
@@ -213,13 +243,13 @@ If there aren't enough articles, the element is removed.
 .Pp
 The
 .Aq updated
-element with an
+element with a Boolean
 .Li data-sblg-updated
 attribute is replaced with the newest article date (or the current date,
 if no articles are listed).
 The
 .Aq id
-element with an
+element with a Boolean
 .Li data-sblg-id
 attributed is replaced with an identifier in the form of
 .Li tag:domain,2013:path ,
@@ -234,7 +264,7 @@ initialised to the root path
 .Pp
 Each
 .Aq entry
-element with an
+element with a Boolean
 .Li data-sblg-entry
 attribute is filled in with a
 .Aq title ,
@@ -246,6 +276,23 @@ HTML
 .Pq if specified in the article as an Ao aside Ac ,
 and alternate
 .Aq link .
+If the
+.Ar entry
+element contains a false
+.Li data-sblg-altlink
+Boolean attribute, the alternate
+.Aq link
+is not printed.
+Furthermore, if a true
+.Li data-sblg-content
+Boolean attribute exists, the article's contents (everything not within the first
+.Aq aside
+or
+.Aq header
+elements) are inlined within a
+.Aq content
+element with type
+.Li html .
 .Sh FILES
 .Bl -tag -width Ds
 .It Pa article-template.xml
@@ -285,3 +332,10 @@ The
 utility was written by
 .Ar Kristaps Dzonsons ,
 .Mt kristaps@bsd.lv .
+.Sh CAVEATS
+Boolean XML values must have an attribute specified.
+In other words,
+.Aq foo bar="1"
+is valid, while
+.Aq foo bar
+is not.

@@ -246,6 +246,15 @@ tmpl_begin(void *userdata,
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	if ( ! echo(arg->f, 1, arg->sargs[arg->spos++].src))
 		XML_StopParser(arg->p, 0);
+	fprintf(arg->f, "</%s>\n", name);
+	for (attp = atts; NULL != *attp; attp += 2) 
+		if (0 == strcasecmp(*attp, "data-sblg-permlink"))
+			break;
+	if (NULL != *attp && ! xmlbool(attp[1]))
+		return;
+	fprintf(arg->f, "<div data-sblg-permlink=\"1\"><a href=\"%s\">"
+			"permanent link</a></div>", 
+			arg->sargs[arg->spos - 1].src);
 }
 
 static void
@@ -274,10 +283,6 @@ article_end(void *userdata, const XML_Char *name)
 	struct linkall	*arg = userdata;
 
 	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
-		fprintf(arg->f, "</%s>\n", name);
-		fprintf(arg->f, "<div data-sblg-permlink=\"1\"><a href=\"%s\">"
-				"permanent link</a></div>", 
-				arg->sargs[arg->spos - 1].src);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 		XML_SetDefaultHandler(arg->p, tmpl_text);
 	}

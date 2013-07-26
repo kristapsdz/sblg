@@ -12,6 +12,8 @@ struct	article {
 	char		*author;
 	size_t		 authorsz;
 	time_t	 	 time;
+	char		*article;
+	size_t		 articlesz;
 };
 
 #define	xrealloc realloc
@@ -31,6 +33,11 @@ int	linkall(XML_Parser p, const char *templ,
 		int sz, char *src[], const char *dst);
 int	atom(XML_Parser p, const char *templ,
 		int sz, char *src[], const char *dst);
+void	xmlappend(char **p, size_t *sz, 
+		const XML_Char *s, int len);
+void	xmlappendclose(char **p, size_t *sz, const XML_Char *name);
+void	xmlappendopen(char **p, size_t *sz, 
+		const XML_Char *name, const XML_Char **atts);
 int	xmlbool(const XML_Char *s);
 void	xmlprint(FILE *f, const XML_Char *s, const XML_Char **atts);
 int	xmlvoid(const XML_Char *s);

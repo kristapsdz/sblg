@@ -31,6 +31,7 @@ struct	parse {
 	XML_Parser	 p;
 	struct article	*article;
 	size_t		 stack;
+	size_t		 gstack;
 	int		 linked;
 	int		 flags;
 #define	PARSE_ASIDE	 1
@@ -44,6 +45,8 @@ static	void	addr_end(void *userdata, const XML_Char *name);
 static	void	addr_text(void *userdata, const XML_Char *s, int len);
 static	void	article_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
+static	void	article_end(void *userdata, const XML_Char *name);
+static	void	article_text(void *userdata, const XML_Char *s, int len);
 static	void	aside_end(void *userdata, const XML_Char *name);
 static	void	aside_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
@@ -120,6 +123,9 @@ input_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 	struct parse	 *arg = userdata;
 	const XML_Char	**attp;
 
+	assert(0 == arg->gstack);
+	assert(0 == arg->stack);
+
 	if (strcasecmp(name, "article"))
 		return;
 
@@ -127,8 +133,20 @@ input_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 		if (0 == strcasecmp(*attp, "data-sblg-article"))
 			break;
 
-	if (0 == arg->linked || (NULL != *attp && xmlbool(attp[1])))
-		XML_SetElementHandler(arg->p, article_begin, NULL);
+	if (0 == arg->linked || (NULL != *attp && xmlbool(attp[1]))) {
+		arg->gstack = 1;
+		XML_SetElementHandler(arg->p, article_begin, article_end);
+		XML_SetDefaultHandler(arg->p, article_text);
+	}
+}
+
+static void
+article_text(void *userdata, const XML_Char *s, int len)
+{
+	struct parse	*arg = userdata;
+
+	xmlappend(&arg->article->article, 
+		&arg->article->articlesz, s, len);
 }
 
 static void
@@ -138,16 +156,23 @@ article_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 
 	assert(0 == arg->stack);
 
-	if (0 == strcasecmp(name, "header"))
+	if (0 == strcasecmp(name, "header")) {
 		XML_SetElementHandler(arg->p, head_begin, head_end);
-	if (0 == strcasecmp(name, "aside")) {
+		XML_SetDefaultHandler(arg->p, NULL);
+		return;
+	} else if (0 == strcasecmp(name, "aside")) {
 		if (PARSE_ASIDE & arg->flags)
 			return;
 		arg->stack++;
 		arg->flags |= PARSE_ASIDE;
 		XML_SetDefaultHandler(arg->p, aside_text);
 		XML_SetElementHandler(arg->p, aside_begin, aside_end);
-	}
+		return;
+	} else if (0 == strcasecmp(name, "article"))
+		arg->gstack++;
+
+	xmlappendopen(&arg->article->article,
+		&arg->article->articlesz, name, atts);
 }
 
 static void
@@ -174,42 +199,10 @@ aside_begin(void *userdata,
 	const XML_Char *name, const XML_Char **atts)
 {
 	struct parse	*arg = userdata;
-	size_t		 sz;
 
 	arg->stack += 0 == strcasecmp(name, "aside");
-	sz = strlen(name) + 8;
-	arg->article->asidesz += sz;
-	arg->article->aside = xrealloc
-		(arg->article->aside, arg->article->asidesz + 1);
-	strlcat(arg->article->aside, "&lt;", arg->article->asidesz + 1);
-	strlcat(arg->article->aside, name, arg->article->asidesz + 1);
-
-	for ( ; NULL != *atts; atts += 2) {
-		sz = strlen(atts[0]) + 2;
-		arg->article->asidesz += sz;
-		arg->article->aside = xrealloc
-			(arg->article->aside, 
-			 arg->article->asidesz + 1);
-		strlcat(arg->article->aside, 
-			" ", arg->article->asidesz + 1);
-		strlcat(arg->article->aside,
-			atts[0], arg->article->asidesz + 1);
-		strlcat(arg->article->aside, 
-			"=", arg->article->asidesz + 1);
-		sz = strlen(atts[1]) + 2;
-		arg->article->asidesz += sz;
-		arg->article->aside = xrealloc
-			(arg->article->aside, 
-			 arg->article->asidesz + 1);
-		strlcat(arg->article->aside, 
-			"\"", arg->article->asidesz + 1);
-		strlcat(arg->article->aside, 
-			atts[1], arg->article->asidesz + 1);
-		strlcat(arg->article->aside, 
-			"\"", arg->article->asidesz + 1);
-	}
-
-	strlcat(arg->article->aside, "&gt;", arg->article->asidesz + 1);
+	xmlappendopen(&arg->article->aside, 
+		&arg->article->asidesz, name, atts);
 }
 
 static void
@@ -217,39 +210,34 @@ aside_text(void *userdata, const XML_Char *name, int len)
 {
 	struct parse	*arg = userdata;
 
-	if (len > 0) {
-		arg->article->aside = xrealloc
-			(arg->article->aside, 
-			 arg->article->asidesz + (size_t)len + 1);
-		memcpy(arg->article->aside + 
-			arg->article->asidesz, name, len);
-		arg->article->asidesz += (size_t)len;
-		arg->article->aside[arg->article->asidesz] = '\0';
-	}
+	xmlappend(&arg->article->aside, 
+		&arg->article->asidesz, name, len);
 }
 
 static void
 aside_end(void *userdata, const XML_Char *name)
 {
 	struct parse	*arg = userdata;
-	size_t		 sz;
 
 	if (0 == strcasecmp(name, "aside") && 0 == --arg->stack) {
-		XML_SetElementHandler(arg->p, article_begin, NULL);
+		XML_SetElementHandler(arg->p, article_begin, article_end);
+		XML_SetDefaultHandler(arg->p, article_text);
+	} else
+		xmlappendclose(&arg->article->aside,
+			&arg->article->asidesz, name);
+}
+
+static void
+article_end(void *userdata, const XML_Char *name)
+{
+	struct parse	*arg = userdata;
+
+	if (0 == strcasecmp(name, "article") && 0 == --arg->gstack) {
+		XML_SetElementHandler(arg->p, NULL, NULL);
 		XML_SetDefaultHandler(arg->p, NULL);
-	} else {
-		sz = strlen(name) + 9;
-		arg->article->asidesz += sz;
-		arg->article->aside = xrealloc
-			(arg->article->aside, 
-			 arg->article->asidesz + 1);
-		strlcat(arg->article->aside, 
-			"&lt;/", arg->article->asidesz + 1);
-		strlcat(arg->article->aside, 
-			name, arg->article->asidesz + 1);
-		strlcat(arg->article->aside, 
-			"&gt;", arg->article->asidesz + 1);
-	}
+	} else
+		xmlappendclose(&arg->article->article,
+			&arg->article->articlesz, name);
 }
 
 static void
@@ -268,8 +256,10 @@ head_end(void *userdata, const XML_Char *name)
 {
 	struct parse	*arg = userdata;
 
-	if (0 == strcasecmp(name, "header"))
-		XML_SetElementHandler(arg->p, article_begin, NULL);
+	if (0 == strcasecmp(name, "header")) {
+		XML_SetElementHandler(arg->p, article_begin, article_end);
+		XML_SetDefaultHandler(arg->p, article_text);
+	}
 }
 
 static void
@@ -287,34 +277,18 @@ static void
 addr_text(void *userdata, const XML_Char *s, int len)
 {
 	struct parse	*arg = userdata;
-	size_t		 sz;
 
-	if (len > 0) {
-		sz = arg->article->authorsz;
-		arg->article->authorsz += (size_t)len;
-		arg->article->author = xrealloc
-			(arg->article->author, 
-			 arg->article->authorsz + 1);
-		memcpy(arg->article->author + sz, s, len);
-		arg->article->author[arg->article->authorsz] = '\0';
-	}
+	xmlappend(&arg->article->author, 
+		&arg->article->authorsz, s, len);
 }
 
 static void
 title_text(void *userdata, const XML_Char *s, int len)
 {
 	struct parse	*arg = userdata;
-	size_t		 sz;
 
-	if (len > 0) {
-		sz = arg->article->titlesz;
-		arg->article->titlesz += (size_t)len;
-		arg->article->title = xrealloc
-			(arg->article->title, 
-			 arg->article->titlesz + 1);
-		memcpy(arg->article->title + sz, s, len);
-		arg->article->title[arg->article->titlesz] = '\0';
-	}
+	xmlappend(&arg->article->title, 
+		&arg->article->titlesz, s, len);
 }
 
 static void
@@ -380,5 +354,6 @@ grok_free(struct article *p)
 		free(p->title);
 		free(p->author);
 		free(p->aside);
+		free(p->article);
 	}
 }
