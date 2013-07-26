@@ -42,6 +42,7 @@ struct	atom {
 };
 
 static	void	atomprint(FILE *f, const struct atom *arg, 
+			int altlink, int content, 
 			const struct article *src);
 static	void	entry_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
@@ -61,7 +62,8 @@ static	void	up_begin(void *userdata, const XML_Char *name,
 static	void	up_end(void *userdata, const XML_Char *name);
 
 static void
-atomprint(FILE *f, const struct atom *arg, const struct article *src)
+atomprint(FILE *f, const struct atom *arg, 
+		int altlink, int content, const struct article *src)
 {
 	char		 buf[1024];
 	struct tm	*tm;
@@ -74,8 +76,11 @@ atomprint(FILE *f, const struct atom *arg, const struct article *src)
 	fprintf(f, "<title>%s</title>\n", src->title);
 	fprintf(f, "<updated>%sT00:00:00Z</updated>\n", buf);
 	fprintf(f, "<author><name>%s</name></author>\n", src->author);
-	fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
-			 "href=\"%s/%s\" />\n", arg->path, src->src);
+	if (altlink)
+		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
+				 "href=\"%s/%s\" />\n", arg->path, src->src);
+	if (content && NULL != src->article) 
+		fprintf(f, "<content type=\"html\">%s</content>", src->article);
 	if (NULL != src->aside)
 		fprintf(f, "<summary type=\"html\">"
 			"%s</summary>", src->aside);
@@ -193,6 +198,7 @@ tmpl_begin(void *userdata,
 	struct atom	 *arg = userdata;
 	time_t		  t;
 	char		  buf[1024];
+	int		  altlink, content;
 	const char	 *start;
 	char		 *cp;
 	struct tm	 *tm;
@@ -288,13 +294,24 @@ tmpl_begin(void *userdata,
 		return;
 	}
 
+	for (attp = atts; NULL != *attp; attp += 2)
+		if (0 == strcasecmp(*attp, "data-sblg-altlink"))
+			break;
+	altlink = NULL == *attp || xmlbool(attp[1]);
+
+	for (attp = atts; NULL != *attp; attp += 2)
+		if (0 == strcasecmp(*attp, "data-sblg-content"))
+			break;
+	content = NULL != *attp && xmlbool(attp[1]);
+
 	arg->stack++;
 	XML_SetDefaultHandler(arg->p, NULL);
 	if (arg->sposz > arg->spos) {
 		fprintf(arg->f, "<%s>", name);
 		XML_SetDefaultHandler(arg->p, NULL);
 		XML_SetElementHandler(arg->p, entry_begin, entry_end);
-		atomprint(arg->f, arg, &arg->sargs[arg->spos++]);
+		atomprint(arg->f, arg, altlink, 
+			content, &arg->sargs[arg->spos++]);
 	} else {
 		XML_SetElementHandler(arg->p, entry_begin, entry_empty);
 	}
