@@ -62,15 +62,11 @@
 			</p>
 			<article class="version">
 				<header>
-					Last version: <span>0.0.10</span>
+					Last version: <span>0.0.11</span>
 				</header>
 				<p>
-					Expand the <a href="article4.html">Atom feed</a> generator to recognise the <q>data-sblg-content</q>
-					Boolean attribute, which has the article content inlined in the feed; and the <q>data-sblg-altlink</q>,
-					which controls whether an alternative link is included.
-					I use these to have a feed of release versions for some systems (e.g., the <a
-						href="http://www.kcons.eu/birdnest">birdnest</a> simulator).
-					See the <a href="sblg.1.html">sblg(1)</a> manual for details.
+					Allow for <a href="sblg.1.html">sblg(1)</a> to output to standard output.
+					Useful when performing keyword-substitution on processed output.
 				</p>
 			</article>
 			<article data-sblg-article="1" />
