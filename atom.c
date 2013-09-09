@@ -117,10 +117,13 @@ atom(XML_Parser p, const char *templ,
 
 	qsort(sarg, sz, sizeof(struct article), scmp);
 
-	if (NULL == (f = fopen(dst, "w"))) {
+	f = stdout;
+	if (strcmp(dst, "-") && NULL == (f = fopen(dst, "w"))) {
 		perror(dst);
 		goto out;
-	} else if ( ! mmap_open(templ, &fd, &buf, &ssz))
+	}
+
+	if ( ! mmap_open(templ, &fd, &buf, &ssz))
 		goto out;
 
 	larg.sargs = sarg;
@@ -149,7 +152,7 @@ out:
 	for (i = 0; i < sz; i++)
 		grok_free(&sarg[i]);
 	mmap_close(fd, buf, ssz);
-	if (NULL != f)
+	if (NULL != f && stdout != f)
 		fclose(f);
 
 	free(sarg);
