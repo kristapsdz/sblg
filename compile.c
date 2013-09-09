@@ -84,10 +84,13 @@ compile(XML_Parser p, const char *templ,
 	} else
 		out = xstrdup(dst);
 
-	if (NULL == (f = fopen(out, "w"))) {
+	f = stdout;
+	if (strcmp(out, "-") && NULL == (f = fopen(out, "w"))) {
 		perror(out);
 		goto out;
-	} else if ( ! mmap_open(templ, &fd, &buf, &sz))
+	}
+
+	if ( ! mmap_open(templ, &fd, &buf, &sz))
 		goto out;
 
 	arg.f = f;
@@ -111,7 +114,7 @@ compile(XML_Parser p, const char *templ,
 	rc = 1;
 out:
 	mmap_close(fd, buf, sz);
-	if (NULL != f)
+	if (NULL != f && stdin != f)
 		fclose(f);
 
 	free(out);

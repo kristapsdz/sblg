@@ -14,8 +14,8 @@ BINDIR = $(PREFIX)/bin
 WWWDIR = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
 MANDIR = $(PREFIX)/man
 DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml atom-template.xml sblg.1 
-VERSION = 0.0.10
-VDATE = 2013-07-26
+VERSION = 0.0.11
+VDATE = 2013-09-09
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
