@@ -39,7 +39,7 @@ sblg.tar.gz:
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
-main.o compile.o linkall.o grok.o echo.o: extern.h
+main.o compile.o linkall.o grok.o echo.o atom.o: extern.h
 
 atom.xml blog.html $(ARTICLES): sblg
 

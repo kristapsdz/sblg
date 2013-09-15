@@ -26,13 +26,17 @@
 #include "extern.h"
 
 struct	linkall {
-	FILE		*f;
-	const char	*src;
-	XML_Parser	 p;
-	struct article	*sargs;
-	int		 spos;
-	int		 sposz;
-	size_t		 stack;
+	FILE		*f; /* open template file */
+	const char	*src; /* template file */
+	XML_Parser	 p; /* active parser */
+	struct article	*sargs; /* sorted article contents */
+	int		 spos; /* current sarg being shown */ 
+	int		 sposz; /* size of sargs */
+	size_t		 stack; /* temporary: tag stack size */
+	size_t		 navlen; /* temporary: nav items to show */
+	int		 navuse; /* use navigation contents */
+	char		*nav; /* temporary: nav buffer */
+	size_t		 navsz; /* nav buffer length */
 };
 
 static	void	article_begin(void *userdata, 
@@ -42,6 +46,7 @@ static	void	empty_end(void *userdata, const XML_Char *name);
 static	void	nav_begin(void *userdata, 
 			const XML_Char *name, const XML_Char **atts);
 static	void	nav_end(void *userdata, const XML_Char *name);
+static	void	nav_text(void *userdata, const XML_Char *s, int len);
 static	int	scmp(const void *p1, const void *p2);
 static	void	tmpl_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
@@ -112,6 +117,7 @@ out:
 	if (NULL != f && stdout != f)
 		fclose(f);
 
+	free(larg.nav);
 	free(sarg);
 	return(rc);
 }
@@ -134,24 +140,101 @@ article_begin(void *userdata,
 }
 
 static void
+nav_text(void *userdata, const XML_Char *s, int len)
+{
+	struct linkall	*arg = userdata;
+
+	xmlappend(&arg->nav, &arg->navsz, s, len);
+}
+
+static void
 nav_begin(void *userdata, 
 	const XML_Char *name, const XML_Char **atts)
 {
 	struct linkall	*arg = userdata;
 
 	arg->stack += 0 == strcasecmp(name, "nav");
+	xmlrappendopen(&arg->nav, &arg->navsz, name, atts);
 }
 
 static void
 nav_end(void *userdata, const XML_Char *name)
 {
 	struct linkall	*arg = userdata;
+	size_t		 i, j, start;
+	char		 buf[32];
+	int		 inprint;
 
-	if (0 == strcasecmp(name, "nav") && 0 == --arg->stack) {
-		fprintf(arg->f, "</%s>", name);
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandler(arg->p, tmpl_text);
+	if (strcasecmp(name, "nav") || 0 != --arg->stack) {
+		xmlrappendclose(&arg->nav, &arg->navsz, name);
+		return;
 	}
+
+	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+	XML_SetDefaultHandler(arg->p, tmpl_text);
+
+	fprintf(arg->f, "\n<ul>\n");
+
+	if ( ! arg->navuse || 0 == arg->navsz) {
+		for (i = 0; i < arg->navlen; i++) {
+			strftime(buf, sizeof(buf), "%Y-%m-%d", 
+				localtime(&arg->sargs[i].time));
+			fprintf(arg->f, "<li>\n");
+			fprintf(arg->f, "%s: ", buf);
+			fprintf(arg->f, "<a href=\"%s\">%s</a>\n",
+				arg->sargs[i].src,
+				arg->sargs[i].title);
+			fprintf(arg->f, "</li>\n");
+		}
+		fprintf(arg->f, "</ul>\n");
+		fprintf(arg->f, "</%s>", name);
+		free(arg->nav);
+		arg->navsz = 0;
+		arg->nav = NULL;
+		return;
+	}
+
+#define	STRCMP(_word, _sz) (j - start == (_sz) && \
+	0 == memcmp(&arg->nav[start], (_word), (_sz)))
+
+	for (i = 0; i < arg->navlen; i++) {
+		inprint = 0;
+		fprintf(arg->f, "<li>\n");
+		for (j = 1; j < arg->navsz; j++) {
+			if ('$' != arg->nav[j - 1]) {
+				fputc(arg->nav[j - 1], arg->f);
+				continue;
+			} else if ('{' != arg->nav[j]) {
+				fputc(arg->nav[j - 1], arg->f);
+				continue;
+			}
+			start = ++j;
+			inprint = 1;
+			for ( ; j < arg->navsz; j++) 
+				if ('}' == arg->nav[j])
+					break;
+			if (j == arg->navsz)
+				break;
+			if (STRCMP("base", 4))
+				fputs(arg->sargs[i].base, arg->f);
+			else if (STRCMP("title", 5))
+				fputs(arg->sargs[i].title, arg->f);
+			else if (STRCMP("source", 6))
+				fputs(arg->sargs[i].src, arg->f);
+
+			if (j < arg->navsz)
+				j++;
+			inprint = 0;
+		}
+		if ( ! inprint)
+			fputc(arg->nav[j - 1], arg->f);
+		fprintf(arg->f, "</li>\n");
+	}
+	fprintf(arg->f, "</ul>\n");
+	fprintf(arg->f, "</%s>", name);
+	free(arg->nav);
+	arg->navsz = 0;
+	arg->nav = NULL;
 }
 
 static void
@@ -160,8 +243,6 @@ tmpl_begin(void *userdata,
 {
 	struct linkall	 *arg = userdata;
 	const XML_Char	**attp;
-	size_t		  i, len;
-	char		  buf[1024];
 
 	assert(0 == arg->stack);
 
@@ -181,34 +262,22 @@ tmpl_begin(void *userdata,
 		 * Take the number of elements to show to be the min of
 		 * the full count or as user-specified.
 		 */
-		len = arg->sposz;
+		arg->navuse = 0;
+		arg->navlen = arg->sposz;
 		for (attp = atts; NULL != *attp; attp += 2) {
-			if (strcasecmp(attp[0], "data-sblg-navsz"))
-				continue;
-			len = atoi(attp[1]);
-			if (len > (size_t)arg->sposz)
-				len = arg->sposz;
+			if (0 == strcasecmp(attp[0], 
+					"data-sblg-navsz")) {
+				arg->navlen = atoi(attp[1]);
+				if (arg->navlen > (size_t)arg->sposz)
+					arg->navlen = arg->sposz;
+			} else if (0 == strcasecmp(attp[0], 
+					"data-sblg-navcontent"))
+				arg->navuse = xmlbool(attp[1]);
 		}
 
-		/*
-		 * Print out a list of recent blog postings.
-		 * For now, this is just a simple list.
-		 */
-		fprintf(arg->f, "\n<ul>\n");
-		for (i = 0; i < len; i++) {
-			strftime(buf, sizeof(buf), "%Y-%m-%d", 
-				localtime(&arg->sargs[i].time));
-			fprintf(arg->f, "<li>\n");
-			fprintf(arg->f, "%s: ", buf);
-			fprintf(arg->f, "<a href=\"%s\">%s</a>\n",
-				arg->sargs[i].src,
-				arg->sargs[i].title);
-			fprintf(arg->f, "</li>\n");
-		}
-		fprintf(arg->f, "</ul>\n");
 		arg->stack++;
-		XML_SetDefaultHandler(arg->p, NULL);
 		XML_SetElementHandler(arg->p, nav_begin, nav_end);
+		XML_SetDefaultHandler(arg->p, nav_text);
 		return;
 	} else if (strcasecmp(name, "article")) {
 		xmlprint(arg->f, name, atts);
