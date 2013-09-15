@@ -30,7 +30,7 @@ int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);
 void	mmap_close(int fd, void *buf, size_t sz);
 int	mmap_open(const char *f, int *fd, char **buf, size_t *sz);
-int	linkall(XML_Parser p, const char *templ,
+int	linkall(XML_Parser p, const char *templ, const char *force, 
 		int sz, char *src[], const char *dst);
 int	atom(XML_Parser p, const char *templ,
 		int sz, char *src[], const char *dst);

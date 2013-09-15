@@ -32,6 +32,7 @@ struct	linkall {
 	struct article	*sargs; /* sorted article contents */
 	int		 spos; /* current sarg being shown */ 
 	int		 sposz; /* size of sargs */
+	int		 ssposz;  /* size of sargs to show */
 	size_t		 stack; /* temporary: tag stack size */
 	size_t		 navlen; /* temporary: nav items to show */
 	int		 navuse; /* use navigation contents */
@@ -55,7 +56,7 @@ static	void	tmpl_text(void *userdata,
 			const XML_Char *s, int len);
 
 int
-linkall(XML_Parser p, const char *templ, 
+linkall(XML_Parser p, const char *templ, const char *force,
 		int sz, char *src[], const char *dst)
 {
 	char		*buf;
@@ -90,10 +91,21 @@ linkall(XML_Parser p, const char *templ,
 		goto out;
 
 	larg.sargs = sarg;
-	larg.sposz = sz;
+	larg.sposz = larg.ssposz = sz;
 	larg.p = p;
 	larg.src = templ;
 	larg.f = f;
+
+	if (NULL != force) {
+		for (i = 0; i < sz; i++)
+			if (0 == strcmp(force, sarg[i].src))
+				break;
+
+		if (i < sz) {
+			larg.spos = i;
+			larg.ssposz = i + 1;
+		}
+	}
 
 	XML_ParserReset(p, NULL);
 	XML_SetDefaultHandler(p, tmpl_text);
@@ -297,7 +309,7 @@ tmpl_begin(void *userdata,
 		return;
 	}
 
-	if (arg->sposz <= arg->spos) {
+	if (arg->spos > arg->ssposz) {
 		/*
 		 * We have no articles left to show.
 		 * Just continue throwing away this article element til
