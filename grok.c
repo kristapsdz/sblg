@@ -64,7 +64,7 @@ static	void	title_text(void *userdata, const XML_Char *s, int len);
 int
 grok(XML_Parser p, int linked, const char *src, struct article *arg)
 {
-	char		*buf;
+	char		*buf, *cp;
 	size_t		 sz;
 	int		 fd, rc;
 	struct parse	 parse;
@@ -79,6 +79,9 @@ grok(XML_Parser p, int linked, const char *src, struct article *arg)
 		goto out;
 
 	arg->src = src;
+	arg->base = xstrdup(src);
+	if (NULL != (cp = strrchr(arg->base, '.')))
+		*cp = '\0';
 	parse.article = arg;
 	parse.p = p;
 	parse.linked = linked;
@@ -351,6 +354,7 @@ grok_free(struct article *p)
 {
 
 	if (NULL != p) {
+		free(p->base);
 		free(p->title);
 		free(p->author);
 		free(p->aside);

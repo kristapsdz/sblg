@@ -4,16 +4,17 @@
 __BEGIN_DECLS
 
 struct	article {
-	const char	*src;
-	char		*title;
-	size_t		 titlesz;
-	char		*aside;
-	size_t		 asidesz;
-	char		*author;
-	size_t		 authorsz;
-	time_t	 	 time;
-	char		*article;
-	size_t		 articlesz;
+	const char	*src; /* source filename */
+	char		*base; /* nil-terminated src w/o suffix */
+	char		*title; /* nil-terminated title */
+	size_t		 titlesz; /* length of title */
+	char		*aside; /* nil-terminated aside content */
+	size_t		 asidesz; /* length of aside */
+	char		*author; /* nil-terminated author name */
+	size_t		 authorsz; /* length of author */
+	time_t	 	 time; /* date of publication */
+	char		*article; /* nil-terminated entire article */
+	size_t		 articlesz; /* length of article */
 };
 
 #define	xrealloc realloc
@@ -41,6 +42,9 @@ void	xmlappendopen(char **p, size_t *sz,
 int	xmlbool(const XML_Char *s);
 void	xmlprint(FILE *f, const XML_Char *s, const XML_Char **atts);
 int	xmlvoid(const XML_Char *s);
+void	xmlrappendclose(char **p, size_t *sz, const XML_Char *name);
+void	xmlrappendopen(char **p, size_t *sz, 
+		const XML_Char *name, const XML_Char **atts);
 
 __END_DECLS
 

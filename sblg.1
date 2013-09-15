@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: July 26 2013 $
+.Dd $Mdocdate: September 9 2013 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -197,6 +197,17 @@ elements with a Boolean
 attribute are replaced by a list of all available articles in an
 unordered list consisting of article dates followed by the title, linked
 to the page itself.
+However, the Boolean
+.Li data-sbgl-navcontent
+attribute makes the content of the
+.Aq nav
+element be reproduced within each list item, with the special string
+.Li ${base} ,
+.Li ${source} ,
+and
+.Li ${title}
+being replaced by the article's basename (i.e., filename with suffix
+chopped off), the article's filename, and title, respectively.
 If the
 .Aq nav
 element contains a positive integer
