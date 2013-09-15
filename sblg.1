@@ -22,6 +22,7 @@
 .Nd simple off-line blog utility
 .Sh SYNOPSIS
 .Nm sblg
+.Op Fl f Ar file
 .Op Fl o Ar file
 .Op Fl t Ar templ
 .Op Fl ac
@@ -64,6 +65,17 @@ files\(emsee below for details.
 .Pp
 The arguments are as follows:
 .Bl -tag -width Ds
+.It Fl f Ar file
+If
+.Fl a
+and
+.Fl c
+are not specified, this causes
+.Ar file
+to be the only article shown regardless the number of
+.Aq article
+entries in the template.
+Otherwise it is ignored.
 .It Fl o Ar file
 Output file.
 If unspecified, standalone articles have their
