@@ -77,6 +77,10 @@ body > header h1 	{ color: #eeeeee;
 			  display: inline; }
 body > header div 	{ font-size: large;
 			  display: inline; }
+body > section > article[data-sblg-article] h1,
+body > section > article[data-sblg-article] h2,
+body > section > article[data-sblg-article] h3
+			{ font-size: large; }
 body > section > article[data-sblg-article] header h1
 			{ margin-bottom: 0; }
 body > section > article[data-sblg-article] header div

@@ -62,11 +62,11 @@
 			</p>
 			<article class="version">
 				<header>
-					Last version: <span>0.0.11</span>
+					Last version: <span>0.0.12</span>
 				</header>
 				<p>
-					Allow for <a href="sblg.1.html">sblg(1)</a> to output to standard output.
-					Useful when performing keyword-substitution on processed output.
+					Allow for custom <code>&lt;nav /&gt;</code> entries as noted in the <a
+						href="sblg.1.html">sblg(1)</a> manual and the <a href="article5.html">Tips and Tricks</a> article.
 				</p>
 			</article>
 			<article data-sblg-article="1" />
