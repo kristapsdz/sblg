@@ -27,7 +27,7 @@ installwww: www
 	install -m 0444 sblg.tar.gz Makefile $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(WWWDIR)
 	install -m 0444 sblg.tar.gz $(WWWDIR)/sblg-$(VERSION).tar.gz
 
-install:
+install: sblg
 	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	install -m 0755 sblg $(DESTDIR)$(BINDIR)
