@@ -27,7 +27,7 @@ int
 main(int argc, char *argv[])
 {
 	int		 ch, mkcomp, i, rc, mkatom;
-	const char	*progname, *templ, *outfile;
+	const char	*progname, *templ, *outfile, *force;
 	XML_Parser	 p;
 
 	progname = strrchr(argv[0], '/');
@@ -36,16 +36,19 @@ main(int argc, char *argv[])
 	else
 		++progname;
 
-	templ = outfile = NULL;
+	templ = outfile = force = NULL;
 	mkcomp = mkatom = 0;
 
-	while (-1 != (ch = getopt(argc, argv, "aco:t:")))
+	while (-1 != (ch = getopt(argc, argv, "acf:o:t:")))
 		switch (ch) {
 		case ('a'):
 			mkatom = 1;
 			break;
 		case ('c'):
 			mkcomp = 1;
+			break;
+		case ('f'):
+			force = optarg;
 			break;
 		case ('o'):
 			outfile = optarg;
@@ -88,7 +91,7 @@ main(int argc, char *argv[])
 			templ = "blog-template.xml";
 		if (NULL == outfile)
 			outfile = "blog.html";
-		rc = linkall(p, templ, argc, argv, outfile);
+		rc = linkall(p, templ, force, argc, argv, outfile);
 	}
 
 	XML_ParserFree(p);

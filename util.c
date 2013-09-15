@@ -145,6 +145,9 @@ xmlrappendclose(char **p, size_t *sz, const XML_Char *name)
 {
 	size_t		 ssz;
 
+	if (xmlvoid(name))
+		return;
+
 	ssz = strlen(name) + 3;
 	*sz += ssz;
 	*p = xrealloc(*p, *sz + 1);
@@ -157,6 +160,9 @@ void
 xmlappendclose(char **p, size_t *sz, const XML_Char *name)
 {
 	size_t		 ssz;
+
+	if (xmlvoid(name))
+		return;
 
 	ssz = strlen(name) + 9;
 	*sz += ssz;
@@ -171,8 +177,11 @@ xmlrappendopen(char **p, size_t *sz,
 	const XML_Char *name, const XML_Char **atts)
 {
 	size_t		 ssz;
+	int		 isvoid;
 
-	ssz = strlen(name) + 2;
+	isvoid = xmlvoid(name);
+
+	ssz = strlen(name) + 2 + isvoid;
 	*sz += ssz;
 	*p = xrealloc(*p, *sz + 1);
 	strlcat(*p, "<", *sz + 1);
@@ -193,6 +202,9 @@ xmlrappendopen(char **p, size_t *sz,
 		strlcat(*p, "\"", *sz + 1);
 	}
 
+	if (isvoid)
+		strlcat(*p, "/", *sz + 1);
+
 	strlcat(*p, ">", *sz + 1);
 }
 
@@ -201,8 +213,11 @@ xmlappendopen(char **p, size_t *sz,
 	const XML_Char *name, const XML_Char **atts)
 {
 	size_t		 ssz;
+	int		 isvoid;
 
-	ssz = strlen(name) + 8;
+	isvoid = xmlvoid(name);
+
+	ssz = strlen(name) + 8 + isvoid;
 	*sz += ssz;
 	*p = xrealloc(*p, *sz + 1);
 	strlcat(*p, "&lt;", *sz + 1);
@@ -222,6 +237,9 @@ xmlappendopen(char **p, size_t *sz,
 		strlcat(*p, atts[1], *sz + 1);
 		strlcat(*p, "\"", *sz + 1);
 	}
+
+	if (isvoid)
+		strlcat(*p, "/", *sz + 1);
 
 	strlcat(*p, "&gt;", *sz + 1);
 }
