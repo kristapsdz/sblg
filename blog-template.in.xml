@@ -62,11 +62,10 @@
 			</p>
 			<article class="version">
 				<header>
-					Last version: <span>0.0.12</span>
+					Last version: <span>0.0.13</span>
 				</header>
 				<p>
-					Allow for custom <code>&lt;nav /&gt;</code> entries as noted in the <a
-						href="sblg.1.html">sblg(1)</a> manual and the <a href="article5.html">Tips and Tricks</a> article.
+					Fix download so that it compiles properly.
 				</p>
 			</article>
 			<article data-sblg-article="1" />
