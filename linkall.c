@@ -210,6 +210,8 @@ nav_end(void *userdata, const XML_Char *name)
 	0 == memcmp(&arg->nav[start], (_word), (_sz)))
 
 	for (i = 0; i < arg->navlen; i++) {
+		strftime(buf, sizeof(buf), "%Y-%m-%d", 
+			localtime(&arg->sargs[i].time));
 		inprint = 0;
 		fprintf(arg->f, "<li>\n");
 		for (j = 1; j < arg->navsz; j++) {
@@ -233,6 +235,11 @@ nav_end(void *userdata, const XML_Char *name)
 				fputs(arg->sargs[i].title, arg->f);
 			else if (STRCMP("source", 6))
 				fputs(arg->sargs[i].src, arg->f);
+			else if (STRCMP("date", 4))
+				fputs(buf, arg->f);
+			else if (STRCMP("aside", 5) &&
+				NULL != arg->sargs[i].aside)
+				fputs(arg->sargs[i].aside, arg->f);
 
 			if (j < arg->navsz)
 				j++;

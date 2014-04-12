@@ -13,9 +13,9 @@ CSSS = article.css blog.css shared.css
 BINDIR = $(PREFIX)/bin
 WWWDIR = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
 MANDIR = $(PREFIX)/man
-DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml atom-template.xml sblg.1 
-VERSION = 0.0.12
-VDATE = 2013-09-15
+DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml atom-template.xml sblg.1 extern.h
+VERSION = 0.0.13
+VDATE = 2014-04-12
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
