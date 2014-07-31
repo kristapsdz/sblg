@@ -35,6 +35,7 @@ struct	linkall {
 	int		 ssposz;  /* size of sargs to show */
 	size_t		 stack; /* temporary: tag stack size */
 	size_t		 navlen; /* temporary: nav items to show */
+	char		*navtag; /* temporary: only show tags */
 	int		 navuse; /* use navigation contents */
 	char		*nav; /* temporary: nav buffer */
 	size_t		 navsz; /* nav buffer length */
@@ -130,6 +131,7 @@ out:
 		fclose(f);
 
 	free(larg.nav);
+	free(larg.navtag);
 	free(sarg);
 	return(rc);
 }
@@ -274,6 +276,7 @@ tmpl_begin(void *userdata,
 		for (attp = atts; NULL != *attp; attp += 2) 
 			if (0 == strcasecmp(*attp, "data-sblg-nav"))
 				break;
+
 		if (NULL == *attp || ! xmlbool(attp[1]))
 			return;
 
@@ -290,8 +293,13 @@ tmpl_begin(void *userdata,
 				if (arg->navlen > (size_t)arg->sposz)
 					arg->navlen = arg->sposz;
 			} else if (0 == strcasecmp(attp[0], 
-					"data-sblg-navcontent"))
+					"data-sblg-navcontent")) {
 				arg->navuse = xmlbool(attp[1]);
+			} else if (0 == strcasecmp(attp[0], 
+					"data-sblg-navtag")) {
+				free(arg->navtag);
+				arg->navtag = strdup(attp[1]);
+			}
 		}
 
 		arg->stack++;

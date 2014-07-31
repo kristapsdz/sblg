@@ -120,6 +120,11 @@ out:
 	return(rc);
 }
 
+/*
+ * Look for the first instance of <article>.
+ * If we're linking files, it must consist of the "data-sblg-article",
+ * otherwise this isn't necessary.
+ */
 static void
 input_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
@@ -132,14 +137,29 @@ input_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 	if (strcasecmp(name, "article"))
 		return;
 
+	/* Look for the data-sblg-article mention.  */
 	for (attp = atts; NULL != *attp; attp += 2)
 		if (0 == strcasecmp(*attp, "data-sblg-article"))
 			break;
 
-	if (0 == arg->linked || (NULL != *attp && xmlbool(attp[1]))) {
-		arg->gstack = 1;
-		XML_SetElementHandler(arg->p, article_begin, article_end);
-		XML_SetDefaultHandler(arg->p, article_text);
+	/*
+	 * If we're being linked and we don't have the data-sblg-article
+	 * (or it's set to false), then continue on.
+	 */
+	if ( ! (0 == arg->linked || (NULL != *attp && xmlbool(attp[1]))))
+		return;
+
+	arg->gstack = 1;
+	XML_SetElementHandler(arg->p, article_begin, article_end);
+	XML_SetDefaultHandler(arg->p, article_text);
+
+	/* Look for the tag listing. */
+	for (attp = atts; NULL != *attp; attp += 2) {
+		if (0 == strcasecmp(*attp, "data-sblg-tags")) {
+			free(arg->article->tags);
+			arg->article->tags = strdup(attp[1]);
+			break;
+		}
 	}
 }
 
@@ -152,6 +172,10 @@ article_text(void *userdata, const XML_Char *s, int len)
 		&arg->article->articlesz, s, len);
 }
 
+/*
+ * Look for a few important parts of the article: the header, the aside,
+ * and nested articled.
+ */
 static void
 article_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 {
@@ -355,6 +379,7 @@ grok_free(struct article *p)
 
 	if (NULL != p) {
 		free(p->base);
+		free(p->tags);
 		free(p->title);
 		free(p->author);
 		free(p->aside);
