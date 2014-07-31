@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: September 15 2013 $
+.Dd $Mdocdate: April 12 2014 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -154,10 +154,19 @@ article publication date is extracted from the first
 .Aq time ,
 and author from the first
 .Aq address .
-If unspecified, these default to
+If the
+.Aq article
+tag has an
+.Li data-sblg-tags
+element, these tags are extracted for tag operation.
+.Pp
+If unspecified, the default article title is
 .Qq Untitled article ,
+the default author is the
 .Qq Unknown author ,
-and the document's ctime.
+the publication time is set to the document's file-system creation time,
+and no tags.
+.Pp
 The first
 .Aq aside ,
 if provided, is used for the feed summary.
