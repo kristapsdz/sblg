@@ -30,11 +30,13 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility knits together an XML article with a template to create standalone
-pages or a collection of articles with a template to create a
+utility knits together an XML article with a template to create
+standalone pages or a collection of articles with a template to create a
 .Qq blog
 or Atom feed
 amalgamation.
+HTML is assumed only with the default suffix re-write rule standalone
+articles; input and output may in fact be arbitrary XML mark-up.
 Input articles may be XML fragments or full documents: only the
 .Aq article data-sblg-article="1"
 tree within the article is considered.
@@ -205,7 +207,8 @@ if you're running
 with XML files, the linked file will consist of an XML target, not
 an HTML target.
 .Pc
-However, the Boolean
+.Pp
+The Boolean
 .Li data-sbgl-navcontent
 attribute makes the content of the
 .Aq nav

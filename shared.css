@@ -99,8 +99,9 @@ div.version		{ color: #333333;
 			  border-right: thin solid #aaaaaa;
 			  padding: 1ex; 
 		 	  padding-left: 1.5ex; }
-div.version > span	{ border-right: thin solid #aaaaaa; 
-			  padding-right: 1ex; }
+div.version > a		{ border-left: thin solid #aaaaaa; 
+			  margin-left: 0.5ex; 
+			  padding-left: 1ex; }
 div.version > a		{ color: #333333; 
 			  white-space: nowrap; }
 div.version > a:hover	{ color: #666666; 

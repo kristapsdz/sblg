@@ -3,8 +3,9 @@
 		<h1>How should one write articles?</h1>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-06-30">30 June, 2013</time></div>
 	</header>
+	<aside>How to write blog article mark-up for sblg.</aside>
 	<p>
-		Articles are fragments of HTML5 documents.
+		Articles are fragments or full XML documents (usually <a href="http://www.w3.org/html/wg/drafts/html/master/">HTML5</a>).
 		The simplest article is structured as follows:
 	</p>
 	<div class="code">
@@ -17,10 +18,11 @@
 		<div class="tab">&lt;aside&gt;</div>
 		<div class="dtab">The article's &lt;b&gt;summary&lt;/b&gt;</div>
 		<div class="tab">&lt;/aside&gt;</div>
+		<div class="tab">&lt;div&gt;Mu.&lt;/div&gt;</div>
 		<div>&lt;/article&gt;</div>
 	</div>
 	<p>
-		An article is any <span class="code">article</span> with the <span class="code">data-sblg-article</span> attribute.
+		An article is any <span class="code">article</span> with the <span class="code">data-sblg-article</span> Boolean attribute.
 		The article publication time is parsed from the <span class="code">datetime</span> attribute of the first <span
 			class="code">time</span> tag in the first <span class="code">header</span>.
 		The title is parsed from the first <span class="code">hn</span> tag (where <var>n</var> = 1&#8211;4), as is the author from the

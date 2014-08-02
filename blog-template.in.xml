@@ -4,6 +4,7 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<meta charset='utf-8' /> 
 		<link rel="stylesheet" href="blog.css" type="text/css" />
+		<link href="atom.xml" type="application/atom+xml" rel="alternate" title="sblg Article and Version Feed" />
 		<title>simple off-line blog utility</title>
 	</head>
 	<body itemscope="itemscope" itemtype="http://schema.org/SoftwareApplication">
@@ -13,7 +14,8 @@
 		</header>
 		<div class="version">
 			<span>Version <span itemprop="softwareVersion">@VERSION@</span>, <time itemprop="dateUpdated" datetime="@VDATE@">@VDATE@</time></span>
-			<a itemprop="downloadUrl" href="sblg.tar.gz">Download Source</a>
+			<a itemprop="downloadUrl" href="sblg.tar.gz">Source</a>
+			<a href="atom.xml">RSS</a>
 		</div>
 		<section>
 			<p>
@@ -23,17 +25,16 @@
 				A simple, standalone utility that
 			</p>
 			<ul>
-				<li>compiles individual articles with a template into standalone <a
-						href="http://www.w3.org/html/wg/drafts/html/master/">HTML5</a> articles;</li>
-				<li>compiles sets of articles into aggregate HTML5 pages;</li>
-				<li>compiles sets of articles into <a href="http://www.atomenabled.org/">Atom</a> feeds;</li>
+				<li>compiles individual articles with a template into standalone articles;</li>
+				<li>compiles sets of articles into amalgamation <q>blog</q> pages;</li>
+				<li>compiles sets of articles into amalgamation <a href="http://www.atomenabled.org/">Atom</a> feeds;</li>
 				<li>manages listings of previous articles and tag indexes.</li>
 			</ul>
 			<p>
 				Want simplified HTML markup, in-line <a href="http://www.latex-project.org/">LaTeX</a> editing, smartphone
 				auto-templating, or <q>modules</q>?  
 				Neither do we.
-				<span class="name">sblg</span> is simple and for people who can already write proper HTML and CSS, version their
+				<span class="name">sblg</span> is simple and for people who can already write proper XML, version their
 				sources into CVS, configure a Makefile, and install into some sort of static htdocs directory.
 				Its only compile-time dependency is <a href="http://expat.sourceforge.net/">libexpat</a>, which is bundled on
 				most UNIX operating systems, and is otherwise ISO C under the open-source <a rel="license"
@@ -41,10 +42,15 @@
 				To deploy, download the <a href="sblg.tar.gz">sources</a>, <code>make install</code> into the
 				<code>PREFIX</code> of your choice, and get to work.
 			</p>
-			<nav id="tagnav" data-sblg-navtag="version" data-sblg-nav="1" data-sblg-navcontent="1">
-				<div><time datetime="${date}">${date}</time>: ${title}</div>
+			<nav id="tagnav" data-sblg-navtag="version" data-sblg-nav="1" data-sblg-navsz="3" data-sblg-navcontent="1">
+				<div><time datetime="${date}">${date}</time>: <span class="version">Version ${title}</span></div>
 				<div class="aside">${aside}</div>
 			</nav>
+			<p>
+				<span class="name">sblg</span> is usually used to knit <a
+					href="http://www.w3.org/html/wg/drafts/html/master/">HTML5</a> articles into amalgamated blog feeeds.
+				It's used in this very page for the versions, above, and the following  <q>how-to</q> documents.
+			</p>
 			<nav id="articlenav" data-sblg-navtag="howto" data-sblg-nav="1" />
 		</section>
 		<footer>
