@@ -39,29 +39,26 @@ struct	article {
 #define	xmalloc	malloc
 #define	xstrdup	strdup
 
-int	grok(XML_Parser p, int linked,
-		const char *src, struct article *data);
-int	echo(FILE *f, int linked, const char *src);
-void	grok_free(struct article *p);
+int	atom(XML_Parser p, const char *templ,
+		int sz, char *src[], const char *dst);
 int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);
+int	echo(FILE *f, int linked, const char *src);
+int	grok(XML_Parser p, int linked,
+		const char *src, struct article *data);
+void	grok_free(struct article *p);
 void	mmap_close(int fd, void *buf, size_t sz);
 int	mmap_open(const char *f, int *fd, char **buf, size_t *sz);
 int	linkall(XML_Parser p, const char *templ, const char *force, 
 		int sz, char *src[], const char *dst);
-int	atom(XML_Parser p, const char *templ,
-		int sz, char *src[], const char *dst);
 void	xmlappend(char **p, size_t *sz, 
 		const XML_Char *s, int len);
-void	xmlappendclose(char **p, size_t *sz, const XML_Char *name);
-void	xmlappendopen(char **p, size_t *sz, 
-		const XML_Char *name, const XML_Char **atts);
 int	xmlbool(const XML_Char *s);
 void	xmlprint(FILE *f, const XML_Char *s, const XML_Char **atts);
-int	xmlvoid(const XML_Char *s);
 void	xmlrappendclose(char **p, size_t *sz, const XML_Char *name);
 void	xmlrappendopen(char **p, size_t *sz, 
 		const XML_Char *name, const XML_Char **atts);
+int	xmlvoid(const XML_Char *s);
 
 __END_DECLS
 

@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013, 2014 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -190,7 +190,7 @@ aside_begin(void *dat,
 	struct parse	*arg = dat;
 
 	arg->stack += 0 == strcasecmp(name, "aside");
-	xmlappendopen(&arg->article->aside, 
+	xmlrappendopen(&arg->article->aside, 
 		&arg->article->asidesz, name, atts);
 }
 
@@ -212,7 +212,7 @@ aside_end(void *dat, const XML_Char *name)
 		XML_SetElementHandler(arg->p, article_begin, article_end);
 		XML_SetDefaultHandler(arg->p, article_text);
 	} else
-		xmlappendclose(&arg->article->aside,
+		xmlrappendclose(&arg->article->aside,
 			&arg->article->asidesz, name);
 }
 
@@ -242,7 +242,7 @@ article_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	} else if (0 == strcasecmp(name, "article"))
 		arg->gstack++;
 
-	xmlappendopen(&arg->article->article,
+	xmlrappendopen(&arg->article->article,
 		&arg->article->articlesz, name, atts);
 }
 
@@ -255,7 +255,7 @@ article_end(void *dat, const XML_Char *name)
 		XML_SetElementHandler(arg->p, NULL, NULL);
 		XML_SetDefaultHandler(arg->p, NULL);
 	} else
-		xmlappendclose(&arg->article->article,
+		xmlrappendclose(&arg->article->article,
 			&arg->article->articlesz, name);
 }
 

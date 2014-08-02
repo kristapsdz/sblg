@@ -5,8 +5,8 @@
 		<time datetime="2014-08-01">2014-08-01</time>
 	</header>
 	<aside>
-		Overhaul documentation for simplicity.
-		Add tag indexing.
+		Overhaul documentation (web, articles, manual, in-line) for simplicity.
+		Add tag indexing (see Tags article).
 		Simplify the flow of standalone to amalgamated articles by mandating that
 		<code>data-sblg-article="1"</code> appear in input articles.
 	</aside>

@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013, 2014 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -156,22 +156,6 @@ xmlrappendclose(char **p, size_t *sz, const XML_Char *name)
 }
 
 void
-xmlappendclose(char **p, size_t *sz, const XML_Char *name)
-{
-	size_t		 ssz;
-
-	if (xmlvoid(name))
-		return;
-
-	ssz = strlen(name) + 9;
-	*sz += ssz;
-	*p = xrealloc(*p, *sz + 1);
-	strlcat(*p, "&lt;/", *sz + 1);
-	strlcat(*p, name, *sz + 1);
-	strlcat(*p, "&gt;", *sz + 1);
-}
-
-void
 xmlrappendopen(char **p, size_t *sz, 
 	const XML_Char *name, const XML_Char **atts)
 {
@@ -205,40 +189,4 @@ xmlrappendopen(char **p, size_t *sz,
 		strlcat(*p, "/", *sz + 1);
 
 	strlcat(*p, ">", *sz + 1);
-}
-
-void
-xmlappendopen(char **p, size_t *sz, 
-	const XML_Char *name, const XML_Char **atts)
-{
-	size_t		 ssz;
-	int		 isvoid;
-
-	isvoid = xmlvoid(name);
-
-	ssz = strlen(name) + 8 + isvoid;
-	*sz += ssz;
-	*p = xrealloc(*p, *sz + 1);
-	strlcat(*p, "&lt;", *sz + 1);
-	strlcat(*p, name, *sz + 1);
-
-	for ( ; NULL != *atts; atts += 2) {
-		ssz = strlen(atts[0]) + 2;
-		*sz += ssz;
-		*p = xrealloc(*p, *sz + 1);
-		strlcat(*p, " ", *sz + 1);
-		strlcat(*p, atts[0], *sz + 1);
-		strlcat(*p, "=", *sz + 1);
-		ssz = strlen(atts[1]) + 2;
-		*sz += ssz;
-		*p = xrealloc(*p, *sz + 1);
-		strlcat(*p, "\"", *sz + 1);
-		strlcat(*p, atts[1], *sz + 1);
-		strlcat(*p, "\"", *sz + 1);
-	}
-
-	if (isvoid)
-		strlcat(*p, "/", *sz + 1);
-
-	strlcat(*p, "&gt;", *sz + 1);
 }
