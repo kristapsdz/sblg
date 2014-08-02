@@ -17,7 +17,6 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-#include <err.h>
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -58,24 +57,24 @@ mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 	*sz = 0;
 
 	if (-1 == (*fd = open(f, O_RDONLY, 0))) {
-		warn("%s", f);
+		perror(f);
 		goto out;
 	} else if (-1 == fstat(*fd, &st)) {
-		warn("%s", f);
+		perror(f);
 		goto out;
 	} else if ( ! S_ISREG(st.st_mode)) {
-		warnx("%s: not a regular file", f);
+		fprintf(stderr, "%s: not a regular file\n", f);
 		goto out;
 	} else if (st.st_size >= (1U << 31)) {
-		warnx("%s: too large", f);
+		fprintf(stderr, "%s: too large", f);
 		goto out;
 	}
 
 	*sz = (size_t)st.st_size;
 	*buf = mmap(NULL, *sz, PROT_READ, MAP_FILE|MAP_SHARED, *fd, 0);
 
-	if (NULL == *buf) {
-		warn("%s", f);
+	if (MAP_FAILED == *buf) {
+		perror(f);
 		goto out;
 	}
 

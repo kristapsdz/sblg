@@ -56,6 +56,10 @@ static	void	tmpl_end(void *userdata, const XML_Char *name);
 static	void	tmpl_text(void *userdata, 
 			const XML_Char *s, int len);
 
+/*
+ * Given a set of articles "src", grok articles from the files, then
+ * fill in a template that's usually the blog "front page".
+ */
 int
 linkall(XML_Parser p, const char *templ, const char *force,
 		int sz, char *src[], const char *dst)
@@ -76,10 +80,16 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	memset(&larg, 0, sizeof(struct linkall));
 	sarg = xcalloc(sz, sizeof(struct article));
 
+	/*
+	 * Grok all article data.
+	 * These can either be the origin XML files or those formatted
+	 * with the compile() function into HTML.
+	 */
 	for (i = 0; i < sz; i++)
 		if ( ! grok(p, 1, src[i], &sarg[i]))
 			goto out;
 
+	/* Sort by date. */
 	qsort(sarg, sz, sizeof(struct article), scmp);
 
 	f = stdout;
@@ -97,6 +107,10 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	larg.src = templ;
 	larg.f = f;
 
+	/*
+	 * If we're going to force a single entry to be shown, then find
+	 * it in our arguments.
+	 */
 	if (NULL != force) {
 		for (i = 0; i < sz; i++)
 			if (0 == strcmp(force, sarg[i].src))
@@ -108,6 +122,9 @@ linkall(XML_Parser p, const char *templ, const char *force,
 		}
 	}
 
+	/*
+	 * Run the XML parser on the template.
+	 */
 	XML_ParserReset(p, NULL);
 	XML_SetDefaultHandler(p, tmpl_text);
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
@@ -171,13 +188,41 @@ nav_begin(void *userdata,
 	xmlrappendopen(&arg->nav, &arg->navsz, name, atts);
 }
 
+static int
+tagfind(const char *needle, const char *haystack)
+{
+	const char 	*cp;
+	size_t	 	 sz;
+
+	if (NULL == needle)
+		return(1);
+	if (NULL == haystack) 
+		return(0);
+
+	sz = strlen(needle);
+again:
+	if (NULL == (cp = strstr(haystack, needle)))
+		return(0);
+
+	if (cp > haystack && ' ' != cp[-1]) {
+		haystack += sz;
+		goto again;
+	}
+
+	cp += sz;
+	if ('\0' == *cp || ' ' == *cp)
+		return(1);
+
+	goto again;
+}
+
 static void
 nav_end(void *userdata, const XML_Char *name)
 {
 	struct linkall	*arg = userdata;
 	size_t		 i, j, start;
 	char		 buf[32];
-	int		 inprint;
+	int		 k, inprint;
 
 	if (strcasecmp(name, "nav") || 0 != --arg->stack) {
 		xmlrappendclose(&arg->nav, &arg->navsz, name);
@@ -189,31 +234,48 @@ nav_end(void *userdata, const XML_Char *name)
 
 	fprintf(arg->f, "\n<ul>\n");
 
+	/*
+	 * If we haven't been provided a navigation template (i.e., what
+	 * was within the navigation tags), then make a simple default
+	 * consisting of a list entry.
+	 */
 	if ( ! arg->navuse || 0 == arg->navsz) {
-		for (i = 0; i < arg->navlen; i++) {
+		for (i = 0, k = 0; i < arg->navlen && k < arg->sposz; k++) {
+			/* Are we limiting by tag? */
+			if ( ! tagfind(arg->navtag, arg->sargs[k].tags))
+				continue;
 			strftime(buf, sizeof(buf), "%Y-%m-%d", 
-				localtime(&arg->sargs[i].time));
+				localtime(&arg->sargs[k].time));
 			fprintf(arg->f, "<li>\n");
 			fprintf(arg->f, "%s: ", buf);
 			fprintf(arg->f, "<a href=\"%s\">%s</a>\n",
-				arg->sargs[i].src,
-				arg->sargs[i].title);
+				arg->sargs[k].src,
+				arg->sargs[k].title);
 			fprintf(arg->f, "</li>\n");
+			i++;
 		}
 		fprintf(arg->f, "</ul>\n");
 		fprintf(arg->f, "</%s>", name);
 		free(arg->nav);
+		free(arg->navtag);
 		arg->navsz = 0;
-		arg->nav = NULL;
+		arg->nav = arg->navtag = NULL;
 		return;
 	}
 
+	/*
+	 * We do have a navigation template.
+	 * Output it, replacing key terms along the way.
+	 */
 #define	STRCMP(_word, _sz) (j - start == (_sz) && \
 	0 == memcmp(&arg->nav[start], (_word), (_sz)))
 
-	for (i = 0; i < arg->navlen; i++) {
+	for (i = 0, k = 0; i < arg->navlen && k < arg->sposz; k++) {
+		/* Are we limiting by tag? */
+		if ( ! tagfind(arg->navtag, arg->sargs[k].tags))
+			continue;
 		strftime(buf, sizeof(buf), "%Y-%m-%d", 
-			localtime(&arg->sargs[i].time));
+			localtime(&arg->sargs[k].time));
 		inprint = 0;
 		fprintf(arg->f, "<li>\n");
 		for (j = 1; j < arg->navsz; j++) {
@@ -232,16 +294,16 @@ nav_end(void *userdata, const XML_Char *name)
 			if (j == arg->navsz)
 				break;
 			if (STRCMP("base", 4))
-				fputs(arg->sargs[i].base, arg->f);
+				fputs(arg->sargs[k].base, arg->f);
 			else if (STRCMP("title", 5))
-				fputs(arg->sargs[i].title, arg->f);
+				fputs(arg->sargs[k].title, arg->f);
 			else if (STRCMP("source", 6))
-				fputs(arg->sargs[i].src, arg->f);
+				fputs(arg->sargs[k].src, arg->f);
 			else if (STRCMP("date", 4))
 				fputs(buf, arg->f);
 			else if (STRCMP("aside", 5) &&
-				NULL != arg->sargs[i].aside)
-				fputs(arg->sargs[i].aside, arg->f);
+				NULL != arg->sargs[k].aside)
+				fputs(arg->sargs[k].aside, arg->f);
 
 			if (j < arg->navsz)
 				j++;
@@ -250,12 +312,14 @@ nav_end(void *userdata, const XML_Char *name)
 		if ( ! inprint)
 			fputc(arg->nav[j - 1], arg->f);
 		fprintf(arg->f, "</li>\n");
+		i++;
 	}
 	fprintf(arg->f, "</ul>\n");
 	fprintf(arg->f, "</%s>", name);
 	free(arg->nav);
+	free(arg->navtag);
 	arg->navsz = 0;
-	arg->nav = NULL;
+	arg->nav = arg->navtag = NULL;
 }
 
 static void
@@ -339,13 +403,11 @@ tmpl_begin(void *userdata,
 	/*
 	 * First throw away children, then push out the article itself.
 	 */
-	xmlprint(arg->f, name, atts);
 	arg->stack++;
 	XML_SetDefaultHandler(arg->p, NULL);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	if ( ! echo(arg->f, 1, arg->sargs[arg->spos++].src))
 		XML_StopParser(arg->p, 0);
-	fprintf(arg->f, "</%s>\n", name);
 	for (attp = atts; NULL != *attp; attp += 2) 
 		if (0 == strcasecmp(*attp, "data-sblg-permlink"))
 			break;

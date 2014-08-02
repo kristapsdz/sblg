@@ -1,4 +1,4 @@
-<article>
+<article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
 		<h1>How should one write articles?</h1>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-06-30">30 June, 2013</time></div>
@@ -8,7 +8,7 @@
 		The simplest article is structured as follows:
 	</p>
 	<div class="code">
-		<div>&lt;article&gt;</div>
+		<div>&lt;article data-sblg-article="1"&gt;</div>
 		<div class="tab">&lt;header&gt;</div>
 		<div class="dtab">&lt;h1&gt;Title&lt;/h1&gt;</div>
 		<div class="dtab">&lt;address&gt;Kristaps Dzonsons&lt;/address&gt;</div>
@@ -20,6 +20,7 @@
 		<div>&lt;/article&gt;</div>
 	</div>
 	<p>
+		An article is any <span class="code">article</span> with the <span class="code">data-sblg-article</span> attribute.
 		The article publication time is parsed from the <span class="code">datetime</span> attribute of the first <span
 			class="code">time</span> tag in the first <span class="code">header</span>.
 		The title is parsed from the first <span class="code">hn</span> tag (where <var>n</var> = 1&#8211;4), as is the author from the

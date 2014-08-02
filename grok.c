@@ -61,65 +61,6 @@ static	void	title_data(struct parse *arg, const XML_Char **atts);
 static	void	title_end(void *userdata, const XML_Char *name);
 static	void	title_text(void *userdata, const XML_Char *s, int len);
 
-int
-grok(XML_Parser p, int linked, const char *src, struct article *arg)
-{
-	char		*buf, *cp;
-	size_t		 sz;
-	int		 fd, rc;
-	struct parse	 parse;
-	struct stat	 st;
-
-	memset(arg, 0, sizeof(struct article));
-	memset(&parse, 0, sizeof(struct parse));
-
-	rc = 0;
-
-	if ( ! mmap_open(src, &fd, &buf, &sz))
-		goto out;
-
-	arg->src = src;
-	arg->base = xstrdup(src);
-	if (NULL != (cp = strrchr(arg->base, '.')))
-		*cp = '\0';
-	parse.article = arg;
-	parse.p = p;
-	parse.linked = linked;
-
-	XML_ParserReset(p, NULL);
-	XML_SetStartElementHandler(p, input_begin);
-	XML_SetUserData(p, &parse);
-
-	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
-		fprintf(stderr, "%s:%zu:%zu: %s\n", src, 
-			XML_GetCurrentLineNumber(p),
-			XML_GetCurrentColumnNumber(p),
-			XML_ErrorString(XML_GetErrorCode(p)));
-		goto out;
-	} 
-
-	if (NULL == parse.article->title) {
-		parse.article->title = xstrdup("Untitled article");
-		parse.article->titlesz = strlen(parse.article->title);
-	}
-	if (NULL == parse.article->author) {
-		parse.article->author = xstrdup("Untitled author");
-		parse.article->authorsz = strlen(parse.article->author);
-	}
-	if (0 == parse.article->time) {
-		if (-1 == fstat(fd, &st)) {
-			perror(src);
-			goto out;
-		}
-		parse.article->time = st.st_ctime;
-	}
-
-	rc = 1;
-out:
-	mmap_close(fd, buf, sz);
-	return(rc);
-}
-
 /*
  * Look for the first instance of <article>.
  * If we're linking files, it must consist of the "data-sblg-article",
@@ -143,10 +84,10 @@ input_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
 			break;
 
 	/*
-	 * If we're being linked and we don't have the data-sblg-article
-	 * (or it's set to false), then continue on.
+	 * If we don't have the data-sblg-article (or it's set to
+	 * false), then continue on.
 	 */
-	if ( ! (0 == arg->linked || (NULL != *attp && xmlbool(attp[1]))))
+	if (NULL == *attp || ! xmlbool(attp[1]))
 		return;
 
 	arg->gstack = 1;
@@ -385,4 +326,64 @@ grok_free(struct article *p)
 		free(p->aside);
 		free(p->article);
 	}
+}
+
+
+int
+grok(XML_Parser p, int linked, const char *src, struct article *arg)
+{
+	char		*buf, *cp;
+	size_t		 sz;
+	int		 fd, rc;
+	struct parse	 parse;
+	struct stat	 st;
+
+	memset(arg, 0, sizeof(struct article));
+	memset(&parse, 0, sizeof(struct parse));
+
+	rc = 0;
+
+	if ( ! mmap_open(src, &fd, &buf, &sz))
+		goto out;
+
+	arg->src = src;
+	arg->base = xstrdup(src);
+	if (NULL != (cp = strrchr(arg->base, '.')))
+		*cp = '\0';
+	parse.article = arg;
+	parse.p = p;
+	parse.linked = linked;
+
+	XML_ParserReset(p, NULL);
+	XML_SetStartElementHandler(p, input_begin);
+	XML_SetUserData(p, &parse);
+
+	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
+		fprintf(stderr, "%s:%zu:%zu: %s\n", src, 
+			XML_GetCurrentLineNumber(p),
+			XML_GetCurrentColumnNumber(p),
+			XML_ErrorString(XML_GetErrorCode(p)));
+		goto out;
+	} 
+
+	if (NULL == parse.article->title) {
+		parse.article->title = xstrdup("Untitled article");
+		parse.article->titlesz = strlen(parse.article->title);
+	}
+	if (NULL == parse.article->author) {
+		parse.article->author = xstrdup("Untitled author");
+		parse.article->authorsz = strlen(parse.article->author);
+	}
+	if (0 == parse.article->time) {
+		if (-1 == fstat(fd, &st)) {
+			perror(src);
+			goto out;
+		}
+		parse.article->time = st.st_ctime;
+	}
+
+	rc = 1;
+out:
+	mmap_close(fd, buf, sz);
+	return(rc);
 }
