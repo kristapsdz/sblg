@@ -23,11 +23,18 @@
 
 #include "extern.h"
 
+enum	op {
+	OP_ATOM,
+	OP_COMPILE,
+	OP_BLOG
+};
+
 int
 main(int argc, char *argv[])
 {
-	int		 ch, mkcomp, i, rc, mkatom;
+	int		 ch, i, rc;
 	const char	*progname, *templ, *outfile, *force;
+	enum op		 op;
 	XML_Parser	 p;
 
 	progname = strrchr(argv[0], '/');
@@ -37,15 +44,15 @@ main(int argc, char *argv[])
 		++progname;
 
 	templ = outfile = force = NULL;
-	mkcomp = mkatom = 0;
+	op = OP_BLOG;
 
 	while (-1 != (ch = getopt(argc, argv, "acf:o:t:")))
 		switch (ch) {
 		case ('a'):
-			mkatom = 1;
+			op = OP_ATOM;
 			break;
 		case ('c'):
-			mkcomp = 1;
+			op = OP_COMPILE;
 			break;
 		case ('f'):
 			force = optarg;
@@ -63,35 +70,58 @@ main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	if (0 == argc || (mkcomp && mkatom))
+	if (0 == argc)
 		goto usage;
 
+	/*
+	 * Avoid constantly re-using a parser by specifying one here.
+	 * We'll just use the same one over and over whilst parsing our
+	 * documents.
+	 */
 	if (NULL == (p = XML_ParserCreate(NULL))) {
 		perror(NULL);
 		return(EXIT_FAILURE);
 	}
 
-	if (mkcomp) {
+	switch (op) {
+	case (OP_COMPILE):
+		/*
+		 * Merge a single input XML file into a template XML
+		 * files to produce output.
+		 * (This can happen multiple times if we're spitting
+		 * into stdout.)
+		 */
 		if (NULL == templ)
 			templ = "article-template.xml";
-		if (argc > 1) {
-			rc = 1;
-			for (i = 0; rc && i < argc; i++)
-				rc = compile(p, templ, argv[i], NULL);
-		} else
+		if (1 == argc) {
 			rc = compile(p, templ, argv[0], outfile);
-	} else if (mkatom) {
+			break;
+		}
+		for (i = 0, rc = 1; rc && i < argc; i++)
+			rc = compile(p, templ, argv[i], NULL);
+		break;
+	case (OP_ATOM):
+		/*
+		 * Merge multiple input files into an Atom feed
+		 * amalgamation.
+		 */
 		if (NULL == templ)
 			templ = "atom-template.xml";
 		if (NULL == outfile)
 			outfile = "atom.xml";
 		rc = atom(p, templ, argc, argv, outfile);
-	} else {
+		break;
+	default:
+		/*
+		 * Merge multiple input files into a regular (we'll call
+		 * it "blog") amalgamation.
+		 */
 		if (NULL == templ)
 			templ = "blog-template.xml";
 		if (NULL == outfile)
 			outfile = "blog.html";
 		rc = linkall(p, templ, force, argc, argv, outfile);
+		break;
 	}
 
 	XML_ParserFree(p);
