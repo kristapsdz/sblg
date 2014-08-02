@@ -13,7 +13,7 @@
 			<div>&#8211; <span itemprop="description">simple off-line blog utility</span></div>
 		</header>
 		<div class="version">
-			<span>Version <span itemprop="softwareVersion">@VERSION@</span>, <time itemprop="dateUpdated" datetime="@VDATE@">@VDATE@</time></span>
+			<span>Version <span itemprop="softwareVersion">@VERSION@</span>, <time datetime="@VDATE@">@VDATE@</time></span>
 			<a itemprop="downloadUrl" href="sblg.tar.gz">Source</a>
 			<a href="atom.xml">RSS</a>
 		</div>
@@ -54,7 +54,7 @@
 			<nav id="articlenav" data-sblg-navtag="howto" data-sblg-nav="1" />
 		</section>
 		<footer>
-			&#169; 2013, <a href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
+			&#169; 2013, 2014, <a rel="author" href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
 		</footer>
 	</body>
 </html>
