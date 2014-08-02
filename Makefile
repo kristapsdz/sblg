@@ -4,9 +4,17 @@ PREFIX = /usr/local
 CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
 OBJS = main.o compile.o linkall.o grok.o echo.o util.o atom.o
 SRCS = main.c compile.c linkall.c grok.c echo.c util.c atom.c
-ARTICLES = article1.html article2.html article4.html article5.html
-VERSIONS = version_0_0_13.xml
-XMLS = article1.xml article2.xml article4.xml article5.xml
+ARTICLES = article1.html \
+	   article2.html \
+	   article4.html \
+	   article5.html
+VERSIONS = version_0_0_13.xml \
+	   version_0_1_1.xml
+XMLS = article1.xml \
+       article2.xml \
+       article4.xml \
+       article5.xml \
+       $(VERSIONS)
 ATOM = atom.xml
 XMLGENS = article-template.xml blog-template.xml
 HTMLS = $(ARTICLES) blog.html sblg.1.html

@@ -1,0 +1,9 @@
+<article data-sblg-article="1" data-sblg-tags="version">
+	<header>
+		<h1>Version 0.0.13</h1>
+		<div><address>Kristaps Dzonsons</address><time datetime="2014-04-12">2014-04-12</time></div>
+	</header>
+	<aside>
+		Fix download so that it compiles properly.
+	</aside>
+</article>
