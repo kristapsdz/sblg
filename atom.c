@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013, 2014 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -62,6 +62,30 @@ static	void	up_begin(void *userdata, const XML_Char *name,
 static	void	up_end(void *userdata, const XML_Char *name);
 
 static void
+atomputs(FILE *f, const char *cp)
+{
+	
+	for ( ; '\0' != *cp; cp++)
+		switch (*cp) {
+		case ('<'):
+			fputs("&lt;", f);
+			break;
+		case ('>'):
+			fputs("&gt;", f);
+			break;
+		case ('"'):
+			fputs("&quot;", f);
+			break;
+		case ('&'):
+			fputs("&amp;", f);
+			break;
+		default:
+			fputc(*cp, f);
+			break;
+		}
+}
+
+static void
 atomprint(FILE *f, const struct atom *arg, 
 		int altlink, int content, const struct article *src)
 {
@@ -79,11 +103,18 @@ atomprint(FILE *f, const struct atom *arg,
 	if (altlink)
 		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
 				 "href=\"%s/%s\" />\n", arg->path, src->src);
-	if (content && NULL != src->article) 
-		fprintf(f, "<content type=\"html\">%s</content>", src->article);
-	if (NULL != src->aside)
-		fprintf(f, "<summary type=\"html\">"
-			"%s</summary>", src->aside);
+
+	if (content && NULL != src->article) {
+		fprintf(f, "<content type=\"html\">");
+		atomputs(f, src->article);
+		fprintf(f, "</content>");
+	}
+
+	if (NULL != src->aside) {
+		fprintf(f, "<summary type=\"html\">");
+		atomputs(f, src->aside);
+		fprintf(f, "</summary>");
+	}
 }
 
 int

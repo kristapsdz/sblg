@@ -21,8 +21,8 @@
 			<p>
 				The <span class="name">sblg</span> utility is an offline blog utility.
 				You write your articles as standalone XML files and <a href="sblg.1.html">sblg(1)</a> knits them together.
-				No Ruby, no format pseudo-language, no complex toolchain.
-				A simple, standalone utility that
+				No run-time interpreter, no format pseudo-language, no complex toolchain.
+				Just a simple, standalone utility that
 			</p>
 			<ul>
 				<li>compiles individual articles with a template into standalone articles;</li>
@@ -34,8 +34,8 @@
 				Want simplified HTML markup, in-line <a href="http://www.latex-project.org/">LaTeX</a> editing, smartphone
 				auto-templating, or <q>modules</q>?  
 				Neither do we.
-				<span class="name">sblg</span> is simple and for people who can already write proper XML, version their
-				sources into CVS, configure a Makefile, and install into some sort of static htdocs directory.
+				<span class="name">sblg</span> is simple and for people who can already write proper HTML5, configure a
+				Makefile, and install into some sort of static htdocs directory.
 				Its only compile-time dependency is <a href="http://expat.sourceforge.net/">libexpat</a>, which is bundled on
 				most UNIX operating systems, and is otherwise ISO C under the open-source <a rel="license"
 					href="http://opensource.org/licenses/ISC">ISC</a> license.
