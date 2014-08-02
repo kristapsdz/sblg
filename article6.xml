@@ -1,0 +1,38 @@
+<article data-sblg-article="1" data-sblg-tags="howto">
+	<header>
+		<h1>Tags</h1>
+		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2014-08-02">02 August, 2014</time></div>
+	</header>
+	<aside>How to make tag indexes and clouds.</aside>
+	<p>
+		Tags are useful for organising your content.
+		As of version 0.1.1, you can specify tags for each article as follows:
+	</p>
+	<div class="code">
+		<div>&lt;article data-sblg-article="1" data-sblg-tags="foo bar"&gt;</div>
+		<div class="tab">&lt;header&gt;</div>
+		<div class="dtab">&lt;h1&gt;Title&lt;/h1&gt;</div>
+		<div class="dtab">&lt;address&gt;Kristaps Dzonsons&lt;/address&gt;</div>
+		<div class="dtab">&lt;time datetime="2013-01-01"&gt;1 January, 2013&lt;/time&gt;</div>
+		<div class="tab">&lt;/header&gt;</div>
+		<div class="tab">&lt;aside&gt;</div>
+		<div class="dtab">The article's &lt;b&gt;summary&lt;/b&gt;</div>
+		<div class="tab">&lt;/aside&gt;</div>
+		<div class="tab">&lt;div&gt;Mu.&lt;/div&gt;</div>
+		<div>&lt;/article&gt;</div>
+	</div>
+	<p>
+		The <code>data-sblg-tags</code> attribute indicates the tags of an article.
+		You can have as many space-separated tags as you'd like.
+	</p>
+	<p>
+		Once you've added the tags, you can use them when generating <code>&lt;nav&gt;</code> entries in the blog amalgation.
+		This is used in the <a href="index.html">index.html</a> page of this site.
+	</p>
+	<div class="code">
+		<div>&lt;nav data-sblg-nav="1" data-sblg-navtag="foo" /&gt;</div>
+	</div>
+	<p>
+		The above navigation element will only display entries with the <code>foo</code> tag.
+	</p>
+</article>
