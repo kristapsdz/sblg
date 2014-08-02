@@ -7,24 +7,26 @@ SRCS = main.c compile.c linkall.c grok.c echo.c util.c atom.c
 ARTICLES = article1.html \
 	   article2.html \
 	   article4.html \
-	   article5.html
+	   article5.html \
+	   article6.html
 VERSIONS = version_0_0_13.xml \
 	   version_0_1_1.xml
 XMLS = article1.xml \
        article2.xml \
        article4.xml \
        article5.xml \
+       article6.xml \
        $(VERSIONS)
 ATOM = atom.xml
 XMLGENS = article-template.xml blog-template.xml
-HTMLS = $(ARTICLES) blog.html sblg.1.html
+HTMLS = $(ARTICLES) index.html sblg.1.html
 CSSS = article.css blog.css shared.css
 BINDIR = $(PREFIX)/bin
 WWWDIR = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
 MANDIR = $(PREFIX)/man
 DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml atom-template.xml sblg.1 extern.h
-VERSION = 0.0.13
-VDATE = 2014-04-12
+VERSION = 0.1.1
+VDATE = 2014-08-01
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
@@ -50,11 +52,11 @@ sblg.tar.gz:
 
 main.o compile.o linkall.o grok.o echo.o atom.o: extern.h
 
-atom.xml blog.html $(ARTICLES): sblg
+atom.xml index.html $(ARTICLES): sblg
 
 atom.xml: atom-template.xml
 
-blog.html: blog-template.xml
+index.html: blog-template.xml
 
 blog-template.xml: blog-template.in.xml
 	sed -e "s!@VERSION@!$(VERSION)!g" \
@@ -66,10 +68,10 @@ article-template.xml: article-template.in.xml
 
 $(ARTICLES): article-template.xml
 
-blog.html: $(ARTICLES)
+index.html: $(ARTICLES) $(VERSIONS)
 	./sblg -o $@ $(ARTICLES) $(VERSIONS)
 
-atom.xml: $(ARTICLES)
+atom.xml: $(ARTICLES) $(VERSIONS)
 	./sblg -o $@ -a $(ARTICLES) $(VERSIONS)
 
 .xml.html:

@@ -9,11 +9,12 @@
 	<body>
 		<header>
 			<h1>sblg</h1>
-			<div>simple off-line blog utility</div>
+			<div>&#8211; simple off-line blog utility</div>
 		</header>
 		<div class="version">
-			<span>Current version: @VERSION@, @VDATE@</span>
-			<a href="sblg.tar.gz">Download Source</a>
+			<span>Version @VERSION@, @VDATE@</span>
+			<a href="sblg.tar.gz">Source</a>
+			<a href="atom.xml">RSS</a>
 		</div>
 		<section>
 			<p>
