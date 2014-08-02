@@ -193,24 +193,24 @@ compile(XML_Parser p, const char *templ,
 
 	if (NULL == dst) {
 		/*
-		 * FIXME: allow for arbitrary input file extensions and
-		 * only do this (replace, not append) if we have the
-		 * correct one.
+		 * If we have no output file name, then name it the same
+		 * as the input but with ".html" at the end.
+		 * However, if we have ".xml", then replace that with
+		 * ".html".
 		 */
-		if (NULL == (cp = strrchr(src, '.'))) {
-			fprintf(f, "%s: bad filename\n", src);
-			goto out;
-		} else if (strcasecmp(++cp, "xml")) {
-			fprintf(f, "%s: bad suffix\n", src);
-			goto out;
-		}
 		sz = strlen(src);
-		out = xmalloc(sz + 2);
-		strlcpy(out, src, sz + 2);
-		cp = strrchr(out, '.');
-		cp[1] = '\0';
-		strlcat(out, "html", sz + 2);
-		sz = 0;
+		if (NULL == (cp = strrchr(src, '.')) ||
+				strcasecmp(cp + 1, "xml")) {
+			/* Append .html to input name. */
+			out = xmalloc(sz + 6);
+			strlcpy(out, src, sz + 6);
+			strlcat(out, ".html", sz + 6);
+		} else {
+			/* Replace .xml with .html. */
+			out = xmalloc(sz + 2);
+			strlcpy(out, src, sz - 3);
+			strlcat(out, "html", sz + 2);
+		} 
 	} else
 		out = xstrdup(dst);
 
@@ -218,9 +218,7 @@ compile(XML_Parser p, const char *templ,
 	if (strcmp(out, "-") && NULL == (f = fopen(out, "w"))) {
 		perror(out);
 		goto out;
-	}
-
-	if ( ! mmap_open(templ, &fd, &buf, &sz))
+	} else if ( ! mmap_open(templ, &fd, &buf, &sz))
 		goto out;
 
 	arg.f = f;

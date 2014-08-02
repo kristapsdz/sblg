@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: July 31 2014 $
+.Dd $Mdocdate: August 2 2014 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -30,8 +30,8 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility knits together XML articles with templates to create
-standalone pages or a collection of articles in a single
+utility knits together an XML article with a template to create standalone
+pages or a collection of articles with a template to create a
 .Qq blog
 or Atom feed
 amalgamation.
@@ -70,9 +70,13 @@ or
 .Fl c .
 .It Fl o Ar file
 Output file.
-If unspecified, standalone articles have their
+If unspecified, standalone articles have
+.Li .html
+appended to the input file name, unless the input file extension is
+.Li .xml ,
+in which case the
 .Li .xml
-suffixes transformed into
+is replaced by
 .Li .html .
 If multiple input files are specified,
 .Fl o
