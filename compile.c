@@ -33,17 +33,142 @@ struct	pargs {
 	struct article	 article;
 };
 
-static	void	article_begin(void *userdata, const XML_Char *name, 
+/* 
+ * Forward-declarations for circular dependencies. 
+ */
+static void	template_begin(void *dat, const XML_Char *name, 
 			const XML_Char **atts);
-static	void	article_end(void *userdata, const XML_Char *name);
-static	void	template_begin(void *userdata, const XML_Char *name, 
-			const XML_Char **atts);
-static	void	template_end(void *userdata, const XML_Char *name);
-static	void	template_text(void *userdata, 
-			const XML_Char *s, int len);
-static	void	title_begin(void *userdata, const XML_Char *name, 
-			const XML_Char **atts);
-static	void	title_end(void *userdata, const XML_Char *name);
+static void	template_end(void *dat, const XML_Char *name);
+static void	template_text(void *dat, const XML_Char *s, int len);
+
+/*
+ * Record the stack of nested <article> entries so we don't prematurely
+ * close the article context.
+ */
+static void
+article_begin(void *dat, const XML_Char *name, const XML_Char **atts)
+{
+	struct pargs	*arg = dat;
+
+	arg->stack += 0 == strcasecmp(name, "article");
+}
+
+/*
+ * If we're at the bottom of the stack of <article> entries, we're
+ * finished with this article; print the rest verbatim.
+ */
+static void
+article_end(void *dat, const XML_Char *name)
+{
+	struct pargs	*arg = dat;
+
+	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
+		XML_SetElementHandler(arg->p, NULL, NULL);
+		XML_SetDefaultHandler(arg->p, template_text);
+	}
+}
+
+/*
+ * Start a stack of nested <title> elements.
+ */
+static void
+title_begin(void *dat, const XML_Char *name, const XML_Char **atts)
+{
+	struct pargs	*arg = dat;
+
+	arg->stack += 0 == strcasecmp(name, "title");
+}
+
+/*
+ * When we've finished our <title> element, go back into the main
+ * parsing context looking for <article> elements.
+ */
+static void
+title_end(void *dat, const XML_Char *name)
+{
+	struct pargs	*arg = dat;
+
+	if (0 == strcasecmp(name, "title") && 0 == --arg->stack) {
+		fprintf(arg->f, "</%s>", name);
+		XML_SetElementHandler(arg->p, template_begin, template_end);
+		XML_SetDefaultHandler(arg->p, template_text);
+	}
+}
+
+/*
+ * Look for important tags in the template.
+ * This is the main handler for this file.
+ */
+static void
+template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
+{
+	struct pargs	 *arg = dat;
+	const XML_Char	**attp;
+
+	assert(0 == arg->stack);
+
+	/*
+	 * If we encounter [any!] title, prepend the article's title in front of it.
+	 * FIXME: note this with data-sblg-title="1" or something like
+	 * that, and also allow for appending instead of prepending; or
+	 * better yet, a template.
+	 */
+	if (0 == strcasecmp(name, "title")) {
+		xmlprint(arg->f, name, atts);
+		fprintf(arg->f, "%s", arg->article.title);
+		arg->stack++;
+		XML_SetElementHandler(arg->p, title_begin, title_end);
+		XML_SetDefaultHandler(arg->p, NULL);
+		return;
+	} else if (strcasecmp(name, "article")) {
+		xmlprint(arg->f, name, atts);
+		return;
+	}
+
+	for (attp = atts; NULL != *attp; attp += 2)
+		if (0 == strcasecmp(*attp, "data-sblg-article"))
+			break;
+
+	if (NULL == *attp || ! xmlbool(attp[1])) {
+		xmlprint(arg->f, name, atts);
+		return;
+	}
+
+	/*
+	 * If we encounter an <article data-sblg-article="1">, then echo
+	 * the article file and discard content until the matching close
+	 * of the article.
+	 */
+	arg->stack++;
+	XML_SetElementHandler(arg->p, article_begin, article_end);
+	XML_SetDefaultHandler(arg->p, NULL);
+	if ( ! echo(arg->f, 0, arg->src))
+		XML_StopParser(arg->p, 0);
+}
+
+/*
+ * Blindly echo content.
+ */
+static void
+template_text(void *dat, const XML_Char *s, int len)
+{
+	struct pargs	*arg = dat;
+
+	fprintf(arg->f, "%.*s", len, s);
+}
+
+/*
+ * Blindly echo end tags (unless void elements!).
+ */
+static void
+template_end(void *dat, const XML_Char *name)
+{
+	struct pargs	*arg = dat;
+
+	/* FIXME: put this all into xmlclose() or similar. */
+	if ( ! xmlvoid(name))
+		fprintf(arg->f, "</%s>", name);
+}
 
 int
 compile(XML_Parser p, const char *templ, 
@@ -67,6 +192,11 @@ compile(XML_Parser p, const char *templ,
 		goto out;
 
 	if (NULL == dst) {
+		/*
+		 * FIXME: allow for arbitrary input file extensions and
+		 * only do this (replace, not append) if we have the
+		 * correct one.
+		 */
 		if (NULL == (cp = strrchr(src, '.'))) {
 			fprintf(f, "%s: bad filename\n", src);
 			goto out;
@@ -122,96 +252,3 @@ out:
 	return(rc);
 }
 
-static void
-article_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
-{
-	struct pargs	*arg = userdata;
-
-	arg->stack += 0 == strcasecmp(name, "article");
-}
-
-static void
-title_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
-{
-	struct pargs	*arg = userdata;
-
-	arg->stack += 0 == strcasecmp(name, "title");
-}
-
-static void
-template_begin(void *userdata, const XML_Char *name, const XML_Char **atts)
-{
-	struct pargs	 *arg = userdata;
-	const XML_Char	**attp;
-
-	assert(0 == arg->stack);
-
-	if (0 == strcasecmp(name, "title")) {
-		xmlprint(arg->f, name, atts);
-		fprintf(arg->f, "%s", arg->article.title);
-		arg->stack++;
-		XML_SetElementHandler(arg->p, title_begin, title_end);
-		XML_SetDefaultHandler(arg->p, NULL);
-		return;
-	} else if (strcasecmp(name, "article")) {
-		xmlprint(arg->f, name, atts);
-		return;
-	}
-
-	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-article"))
-			break;
-
-	if (NULL == *attp || ! xmlbool(attp[1])) {
-		xmlprint(arg->f, name, atts);
-		return;
-	}
-
-	xmlprint(arg->f, name, atts);
-	arg->stack++;
-	XML_SetElementHandler(arg->p, article_begin, article_end);
-	XML_SetDefaultHandler(arg->p, NULL);
-	if ( ! echo(arg->f, 0, arg->src))
-		XML_StopParser(arg->p, 0);
-}
-
-static void
-template_end(void *userdata, const XML_Char *name)
-{
-	struct pargs	*arg = userdata;
-
-	if ( ! xmlvoid(name))
-		fprintf(arg->f, "</%s>", name);
-}
-
-static void
-title_end(void *userdata, const XML_Char *name)
-{
-	struct pargs	*arg = userdata;
-
-	if (0 == strcasecmp(name, "title") && 0 == --arg->stack) {
-		fprintf(arg->f, "</%s>", name);
-		XML_SetElementHandler(arg->p, template_begin, template_end);
-		XML_SetDefaultHandler(arg->p, template_text);
-	}
-}
-
-static void
-article_end(void *userdata, const XML_Char *name)
-{
-	struct pargs	*arg = userdata;
-
-	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
-		fprintf(arg->f, "</%s>", name);
-		XML_SetElementHandler(arg->p, NULL, NULL);
-		XML_SetDefaultHandler(arg->p, template_text);
-	}
-}
-
-static void
-template_text(void *userdata, const XML_Char *s, int len)
-{
-	struct pargs	*arg = userdata;
-
-	fprintf(arg->f, "%.*s", len, s);
-}

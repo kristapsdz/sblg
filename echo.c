@@ -73,6 +73,7 @@ echo(FILE *f, int linked, const char *src)
 		goto out;
 	} 
 
+	fprintf(f, "</article>\n");
 	rc = 1;
 out:
 	mmap_close(fd, buf, sz);
@@ -99,8 +100,9 @@ input_begin(void *userdata,
 		if (0 == strcasecmp(*attp, "data-sblg-article"))
 			break;
 
-	if (0 == arg->linked || (NULL != *attp && xmlbool(attp[1]))) {
+	if (NULL != *attp && xmlbool(attp[1])) {
 		arg->stack++;
+		xmlprint(arg->f, name, atts);
 		XML_SetElementHandler(arg->p, data_begin, data_end);
 		XML_SetDefaultHandler(arg->p, data_text);
 	}

@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: April 12 2014 $
+.Dd $Mdocdate: July 31 2014 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -30,69 +30,64 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility knits together HTML5 articles into a blog-like collection of
-HTML5 files.
+utility knits together XML articles with templates to create
+standalone pages or a collection of articles in a single
+.Qq blog
+or Atom feed
+amalgamation.
+Input articles may be XML fragments or full documents: only the
+.Aq article data-sblg-article="1"
+tree within the article is considered.
+.Pp
 The calling conventions follow that of
 .Xr cc 1
-for easier integration into Makefiles: specifying
+for easier integration with
+.Xr make 1 :
+specifying
 .Fl c
-produces a stand-alone, formatted HTML5 article page from input files;
-whereas running without
+produces a stand-alone article page from an input file and template.
+Not specifying
 .Fl c
-will link together previously-formatted HTML5 articles to create a front
-page.
-As an extension,
-.Fl a
-creates an Atom feed file from previously-formatted HTML5 articles.
-.Pp
-When producing standalone files with
-.Fl c ,
-input is assumed to be an HTML5 fragment suffixed with
-.Li .xml ;
-when running without
-.Fl c ,
-input should be a fully-formed
-.Li .html
-file usually as produced with
-.Fl c .
-.Po
-It's possible to run without
-.Fl c
-on unformatted
-.Li .xml
-files\(emsee below for details.
-.Pc
+will link together articles (fragments or as previously run through
+.Fl c )
+to create a blog amalgamation.
+behaves like the latter case, but creates an Atom feed amalgamation.
 .Pp
 The arguments are as follows:
 .Bl -tag -width Ds
 .It Fl f Ar file
-If
+When creating an amalgamation, this fills a single
+.Aq article data-sblg-article="1"
+element with
+.Ar file ,
+which also must appear in the input list.
+This is useful when creating pages with
+.Aq nav data-sblg-nav="1" ,
+but with a single specific article.
+The argument is ignored when combined with
 .Fl a
-and
-.Fl c
-are not specified, this causes
-.Ar file
-to be the only article shown regardless the number of
-.Aq article
-entries in the template.
-Otherwise it is ignored.
+or
+.Fl c .
 .It Fl o Ar file
 Output file.
 If unspecified, standalone articles have their
 .Li .xml
 suffixes transformed into
-.Li .html
-unless multiple input files are specified, in which case
+.Li .html .
+If multiple input files are specified,
 .Fl o
 is ignored.
-If unspecified for front pages,
+If unspecified for the blog amalgamation,
 .Ar blog.html
+is used by default.
+If unspecified for the Atom feed amalgamation,
+.Ar atom.xml
 is used by default.
 Use
 .Fl o Ar \-
 for standard output.
 .It Fl t Ar templ
-Template for standalone or front-page file.
+Template for standalone or amalgamation files.
 If unspecified, defaults to
 .Ar article-template.xml
 for
@@ -104,30 +99,22 @@ and
 .Ar blog-template.xml
 otherwise.
 .It Fl a
-Creates an Atom feed instead of a standalone article
-.Pq as with Fl c
-or merging together articles.
+Creates an Atom feed amalgamation from its input files.
 .It Fl c
-Create standalone articles instead of merging together articles into a
-front page.
+Create standalone articles instead of merging together articles into an
+amalgamation.
 .It Ar
 Input files.
 In standalone mode with
 .Fl c ,
-input
-.Li .xml
-files are merged with templates into
-.Li html
-files.
-Otherwise, input
-.Li html
-files are merged into a single front page.
+input XML files are merged with a template into an output file.
+Otherwise, multiple input files are merged into a single amalgamation.
 .El
 .Pp
-Article input files consist of XML-syntax HTML5 fragments.
-They usually consist of the following:
+Article input files consist of XML fragments or whole documents.
+They must at least consist of the following within the document:
 .Bd -literal
-<article>
+<article data-sblg-article="1">
   <header>
     <h1>Article Name</h1>
     <address>Author Name</address>
@@ -142,8 +129,8 @@ They usually consist of the following:
 .Pp
 When processed with
 .Nm ,
-all data outside of the first
-.Aq article
+all data outside of the
+.Aq article data-sblg-article="1"
 element is discarded.
 Then the article title is extracted from the first
 .Aq hn
@@ -158,7 +145,8 @@ If the
 .Aq article
 tag has an
 .Li data-sblg-tags
-element, these tags are extracted for tag operation.
+attribute consisting of space-separated tag names, these tags are
+extracted for tag operation.
 .Pp
 If unspecified, the default article title is
 .Qq Untitled article ,
@@ -178,22 +166,10 @@ is recorded in case the
 .Li data-sblg-content
 Boolean value is used in an Atom feed.
 .Pp
-If you're passing article fragments directly into the link or feed
-.Pq Fl a
-operation of
-.Nm ,
-include the
-.Li data-sblg-article
-Boolean XML attribute in the
-.Aq article
-declaration.
-.Pp
-The standalone template file must be a well-formed HTML5 file where the
+The standalone template file must be a well-formed XML file where the
 first
-.Aq article
-element with a Boolean
-.Li data-sblg-article
-attribute is replaced by the article text.
+.Aq article data-sblg-article="1"
+element is replaced by the article text.
 All of this element's children are removed.
 .Bd -literal
 <body>
@@ -204,25 +180,27 @@ All of this element's children are removed.
 </body>
 .Ed
 .Pp
-The front page template file must also be a well-formed HTML5 file where
+The template's
+.Aq title
+element has the input article's title prepended to any existing content.
+.Pp
+The amalgamation template file must also be a well-formed XML file where
 each
-.Aq article
-element with a Boolean
-.Li data-sblg-article
-attribute is replaced by ordered (newest to oldest) article text.
+.Aq article data-sblg-article="1"
+element is replaced by ordered (newest to oldest) article text.
 If there aren't enough articles, the element is removed.
 Furthermore, any
-.Aq nav
-elements with a Boolean
-.Li data-sblg-nav
-attribute are replaced by a list of all available articles in an
+.Aq nav data-sblg-nav="1"
+elements are replaced by a list of all available articles in an
 unordered list consisting of article dates followed by the title, linked
 to the page itself.
+.Po
 .Em Note :
 if you're running
 .Fl o
-with raw XML files, the linked file will consist of an XML target, not
+with XML files, the linked file will consist of an XML target, not
 an HTML target.
+.Pc
 However, the Boolean
 .Li data-sbgl-navcontent
 attribute makes the content of the
@@ -242,6 +220,14 @@ If the
 element contains a positive integer
 .Li data-sblg-navsz
 attribute, this is used to limit the number of navigation entries.
+Finally, if the
+.Li data-sblg-navtag
+is specified, only articles with matching tags are shown.
+Tags are extracted from the space-separated
+.Li data-sblg-tags
+element of each article's topmost
+.Aq article
+element.
 .Bd -literal
 <body>
   <header>This consists of two blog entries.</header>
@@ -351,7 +337,7 @@ Default template for creating a front page.
 .Ex -std
 .Sh EXAMPLES
 First, create standalone HTML5 files from article fragments.
-A
+An
 .Pa article-template.xml
 file is assumed to exist.
 .Pp
@@ -364,9 +350,8 @@ file is assumed to exist.
 .Pp
 .Dl % sblg -o index.html article1.html article2.html
 .Sh STANDARDS
-Input files and templates must be properly-formed HTML5 files using XML
-syntax
-Output files are guranteed to be HTML5 conforming.
+Input files and templates must be properly-formed XML files.
+Output files are guranteed to be XML as well.
 The Atom file template must be well-formed; output is guaranteed to
 satisfy the Atom 1.0 and Tag ID standards.
 .Sh AUTHORS
