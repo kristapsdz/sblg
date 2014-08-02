@@ -53,7 +53,6 @@ Not specifying
 will link together articles (fragments or as previously run through
 .Fl c )
 to create a blog amalgamation.
-behaves like the latter case, but creates an Atom feed amalgamation.
 .Pp
 The arguments are as follows:
 .Bl -tag -width Ds
@@ -222,6 +221,9 @@ and
 being replaced by the article's basename (i.e., filename with suffix
 chopped off), publication date, filename, aside content, and title,
 respectively.
+.Em Note :
+the aside is not HTML-encoded, so tags appearing in the aside will
+appear unmodified in the output.
 If the
 .Aq nav
 element contains a positive integer
