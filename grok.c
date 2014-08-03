@@ -165,25 +165,6 @@ addr_data(struct parse *arg, const XML_Char **atts)
 }
 
 static void
-head_begin(void *dat, const XML_Char *name, const XML_Char **atts)
-{
-	struct parse	*arg = dat;
-
-	if (0 == strcasecmp(name, "time"))
-		time_data(arg, atts);
-	else if (0 == strcasecmp(name, "address"))
-		addr_data(arg, atts);
-	else if (0 == strcasecmp(name, "h1"))
-		title_data(arg, atts);
-	else if (0 == strcasecmp(name, "h2"))
-		title_data(arg, atts);
-	else if (0 == strcasecmp(name, "h3"))
-		title_data(arg, atts);
-	else if (0 == strcasecmp(name, "h4"))
-		title_data(arg, atts);
-}
-
-static void
 aside_begin(void *dat, 
 	const XML_Char *name, const XML_Char **atts)
 {
@@ -214,6 +195,32 @@ aside_end(void *dat, const XML_Char *name)
 	} else
 		xmlrappendclose(&arg->article->aside,
 			&arg->article->asidesz, name);
+}
+
+static void
+head_begin(void *dat, const XML_Char *name, const XML_Char **atts)
+{
+	struct parse	*arg = dat;
+
+	if (0 == strcasecmp(name, "aside")) {
+		if (PARSE_ASIDE & arg->flags)
+			return;
+		arg->stack++;
+		arg->flags |= PARSE_ASIDE;
+		XML_SetDefaultHandler(arg->p, aside_text);
+		XML_SetElementHandler(arg->p, aside_begin, aside_end);
+	} else if (0 == strcasecmp(name, "time"))
+		time_data(arg, atts);
+	else if (0 == strcasecmp(name, "address"))
+		addr_data(arg, atts);
+	else if (0 == strcasecmp(name, "h1"))
+		title_data(arg, atts);
+	else if (0 == strcasecmp(name, "h2"))
+		title_data(arg, atts);
+	else if (0 == strcasecmp(name, "h3"))
+		title_data(arg, atts);
+	else if (0 == strcasecmp(name, "h4"))
+		title_data(arg, atts);
 }
 
 /*
