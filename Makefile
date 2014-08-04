@@ -1,7 +1,7 @@
 .SUFFIXES: .xml .html .1.html .1
 
 VERSION = 0.1.2
-VDATE = 2014-08-03
+VDATE = 2014-08-04
 PREFIX = /usr/local
 CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
 OBJS = main.o compile.o linkall.o grok.o echo.o util.o atom.o
