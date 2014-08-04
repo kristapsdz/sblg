@@ -64,7 +64,7 @@ article_end(void *dat, const XML_Char *name)
 
 	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
 		XML_SetElementHandler(arg->p, NULL, NULL);
-		XML_SetDefaultHandler(arg->p, template_text);
+		XML_SetDefaultHandlerExpand(arg->p, template_text);
 	}
 }
 
@@ -91,7 +91,7 @@ title_end(void *dat, const XML_Char *name)
 	if (0 == strcasecmp(name, "title") && 0 == --arg->stack) {
 		fprintf(arg->f, "</%s>", name);
 		XML_SetElementHandler(arg->p, template_begin, template_end);
-		XML_SetDefaultHandler(arg->p, template_text);
+		XML_SetDefaultHandlerExpand(arg->p, template_text);
 	}
 }
 
@@ -115,10 +115,10 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	 */
 	if (0 == strcasecmp(name, "title")) {
 		xmlprint(arg->f, name, atts);
-		fprintf(arg->f, "%s", arg->article.title);
+		fprintf(arg->f, "%s", arg->article.titletext);
 		arg->stack++;
 		XML_SetElementHandler(arg->p, title_begin, title_end);
-		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		return;
 	} else if (strcasecmp(name, "article")) {
 		xmlprint(arg->f, name, atts);
@@ -141,7 +141,7 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	 */
 	arg->stack++;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
-	XML_SetDefaultHandler(arg->p, NULL);
+	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	if ( ! echo(arg->f, 0, arg->src))
 		XML_StopParser(arg->p, 0);
 }
@@ -227,7 +227,7 @@ compile(XML_Parser p, const char *templ,
 
 	XML_ParserReset(p, NULL);
 	XML_SetElementHandler(p, template_begin, template_end);
-	XML_SetDefaultHandler(p, template_text);
+	XML_SetDefaultHandlerExpand(p, template_text);
 	XML_SetUserData(p, &arg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {

@@ -104,7 +104,7 @@ input_begin(void *userdata,
 		arg->stack++;
 		xmlprint(arg->f, name, atts);
 		XML_SetElementHandler(arg->p, data_begin, data_end);
-		XML_SetDefaultHandler(arg->p, data_text);
+		XML_SetDefaultHandlerExpand(arg->p, data_text);
 	}
 }
 
@@ -141,6 +141,6 @@ data_end(void *userdata, const XML_Char *name)
 		return;
 	}
 
-	XML_SetDefaultHandler(arg->p, NULL);
+	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	XML_SetElementHandler(arg->p, NULL, NULL);
 }

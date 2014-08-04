@@ -1,5 +1,7 @@
 .SUFFIXES: .xml .html .1.html .1
 
+VERSION = 0.1.2
+VDATE = 2014-08-03
 PREFIX = /usr/local
 CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
 OBJS = main.o compile.o linkall.o grok.o echo.o util.o atom.o
@@ -26,8 +28,6 @@ BINDIR = $(PREFIX)/bin
 WWWDIR = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
 MANDIR = $(PREFIX)/man
 DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml atom-template.xml sblg.1 extern.h
-VERSION = 0.1.1
-VDATE = 2014-08-01
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat

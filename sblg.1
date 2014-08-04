@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: August 2 2014 $
+.Dd $Mdocdate: August 4 2014 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -147,14 +147,16 @@ When processed with
 all data outside of the
 .Aq article data-sblg-article="1"
 element is discarded.
-Then the article title is extracted from the first
+Then the article title (both as text data only and inclusive of markup)
+is extracted from the first
 .Aq hn
 .Pq header 1\(en4
 within the
 .Aq header ,
 article publication date is extracted from the first
 .Aq time ,
-and author from the first
+and author (both as text data only and inclusive of markup) from the
+first
 .Aq address .
 If the
 .Aq article
@@ -163,9 +165,9 @@ tag has an
 attribute consisting of space-separated tag names, these tags are
 extracted for tag operation.
 .Pp
-If unspecified, the default article title is
+If unspecified, the default article title text (and mark-up) is
 .Qq Untitled article ,
-the default author is the
+the default author text (and mark-up) is the
 .Qq Unknown author ,
 the publication time is set to the document's file-system creation time,
 and no tags.
@@ -193,7 +195,8 @@ All of this element's children are removed.
 .Pp
 The template's
 .Aq title
-element has the input article's title prepended to any existing content.
+element has the input article's title text prepended to any existing
+content.
 .Ss Blog Amalgamation Template
 The amalgamation template file must also be a well-formed XML file where
 each
@@ -203,8 +206,8 @@ If there aren't enough articles, the element is removed.
 Furthermore, any
 .Aq nav data-sblg-nav="1"
 elements are replaced by a list of all available articles in an
-unordered list consisting of article dates followed by the title, linked
-to the page itself.
+unordered list consisting of article dates followed by the title text,
+linked to the page itself.
 .Po
 .Em Note :
 if you're running
@@ -218,14 +221,18 @@ The Boolean
 attribute makes the content of the
 .Aq nav
 element be reproduced within each list item, with the special string
+.Li ${author} ,
+.Li ${authortext} ,
 .Li ${base} ,
 .Li ${date} ,
 .Li ${source} ,
 .Li ${aside} ,
+.Li ${title} ,
 and
-.Li ${title}
-being replaced by the article's basename (i.e., filename with suffix
-chopped off), publication date, filename, aside content, and title,
+.Li ${titletext}
+being replaced by the article's author (with markup), author text,
+basename (i.e., filename with suffix chopped off), publication date,
+filename, aside content, title (with markup), and title text,
 respectively.
 .Em Note :
 the aside is not HTML-encoded, so tags appearing in the aside will
