@@ -41,20 +41,325 @@ struct	linkall {
 	size_t		 navsz; /* nav buffer length */
 };
 
-static	void	article_begin(void *userdata, 
-			const XML_Char *name, const XML_Char **atts);
-static	void	article_end(void *userdata, const XML_Char *name);
-static	void	empty_end(void *userdata, const XML_Char *name);
-static	void	nav_begin(void *userdata, 
-			const XML_Char *name, const XML_Char **atts);
-static	void	nav_end(void *userdata, const XML_Char *name);
-static	void	nav_text(void *userdata, const XML_Char *s, int len);
-static	int	scmp(const void *p1, const void *p2);
-static	void	tmpl_begin(void *userdata, const XML_Char *name, 
+static	void	tmpl_begin(void *dat, const XML_Char *s, 
 			const XML_Char **atts);
-static	void	tmpl_end(void *userdata, const XML_Char *name);
-static	void	tmpl_text(void *userdata, 
-			const XML_Char *s, int len);
+
+static void
+tmpl_text(void *dat, const XML_Char *s, int len)
+{
+	struct linkall	*arg = dat;
+
+	fprintf(arg->f, "%.*s", len, s);
+}
+
+static void
+tmpl_end(void *dat, const XML_Char *s)
+{
+	struct linkall	*arg = dat;
+
+	if ( ! xmlvoid(s))
+		fprintf(arg->f, "</%s>", s);
+}
+
+static void
+article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
+{
+	struct linkall	*arg = dat;
+
+	arg->stack += 0 == strcasecmp(s, "article");
+}
+
+static void
+nav_text(void *dat, const XML_Char *s, int len)
+{
+	struct linkall	*arg = dat;
+
+	xmlappend(&arg->nav, &arg->navsz, s, len);
+}
+
+static void
+nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
+{
+	struct linkall	*arg = dat;
+
+	arg->stack += 0 == strcasecmp(s, "nav");
+	xmlrappendopen(&arg->nav, &arg->navsz, s, atts);
+}
+
+/*
+ * Find a given tag "needle" in the space-separated set of tags
+ * "haystack".
+ * If "needle" is NULL or the tag was found, return 1.
+ * If "haystack" is NULL or the tag wasn't found, return 0.
+ */
+static int
+tfind(const char *needle, const char *haystack)
+{
+	const char 	*cp;
+	size_t	 	 sz;
+
+	if (NULL == needle)
+		return(1);
+	if (NULL == haystack) 
+		return(0);
+
+	sz = strlen(needle);
+again:
+	if (NULL == (cp = strstr(haystack, needle)))
+		return(0);
+
+	if (cp > haystack && ' ' != cp[-1]) {
+		haystack += sz;
+		goto again;
+	}
+
+	cp += sz;
+	if ('\0' == *cp || ' ' == *cp)
+		return(1);
+
+	goto again;
+}
+
+static void
+nav_end(void *dat, const XML_Char *s)
+{
+	struct linkall	*arg = dat;
+	size_t		 i, j, start;
+	char		 buf[32]; /* large enough for date */
+	int		 k, inprint;
+
+	if (strcasecmp(s, "nav") || 0 != --arg->stack) {
+		xmlrappendclose(&arg->nav, &arg->navsz, s);
+		return;
+	}
+
+	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
+
+	fprintf(arg->f, "\n<ul>\n");
+
+	/*
+	 * If we haven't been provided a navigation template (i.e., what
+	 * was within the navigation tags), then make a simple default
+	 * consisting of a list entry.
+	 */
+	if ( ! arg->navuse || 0 == arg->navsz) {
+		i = 0;
+		for (k = 0; i < arg->navlen && k < arg->sposz; k++) {
+			/* Are we limiting by tag? */
+			if ( ! tfind(arg->navtag, arg->sargs[k].tags))
+				continue;
+			(void)strftime(buf, sizeof(buf), 
+				"%Y-%m-%d", 
+				localtime(&arg->sargs[k].time));
+			fprintf(arg->f, "<li>\n");
+			fprintf(arg->f, "%s: ", buf);
+			fprintf(arg->f, 
+				"<a href=\"%s\">%s</a>\n",
+				arg->sargs[k].src,
+				arg->sargs[k].titletext);
+			fprintf(arg->f, "</li>\n");
+			i++;
+		}
+		fprintf(arg->f, "</ul>\n");
+		fprintf(arg->f, "</%s>", s);
+		free(arg->nav);
+		free(arg->navtag);
+		arg->navsz = 0;
+		arg->nav = arg->navtag = NULL;
+		return;
+	}
+
+	/*
+	 * We do have a navigation template.
+	 * Output it, replacing key terms along the way.
+	 */
+#define	STRCMP(_word, _sz) (j - start == (_sz) && \
+	0 == memcmp(&arg->nav[start], (_word), (_sz)))
+
+	for (i = 0, k = 0; i < arg->navlen && k < arg->sposz; k++) {
+		/* Are we limiting by tag? */
+		if ( ! tfind(arg->navtag, arg->sargs[k].tags))
+			continue;
+		strftime(buf, sizeof(buf), "%Y-%m-%d", 
+			localtime(&arg->sargs[k].time));
+		inprint = 0;
+		fprintf(arg->f, "<li>\n");
+		for (j = 1; j < arg->navsz; j++) {
+			if ('$' != arg->nav[j - 1]) {
+				fputc(arg->nav[j - 1], arg->f);
+				continue;
+			} else if ('{' != arg->nav[j]) {
+				fputc(arg->nav[j - 1], arg->f);
+				continue;
+			}
+			start = ++j;
+			inprint = 1;
+			for ( ; j < arg->navsz; j++) 
+				if ('}' == arg->nav[j])
+					break;
+			if (j == arg->navsz)
+				break;
+			if (STRCMP("base", 4))
+				fputs(arg->sargs[k].base, arg->f);
+			else if (STRCMP("title", 5))
+				fputs(arg->sargs[k].title, arg->f);
+			else if (STRCMP("titletext", 9))
+				fputs(arg->sargs[k].titletext, arg->f);
+			else if (STRCMP("author", 6))
+				fputs(arg->sargs[k].author, arg->f);
+			else if (STRCMP("authortext", 10))
+				fputs(arg->sargs[k].authortext, arg->f);
+			else if (STRCMP("source", 6))
+				fputs(arg->sargs[k].src, arg->f);
+			else if (STRCMP("date", 4))
+				fputs(buf, arg->f);
+			else if (STRCMP("aside", 5) &&
+				NULL != arg->sargs[k].aside)
+				fputs(arg->sargs[k].aside, arg->f);
+
+			if (j < arg->navsz)
+				j++;
+			inprint = 0;
+		}
+		if ( ! inprint)
+			fputc(arg->nav[j - 1], arg->f);
+		fprintf(arg->f, "</li>\n");
+		i++;
+	}
+	fprintf(arg->f, "</ul>\n");
+	fprintf(arg->f, "</%s>", s);
+	free(arg->nav);
+	free(arg->navtag);
+	arg->navsz = 0;
+	arg->nav = arg->navtag = NULL;
+}
+
+static void
+empty_end(void *dat, const XML_Char *s)
+{
+	struct linkall	*arg = dat;
+
+	if (0 == strcasecmp(s, "article") && 0 == --arg->stack) {
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
+	}
+}
+
+static void
+article_end(void *dat, const XML_Char *s)
+{
+	struct linkall	*arg = dat;
+
+	if (0 == strcasecmp(s, "article") && 0 == --arg->stack) {
+		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
+	}
+}
+
+static int
+scmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+
+	return(difftime(s2->time, s1->time));
+}
+
+static void
+tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
+{
+	struct linkall	 *arg = dat;
+	const XML_Char	**attp;
+
+	assert(0 == arg->stack);
+
+	if (0 == strcasecmp(s, "nav")) {
+		/*
+		 * Only handle if containing the "data-sblg-nav"
+		 * attribute, otherwise continue.
+		 */
+		xmlprint(arg->f, s, atts);
+		for (attp = atts; NULL != *attp; attp += 2) 
+			if (0 == strcasecmp(*attp, "data-sblg-nav"))
+				break;
+
+		if (NULL == *attp || ! xmlbool(attp[1]))
+			return;
+
+		/*
+		 * Take the number of elements to show to be the min of
+		 * the full count or as user-specified.
+		 */
+		arg->navuse = 0;
+		arg->navlen = arg->sposz;
+		for (attp = atts; NULL != *attp; attp += 2) {
+			if (0 == strcasecmp(attp[0], 
+					"data-sblg-navsz")) {
+				arg->navlen = atoi(attp[1]);
+				if (arg->navlen > (size_t)arg->sposz)
+					arg->navlen = arg->sposz;
+			} else if (0 == strcasecmp(attp[0], 
+					"data-sblg-navcontent")) {
+				arg->navuse = xmlbool(attp[1]);
+			} else if (0 == strcasecmp(attp[0], 
+					"data-sblg-navtag")) {
+				free(arg->navtag);
+				arg->navtag = strdup(attp[1]);
+			}
+		}
+
+		arg->stack++;
+		XML_SetElementHandler(arg->p, nav_begin, nav_end);
+		XML_SetDefaultHandlerExpand(arg->p, nav_text);
+		return;
+	} else if (strcasecmp(s, "article")) {
+		xmlprint(arg->f, s, atts);
+		return;
+	}
+
+	/*
+	 * Only consider article elements if they contain the magic
+	 * data-sblg-article attribute.
+	 */
+	for (attp = atts; NULL != *attp; attp += 2) 
+		if (0 == strcasecmp(*attp, "data-sblg-article"))
+			break;
+
+	if (NULL == *attp || ! xmlbool(attp[1])) {
+		xmlprint(arg->f, s, atts);
+		return;
+	}
+
+	if (arg->spos > arg->ssposz) {
+		/*
+		 * We have no articles left to show.
+		 * Just continue throwing away this article element til
+		 * we receive a matching one.
+		 */
+		arg->stack++;
+		XML_SetDefaultHandlerExpand(arg->p, NULL);
+		XML_SetElementHandler(arg->p, article_begin, empty_end);
+		return;
+	}
+
+	/*
+	 * First throw away children, then push out the article itself.
+	 */
+	arg->stack++;
+	XML_SetDefaultHandlerExpand(arg->p, NULL);
+	XML_SetElementHandler(arg->p, article_begin, article_end);
+	if ( ! echo(arg->f, 1, arg->sargs[arg->spos++].src))
+		XML_StopParser(arg->p, 0);
+	for (attp = atts; NULL != *attp; attp += 2) 
+		if (0 == strcasecmp(*attp, "data-sblg-permlink"))
+			break;
+	if (NULL != *attp && ! xmlbool(attp[1]))
+		return;
+	fprintf(arg->f, "<div data-sblg-permlink=\"1\"><a href=\"%s\">"
+			"permanent link</a></div>", 
+			arg->sargs[arg->spos - 1].src);
+}
+
 
 /*
  * Given a set of articles "src", grok articles from the files, then
@@ -153,312 +458,3 @@ out:
 	return(rc);
 }
 
-static void
-tmpl_text(void *userdata, const XML_Char *s, int len)
-{
-	struct linkall	*arg = userdata;
-
-	fprintf(arg->f, "%.*s", len, s);
-}
-
-static void
-article_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
-{
-	struct linkall	*arg = userdata;
-
-	arg->stack += 0 == strcasecmp(name, "article");
-}
-
-static void
-nav_text(void *userdata, const XML_Char *s, int len)
-{
-	struct linkall	*arg = userdata;
-
-	xmlappend(&arg->nav, &arg->navsz, s, len);
-}
-
-static void
-nav_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
-{
-	struct linkall	*arg = userdata;
-
-	arg->stack += 0 == strcasecmp(name, "nav");
-	xmlrappendopen(&arg->nav, &arg->navsz, name, atts);
-}
-
-static int
-tagfind(const char *needle, const char *haystack)
-{
-	const char 	*cp;
-	size_t	 	 sz;
-
-	if (NULL == needle)
-		return(1);
-	if (NULL == haystack) 
-		return(0);
-
-	sz = strlen(needle);
-again:
-	if (NULL == (cp = strstr(haystack, needle)))
-		return(0);
-
-	if (cp > haystack && ' ' != cp[-1]) {
-		haystack += sz;
-		goto again;
-	}
-
-	cp += sz;
-	if ('\0' == *cp || ' ' == *cp)
-		return(1);
-
-	goto again;
-}
-
-static void
-nav_end(void *userdata, const XML_Char *name)
-{
-	struct linkall	*arg = userdata;
-	size_t		 i, j, start;
-	char		 buf[32];
-	int		 k, inprint;
-
-	if (strcasecmp(name, "nav") || 0 != --arg->stack) {
-		xmlrappendclose(&arg->nav, &arg->navsz, name);
-		return;
-	}
-
-	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
-
-	fprintf(arg->f, "\n<ul>\n");
-
-	/*
-	 * If we haven't been provided a navigation template (i.e., what
-	 * was within the navigation tags), then make a simple default
-	 * consisting of a list entry.
-	 */
-	if ( ! arg->navuse || 0 == arg->navsz) {
-		for (i = 0, k = 0; i < arg->navlen && k < arg->sposz; k++) {
-			/* Are we limiting by tag? */
-			if ( ! tagfind(arg->navtag, arg->sargs[k].tags))
-				continue;
-			strftime(buf, sizeof(buf), "%Y-%m-%d", 
-				localtime(&arg->sargs[k].time));
-			fprintf(arg->f, "<li>\n");
-			fprintf(arg->f, "%s: ", buf);
-			fprintf(arg->f, "<a href=\"%s\">%s</a>\n",
-				arg->sargs[k].src,
-				arg->sargs[k].titletext);
-			fprintf(arg->f, "</li>\n");
-			i++;
-		}
-		fprintf(arg->f, "</ul>\n");
-		fprintf(arg->f, "</%s>", name);
-		free(arg->nav);
-		free(arg->navtag);
-		arg->navsz = 0;
-		arg->nav = arg->navtag = NULL;
-		return;
-	}
-
-	/*
-	 * We do have a navigation template.
-	 * Output it, replacing key terms along the way.
-	 */
-#define	STRCMP(_word, _sz) (j - start == (_sz) && \
-	0 == memcmp(&arg->nav[start], (_word), (_sz)))
-
-	for (i = 0, k = 0; i < arg->navlen && k < arg->sposz; k++) {
-		/* Are we limiting by tag? */
-		if ( ! tagfind(arg->navtag, arg->sargs[k].tags))
-			continue;
-		strftime(buf, sizeof(buf), "%Y-%m-%d", 
-			localtime(&arg->sargs[k].time));
-		inprint = 0;
-		fprintf(arg->f, "<li>\n");
-		for (j = 1; j < arg->navsz; j++) {
-			if ('$' != arg->nav[j - 1]) {
-				fputc(arg->nav[j - 1], arg->f);
-				continue;
-			} else if ('{' != arg->nav[j]) {
-				fputc(arg->nav[j - 1], arg->f);
-				continue;
-			}
-			start = ++j;
-			inprint = 1;
-			for ( ; j < arg->navsz; j++) 
-				if ('}' == arg->nav[j])
-					break;
-			if (j == arg->navsz)
-				break;
-			if (STRCMP("base", 4))
-				fputs(arg->sargs[k].base, arg->f);
-			else if (STRCMP("title", 5))
-				fputs(arg->sargs[k].title, arg->f);
-			else if (STRCMP("titletext", 9))
-				fputs(arg->sargs[k].titletext, arg->f);
-			else if (STRCMP("author", 6))
-				fputs(arg->sargs[k].author, arg->f);
-			else if (STRCMP("authortext", 10))
-				fputs(arg->sargs[k].authortext, arg->f);
-			else if (STRCMP("source", 6))
-				fputs(arg->sargs[k].src, arg->f);
-			else if (STRCMP("date", 4))
-				fputs(buf, arg->f);
-			else if (STRCMP("aside", 5) &&
-				NULL != arg->sargs[k].aside)
-				fputs(arg->sargs[k].aside, arg->f);
-
-			if (j < arg->navsz)
-				j++;
-			inprint = 0;
-		}
-		if ( ! inprint)
-			fputc(arg->nav[j - 1], arg->f);
-		fprintf(arg->f, "</li>\n");
-		i++;
-	}
-	fprintf(arg->f, "</ul>\n");
-	fprintf(arg->f, "</%s>", name);
-	free(arg->nav);
-	free(arg->navtag);
-	arg->navsz = 0;
-	arg->nav = arg->navtag = NULL;
-}
-
-static void
-tmpl_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
-{
-	struct linkall	 *arg = userdata;
-	const XML_Char	**attp;
-
-	assert(0 == arg->stack);
-
-	if (0 == strcasecmp(name, "nav")) {
-		/*
-		 * Only handle if containing the "data-sblg-nav"
-		 * attribute, otherwise continue.
-		 */
-		xmlprint(arg->f, name, atts);
-		for (attp = atts; NULL != *attp; attp += 2) 
-			if (0 == strcasecmp(*attp, "data-sblg-nav"))
-				break;
-
-		if (NULL == *attp || ! xmlbool(attp[1]))
-			return;
-
-		/*
-		 * Take the number of elements to show to be the min of
-		 * the full count or as user-specified.
-		 */
-		arg->navuse = 0;
-		arg->navlen = arg->sposz;
-		for (attp = atts; NULL != *attp; attp += 2) {
-			if (0 == strcasecmp(attp[0], 
-					"data-sblg-navsz")) {
-				arg->navlen = atoi(attp[1]);
-				if (arg->navlen > (size_t)arg->sposz)
-					arg->navlen = arg->sposz;
-			} else if (0 == strcasecmp(attp[0], 
-					"data-sblg-navcontent")) {
-				arg->navuse = xmlbool(attp[1]);
-			} else if (0 == strcasecmp(attp[0], 
-					"data-sblg-navtag")) {
-				free(arg->navtag);
-				arg->navtag = strdup(attp[1]);
-			}
-		}
-
-		arg->stack++;
-		XML_SetElementHandler(arg->p, nav_begin, nav_end);
-		XML_SetDefaultHandlerExpand(arg->p, nav_text);
-		return;
-	} else if (strcasecmp(name, "article")) {
-		xmlprint(arg->f, name, atts);
-		return;
-	}
-
-	/*
-	 * Only consider article elements if they contain the magic
-	 * data-sblg-article attribute.
-	 */
-	for (attp = atts; NULL != *attp; attp += 2) 
-		if (0 == strcasecmp(*attp, "data-sblg-article"))
-			break;
-
-	if (NULL == *attp || ! xmlbool(attp[1])) {
-		xmlprint(arg->f, name, atts);
-		return;
-	}
-
-	if (arg->spos > arg->ssposz) {
-		/*
-		 * We have no articles left to show.
-		 * Just continue throwing away this article element til
-		 * we receive a matching one.
-		 */
-		arg->stack++;
-		XML_SetDefaultHandlerExpand(arg->p, NULL);
-		XML_SetElementHandler(arg->p, article_begin, empty_end);
-		return;
-	}
-
-	/*
-	 * First throw away children, then push out the article itself.
-	 */
-	arg->stack++;
-	XML_SetDefaultHandlerExpand(arg->p, NULL);
-	XML_SetElementHandler(arg->p, article_begin, article_end);
-	if ( ! echo(arg->f, 1, arg->sargs[arg->spos++].src))
-		XML_StopParser(arg->p, 0);
-	for (attp = atts; NULL != *attp; attp += 2) 
-		if (0 == strcasecmp(*attp, "data-sblg-permlink"))
-			break;
-	if (NULL != *attp && ! xmlbool(attp[1]))
-		return;
-	fprintf(arg->f, "<div data-sblg-permlink=\"1\"><a href=\"%s\">"
-			"permanent link</a></div>", 
-			arg->sargs[arg->spos - 1].src);
-}
-
-static void
-empty_end(void *userdata, const XML_Char *name)
-{
-	struct linkall	*arg = userdata;
-
-	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
-	}
-}
-
-static void
-tmpl_end(void *userdata, const XML_Char *name)
-{
-	struct linkall	*arg = userdata;
-
-	if ( ! xmlvoid(name))
-		fprintf(arg->f, "</%s>", name);
-}
-
-static void
-article_end(void *userdata, const XML_Char *name)
-{
-	struct linkall	*arg = userdata;
-
-	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
-	}
-}
-
-static int
-scmp(const void *p1, const void *p2)
-{
-	const struct article *s1 = p1, *s2 = p2;
-
-	return(difftime(s2->time, s1->time));
-}
