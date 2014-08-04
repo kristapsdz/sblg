@@ -19,7 +19,7 @@
 		</div>
 		<section>
 			<p>
-				The <span class="name">sblg</span> utility is an offline blog utility.
+				The <span class="name">sblg</span> utility is an offline blog utility for UNIX (right now, only BSD).
 				You write your articles as standalone XML files and <a href="sblg.1.html">sblg(1)</a> knits them together.
 				No run-time interpreter, no format pseudo-language, no complex toolchain.
 				Just a simple, standalone utility that
