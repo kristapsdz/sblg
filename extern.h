@@ -44,8 +44,7 @@ int	atom(XML_Parser p, const char *templ,
 int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);
 int	echo(FILE *f, int linked, const char *src);
-int	grok(XML_Parser p, int linked,
-		const char *src, struct article *data);
+int	grok(XML_Parser p, const char *src, struct article *data);
 void	grok_free(struct article *p);
 void	mmap_close(int fd, void *buf, size_t sz);
 int	mmap_open(const char *f, int *fd, char **buf, size_t *sz);

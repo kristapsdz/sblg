@@ -188,7 +188,7 @@ compile(XML_Parser p, const char *templ,
 	f = NULL;
 	sz = 0;
 
-	if ( ! grok(p, 0, src, &arg.article))
+	if ( ! grok(p, src, &arg.article))
 		goto out;
 
 	if (NULL == dst) {
