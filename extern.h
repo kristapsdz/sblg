@@ -24,10 +24,14 @@ struct	article {
 	char		*base; /* nil-terminated src w/o suffix */
 	char		*title; /* nil-terminated title */
 	size_t		 titlesz; /* length of title */
+	char		*titletext; /* nil-terminated title text */
+	size_t		 titletextsz; /* length of titletext */
 	char		*aside; /* nil-terminated aside content */
 	size_t		 asidesz; /* length of aside */
 	char		*author; /* nil-terminated author name */
 	size_t		 authorsz; /* length of author */
+	char		*authortext; /* nil-terminated author name text */
+	size_t		 authortextsz; /* length of authortext */
 	time_t	 	 time; /* date of publication */
 	char		*article; /* nil-terminated entire article */
 	size_t		 articlesz; /* length of article */

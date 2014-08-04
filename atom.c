@@ -97,9 +97,9 @@ atomprint(FILE *f, const struct atom *arg,
 
 	fprintf(f, "<id>tag:%s,%s:%s/%s</id>\n", 
 			arg->domain, buf, arg->path, src->src);
-	fprintf(f, "<title>%s</title>\n", src->title);
+	fprintf(f, "<title>%s</title>\n", src->titletext);
 	fprintf(f, "<updated>%sT00:00:00Z</updated>\n", buf);
-	fprintf(f, "<author><name>%s</name></author>\n", src->author);
+	fprintf(f, "<author><name>%s</name></author>\n", src->authortext);
 	if (altlink)
 		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
 				 "href=\"%s/%s\" />\n", arg->path, src->src);
@@ -165,7 +165,7 @@ atom(XML_Parser p, const char *templ,
 	larg.f = f;
 
 	XML_ParserReset(p, NULL);
-	XML_SetDefaultHandler(p, tmpl_text);
+	XML_SetDefaultHandlerExpand(p, tmpl_text);
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 	XML_SetUserData(p, &larg);
 
@@ -256,7 +256,7 @@ tmpl_begin(void *userdata,
 		strftime(buf, sizeof(buf), "%FT%TZ", tm);
 		fprintf(arg->f, "%s", buf);
 		arg->stack++;
-		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		XML_SetElementHandler(arg->p, up_begin, up_end);
 		return;
 	} else if (0 == strcasecmp(name, "id")) {
@@ -269,7 +269,7 @@ tmpl_begin(void *userdata,
 		}
 		fprintf(arg->f, "<%s>", name);
 		arg->stack++;
-		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		XML_SetElementHandler(arg->p, id_begin, id_end);
 		return;
 	} else if (0 == strcasecmp(name, "link")) {
@@ -339,10 +339,10 @@ tmpl_begin(void *userdata,
 	content = NULL != *attp && xmlbool(attp[1]);
 
 	arg->stack++;
-	XML_SetDefaultHandler(arg->p, NULL);
+	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	if (arg->sposz > arg->spos) {
 		fprintf(arg->f, "<%s>", name);
-		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		XML_SetElementHandler(arg->p, entry_begin, entry_end);
 		atomprint(arg->f, arg, altlink, 
 			content, &arg->sargs[arg->spos++]);
@@ -358,7 +358,7 @@ entry_empty(void *userdata, const XML_Char *name)
 
 	if (0 == strcasecmp(name, "entry") && 0 == --arg->stack) {
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandler(arg->p, tmpl_text);
+		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
 }
 
@@ -380,7 +380,7 @@ id_end(void *userdata, const XML_Char *name)
 		fprintf(arg->f, "tag:%s,2013:%s/%s</%s>", 
 			arg->domain, arg->path, arg->dst, name);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandler(arg->p, tmpl_text);
+		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
 }
 
@@ -392,7 +392,7 @@ up_end(void *userdata, const XML_Char *name)
 	if (0 == strcasecmp(name, "updated") && 0 == --arg->stack) {
 		fprintf(arg->f, "</%s>", name);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandler(arg->p, tmpl_text);
+		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
 }
 
@@ -404,7 +404,7 @@ entry_end(void *userdata, const XML_Char *name)
 	if (0 == strcasecmp(name, "entry") && 0 ==  --arg->stack) {
 		fprintf(arg->f, "</%s>", name);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandler(arg->p, tmpl_text);
+		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
 }
 

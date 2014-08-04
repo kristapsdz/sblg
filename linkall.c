@@ -126,7 +126,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	 * Run the XML parser on the template.
 	 */
 	XML_ParserReset(p, NULL);
-	XML_SetDefaultHandler(p, tmpl_text);
+	XML_SetDefaultHandlerExpand(p, tmpl_text);
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 	XML_SetUserData(p, &larg);
 
@@ -230,7 +230,7 @@ nav_end(void *userdata, const XML_Char *name)
 	}
 
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-	XML_SetDefaultHandler(arg->p, tmpl_text);
+	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 
 	fprintf(arg->f, "\n<ul>\n");
 
@@ -250,7 +250,7 @@ nav_end(void *userdata, const XML_Char *name)
 			fprintf(arg->f, "%s: ", buf);
 			fprintf(arg->f, "<a href=\"%s\">%s</a>\n",
 				arg->sargs[k].src,
-				arg->sargs[k].title);
+				arg->sargs[k].titletext);
 			fprintf(arg->f, "</li>\n");
 			i++;
 		}
@@ -297,6 +297,12 @@ nav_end(void *userdata, const XML_Char *name)
 				fputs(arg->sargs[k].base, arg->f);
 			else if (STRCMP("title", 5))
 				fputs(arg->sargs[k].title, arg->f);
+			else if (STRCMP("titletext", 9))
+				fputs(arg->sargs[k].titletext, arg->f);
+			else if (STRCMP("author", 6))
+				fputs(arg->sargs[k].author, arg->f);
+			else if (STRCMP("authortext", 10))
+				fputs(arg->sargs[k].authortext, arg->f);
 			else if (STRCMP("source", 6))
 				fputs(arg->sargs[k].src, arg->f);
 			else if (STRCMP("date", 4))
@@ -368,7 +374,7 @@ tmpl_begin(void *userdata,
 
 		arg->stack++;
 		XML_SetElementHandler(arg->p, nav_begin, nav_end);
-		XML_SetDefaultHandler(arg->p, nav_text);
+		XML_SetDefaultHandlerExpand(arg->p, nav_text);
 		return;
 	} else if (strcasecmp(name, "article")) {
 		xmlprint(arg->f, name, atts);
@@ -395,7 +401,7 @@ tmpl_begin(void *userdata,
 		 * we receive a matching one.
 		 */
 		arg->stack++;
-		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		XML_SetElementHandler(arg->p, article_begin, empty_end);
 		return;
 	}
@@ -404,7 +410,7 @@ tmpl_begin(void *userdata,
 	 * First throw away children, then push out the article itself.
 	 */
 	arg->stack++;
-	XML_SetDefaultHandler(arg->p, NULL);
+	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	if ( ! echo(arg->f, 1, arg->sargs[arg->spos++].src))
 		XML_StopParser(arg->p, 0);
@@ -425,7 +431,7 @@ empty_end(void *userdata, const XML_Char *name)
 
 	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandler(arg->p, tmpl_text);
+		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
 }
 
@@ -445,7 +451,7 @@ article_end(void *userdata, const XML_Char *name)
 
 	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandler(arg->p, tmpl_text);
+		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
 }
 
