@@ -109,7 +109,7 @@ again:
 		return(0);
 
 	if (cp > haystack && ' ' != cp[-1]) {
-		haystack += sz;
+		haystack = cp + sz;
 		goto again;
 	}
 
@@ -117,6 +117,7 @@ again:
 	if ('\0' == *cp || ' ' == *cp)
 		return(1);
 
+	haystack = cp;
 	goto again;
 }
 
