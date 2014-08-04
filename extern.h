@@ -36,6 +36,7 @@ struct	article {
 	char		*article; /* nil-terminated entire article */
 	size_t		 articlesz; /* length of article */
 	char		*tags; /* any article tags */
+	size_t		 tagsz;
 };
 
 #define	xrealloc realloc

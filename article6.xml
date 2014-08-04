@@ -18,11 +18,12 @@
 		<div class="tab">&lt;aside&gt;</div>
 		<div class="dtab">The article's &lt;b&gt;summary&lt;/b&gt;</div>
 		<div class="tab">&lt;/aside&gt;</div>
-		<div class="tab">&lt;div&gt;Mu.&lt;/div&gt;</div>
+		<div class="tab">&lt;div data-sblg-tags="baz"&gt;Mu.&lt;/div&gt;</div>
 		<div>&lt;/article&gt;</div>
 	</div>
 	<p>
 		The <code>data-sblg-tags</code> attribute indicates the tags of an article.
+		In this article's case, that's <code>foo</code>, <code>bar</code>, and <code>baz</code>.
 		You can have as many space-separated tags as you'd like.
 	</p>
 	<p>

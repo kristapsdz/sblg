@@ -144,6 +144,26 @@ addr_end(void *dat, const XML_Char *s)
 }
 
 static void
+tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
+{
+	const XML_Char	**attp;
+	size_t		  sz;
+
+	for (attp = atts; NULL != *attp; attp += 2)
+		if (0 == strcasecmp(*attp, "data-sblg-tags")) {
+			if (0 == (sz = strlen(attp[1])))
+				continue;
+			sz += arg->article->tagsz + 2;
+			arg->article->tags = xrealloc(arg->article->tags, sz);
+			if (0 == arg->article->tagsz)
+				*arg->article->tags = '\0';
+			strlcat(arg->article->tags, attp[1], sz);
+			strlcat(arg->article->tags, " ", sz);
+			arg->article->tagsz = sz;
+		}
+}
+
+static void
 title_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct parse	*arg = dat;
@@ -153,6 +173,7 @@ title_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		&arg->article->titlesz, s, atts);
 	xmlrappendopen(&arg->article->article, 
 		&arg->article->articlesz, s, atts);
+	tsearch(arg, s, atts);
 }
 
 
@@ -166,6 +187,7 @@ addr_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		&arg->article->authorsz, s, atts);
 	xmlrappendopen(&arg->article->article, 
 		&arg->article->articlesz, s, atts);
+	tsearch(arg, s, atts);
 }
 
 static void
@@ -178,6 +200,7 @@ aside_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		&arg->article->asidesz, s, atts);
 	xmlrappendopen(&arg->article->article, 
 		&arg->article->articlesz, s, atts);
+	tsearch(arg, s, atts);
 }
 
 /*
@@ -196,6 +219,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	xmlrappendopen(&arg->article->article,
 		&arg->article->articlesz, s, atts);
+	tsearch(arg, s, atts);
 
 	if (0 == strcasecmp(s, "aside")) {
 		if (PARSE_ASIDE & arg->flags)
@@ -298,15 +322,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	arg->gstack = 1;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, article_text);
-
-	/* Look for the tag listing. */
-	for (attp = atts; NULL != *attp; attp += 2) {
-		if (0 == strcasecmp(*attp, "data-sblg-tags")) {
-			free(arg->article->tags);
-			arg->article->tags = strdup(attp[1]);
-			break;
-		}
-	}
+	tsearch(arg, s, atts);
 }
 
 int
