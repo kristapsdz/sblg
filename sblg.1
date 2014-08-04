@@ -116,6 +116,16 @@ input XML files are merged with a template into an output file.
 Otherwise, multiple input files are merged into a single amalgamation.
 .El
 .Pp
+By default,
+.Nm
+creates a
+.Qq blog
+amalgamation
+.Pa blog.html
+from one or more input files using
+.Pa blog-template.xml
+as the template file.
+.Ss Article Input
 Article input files consist of XML fragments or whole documents.
 They must at least consist of the following within the document:
 .Bd -literal
@@ -163,14 +173,10 @@ and no tags.
 The first
 .Aq aside ,
 if provided, is used for the feed summary.
-All other content (i.e., outside of the
-.Aq header
-and
-.Aq aside ) ,
-is recorded in case the
+All content is recorded in case the
 .Li data-sblg-content
 Boolean value is used in an Atom feed.
-.Pp
+.Ss Standalone Template
 The standalone template file must be a well-formed XML file where the
 first
 .Aq article data-sblg-article="1"
@@ -188,7 +194,7 @@ All of this element's children are removed.
 The template's
 .Aq title
 element has the input article's title prepended to any existing content.
-.Pp
+.Ss Blog Amalgamation Template
 The amalgamation template file must also be a well-formed XML file where
 each
 .Aq article data-sblg-article="1"
@@ -258,7 +264,7 @@ with the custom class
 unless a Boolean
 .Qq data-sblg-permlink
 attribute is set to false.
-.Pp
+.Ss Atom Amalgamation Template
 The Atom template file must be a well-formed XML file where each
 .Aq entry
 element with a Boolean
@@ -323,11 +329,9 @@ Boolean attribute, the alternate
 is not printed.
 Furthermore, if a true
 .Li data-sblg-content
-Boolean attribute exists, the article's contents (everything not within the first
-.Aq aside
-or
-.Aq header
-elements) are inlined within a
+Boolean attribute exists, the article's contents (everything within the
+.Aq article data-sblg-article="1" )
+are inlined within a
 .Aq content
 element with type
 .Li html .

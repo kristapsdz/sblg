@@ -32,7 +32,6 @@ struct	parse {
 	struct article	*article;
 	size_t		 stack;
 	size_t		 gstack;
-	int		 linked;
 	int		 flags;
 #define	PARSE_ASIDE	 1
 #define	PARSE_TIME	 2
@@ -43,11 +42,9 @@ struct	parse {
 /*
  * Forward declarations for circular references.
  */
-static void	head_begin(void *dat, const XML_Char *name, 
+static void	article_begin(void *dat, const XML_Char *s, 
 			const XML_Char **atts);
-static void	article_begin(void *dat, const XML_Char *name, 
-			const XML_Char **atts);
-static void	article_end(void *dat, const XML_Char *name);
+static void	article_end(void *dat, const XML_Char *s);
 
 static void
 article_text(void *dat, const XML_Char *s, int len)
@@ -59,67 +56,13 @@ article_text(void *dat, const XML_Char *s, int len)
 }
 
 static void
-head_end(void *dat, const XML_Char *name)
-{
-	struct parse	*arg = dat;
-
-	if (0 == strcasecmp(name, "header")) {
-		XML_SetElementHandler(arg->p, article_begin, article_end);
-		XML_SetDefaultHandler(arg->p, article_text);
-	}
-}
-
-static void
-time_data(struct parse *arg, const XML_Char **atts)
-{
-	struct tm	 tm;
-
-	if (PARSE_TIME & arg->flags)
-		return;
-	arg->flags |= PARSE_TIME;
-
-	for ( ; NULL != *atts; atts += 2) {
-		if (strcasecmp(atts[0], "datetime"))
-			continue;
-		memset(&tm, 0, sizeof(struct tm));
-		if (NULL == strptime(atts[1], "%Y-%m-%d", &tm))
-			continue;
-		arg->article->time = mktime(&tm);
-	}
-}
-
-static void
 title_text(void *dat, const XML_Char *s, int len)
 {
 	struct parse	*arg = dat;
 
 	xmlappend(&arg->article->title, 
 		&arg->article->titlesz, s, len);
-}
-
-static void
-title_end(void *dat, const XML_Char *name)
-{
-	struct parse	*arg = dat;
-
-	if (0 == strcasecmp(name, "h1") ||
-			0 == strcasecmp(name, "h2") ||
-			0 == strcasecmp(name, "h3") ||
-			0 == strcasecmp(name, "h4")) {
-		XML_SetElementHandler(arg->p, head_begin, head_end);
-		XML_SetCharacterDataHandler(arg->p, NULL);
-	}
-}
-
-static void
-title_data(struct parse *arg, const XML_Char **atts)
-{
-
-	if ( ! (PARSE_TITLE & arg->flags)) {
-		arg->flags |= PARSE_TITLE;
-		XML_SetElementHandler(arg->p, NULL, title_end);
-		XML_SetCharacterDataHandler(arg->p, title_text);
-	}
+	article_text(dat, s, len);
 }
 
 static void
@@ -129,141 +72,165 @@ addr_text(void *dat, const XML_Char *s, int len)
 
 	xmlappend(&arg->article->author, 
 		&arg->article->authorsz, s, len);
+	article_text(dat, s, len);
 }
 
 static void
-addr_begin(void *dat, 
-	const XML_Char *name, const XML_Char **atts)
+aside_text(void *dat, const XML_Char *s, int len)
 {
 	struct parse	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(name, "address");
+	xmlappend(&arg->article->aside, 
+		&arg->article->asidesz, s, len);
+	article_text(dat, s, len);
 }
 
 static void
-addr_end(void *dat, const XML_Char *name)
+title_end(void *dat, const XML_Char *s)
 {
 	struct parse	*arg = dat;
 
-	if (0 == strcasecmp(name, "address") && 0 == --arg->stack) {
-		XML_SetElementHandler(arg->p, head_begin, head_end);
-		XML_SetCharacterDataHandler(arg->p, NULL);
-	}
+	xmlrappendclose(&arg->article->article,
+		&arg->article->articlesz, s);
+
+	if (0 == strcasecmp(s, "h1") ||
+			0 == strcasecmp(s, "h2") ||
+			0 == strcasecmp(s, "h3") ||
+			0 == strcasecmp(s, "h4")) {
+		XML_SetElementHandler(arg->p, 
+			article_begin, article_end);
+		XML_SetCharacterDataHandler(arg->p, article_text);
+	} else
+		xmlrappendclose(&arg->article->title, 
+			&arg->article->titlesz, s);
 }
 
 static void
-addr_data(struct parse *arg, const XML_Char **atts)
+aside_end(void *dat, const XML_Char *s)
 {
+	struct parse	*arg = dat;
 
-	if ( ! (PARSE_ADDR & arg->flags)) {
+	xmlrappendclose(&arg->article->article,
+		&arg->article->articlesz, s);
+
+	if (0 == strcasecmp(s, "aside") && 0 == --arg->stack) {
+		XML_SetElementHandler(arg->p, 
+			article_begin, article_end);
+		XML_SetCharacterDataHandler(arg->p, article_text);
+	} else
+		xmlrappendclose(&arg->article->aside, 
+			&arg->article->asidesz, s);
+}
+
+static void
+addr_end(void *dat, const XML_Char *s)
+{
+	struct parse	*arg = dat;
+
+	xmlrappendclose(&arg->article->article,
+		&arg->article->articlesz, s);
+
+	if (0 == strcasecmp(s, "address") && 0 == --arg->stack) {
+		XML_SetElementHandler(arg->p, 
+			article_begin, article_end);
+		XML_SetCharacterDataHandler(arg->p, article_text);
+	} else
+		xmlrappendclose(&arg->article->author, 
+			&arg->article->authorsz, s);
+}
+
+static void
+addr_begin(void *dat, const XML_Char *s, const XML_Char **atts)
+{
+	struct parse	*arg = dat;
+
+	arg->stack += 0 == strcasecmp(s, "address");
+	xmlrappendopen(&arg->article->author, 
+		&arg->article->authorsz, s, atts);
+	xmlrappendopen(&arg->article->article, 
+		&arg->article->articlesz, s, atts);
+}
+
+static void
+aside_begin(void *dat, const XML_Char *s, const XML_Char **atts)
+{
+	struct parse	*arg = dat;
+
+	arg->stack += 0 == strcasecmp(s, "aside");
+	xmlrappendopen(&arg->article->aside, 
+		&arg->article->asidesz, s, atts);
+	xmlrappendopen(&arg->article->article, 
+		&arg->article->articlesz, s, atts);
+}
+
+/*
+ * Look for a few important parts of the article: the header, the aside,
+ * nested articles, etc.
+ * This is where we'll actually grok the data.
+ */
+static void
+article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
+{
+	struct parse	 *arg = dat;
+	const XML_Char	**attp;
+	struct tm	  tm;
+
+	assert(0 == arg->stack);
+
+	xmlrappendopen(&arg->article->article,
+		&arg->article->articlesz, s, atts);
+
+	if (0 == strcasecmp(s, "aside")) {
+		if (PARSE_ASIDE & arg->flags)
+			return;
+		arg->stack++;
+		arg->flags |= PARSE_ASIDE;
+		XML_SetCharacterDataHandler(arg->p, aside_text);
+		XML_SetElementHandler(arg->p, aside_begin, aside_end);
+	} else if (0 == strcasecmp(s, "time")) {
+		if (PARSE_TIME & arg->flags)
+			return;
+		arg->flags |= PARSE_TIME;
+		for (attp = atts; NULL != *attp; attp += 2) {
+			if (strcasecmp(atts[0], "datetime"))
+				continue;
+			memset(&tm, 0, sizeof(struct tm));
+			if (NULL == strptime(atts[1], "%F", &tm))
+				continue;
+			arg->article->time = mktime(&tm);
+		}
+	} else if (0 == strcasecmp(s, "address")) {
+		if (PARSE_ADDR & arg->flags) 
+			return;
 		arg->flags |= PARSE_ADDR;
 		assert(0 == arg->stack);
 		arg->stack++;
 		XML_SetElementHandler(arg->p, addr_begin, addr_end);
 		XML_SetCharacterDataHandler(arg->p, addr_text);
-	}
-}
-
-static void
-aside_begin(void *dat, 
-	const XML_Char *name, const XML_Char **atts)
-{
-	struct parse	*arg = dat;
-
-	arg->stack += 0 == strcasecmp(name, "aside");
-	xmlrappendopen(&arg->article->aside, 
-		&arg->article->asidesz, name, atts);
-}
-
-static void
-aside_text(void *dat, const XML_Char *name, int len)
-{
-	struct parse	*arg = dat;
-
-	xmlappend(&arg->article->aside, 
-		&arg->article->asidesz, name, len);
-}
-
-static void
-aside_end(void *dat, const XML_Char *name)
-{
-	struct parse	*arg = dat;
-
-	if (0 == strcasecmp(name, "aside") && 0 == --arg->stack) {
-		XML_SetElementHandler(arg->p, article_begin, article_end);
-		XML_SetDefaultHandler(arg->p, article_text);
-	} else
-		xmlrappendclose(&arg->article->aside,
-			&arg->article->asidesz, name);
-}
-
-static void
-head_begin(void *dat, const XML_Char *name, const XML_Char **atts)
-{
-	struct parse	*arg = dat;
-
-	if (0 == strcasecmp(name, "aside")) {
-		if (PARSE_ASIDE & arg->flags)
+	} else if (0 == strcasecmp(s, "h1") ||
+			0 == strcasecmp(s, "h2") ||
+			0 == strcasecmp(s, "h3") ||
+			0 == strcasecmp(s, "h4")) {
+		if (PARSE_TITLE & arg->flags) 
 			return;
-		arg->stack++;
-		arg->flags |= PARSE_ASIDE;
-		XML_SetDefaultHandler(arg->p, aside_text);
-		XML_SetElementHandler(arg->p, aside_begin, aside_end);
-	} else if (0 == strcasecmp(name, "time"))
-		time_data(arg, atts);
-	else if (0 == strcasecmp(name, "address"))
-		addr_data(arg, atts);
-	else if (0 == strcasecmp(name, "h1"))
-		title_data(arg, atts);
-	else if (0 == strcasecmp(name, "h2"))
-		title_data(arg, atts);
-	else if (0 == strcasecmp(name, "h3"))
-		title_data(arg, atts);
-	else if (0 == strcasecmp(name, "h4"))
-		title_data(arg, atts);
-}
-
-/*
- * Look for a few important parts of the article: the header, the aside,
- * and nested articled.
- */
-static void
-article_begin(void *dat, const XML_Char *name, const XML_Char **atts)
-{
-	struct parse	*arg = dat;
-
-	assert(0 == arg->stack);
-
-	if (0 == strcasecmp(name, "header")) {
-		XML_SetElementHandler(arg->p, head_begin, head_end);
-		XML_SetDefaultHandler(arg->p, NULL);
-		return;
-	} else if (0 == strcasecmp(name, "aside")) {
-		if (PARSE_ASIDE & arg->flags)
-			return;
-		arg->stack++;
-		arg->flags |= PARSE_ASIDE;
-		XML_SetDefaultHandler(arg->p, aside_text);
-		XML_SetElementHandler(arg->p, aside_begin, aside_end);
-		return;
-	} else if (0 == strcasecmp(name, "article"))
+		arg->flags |= PARSE_TITLE;
+		XML_SetElementHandler(arg->p, NULL, title_end);
+		XML_SetCharacterDataHandler(arg->p, title_text);
+	} else if (0 == strcasecmp(s, "article"))
 		arg->gstack++;
-
-	xmlrappendopen(&arg->article->article,
-		&arg->article->articlesz, name, atts);
 }
 
 static void
-article_end(void *dat, const XML_Char *name)
+article_end(void *dat, const XML_Char *s)
 {
 	struct parse	*arg = dat;
 
-	if (0 == strcasecmp(name, "article") && 0 == --arg->gstack) {
+	if (0 == strcasecmp(s, "article") && 0 == --arg->gstack) {
 		XML_SetElementHandler(arg->p, NULL, NULL);
-		XML_SetDefaultHandler(arg->p, NULL);
+		XML_SetCharacterDataHandler(arg->p, NULL);
 	} else
 		xmlrappendclose(&arg->article->article,
-			&arg->article->articlesz, name);
+			&arg->article->articlesz, s);
 }
 
 void
@@ -286,7 +253,7 @@ grok_free(struct article *p)
  * otherwise this isn't necessary.
  */
 static void
-input_begin(void *dat, const XML_Char *name, const XML_Char **atts)
+input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct parse	 *arg = dat;
 	const XML_Char	**attp;
@@ -294,7 +261,7 @@ input_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	assert(0 == arg->gstack);
 	assert(0 == arg->stack);
 
-	if (strcasecmp(name, "article"))
+	if (strcasecmp(s, "article"))
 		return;
 
 	/* Look for the data-sblg-article mention.  */
@@ -311,7 +278,7 @@ input_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 
 	arg->gstack = 1;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
-	XML_SetDefaultHandler(arg->p, article_text);
+	XML_SetCharacterDataHandler(arg->p, article_text);
 
 	/* Look for the tag listing. */
 	for (attp = atts; NULL != *attp; attp += 2) {
@@ -324,7 +291,7 @@ input_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 }
 
 int
-grok(XML_Parser p, int linked, const char *src, struct article *arg)
+grok(XML_Parser p, const char *src, struct article *arg)
 {
 	char		*buf, *cp;
 	size_t		 sz;
@@ -346,7 +313,6 @@ grok(XML_Parser p, int linked, const char *src, struct article *arg)
 		*cp = '\0';
 	parse.article = arg;
 	parse.p = p;
-	parse.linked = linked;
 
 	XML_ParserReset(p, NULL);
 	XML_SetStartElementHandler(p, input_begin);

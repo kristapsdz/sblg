@@ -86,7 +86,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	 * with the compile() function into HTML.
 	 */
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, 1, src[i], &sarg[i]))
+		if ( ! grok(p, src[i], &sarg[i]))
 			goto out;
 
 	/* Sort by date. */

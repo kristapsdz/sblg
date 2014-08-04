@@ -143,7 +143,7 @@ atom(XML_Parser p, const char *templ,
 	strlcpy(larg.path, "/", MAXPATHLEN);
 
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, 1, src[i], &sarg[i]))
+		if ( ! grok(p, src[i], &sarg[i]))
 			goto out;
 
 	qsort(sarg, sz, sizeof(struct article), scmp);
