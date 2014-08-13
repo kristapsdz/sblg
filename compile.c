@@ -208,7 +208,7 @@ compile(XML_Parser p, const char *templ,
 		} else {
 			/* Replace .xml with .html. */
 			out = xmalloc(sz + 2);
-			strlcpy(out, src, sz - 3);
+			strlcpy(out, src, sz - 2);
 			strlcat(out, "html", sz + 2);
 		} 
 	} else
