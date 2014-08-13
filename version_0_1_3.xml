@@ -2,10 +2,11 @@
 	<header>
 		<h1>0.1.3</h1>
 		<address>Kristaps Dzonsons</address>
-		<time datetime="2014-08-NN">2014-08-NN</time>
+		<time datetime="2014-08-13">2014-08-13</time>
 	</header>
 	<aside>
 		Fix tagging to allow for <code>data-sblg-tags</code>
 		attributes anywhere in an article.
+		Also fix off-by-one in replacing <code>.xml</code> with <code>.html</code> in <b>-c</b> mode.
 	</aside>
 </article>
