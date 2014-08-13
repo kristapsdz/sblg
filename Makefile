@@ -13,7 +13,8 @@ ARTICLES = article1.html \
 	   article6.html
 VERSIONS = version_0_0_13.xml \
 	   version_0_1_1.xml \
-	   version_0_1_2.xml
+	   version_0_1_2.xml \
+	   version_0_1_3.xml
 XMLS = article1.xml \
        article2.xml \
        article4.xml \
