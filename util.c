@@ -240,6 +240,40 @@ xmlopen(FILE *f, const XML_Char *name, ...)
 }
 
 void
+xmlopensx(FILE *f, const XML_Char *s, const XML_Char **atts, 
+	const char *url, const struct article *article)
+{
+	const char	*start, *end, *cp;
+	size_t		 sz;
+
+	fputc('<', f);
+	fputs(s, f);
+
+	for ( ; NULL != *atts; atts += 2) {
+		fputc(' ', f);
+		fputs(atts[0], f);
+		fputs("=\"", f);
+		start = atts[1];
+		while (NULL != (cp = strstr(start, "${"))) {
+			if (NULL == (end = strchr(cp, '}')))
+				break;
+			fprintf(f, "%.*s", (int)(cp - start), start);
+			start = cp + 2;
+			sz = end - start;
+			if (sz == 3 && 0 == memcmp(start, "url", sz))
+				fputs(url, f);
+			start = end + 1;
+		}
+
+		fputs(start, f);
+		fputc('"', f);
+	}
+	if (xmlvoid(s))
+		fputs(" /", f);
+	fputc('>', f);
+}
+
+void
 xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
 {
 
