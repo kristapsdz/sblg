@@ -129,7 +129,8 @@ main(int argc, char *argv[])
 usage:
 	fprintf(stderr, "usage: %s [-o file] [-t templ] -c file...\n"
 			"       %s [-o file] [-t templ] -a file...\n"
+			"       %s [-o file] [-t templ] -C file...\n"
 			"       %s [-o file] [-t templ] file...\n",
-			progname, progname, progname);
+			progname, progname, progname, progname);
 	return(EXIT_FAILURE);
 }

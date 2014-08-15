@@ -37,6 +37,7 @@ struct	linkall {
 	size_t		 navlen; /* temporary: nav items to show */
 	char		*navtag; /* temporary: only show tags */
 	int		 navuse; /* use navigation contents */
+	int		 single; /* show a single page only */
 	char		*nav; /* temporary: nav buffer */
 	size_t		 navsz; /* nav buffer length */
 };
@@ -73,7 +74,7 @@ nav_text(void *dat, const XML_Char *s, int len)
 {
 	struct linkall	*arg = dat;
 
-	xmlappend(&arg->nav, &arg->navsz, s, len);
+	xmlstrtext(&arg->nav, &arg->navsz, s, len);
 }
 
 static void
@@ -82,7 +83,7 @@ nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct linkall	*arg = dat;
 
 	arg->stack += 0 == strcasecmp(s, "nav");
-	xmlrappendopen(&arg->nav, &arg->navsz, s, atts);
+	xmlstropen(&arg->nav, &arg->navsz, s, atts);
 }
 
 /*
@@ -99,6 +100,7 @@ tfind(const char *needle, const char *haystack)
 
 	if (NULL == needle)
 		return(1);
+
 	if (NULL == haystack) 
 		return(0);
 
@@ -125,18 +127,20 @@ nav_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
 	size_t		 i, j, start;
-	char		 buf[32]; /* large enough for date */
+	char		 buf[32]; 
 	int		 k, inprint;
 
 	if (strcasecmp(s, "nav") || 0 != --arg->stack) {
-		xmlrappendclose(&arg->nav, &arg->navsz, s);
+		xmlstrclose(&arg->nav, &arg->navsz, s);
 		return;
 	}
 
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 
-	fprintf(arg->f, "\n<ul>\n");
+	fputc('\n', arg->f);
+	xmlopen(arg->f, "ul", NULL);
+	fputc('\n', arg->f);
 
 	/*
 	 * If we haven't been provided a navigation template (i.e., what
@@ -144,25 +148,25 @@ nav_end(void *dat, const XML_Char *s)
 	 * consisting of a list entry.
 	 */
 	if ( ! arg->navuse || 0 == arg->navsz) {
-		i = 0;
-		for (k = 0; i < arg->navlen && k < arg->sposz; k++) {
-			/* Are we limiting by tag? */
+		for (i = k = 0; k < arg->sposz; k++) {
 			if ( ! tfind(arg->navtag, arg->sargs[k].tags))
 				continue;
-			(void)strftime(buf, sizeof(buf), 
-				"%Y-%m-%d", 
+			(void)strftime(buf, sizeof(buf), "%F", 
 				localtime(&arg->sargs[k].time));
-			fprintf(arg->f, "<li>\n");
-			fprintf(arg->f, "%s: ", buf);
-			fprintf(arg->f, 
-				"<a href=\"%s\">%s</a>\n",
-				arg->sargs[k].src,
-				arg->sargs[k].titletext);
-			fprintf(arg->f, "</li>\n");
-			i++;
+			xmlopen(arg->f, "li", NULL);
+			fputs(buf, arg->f);
+			fputs(": ", arg->f);
+			xmlopen(arg->f, "a", "href", 
+				arg->sargs[k].src, NULL);
+			fputs(arg->sargs[k].titletext, arg->f);
+			xmlclose(arg->f, "a");
+			xmlclose(arg->f, "li");
+			fputc('\n', arg->f);
+			if (i++ >= arg->navlen)
+				break;
 		}
-		fprintf(arg->f, "</ul>\n");
-		fprintf(arg->f, "</%s>", s);
+		xmlclose(arg->f, "ul");
+		xmlclose(arg->f, s);
 		free(arg->nav);
 		free(arg->navtag);
 		arg->navsz = 0;
@@ -177,15 +181,13 @@ nav_end(void *dat, const XML_Char *s)
 #define	STRCMP(_word, _sz) (j - start == (_sz) && \
 	0 == memcmp(&arg->nav[start], (_word), (_sz)))
 
-	for (i = 0, k = 0; i < arg->navlen && k < arg->sposz; k++) {
-		/* Are we limiting by tag? */
+	for (i = k = 0; k < arg->sposz; k++) {
 		if ( ! tfind(arg->navtag, arg->sargs[k].tags))
 			continue;
-		strftime(buf, sizeof(buf), "%Y-%m-%d", 
+		(void)strftime(buf, sizeof(buf), "%F", 
 			localtime(&arg->sargs[k].time));
-		inprint = 0;
-		fprintf(arg->f, "<li>\n");
-		for (j = 1; j < arg->navsz; j++) {
+		xmlopen(arg->f, "li");
+		for (inprint = 0, j = 1; j < arg->navsz; j++) {
 			if ('$' != arg->nav[j - 1]) {
 				fputc(arg->nav[j - 1], arg->f);
 				continue;
@@ -224,11 +226,12 @@ nav_end(void *dat, const XML_Char *s)
 		}
 		if ( ! inprint)
 			fputc(arg->nav[j - 1], arg->f);
-		fprintf(arg->f, "</li>\n");
-		i++;
+		xmlclose(arg->f, "li");
+		if (++i >= arg->navlen)
+			break;
 	}
-	fprintf(arg->f, "</ul>\n");
-	fprintf(arg->f, "</%s>", s);
+	xmlclose(arg->f, "ul");
+	xmlclose(arg->f, s);
 	free(arg->nav);
 	free(arg->navtag);
 	arg->navsz = 0;
@@ -278,7 +281,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		 * Only handle if containing the "data-sblg-nav"
 		 * attribute, otherwise continue.
 		 */
-		xmlprint(arg->f, s, atts);
+		xmlopens(arg->f, s, atts);
 		for (attp = atts; NULL != *attp; attp += 2) 
 			if (0 == strcasecmp(*attp, "data-sblg-nav"))
 				break;
@@ -313,7 +316,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		XML_SetDefaultHandlerExpand(arg->p, nav_text);
 		return;
 	} else if (strcasecmp(s, "article")) {
-		xmlprint(arg->f, s, atts);
+		xmlopens(arg->f, s, atts);
 		return;
 	}
 
@@ -326,7 +329,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			break;
 
 	if (NULL == *attp || ! xmlbool(attp[1])) {
-		xmlprint(arg->f, s, atts);
+		xmlopens(arg->f, s, atts);
 		return;
 	}
 
@@ -350,14 +353,19 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	if ( ! echo(arg->f, 1, arg->sargs[arg->spos++].src))
 		XML_StopParser(arg->p, 0);
+
 	for (attp = atts; NULL != *attp; attp += 2) 
 		if (0 == strcasecmp(*attp, "data-sblg-permlink"))
 			break;
 	if (NULL != *attp && ! xmlbool(attp[1]))
 		return;
-	fprintf(arg->f, "<div data-sblg-permlink=\"1\"><a href=\"%s\">"
-			"permanent link</a></div>", 
-			arg->sargs[arg->spos - 1].src);
+
+	xmlopen(arg->f, "div", "data-sblg-permlink", "1", NULL);
+	xmlopen(arg->f, "a", "href", arg->sargs[arg->spos - 1].src, NULL);
+	fputs("permanent link", arg->f);
+	xmlclose(arg->f, "a");
+	xmlclose(arg->f, "div");
+	fputc('\n', arg->f);
 }
 
 
@@ -387,36 +395,39 @@ linkall(XML_Parser p, const char *templ,
 
 	/*
 	 * Grok all article data.
-	 * These can either be the origin XML files or those formatted
-	 * with the compile() function into HTML.
+	 * Then sort by date (TODO: do this on-demand and allow for
+	 * different types of sorting).
 	 */
 	for (i = 0; i < sz; i++)
 		if ( ! grok(p, src[i], &sarg[i]))
 			goto out;
 
-	/* Sort by date. */
 	qsort(sarg, sz, sizeof(struct article), scmp);
 
+	/* Open a FILE to the output file or stream. */
 	f = stdout;
 	if (strcmp(dst, "-") && (NULL == (f = fopen(dst, "w")))) {
 		perror(dst);
 		goto out;
 	} 
 	
+	/* Map the template into memory for parsing. */
 	if ( ! mmap_open(templ, &fd, &buf, &ssz))
 		goto out;
 
+	/*
+	 * By default, we want to show all the articles we have in our
+	 * input; however, if we're going to force a single entry to be
+	 * shown, then find it in our arguments.
+	 */
 	larg.sargs = sarg;
 	larg.sposz = larg.ssposz = sz;
 	larg.p = p;
 	larg.src = templ;
 	larg.f = f;
+	larg.single = NULL != force;
 
-	/*
-	 * If we're going to force a single entry to be shown, then find
-	 * it in our arguments.
-	 */
-	if (NULL != force) {
+	if (larg.single) {
 		for (i = 0; i < sz; i++)
 			if (0 == strcmp(force, sarg[i].src))
 				break;
@@ -424,12 +435,14 @@ linkall(XML_Parser p, const char *templ,
 		if (i < sz) {
 			larg.spos = i;
 			larg.ssposz = i + 1;
+		} else {
+			fprintf(stderr, "%s: does not "
+				"appear in input list\n", force);
+			goto out;
 		}
 	}
 
-	/*
-	 * Run the XML parser on the template.
-	 */
+	/* Run the XML parser on the template. */
 	XML_ParserReset(p, NULL);
 	XML_SetDefaultHandlerExpand(p, tmpl_text);
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
@@ -447,7 +460,7 @@ linkall(XML_Parser p, const char *templ,
 	rc = 1;
 out:
 	for (i = 0; i < sz; i++) 
-		grok_free(&sarg[i]);
+		article_free(&sarg[i]);
 	mmap_close(fd, buf, ssz);
 	if (NULL != f && stdout != f)
 		fclose(f);

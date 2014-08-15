@@ -51,7 +51,7 @@ article_text(void *dat, const XML_Char *s, int len)
 {
 	struct parse	*arg = dat;
 
-	xmlappend(&arg->article->article, 
+	xmlstrtext(&arg->article->article, 
 		&arg->article->articlesz, s, len);
 }
 
@@ -60,9 +60,9 @@ title_text(void *dat, const XML_Char *s, int len)
 {
 	struct parse	*arg = dat;
 
-	xmlappend(&arg->article->title, 
+	xmlstrtext(&arg->article->title, 
 		&arg->article->titlesz, s, len);
-	xmlappend(&arg->article->titletext, 
+	xmlstrtext(&arg->article->titletext, 
 		&arg->article->titletextsz, s, len);
 	article_text(dat, s, len);
 }
@@ -72,9 +72,9 @@ addr_text(void *dat, const XML_Char *s, int len)
 {
 	struct parse	*arg = dat;
 
-	xmlappend(&arg->article->author, 
+	xmlstrtext(&arg->article->author, 
 		&arg->article->authorsz, s, len);
-	xmlappend(&arg->article->authortext, 
+	xmlstrtext(&arg->article->authortext, 
 		&arg->article->authortextsz, s, len);
 	article_text(dat, s, len);
 }
@@ -84,7 +84,7 @@ aside_text(void *dat, const XML_Char *s, int len)
 {
 	struct parse	*arg = dat;
 
-	xmlappend(&arg->article->aside, 
+	xmlstrtext(&arg->article->aside, 
 		&arg->article->asidesz, s, len);
 	article_text(dat, s, len);
 }
@@ -94,7 +94,7 @@ title_end(void *dat, const XML_Char *s)
 {
 	struct parse	*arg = dat;
 
-	xmlrappendclose(&arg->article->article,
+	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
 	if (0 == strcasecmp(s, "h1") ||
@@ -105,7 +105,7 @@ title_end(void *dat, const XML_Char *s)
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
 	} else
-		xmlrappendclose(&arg->article->title, 
+		xmlstrclose(&arg->article->title, 
 			&arg->article->titlesz, s);
 }
 
@@ -114,7 +114,7 @@ aside_end(void *dat, const XML_Char *s)
 {
 	struct parse	*arg = dat;
 
-	xmlrappendclose(&arg->article->article,
+	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
 	if (0 == strcasecmp(s, "aside") && 0 == --arg->stack) {
@@ -122,7 +122,7 @@ aside_end(void *dat, const XML_Char *s)
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
 	} else
-		xmlrappendclose(&arg->article->aside, 
+		xmlstrclose(&arg->article->aside, 
 			&arg->article->asidesz, s);
 }
 
@@ -131,7 +131,7 @@ addr_end(void *dat, const XML_Char *s)
 {
 	struct parse	*arg = dat;
 
-	xmlrappendclose(&arg->article->article,
+	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
 	if (0 == strcasecmp(s, "address") && 0 == --arg->stack) {
@@ -139,7 +139,7 @@ addr_end(void *dat, const XML_Char *s)
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
 	} else
-		xmlrappendclose(&arg->article->author, 
+		xmlstrclose(&arg->article->author, 
 			&arg->article->authorsz, s);
 }
 
@@ -154,7 +154,8 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 			if (0 == (sz = strlen(attp[1])))
 				continue;
 			sz += arg->article->tagsz + 2;
-			arg->article->tags = xrealloc(arg->article->tags, sz);
+			arg->article->tags = xrealloc
+				(arg->article->tags, sz);
 			if (0 == arg->article->tagsz)
 				*arg->article->tags = '\0';
 			strlcat(arg->article->tags, attp[1], sz);
@@ -169,9 +170,9 @@ title_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct parse	*arg = dat;
 
 	arg->stack += 0 == strcasecmp(s, "title");
-	xmlrappendopen(&arg->article->title, 
+	xmlstropen(&arg->article->title, 
 		&arg->article->titlesz, s, atts);
-	xmlrappendopen(&arg->article->article, 
+	xmlstropen(&arg->article->article, 
 		&arg->article->articlesz, s, atts);
 	tsearch(arg, s, atts);
 }
@@ -183,9 +184,9 @@ addr_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct parse	*arg = dat;
 
 	arg->stack += 0 == strcasecmp(s, "address");
-	xmlrappendopen(&arg->article->author, 
+	xmlstropen(&arg->article->author, 
 		&arg->article->authorsz, s, atts);
-	xmlrappendopen(&arg->article->article, 
+	xmlstropen(&arg->article->article, 
 		&arg->article->articlesz, s, atts);
 	tsearch(arg, s, atts);
 }
@@ -196,9 +197,9 @@ aside_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct parse	*arg = dat;
 
 	arg->stack += 0 == strcasecmp(s, "aside");
-	xmlrappendopen(&arg->article->aside, 
+	xmlstropen(&arg->article->aside, 
 		&arg->article->asidesz, s, atts);
-	xmlrappendopen(&arg->article->article, 
+	xmlstropen(&arg->article->article, 
 		&arg->article->articlesz, s, atts);
 	tsearch(arg, s, atts);
 }
@@ -217,7 +218,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	assert(0 == arg->stack);
 
-	xmlrappendopen(&arg->article->article,
+	xmlstropen(&arg->article->article,
 		&arg->article->articlesz, s, atts);
 	tsearch(arg, s, atts);
 
@@ -270,24 +271,8 @@ article_end(void *dat, const XML_Char *s)
 		XML_SetElementHandler(arg->p, NULL, NULL);
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
 	} else
-		xmlrappendclose(&arg->article->article,
+		xmlstrclose(&arg->article->article,
 			&arg->article->articlesz, s);
-}
-
-void
-grok_free(struct article *p)
-{
-
-	if (NULL != p) {
-		free(p->base);
-		free(p->tags);
-		free(p->title);
-		free(p->titletext);
-		free(p->author);
-		free(p->authortext);
-		free(p->aside);
-		free(p->article);
-	}
 }
 
 /*

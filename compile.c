@@ -114,14 +114,14 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	 * better yet, a template.
 	 */
 	if (0 == strcasecmp(name, "title")) {
-		xmlprint(arg->f, name, atts);
+		xmlopens(arg->f, name, atts);
 		fprintf(arg->f, "%s", arg->article.titletext);
 		arg->stack++;
 		XML_SetElementHandler(arg->p, title_begin, title_end);
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		return;
 	} else if (strcasecmp(name, "article")) {
-		xmlprint(arg->f, name, atts);
+		xmlopens(arg->f, name, atts);
 		return;
 	}
 
@@ -130,7 +130,7 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 			break;
 
 	if (NULL == *attp || ! xmlbool(attp[1])) {
-		xmlprint(arg->f, name, atts);
+		xmlopens(arg->f, name, atts);
 		return;
 	}
 
@@ -244,7 +244,7 @@ out:
 		fclose(f);
 
 	free(out);
-	grok_free(&arg.article);
+	article_free(&arg.article);
 	return(rc);
 }
 
