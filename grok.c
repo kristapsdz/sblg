@@ -86,6 +86,8 @@ aside_text(void *dat, const XML_Char *s, int len)
 
 	xmlstrtext(&arg->article->aside, 
 		&arg->article->asidesz, s, len);
+	xmlstrtext(&arg->article->asidetext, 
+		&arg->article->asidetextsz, s, len);
 	article_text(dat, s, len);
 }
 
@@ -347,6 +349,7 @@ grok(XML_Parser p, const char *src, struct article *arg)
 	} 
 
 	if (NULL == parse.article->title) {
+		assert(NULL == parse.article->titletext);
 		parse.article->title = 
 			xstrdup("Untitled article");
 		parse.article->titlesz = 
@@ -357,6 +360,7 @@ grok(XML_Parser p, const char *src, struct article *arg)
 			strlen(parse.article->titletext);
 	}
 	if (NULL == parse.article->author) {
+		assert(NULL == parse.article->authortext);
 		parse.article->author = 
 			xstrdup("Untitled author");
 		parse.article->authorsz = 
@@ -372,6 +376,13 @@ grok(XML_Parser p, const char *src, struct article *arg)
 			goto out;
 		}
 		parse.article->time = st.st_ctime;
+	}
+	if (NULL == parse.article->aside) {
+		assert(NULL == parse.article->asidetext);
+		parse.article->aside = xstrdup("");
+		parse.article->asidetext = xstrdup("");
+		parse.article->asidesz =
+			parse.article->asidetextsz = 0;
 	}
 
 	rc = 1;

@@ -110,7 +110,7 @@ atomprint(FILE *f, const struct atom *arg,
 		fprintf(f, "</content>");
 	}
 
-	if (NULL != src->aside) {
+	if ('\0' != *src->aside) {
 		fprintf(f, "<summary type=\"html\">");
 		atomputs(f, src->aside);
 		fprintf(f, "</summary>");

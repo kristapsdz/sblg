@@ -9,7 +9,7 @@
 	</head>
 	<body>
 		<header>
-			<h1>sblg</h1>
+			<h1><a href="index.html">sblg</a></h1>
 			<div>&#8211; simple off-line blog utility</div>
 		</header>
 		<div class="version">
