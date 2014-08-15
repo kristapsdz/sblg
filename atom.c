@@ -367,8 +367,7 @@ tmpl_end(void *userdata, const XML_Char *name)
 {
 	struct atom	*arg = userdata;
 
-	if ( ! xmlvoid(name))
-		fprintf(arg->f, "</%s>", name);
+	xmlclose(arg->f, name);
 }
 
 static void
