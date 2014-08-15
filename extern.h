@@ -28,6 +28,8 @@ struct	article {
 	size_t		 titletextsz; /* length of titletext */
 	char		*aside; /* nil-terminated aside content */
 	size_t		 asidesz; /* length of aside */
+	char		*asidetext; /* nil-terminated aside text */
+	size_t		 asidetextsz; /* length of asidetext */
 	char		*author; /* nil-terminated author name */
 	size_t		 authorsz; /* length of author */
 	char		*authortext; /* nil-terminated author name text */

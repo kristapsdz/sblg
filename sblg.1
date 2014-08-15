@@ -210,6 +210,11 @@ All of this element's children are removed.
   <footer>Something.</footer>
 </body>
 .Ed
+.Pp
+See
+.Sx Template Symbols
+for a list of symbols that will be replaced if found in attribute value
+or textual contexts.
 .Ss Blog Amalgamation Template
 The amalgamation template file must also be a well-formed XML file where
 each
@@ -233,23 +238,9 @@ The Boolean
 .Li data-sbgl-navcontent
 attribute makes the content of the
 .Aq nav
-element be reproduced within each list item, with the special string
-.Li ${author} ,
-.Li ${authortext} ,
-.Li ${base} ,
-.Li ${date} ,
-.Li ${source} ,
-.Li ${aside} ,
-.Li ${title} ,
-and
-.Li ${titletext}
-being replaced by the article's author (with markup), author text,
-basename (i.e., filename with suffix chopped off), publication date,
-filename, aside content, title (with markup), and title text,
-respectively.
-.Em Note :
-the aside is not HTML-encoded, so tags appearing in the aside will
-appear unmodified in the output.
+be replaced as specified in
+.Sx Template Symbols .
+.Pp
 If the
 .Aq nav
 element contains a positive integer
@@ -355,6 +346,33 @@ are inlined within a
 .Aq content
 element with type
 .Li html .
+.Ss Template Symbols
+Within the template for
+.Fl c
+or
+.Fl C ,
+or in an amalgamation navigation entry having
+.Li data-sblg-navcontents="1" ,
+the special strings
+.Li ${sblg-aside} ,
+.Li ${sblg-asidetext} ,
+.Li ${sblg-author} ,
+.Li ${sblg-authortext} ,
+.Li ${sblg-base} ,
+.Li ${sblg-date} ,
+.Li ${sblg-source} ,
+.Li ${sblg-title} ,
+.Li ${sblg-titletext} ,
+and
+.Li ${sblg-url}
+will be replaced by the article's author (with markup), author text,
+basename (i.e., filename with suffix chopped off), publication date,
+filename, aside content, title (with markup), title text, and output URL
+(in a non-navigation context) respectively.
+.Pp
+Be careful in using these: the contents are copied directly, so if
+specifying a value within an HTML attribute that has a double-quote, the
+attribute will be prematurely closed.
 .Sh FILES
 .Bl -tag -width Ds
 .It Pa article-template.xml

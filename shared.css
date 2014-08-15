@@ -72,9 +72,9 @@ a:hover			{ border-bottom: thin dashed #0000ee; }
 body > header		{ padding: 1.5em 1% 1em 1%; 
 			  color: #dddddd;
 			  background-color: #336699; }
-body > header h1 	{ color: #eeeeee; 
-			  font-size: large;
+body > header h1 	{ font-size: large;
 			  display: inline; }
+body > header h1 a	{ color: #eeeeee; }
 body > header div 	{ font-size: large;
 			  display: inline; }
 body > section > article[data-sblg-article] h1,
