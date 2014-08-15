@@ -133,11 +133,10 @@ data_end(void *userdata, const XML_Char *name)
 	struct input	*arg = userdata;
 	
 	if (strcasecmp(name, "article")) {
-		if ( ! xmlvoid(name))
-			fprintf(arg->f, "</%s>", name);
+		xmlclose(arg->f, name);
 		return;
 	} if (--arg->stack > 0) {
-		fprintf(arg->f, "</%s>", name);
+		xmlclose(arg->f, name);
 		return;
 	}
 

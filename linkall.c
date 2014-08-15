@@ -57,8 +57,7 @@ tmpl_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
 
-	if ( ! xmlvoid(s))
-		fprintf(arg->f, "</%s>", s);
+	xmlclose(arg->f, s);
 }
 
 static void
@@ -367,8 +366,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
  * fill in a template that's usually the blog "front page".
  */
 int
-linkall(XML_Parser p, const char *templ, const char *force,
-		int sz, char *src[], const char *dst)
+linkall(XML_Parser p, const char *templ, 
+	const char *force, int sz, char *src[], const char *dst)
 {
 	char		*buf;
 	size_t		 ssz;
