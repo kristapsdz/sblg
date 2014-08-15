@@ -35,5 +35,6 @@ article_free(struct article *p)
 	free(p->author);
 	free(p->authortext);
 	free(p->aside);
+	free(p->asidetext);
 	free(p->article);
 }

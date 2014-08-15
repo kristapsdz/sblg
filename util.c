@@ -291,8 +291,9 @@ xmltextx(FILE *f, const XML_Char *s,
 		else if (STRCMP("sblg-date", 9))
 			fputs(buf, f);
 		else if (STRCMP("sblg-aside", 10))
-			fputs(NULL == article->aside ?
-				"" : article->aside, f);
+			fputs(article->aside, f);
+		else if (STRCMP("sblg-asidetext", 14))
+			fputs(article->asidetext, f);
 		start = end + 1;
 	}
 
