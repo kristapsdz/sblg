@@ -26,21 +26,34 @@
 #include "extern.h"
 
 struct	pargs {
-	const char	*src;
-	const char	*dst;
-	FILE		*f;
-	XML_Parser	 p;
-	size_t		 stack;
-	struct article	 article;
+	const char	*src; /* template file */
+	const char	*dst; /* output file (or empty) */
+	FILE		*f; /* output stream */
+	XML_Parser	 p; /* active parser */
+	size_t		 stack; /* temporary: tag stack size */
+	struct article	 article; /* standalone article */
+	char		*buf; /* buffer for text */
+	size_t		 bufsz; /* buffer size */
+	size_t		 bufmax; /* buffer maximum size */
 };
 
-/* 
- * Forward-declarations for circular dependencies. 
- */
-static void	template_begin(void *dat, const XML_Char *name, 
-			const XML_Char **atts);
-static void	template_end(void *dat, const XML_Char *name);
-static void	template_text(void *dat, const XML_Char *s, int len);
+static void
+template_text(void *dat, const XML_Char *s, int len)
+{
+	struct pargs	*arg = dat;
+
+	xmlstrtext(&arg->buf, &arg->bufsz, s, len);
+}
+
+static void
+template_end(void *dat, const XML_Char *name)
+{
+	struct pargs	*arg = dat;
+
+	xmltextx(arg->f, arg->buf, arg->dst, &arg->article);
+	xmlstrflush(arg->buf, &arg->bufsz);
+	xmlclose(arg->f, name);
+}
 
 /*
  * Record the stack of nested <article> entries so we don't prematurely
@@ -70,33 +83,6 @@ article_end(void *dat, const XML_Char *name)
 }
 
 /*
- * Start a stack of nested <title> elements.
- */
-static void
-title_begin(void *dat, const XML_Char *name, const XML_Char **atts)
-{
-	struct pargs	*arg = dat;
-
-	arg->stack += 0 == strcasecmp(name, "title");
-}
-
-/*
- * When we've finished our <title> element, go back into the main
- * parsing context looking for <article> elements.
- */
-static void
-title_end(void *dat, const XML_Char *name)
-{
-	struct pargs	*arg = dat;
-
-	if (0 == strcasecmp(name, "title") && 0 == --arg->stack) {
-		xmlclose(arg->f, name);
-		XML_SetElementHandler(arg->p, template_begin, template_end);
-		XML_SetDefaultHandlerExpand(arg->p, template_text);
-	}
-}
-
-/*
  * Look for important tags in the template.
  * This is the main handler for this file.
  */
@@ -108,22 +94,11 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 
 	assert(0 == arg->stack);
 
-	/*
-	 * If we encounter [any!] title, prepend the article's title in front of it.
-	 * FIXME: note this with data-sblg-title="1" or something like
-	 * that, and also allow for appending instead of prepending; or
-	 * better yet, a template.
-	 */
-	if (0 == strcasecmp(name, "title")) {
-		xmlopens(arg->f, name, atts);
-		fprintf(arg->f, "%s", arg->article.titletext);
-		arg->stack++;
-		XML_SetElementHandler(arg->p, title_begin, title_end);
-		XML_SetDefaultHandlerExpand(arg->p, NULL);
-		return;
-	} else if (strcasecmp(name, "article")) {
-		xmlopensx(arg->f, name, atts, 
-			arg->dst, &arg->article);
+	xmltextx(arg->f, arg->buf, arg->dst, &arg->article);
+	xmlstrflush(arg->buf, &arg->bufsz);
+
+	if (strcasecmp(name, "article")) {
+		xmlopensx(arg->f, name, atts, arg->dst, &arg->article);
 		return;
 	}
 
@@ -132,7 +107,7 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 			break;
 
 	if (NULL == *attp || ! xmlbool(attp[1])) {
-		xmlopens(arg->f, name, atts);
+		xmlopensx(arg->f, name, atts, arg->dst, &arg->article);
 		return;
 	}
 
@@ -148,31 +123,9 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 		XML_StopParser(arg->p, 0);
 }
 
-/*
- * Blindly echo content.
- */
-static void
-template_text(void *dat, const XML_Char *s, int len)
-{
-	struct pargs	*arg = dat;
-
-	fprintf(arg->f, "%.*s", len, s);
-}
-
-/*
- * Blindly echo end tags (unless void elements!).
- */
-static void
-template_end(void *dat, const XML_Char *name)
-{
-	struct pargs	*arg = dat;
-
-	xmlclose(arg->f, name);
-}
-
 int
 compile(XML_Parser p, const char *templ, 
-		const char *src, const char *dst)
+	const char *src, const char *dst)
 {
 	char		*out, *cp, *buf;
 	size_t		 sz;
@@ -218,12 +171,13 @@ compile(XML_Parser p, const char *templ,
 	if (strcmp(out, "-") && NULL == (f = fopen(out, "w"))) {
 		perror(out);
 		goto out;
-	} else if ( ! mmap_open(templ, &fd, &buf, &sz))
+	} 
+	if ( ! mmap_open(templ, &fd, &buf, &sz))
 		goto out;
 
 	arg.f = f;
 	arg.src = src;
-	arg.dst = strcmp(out, "-") ? out : "";
+	arg.dst = strcmp(out, "-") ? out : NULL;
 	arg.p = p;
 
 	XML_ParserReset(p, NULL);
@@ -239,6 +193,8 @@ compile(XML_Parser p, const char *templ,
 		goto out;
 	} 
 
+	xmltextx(arg.f, arg.buf, arg.dst, &arg.article);
+	xmlstrflush(arg.buf, &arg.bufsz);
 	fputc('\n', f);
 	rc = 1;
 out:
@@ -248,6 +204,7 @@ out:
 
 	free(out);
 	article_free(&arg.article);
+	free(arg.buf);
 	return(rc);
 }
 

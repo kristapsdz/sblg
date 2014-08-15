@@ -52,7 +52,7 @@ sblg.tar.gz:
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
-main.o compile.o linkall.o grok.o echo.o atom.o: extern.h
+$(OBJS): extern.h
 
 atom.xml index.html $(ARTICLES): sblg
 

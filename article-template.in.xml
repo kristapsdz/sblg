@@ -4,7 +4,8 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<meta charset='utf-8' /> 
 		<link rel="stylesheet" href="article.css" type="text/css" />
-		<title> - sblg</title>
+		<link rel="canonical" href="${sblg-url}" />
+		<title>sblg - ${sblg-title}</title>
 	</head>
 	<body>
 		<header>
