@@ -28,6 +28,7 @@
 struct	linkall {
 	FILE		*f; /* open template file */
 	const char	*src; /* template file */
+	const char	*dst; /* destination file */
 	XML_Parser	 p; /* active parser */
 	struct article	*sargs; /* sorted article contents */
 	int		 spos; /* current sarg being shown */ 
@@ -37,7 +38,8 @@ struct	linkall {
 	size_t		 navlen; /* temporary: nav items to show */
 	char		*navtag; /* temporary: only show tags */
 	int		 navuse; /* use navigation contents */
-	int		 single; /* show a single page only */
+	ssize_t		 single; /* show a single page only */
+	int		 ext;
 	char		*nav; /* temporary: nav buffer */
 	size_t		 navsz; /* nav buffer length */
 };
@@ -316,6 +318,10 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		XML_SetDefaultHandlerExpand(arg->p, nav_text);
 		return;
 	} else if (strcasecmp(s, "article")) {
+		if (-1 != arg->single) {
+			xmlopensx(arg->f, s, atts, arg->dst, &arg->sargs[arg->single]);
+
+		}
 		xmlopens(arg->f, s, atts);
 		return;
 	}
@@ -424,15 +430,17 @@ linkall(XML_Parser p, const char *templ,
 	larg.sposz = larg.ssposz = sz;
 	larg.p = p;
 	larg.src = templ;
+	larg.dst = strcmp(dst, "-") ? dst : "";
 	larg.f = f;
-	larg.single = NULL != force;
+	larg.single = -1;
 
-	if (larg.single) {
+	if (NULL != force) {
 		for (i = 0; i < sz; i++)
 			if (0 == strcmp(force, sarg[i].src))
 				break;
 
 		if (i < sz) {
+			larg.single = i;
 			larg.spos = i;
 			larg.ssposz = i + 1;
 		} else {

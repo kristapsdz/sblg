@@ -27,6 +27,7 @@
 
 struct	pargs {
 	const char	*src;
+	const char	*dst;
 	FILE		*f;
 	XML_Parser	 p;
 	size_t		 stack;
@@ -121,7 +122,8 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		return;
 	} else if (strcasecmp(name, "article")) {
-		xmlopens(arg->f, name, atts);
+		xmlopensx(arg->f, name, atts, 
+			arg->dst, &arg->article);
 		return;
 	}
 
@@ -221,6 +223,7 @@ compile(XML_Parser p, const char *templ,
 
 	arg.f = f;
 	arg.src = src;
+	arg.dst = strcmp(out, "-") ? out : "";
 	arg.p = p;
 
 	XML_ParserReset(p, NULL);
