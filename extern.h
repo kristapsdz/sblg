@@ -64,6 +64,8 @@ int	xmlbool(const XML_Char *s);
 void	xmlclose(FILE *, const XML_Char *);
 void	xmlopen(FILE *, const XML_Char *, ...);
 void	xmlopens(FILE *, const XML_Char *, const XML_Char **);
+void	xmlopensx(FILE *, const XML_Char *, const XML_Char **, 
+		const char *, const struct article *);
 
 void	*xcalloc(size_t, size_t);
 void	*xmalloc(size_t);

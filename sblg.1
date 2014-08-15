@@ -30,59 +30,57 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility knits together XML articles with templates.
-It has four modes.
-.Bl -enum
+utility knits together XML articles and templates in four ways.
+.Bl -bullet
 .It
 Standalone mode
 .Pq Fl c
-shows a single article.
+links single articles with a template.
 For example,
-.Qq sblg -c foo1.xml foo2.xml
-creates two pages,
-.Pa foo1.html
+.Qq sblg -c foo.xml bar.xml
+creates
+.Pa foo.html
 and
-.Pa foo2.html
-from the template.
-.It 
-Blog amalgamation mode links multiple articles.
+.Pa bar.html
+from an article template.
+.It
+Blog amalgamation mode links multiple articles with a template.
 For example,
-.Qq sblg foo1.html foo2.html
+.Qq sblg -o foo.html bar.html baz.html
 links
-.Pa foo1.html
+.Pa bar.html
 and
-.Pa foo2.html
-into a blog feed
-.Pa blog.html
-from the template of articles and navigation.
+.Pa baz.html
+into
+.Pa foo.html
+from a template of articles and navigation.
 .It 
 Atom amalgamation mode
 .Pq Fl a
-link multiple articles into an Atom feed.
+link multiple articles with an Atom feed template.
 .It
 Standalone amalgamation mode
 .Pq Fl C
-links multiple articles but in standalone style.
+links multiple articles in standalone style.
 For example,
-.Qq sblg -C foo1.html foo1.html foo2.html
+.Qq sblg -o foo.html -C bar.html baz.html bar.html
 will show only
-.Pa foo1.html
+.Pa bar.html
 in the article list of
-.Pa blog.html ,
+.Pa foo.html ,
 but both
-.Pa foo1.html
+.Pa bar.html
 and
-.Pa foo2.html
+.Pa baz.html
 in its navigation.
 .El
 .Pp
-HTML is assumed only with the default suffix re-write rule standalone
-articles; input and output may in fact be arbitrary XML mark-up.
-Input articles may be XML fragments or full documents: only the
-.Aq article data-sblg-article="1"
-tree within the article is considered.
-.Pp
-The arguments are as follows:
+By default,
+.Nm
+operates as blog amalgamation mode, specifically as if
+.Qq sblg -o blog.html -t blog-template.xml ...
+were specified.
+Its arguments are as follows:
 .Bl -tag -width Ds
 .It Fl C Ar file
 Like
@@ -116,7 +114,7 @@ is used by default.
 Use
 .Fl o Ar \-
 for standard output.
-.It Fl t Ar templ
+.It Fl t Ar template
 Template for standalone or amalgamation files.
 If unspecified, defaults to
 .Ar article-template.xml
@@ -141,15 +139,14 @@ input XML files are merged with a template into an output file.
 Otherwise, multiple input files are merged into a single amalgamation.
 .El
 .Pp
-By default,
-.Nm
-creates a
-.Qq blog
-amalgamation
-.Pa blog.html
-from one or more input files using
-.Pa blog-template.xml
-as the template file.
+All input and output must be well-formed XML.
+HTML is assumed only with the default suffix re-write rule for
+.Fl c
+without
+.Fl o .
+Input articles may be XML fragments or full documents: only the
+.Aq article data-sblg-article="1"
+tree within the article is considered.
 .Ss Article Input
 Article input files consist of XML fragments or whole documents.
 They must at least consist of the following within the document:
