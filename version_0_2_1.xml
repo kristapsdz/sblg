@@ -1,0 +1,14 @@
+<article data-sblg-article="1" data-sblg-tags="version">
+	<header>
+		<h1>0.2.1</h1>
+		<address>Kristaps Dzonsons</address>
+		<time datetime="2014-08-15">2014-08-15</time>
+	</header>
+	<aside>
+		Bumped minor after changing the symbols replaced within <code>&lt;nav data-sblg-navcontent="1"&gt;</code>.
+		These are all now prefixed with <code>sblg-</code>.
+		Also switched <code>-f</code> to <code>-C</code> for consistency.
+		Lastly, allowed all non-article and non-navigation text and attribute values within the templates for <code>-c</code> and
+		<code>-C</code> to have the same symbols as for navigation replacement.
+	</aside>
+</article>
