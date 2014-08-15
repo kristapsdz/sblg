@@ -27,6 +27,9 @@
 
 #include "extern.h"
 
+/*
+ * All possible self-closing (e.g., <area />) elements.
+ */
 static	const char *elemvoid[] = {
 	"area",
 	"base",
@@ -46,6 +49,23 @@ static	const char *elemvoid[] = {
 	"wbr",
 	NULL
 };
+
+/*
+ * Look up a given element to see if it can be "void", i.e., close
+ * itself out.
+ * For example, <p> is not void; <link /> is.
+ */
+static int
+xmlvoid(const XML_Char *s)
+{
+	const char	**cp;
+
+	for (cp = (const char **)elemvoid; NULL != *cp; cp++)
+		if (0 == strcasecmp(s, *cp))
+			return(1);
+
+	return(0);
+}
 
 int
 mmap_open(const char *f, int *fd, char **buf, size_t *sz)
@@ -113,18 +133,6 @@ xmlbool(const XML_Char *s)
 	return(0 == strcasecmp(s, "1") || 0 == strcasecmp(s, "true"));
 }
 
-int
-xmlvoid(const XML_Char *s)
-{
-	const char	**cp;
-
-	for (cp = (const char **)elemvoid; NULL != *cp; cp++)
-		if (0 == strcasecmp(s, *cp))
-			return(1);
-
-	return(0);
-}
-
 void
 xmlappend(char **p, size_t *sz, const XML_Char *s, int len)
 {
@@ -189,4 +197,36 @@ xmlrappendopen(char **p, size_t *sz,
 		strlcat(*p, "/", *sz + 1);
 
 	strlcat(*p, ">", *sz + 1);
+}
+
+void
+xmlclose(FILE *f, const XML_Char *name)
+{
+
+	if ( ! xmlvoid(name))
+		fprintf(f, "</%s>", name);
+}
+
+void *
+xcalloc(size_t nm, size_t sz)
+{
+	void	*p;
+
+	if (NULL != (p = calloc(nm, sz)))
+		return(p);
+
+	perror(NULL);
+	exit(EXIT_FAILURE);
+}
+
+void *
+xmalloc(size_t sz)
+{
+	void	*p;
+
+	if (NULL != (p = malloc(sz)))
+		return(p);
+
+	perror(NULL);
+	exit(EXIT_FAILURE);
 }

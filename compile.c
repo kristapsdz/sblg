@@ -89,7 +89,7 @@ title_end(void *dat, const XML_Char *name)
 	struct pargs	*arg = dat;
 
 	if (0 == strcasecmp(name, "title") && 0 == --arg->stack) {
-		fprintf(arg->f, "</%s>", name);
+		xmlclose(arg->f, name);
 		XML_SetElementHandler(arg->p, template_begin, template_end);
 		XML_SetDefaultHandlerExpand(arg->p, template_text);
 	}
@@ -165,9 +165,7 @@ template_end(void *dat, const XML_Char *name)
 {
 	struct pargs	*arg = dat;
 
-	/* FIXME: put this all into xmlclose() or similar. */
-	if ( ! xmlvoid(name))
-		fprintf(arg->f, "</%s>", name);
+	xmlclose(arg->f, name);
 }
 
 int

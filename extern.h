@@ -40,8 +40,6 @@ struct	article {
 };
 
 #define	xrealloc realloc
-#define	xcalloc	calloc
-#define	xmalloc	malloc
 #define	xstrdup	strdup
 
 int	atom(XML_Parser p, const char *templ,
@@ -58,11 +56,14 @@ int	linkall(XML_Parser p, const char *templ, const char *force,
 void	xmlappend(char **p, size_t *sz, 
 		const XML_Char *s, int len);
 int	xmlbool(const XML_Char *s);
+void	xmlclose(FILE *f, const XML_Char *s);
 void	xmlprint(FILE *f, const XML_Char *s, const XML_Char **atts);
 void	xmlrappendclose(char **p, size_t *sz, const XML_Char *name);
 void	xmlrappendopen(char **p, size_t *sz, 
 		const XML_Char *name, const XML_Char **atts);
-int	xmlvoid(const XML_Char *s);
+
+void	*xcalloc(size_t, size_t);
+void	*xmalloc(size_t);
 
 __END_DECLS
 
