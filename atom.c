@@ -181,7 +181,7 @@ atom(XML_Parser p, const char *templ,
 	rc = 1;
 out:
 	for (i = 0; i < sz; i++)
-		grok_free(&sarg[i]);
+		article_free(&sarg[i]);
 	mmap_close(fd, buf, ssz);
 	if (NULL != f && stdout != f)
 		fclose(f);
@@ -245,7 +245,7 @@ tmpl_begin(void *userdata,
 			if (0 == strcasecmp(*attp, "data-sblg-updated"))
 				break;
 		if (NULL == *attp || ! xmlbool(attp[1])) {
-			xmlprint(arg->f, name, atts);
+			xmlopens(arg->f, name, atts);
 			return;
 		}
 		fprintf(arg->f, "<%s>", name);
@@ -264,7 +264,7 @@ tmpl_begin(void *userdata,
 			if (0 == strcasecmp(*attp, "data-sblg-id"))
 				break;
 		if (NULL == *attp || ! xmlbool(attp[1])) {
-			xmlprint(arg->f, name, atts);
+			xmlopens(arg->f, name, atts);
 			return;
 		}
 		fprintf(arg->f, "<%s>", name);
@@ -279,7 +279,7 @@ tmpl_begin(void *userdata,
 			XML_StopParser(arg->p, 0);
 			return;
 		}
-		xmlprint(arg->f, name, atts);
+		xmlopens(arg->f, name, atts);
 		for (attp = atts; NULL != *attp; attp += 2) 
 			if (0 == strcasecmp(attp[0], "rel"))
 				if (0 == strcasecmp(attp[1], "self"))
@@ -315,7 +315,7 @@ tmpl_begin(void *userdata,
 		*cp = '\0';
 		return;
 	} else if (strcasecmp(name, "entry")) {
-		xmlprint(arg->f, name, atts);
+		xmlopens(arg->f, name, atts);
 		return;
 	}
 
@@ -324,7 +324,7 @@ tmpl_begin(void *userdata,
 			break;
 
 	if (NULL == *attp || ! xmlbool(attp[1])) {
-		xmlprint(arg->f, name, atts);
+		xmlopens(arg->f, name, atts);
 		return;
 	}
 
