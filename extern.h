@@ -56,6 +56,7 @@ void	mmap_close(int fd, void *buf, size_t sz);
 int	mmap_open(const char *f, int *fd, char **buf, size_t *sz);
 
 void	xmlstrclose(char **, size_t *, const XML_Char *);
+void	xmlstrflush(char *, size_t *);
 void	xmlstropen(char **, size_t *, 
 		const XML_Char *, const XML_Char **);
 void	xmlstrtext(char **, size_t *, const XML_Char *, int);
@@ -65,6 +66,8 @@ void	xmlclose(FILE *, const XML_Char *);
 void	xmlopen(FILE *, const XML_Char *, ...);
 void	xmlopens(FILE *, const XML_Char *, const XML_Char **);
 void	xmlopensx(FILE *, const XML_Char *, const XML_Char **, 
+		const char *, const struct article *);
+void	xmltextx(FILE *f, const XML_Char *s, 
 		const char *, const struct article *);
 
 void	*xcalloc(size_t, size_t);

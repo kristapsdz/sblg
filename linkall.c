@@ -28,20 +28,22 @@
 struct	linkall {
 	FILE		*f; /* open template file */
 	const char	*src; /* template file */
-	const char	*dst; /* destination file */
+	const char	*dst; /* output file (or empty)*/
 	XML_Parser	 p; /* active parser */
 	struct article	*sargs; /* sorted article contents */
 	int		 spos; /* current sarg being shown */ 
 	int		 sposz; /* size of sargs */
-	int		 ssposz;  /* size of sargs to show */
+	int		 ssposz;  /* number of sargs to show */
 	size_t		 stack; /* temporary: tag stack size */
 	size_t		 navlen; /* temporary: nav items to show */
 	char		*navtag; /* temporary: only show tags */
 	int		 navuse; /* use navigation contents */
-	ssize_t		 single; /* show a single page only */
-	int		 ext;
+	ssize_t		 single; /* page index in -C mode*/
 	char		*nav; /* temporary: nav buffer */
 	size_t		 navsz; /* nav buffer length */
+	char		*buf; /* buffer for text */
+	size_t		 bufsz; /* buffer size */
+	size_t		 bufmax; /* buffer maximum size */
 };
 
 static	void	tmpl_begin(void *dat, const XML_Char *s, 
@@ -52,13 +54,22 @@ tmpl_text(void *dat, const XML_Char *s, int len)
 {
 	struct linkall	*arg = dat;
 
-	fprintf(arg->f, "%.*s", len, s);
+	if (-1 != arg->single)
+		xmlstrtext(&arg->buf, &arg->bufsz, s, len);
+	else
+		fprintf(arg->f, "%.*s", len, s);
 }
 
 static void
 tmpl_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
+
+	if (-1 != arg->single) {
+		xmltextx(arg->f, arg->buf, arg->dst, 
+			&arg->sargs[arg->single]);
+		xmlstrflush(arg->buf, &arg->bufsz);
+	}
 
 	xmlclose(arg->f, s);
 }
@@ -128,9 +139,9 @@ static void
 nav_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
-	size_t		 i, j, start;
+	size_t		 i;
 	char		 buf[32]; 
-	int		 k, inprint;
+	int		 k;
 
 	if (strcasecmp(s, "nav") || 0 != --arg->stack) {
 		xmlstrclose(&arg->nav, &arg->navsz, s);
@@ -169,10 +180,9 @@ nav_end(void *dat, const XML_Char *s)
 		}
 		xmlclose(arg->f, "ul");
 		xmlclose(arg->f, s);
-		free(arg->nav);
+		xmlstrflush(arg->nav, &arg->navsz);
 		free(arg->navtag);
-		arg->navsz = 0;
-		arg->nav = arg->navtag = NULL;
+		arg->navtag = NULL;
 		return;
 	}
 
@@ -180,64 +190,20 @@ nav_end(void *dat, const XML_Char *s)
 	 * We do have a navigation template.
 	 * Output it, replacing key terms along the way.
 	 */
-#define	STRCMP(_word, _sz) (j - start == (_sz) && \
-	0 == memcmp(&arg->nav[start], (_word), (_sz)))
-
 	for (i = k = 0; k < arg->sposz; k++) {
 		if ( ! tfind(arg->navtag, arg->sargs[k].tags))
 			continue;
-		(void)strftime(buf, sizeof(buf), "%F", 
-			localtime(&arg->sargs[k].time));
-		xmlopen(arg->f, "li");
-		for (inprint = 0, j = 1; j < arg->navsz; j++) {
-			if ('$' != arg->nav[j - 1]) {
-				fputc(arg->nav[j - 1], arg->f);
-				continue;
-			} else if ('{' != arg->nav[j]) {
-				fputc(arg->nav[j - 1], arg->f);
-				continue;
-			}
-			start = ++j;
-			inprint = 1;
-			for ( ; j < arg->navsz; j++) 
-				if ('}' == arg->nav[j])
-					break;
-			if (j == arg->navsz)
-				break;
-			if (STRCMP("base", 4))
-				fputs(arg->sargs[k].base, arg->f);
-			else if (STRCMP("title", 5))
-				fputs(arg->sargs[k].title, arg->f);
-			else if (STRCMP("titletext", 9))
-				fputs(arg->sargs[k].titletext, arg->f);
-			else if (STRCMP("author", 6))
-				fputs(arg->sargs[k].author, arg->f);
-			else if (STRCMP("authortext", 10))
-				fputs(arg->sargs[k].authortext, arg->f);
-			else if (STRCMP("source", 6))
-				fputs(arg->sargs[k].src, arg->f);
-			else if (STRCMP("date", 4))
-				fputs(buf, arg->f);
-			else if (STRCMP("aside", 5) &&
-				NULL != arg->sargs[k].aside)
-				fputs(arg->sargs[k].aside, arg->f);
-
-			if (j < arg->navsz)
-				j++;
-			inprint = 0;
-		}
-		if ( ! inprint)
-			fputc(arg->nav[j - 1], arg->f);
+		xmlopen(arg->f, "li", NULL);
+		xmltextx(arg->f, arg->nav, NULL, &arg->sargs[k]);
 		xmlclose(arg->f, "li");
 		if (++i >= arg->navlen)
 			break;
 	}
 	xmlclose(arg->f, "ul");
 	xmlclose(arg->f, s);
-	free(arg->nav);
+	xmlstrflush(arg->nav, &arg->navsz);
 	free(arg->navtag);
-	arg->navsz = 0;
-	arg->nav = arg->navtag = NULL;
+	arg->navtag = NULL;
 }
 
 static void
@@ -277,6 +243,12 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	const XML_Char	**attp;
 
 	assert(0 == arg->stack);
+
+	if (-1 != arg->single) {
+		xmltextx(arg->f, arg->buf, arg->dst, 
+			&arg->sargs[arg->single]);
+		xmlstrflush(arg->buf, &arg->bufsz);
+	}
 
 	if (0 == strcasecmp(s, "nav")) {
 		/*
@@ -318,11 +290,11 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		XML_SetDefaultHandlerExpand(arg->p, nav_text);
 		return;
 	} else if (strcasecmp(s, "article")) {
-		if (-1 != arg->single) {
-			xmlopensx(arg->f, s, atts, arg->dst, &arg->sargs[arg->single]);
-
-		}
-		xmlopens(arg->f, s, atts);
+		if (-1 != arg->single)
+			xmlopensx(arg->f, s, atts, 
+				arg->dst, &arg->sargs[arg->single]);
+		else
+			xmlopens(arg->f, s, atts);
 		return;
 	}
 
@@ -399,11 +371,7 @@ linkall(XML_Parser p, const char *templ,
 	memset(&larg, 0, sizeof(struct linkall));
 	sarg = xcalloc(sz, sizeof(struct article));
 
-	/*
-	 * Grok all article data.
-	 * Then sort by date (TODO: do this on-demand and allow for
-	 * different types of sorting).
-	 */
+	/* Grok all article data and sort by date. */
 	for (i = 0; i < sz; i++)
 		if ( ! grok(p, src[i], &sarg[i]))
 			goto out;
@@ -430,7 +398,7 @@ linkall(XML_Parser p, const char *templ,
 	larg.sposz = larg.ssposz = sz;
 	larg.p = p;
 	larg.src = templ;
-	larg.dst = strcmp(dst, "-") ? dst : "";
+	larg.dst = strcmp(dst, "-") ? dst : NULL;
 	larg.f = f;
 	larg.single = -1;
 
@@ -438,7 +406,6 @@ linkall(XML_Parser p, const char *templ,
 		for (i = 0; i < sz; i++)
 			if (0 == strcmp(force, sarg[i].src))
 				break;
-
 		if (i < sz) {
 			larg.single = i;
 			larg.spos = i;
@@ -475,6 +442,7 @@ out:
 
 	free(larg.nav);
 	free(larg.navtag);
+	free(larg.buf);
 	free(sarg);
 	return(rc);
 }
