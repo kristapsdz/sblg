@@ -43,8 +43,8 @@
 				<code>PREFIX</code> of your choice, and get to work.
 			</p>
 			<nav id="tagnav" data-sblg-navtag="version" data-sblg-nav="1" data-sblg-navsz="3" data-sblg-navcontent="1">
-				<div><time datetime="${date}">${date}</time>: <span class="version">Version ${title}</span></div>
-				<div class="aside">${aside}</div>
+				<div><time datetime="${sblg-date}">${sblg-date}</time>: <span class="version">Version ${sblg-title}</span></div>
+				<div class="aside">${sblg-aside}</div>
 			</nav>
 			<p>
 				<span class="name">sblg</span> is usually used to knit <a

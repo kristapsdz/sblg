@@ -145,6 +145,17 @@ xmlstrtext(char **p, size_t *sz, const XML_Char *s, int len)
 }
 
 void
+xmlstrflush(char *cp, size_t *sz)
+{
+
+	if (0 == *sz)
+		return;
+
+	*cp = '\0';
+	*sz = 0;
+}
+
+void
 xmlstrclose(char **p, size_t *sz, const XML_Char *name)
 {
 	size_t		 ssz;
@@ -240,11 +251,58 @@ xmlopen(FILE *f, const XML_Char *name, ...)
 }
 
 void
+xmltextx(FILE *f, const XML_Char *s, 
+	const char *url, const struct article *article)
+{
+	const char	*cp, *start, *end;
+	char		 buf[32];
+	size_t		 sz;
+
+	if (NULL == s || '\0' == *s)
+		return;
+
+#define	STRCMP(_word, _sz) \
+	(sz == (_sz) && 0 == memcmp(start, (_word), (_sz)))
+
+	start = s;
+	while (NULL != (cp = strstr(start, "${"))) {
+		if (NULL == (end = strchr(cp, '}')))
+			break;
+		fprintf(f, "%.*s", (int)(cp - start), start);
+		start = cp + 2;
+		sz = end - start;
+		if (STRCMP("sblg-date", 9))
+			strftime(buf, sizeof(buf), "%F", 
+				localtime(&article->time));
+		if (STRCMP("sblg-base", 9))
+			fputs(article->base, f);
+		else if (STRCMP("sblg-title", 10))
+			fputs(article->title, f);
+		else if (STRCMP("sblg-url", 8))
+			fputs(NULL == url ? "" : url, f);
+		else if (STRCMP("sblg-titletext", 14))
+			fputs(article->titletext, f);
+		else if (STRCMP("sblg-author", 11))
+			fputs(article->author, f);
+		else if (STRCMP("sblg-authortext", 15))
+			fputs(article->authortext, f);
+		else if (STRCMP("sblg-source", 11))
+			fputs(article->src, f);
+		else if (STRCMP("sblg-date", 9))
+			fputs(buf, f);
+		else if (STRCMP("sblg-aside", 10))
+			fputs(NULL == article->aside ?
+				"" : article->aside, f);
+		start = end + 1;
+	}
+
+	fputs(start, f);
+}
+
+void
 xmlopensx(FILE *f, const XML_Char *s, const XML_Char **atts, 
 	const char *url, const struct article *article)
 {
-	const char	*start, *end, *cp;
-	size_t		 sz;
 
 	fputc('<', f);
 	fputs(s, f);
@@ -253,19 +311,7 @@ xmlopensx(FILE *f, const XML_Char *s, const XML_Char **atts,
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
-		start = atts[1];
-		while (NULL != (cp = strstr(start, "${"))) {
-			if (NULL == (end = strchr(cp, '}')))
-				break;
-			fprintf(f, "%.*s", (int)(cp - start), start);
-			start = cp + 2;
-			sz = end - start;
-			if (sz == 3 && 0 == memcmp(start, "url", sz))
-				fputs(url, f);
-			start = end + 1;
-		}
-
-		fputs(start, f);
+		xmltextx(f, atts[1], url, article);
 		fputc('"', f);
 	}
 	if (xmlvoid(s))
