@@ -19,11 +19,12 @@
 
 #include <expat.h>
 #include <fcntl.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "extern.h"
 
@@ -67,6 +68,10 @@ xmlvoid(const XML_Char *s)
 	return(0);
 }
 
+/*
+ * Map a regular file into memory for parsing.
+ * Make sure it's not too large, first.
+ */
 int
 mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 {
@@ -104,6 +109,10 @@ out:
 	return(0);
 }
 
+/*
+ * Reverse of mmap_open.
+ * Do NOT call twice!
+ */
 void
 mmap_close(int fd, void *buf, size_t sz)
 {
@@ -114,18 +123,6 @@ mmap_close(int fd, void *buf, size_t sz)
 		close(fd);
 }
 
-void
-xmlprint(FILE *f, const XML_Char *s, const XML_Char **atts)
-{
-
-	fprintf(f, "<%s", s);
-	for ( ; NULL != *atts; atts += 2)
-		fprintf(f, " %s=\"%s\"", atts[0], atts[1]);
-	if (xmlvoid(s))
-		fprintf(f, " /");
-	fputc('>', f);
-}
-
 int
 xmlbool(const XML_Char *s)
 {
@@ -134,7 +131,7 @@ xmlbool(const XML_Char *s)
 }
 
 void
-xmlappend(char **p, size_t *sz, const XML_Char *s, int len)
+xmlstrtext(char **p, size_t *sz, const XML_Char *s, int len)
 {
 	size_t		 ssz;
 
@@ -148,7 +145,7 @@ xmlappend(char **p, size_t *sz, const XML_Char *s, int len)
 }
 
 void
-xmlrappendclose(char **p, size_t *sz, const XML_Char *name)
+xmlstrclose(char **p, size_t *sz, const XML_Char *name)
 {
 	size_t		 ssz;
 
@@ -164,7 +161,7 @@ xmlrappendclose(char **p, size_t *sz, const XML_Char *name)
 }
 
 void
-xmlrappendopen(char **p, size_t *sz, 
+xmlstropen(char **p, size_t *sz, 
 	const XML_Char *name, const XML_Char **atts)
 {
 	size_t		 ssz;
@@ -199,12 +196,65 @@ xmlrappendopen(char **p, size_t *sz,
 	strlcat(*p, ">", *sz + 1);
 }
 
+/*
+ * Print an XML closure tag unless the element is void.
+ * See xmlopen().
+ */
 void
 xmlclose(FILE *f, const XML_Char *name)
 {
 
 	if ( ! xmlvoid(name))
 		fprintf(f, "</%s>", name);
+}
+
+/*
+ * Print an XML tag with a varying number of arguments, key then value
+ * pairs, terminating with a single NULL.
+ * This will auto-close any void elements.
+ * See xmlclose().
+ */
+void
+xmlopen(FILE *f, const XML_Char *name, ...)
+{
+	va_list	 	 ap;
+	const XML_Char	*attr;
+
+	fputc('<', f);
+	fputs(name, f);
+
+	va_start(ap, name);
+	while (NULL != (attr = va_arg(ap, XML_Char *))) {
+		fputc(' ', f);
+		fputs(attr, f);
+		fputs("=\"", f);
+		fputs(va_arg(ap, XML_Char *), f);
+		fputc('"', f);
+	}
+	va_end(ap);
+
+	if (xmlvoid(name)) 
+		fputs(" /", f);
+
+	fputc('>', f);
+}
+
+void
+xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
+{
+
+	fputc('<', f);
+	fputs(s, f);
+	for ( ; NULL != *atts; atts += 2) {
+		fputc(' ', f);
+		fputs(atts[0], f);
+		fputs("=\"", f);
+		fputs(atts[1], f);
+		fputc('"', f);
+	}
+	if (xmlvoid(s))
+		fputs(" /", f);
+	fputc('>', f);
 }
 
 void *

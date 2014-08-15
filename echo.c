@@ -102,7 +102,7 @@ input_begin(void *userdata,
 
 	if (NULL != *attp && xmlbool(attp[1])) {
 		arg->stack++;
-		xmlprint(arg->f, name, atts);
+		xmlopens(arg->f, name, atts);
 		XML_SetElementHandler(arg->p, data_begin, data_end);
 		XML_SetDefaultHandlerExpand(arg->p, data_text);
 	}
@@ -123,7 +123,7 @@ data_begin(void *userdata,
 	struct input	*arg = userdata;
 
 	arg->stack += 0 == strcasecmp(name, "article");
-	xmlprint(arg->f, name, atts);
+	xmlopens(arg->f, name, atts);
 }
 
 

@@ -22,50 +22,75 @@
 .Nd simple off-line blog utility
 .Sh SYNOPSIS
 .Nm sblg
-.Op Fl f Ar file
+.Op Fl C Ar file
 .Op Fl o Ar file
-.Op Fl t Ar templ
+.Op Fl t Ar template
 .Op Fl ac
 .Ar
 .Sh DESCRIPTION
 The
 .Nm
-utility knits together an XML article with a template to create
-standalone pages or a collection of articles with a template to create a
-.Qq blog
-or Atom feed
-amalgamation.
+utility knits together XML articles with templates.
+It has four modes.
+.Bl -enum
+.It
+Standalone mode
+.Pq Fl c
+shows a single article.
+For example,
+.Qq sblg -c foo1.xml foo2.xml
+creates two pages,
+.Pa foo1.html
+and
+.Pa foo2.html
+from the template.
+.It 
+Blog amalgamation mode links multiple articles.
+For example,
+.Qq sblg foo1.html foo2.html
+links
+.Pa foo1.html
+and
+.Pa foo2.html
+into a blog feed
+.Pa blog.html
+from the template of articles and navigation.
+.It 
+Atom amalgamation mode
+.Pq Fl a
+link multiple articles into an Atom feed.
+.It
+Standalone amalgamation mode
+.Pq Fl C
+links multiple articles but in standalone style.
+For example,
+.Qq sblg -C foo1.html foo1.html foo2.html
+will show only
+.Pa foo1.html
+in the article list of
+.Pa blog.html ,
+but both
+.Pa foo1.html
+and
+.Pa foo2.html
+in its navigation.
+.El
+.Pp
 HTML is assumed only with the default suffix re-write rule standalone
 articles; input and output may in fact be arbitrary XML mark-up.
 Input articles may be XML fragments or full documents: only the
 .Aq article data-sblg-article="1"
 tree within the article is considered.
 .Pp
-The calling conventions follow that of
-.Xr cc 1
-for easier integration with
-.Xr make 1 :
-specifying
-.Fl c
-produces a stand-alone article page from an input file and template.
-Not specifying
-.Fl c
-will link together articles (fragments or as previously run through
-.Fl c )
-to create a blog amalgamation.
-.Pp
 The arguments are as follows:
 .Bl -tag -width Ds
-.It Fl f Ar file
-When creating an amalgamation, this fills a single
-.Aq article data-sblg-article="1"
-element with
-.Ar file ,
-which also must appear in the input list.
-This is useful when creating pages with
-.Aq nav data-sblg-nav="1" ,
-but with a single specific article.
-The argument is ignored when combined with
+.It Fl C Ar file
+Like
+.Fl c ,
+but creating a blog amalgamation.
+In effect, an amalgamation with a single
+.Aq article data-sblg-article="1" .
+Ignored when used with
 .Fl a
 or
 .Fl c .
