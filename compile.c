@@ -50,7 +50,7 @@ template_end(void *dat, const XML_Char *name)
 {
 	struct pargs	*arg = dat;
 
-	xmltextx(arg->f, arg->buf, arg->dst, &arg->article);
+	xmltextx(arg->f, arg->buf, arg->dst, &arg->article, 1, 0);
 	xmlstrflush(arg->buf, &arg->bufsz);
 	xmlclose(arg->f, name);
 }
@@ -94,11 +94,12 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 
 	assert(0 == arg->stack);
 
-	xmltextx(arg->f, arg->buf, arg->dst, &arg->article);
+	xmltextx(arg->f, arg->buf, arg->dst, &arg->article, 1, 0);
 	xmlstrflush(arg->buf, &arg->bufsz);
 
 	if (strcasecmp(name, "article")) {
-		xmlopensx(arg->f, name, atts, arg->dst, &arg->article);
+		xmlopensx(arg->f, name, atts, 
+			arg->dst, &arg->article, 1, 0);
 		return;
 	}
 
@@ -107,7 +108,8 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 			break;
 
 	if (NULL == *attp || ! xmlbool(attp[1])) {
-		xmlopensx(arg->f, name, atts, arg->dst, &arg->article);
+		xmlopensx(arg->f, name, atts, 
+			arg->dst, &arg->article, 1, 0);
 		return;
 	}
 
@@ -193,7 +195,7 @@ compile(XML_Parser p, const char *templ,
 		goto out;
 	} 
 
-	xmltextx(arg.f, arg.buf, arg.dst, &arg.article);
+	xmltextx(arg.f, arg.buf, arg.dst, &arg.article, 1, 0);
 	xmlstrflush(arg.buf, &arg.bufsz);
 	fputc('\n', f);
 	rc = 1;

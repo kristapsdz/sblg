@@ -251,15 +251,18 @@ xmlopen(FILE *f, const XML_Char *name, ...)
 }
 
 void
-xmltextx(FILE *f, const XML_Char *s, 
-	const char *url, const struct article *article)
+xmltextx(FILE *f, const XML_Char *s, const char *url, 
+	const struct article *arts, size_t artsz, size_t artpos)
 {
 	const char	*cp, *start, *end;
 	char		 buf[32];
-	size_t		 sz;
+	size_t		 sz, next, prev;
 
 	if (NULL == s || '\0' == *s)
 		return;
+
+	next = (artpos + 1) % artsz;
+	prev = artpos == 0 ? artsz - 1 : artpos - 1;
 
 #define	STRCMP(_word, _sz) \
 	(sz == (_sz) && 0 == memcmp(start, (_word), (_sz)))
@@ -273,27 +276,31 @@ xmltextx(FILE *f, const XML_Char *s,
 		sz = end - start;
 		if (STRCMP("sblg-date", 9))
 			strftime(buf, sizeof(buf), "%F", 
-				localtime(&article->time));
+				localtime(&arts[artpos].time));
 		if (STRCMP("sblg-base", 9))
-			fputs(article->base, f);
+			fputs(arts[artpos].base, f);
+		else if (STRCMP("sblg-next-base", 14))
+			fputs(arts[next].base, f);
+		else if (STRCMP("sblg-prev-base", 14))
+			fputs(arts[prev].base, f);
 		else if (STRCMP("sblg-title", 10))
-			fputs(article->title, f);
+			fputs(arts[artpos].title, f);
 		else if (STRCMP("sblg-url", 8))
 			fputs(NULL == url ? "" : url, f);
 		else if (STRCMP("sblg-titletext", 14))
-			fputs(article->titletext, f);
+			fputs(arts[artpos].titletext, f);
 		else if (STRCMP("sblg-author", 11))
-			fputs(article->author, f);
+			fputs(arts[artpos].author, f);
 		else if (STRCMP("sblg-authortext", 15))
-			fputs(article->authortext, f);
+			fputs(arts[artpos].authortext, f);
 		else if (STRCMP("sblg-source", 11))
-			fputs(article->src, f);
+			fputs(arts[artpos].src, f);
 		else if (STRCMP("sblg-date", 9))
 			fputs(buf, f);
 		else if (STRCMP("sblg-aside", 10))
-			fputs(article->aside, f);
+			fputs(arts[artpos].aside, f);
 		else if (STRCMP("sblg-asidetext", 14))
-			fputs(article->asidetext, f);
+			fputs(arts[artpos].asidetext, f);
 		start = end + 1;
 	}
 
@@ -301,8 +308,9 @@ xmltextx(FILE *f, const XML_Char *s,
 }
 
 void
-xmlopensx(FILE *f, const XML_Char *s, const XML_Char **atts, 
-	const char *url, const struct article *article)
+xmlopensx(FILE *f, const XML_Char *s, 
+	const XML_Char **atts, const char *url, 
+	const struct article *art, size_t artsz, size_t artpos)
 {
 
 	fputc('<', f);
@@ -312,7 +320,7 @@ xmlopensx(FILE *f, const XML_Char *s, const XML_Char **atts,
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
-		xmltextx(f, atts[1], url, article);
+		xmltextx(f, atts[1], url, art, artsz, artpos);
 		fputc('"', f);
 	}
 	if (xmlvoid(s))
