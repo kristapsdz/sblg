@@ -68,9 +68,9 @@ void	xmlclose(FILE *, const XML_Char *);
 void	xmlopen(FILE *, const XML_Char *, ...);
 void	xmlopens(FILE *, const XML_Char *, const XML_Char **);
 void	xmlopensx(FILE *, const XML_Char *, const XML_Char **, 
-		const char *, const struct article *);
+		const char *, const struct article *, size_t, size_t);
 void	xmltextx(FILE *f, const XML_Char *s, 
-		const char *, const struct article *);
+		const char *, const struct article *, size_t, size_t);
 
 void	*xcalloc(size_t, size_t);
 void	*xmalloc(size_t);

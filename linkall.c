@@ -67,7 +67,7 @@ tmpl_end(void *dat, const XML_Char *s)
 
 	if (-1 != arg->single) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
-			&arg->sargs[arg->single]);
+			arg->sargs, arg->sposz, arg->single);
 		xmlstrflush(arg->buf, &arg->bufsz);
 	}
 
@@ -194,7 +194,8 @@ nav_end(void *dat, const XML_Char *s)
 		if ( ! tfind(arg->navtag, arg->sargs[k].tags))
 			continue;
 		xmlopen(arg->f, "li", NULL);
-		xmltextx(arg->f, arg->nav, NULL, &arg->sargs[k]);
+		xmltextx(arg->f, arg->nav, NULL, 
+			arg->sargs, arg->sposz, k);
 		xmlclose(arg->f, "li");
 		if (++i >= arg->navlen)
 			break;
@@ -246,7 +247,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	if (-1 != arg->single) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
-			&arg->sargs[arg->single]);
+			arg->sargs, arg->sposz, arg->single);
 		xmlstrflush(arg->buf, &arg->bufsz);
 	}
 
@@ -291,8 +292,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		return;
 	} else if (strcasecmp(s, "article")) {
 		if (-1 != arg->single)
-			xmlopensx(arg->f, s, atts, 
-				arg->dst, &arg->sargs[arg->single]);
+			xmlopensx(arg->f, s, atts, arg->dst, 
+				arg->sargs, arg->sposz, arg->single);
 		else
 			xmlopens(arg->f, s, atts);
 		return;
