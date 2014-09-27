@@ -171,6 +171,50 @@ xmlstrclose(char **p, size_t *sz, const XML_Char *name)
 	strlcat(*p, ">", *sz + 1);
 }
 
+static void
+xmlescape(FILE *f, const char *cp)
+{
+
+	warnx("foo2");
+	for ( ; '\0' != *cp; cp++) 
+		switch (*cp) {
+		case ('"'):
+			fputs("&quot;", f);
+			break;
+		case ('&'):
+			fputs("&amp;", f);
+			break;
+		default:
+			fputc(*cp, f);
+			break;
+		}
+	warnx("bar2");
+}
+
+static void
+xmlstrescape(char *p, size_t sz, const char *cp)
+{
+	size_t	ssz;
+
+	ssz = strlen(p);
+	warnx("foo1");
+
+	for ( ; '\0' != *cp; cp++) 
+		switch (*cp) {
+		case ('"'):
+			ssz = strlcat(p, "&quot;", sz);
+			break;
+		case ('&'):
+			ssz = strlcat(p, "&amp;", sz);
+			break;
+		default:
+			p[ssz++] = *cp;
+			p[ssz] = '\0';
+			break;
+		}
+	warnx("bar1");
+}
+
 void
 xmlstropen(char **p, size_t *sz, 
 	const XML_Char *name, const XML_Char **atts)
@@ -197,7 +241,7 @@ xmlstropen(char **p, size_t *sz,
 		*sz += ssz;
 		*p = xrealloc(*p, *sz + 1);
 		strlcat(*p, "\"", *sz + 1);
-		strlcat(*p, atts[1], *sz + 1);
+		xmlstrescape(*p, *sz + 1, atts[1]);
 		strlcat(*p, "\"", *sz + 1);
 	}
 
@@ -239,7 +283,7 @@ xmlopen(FILE *f, const XML_Char *name, ...)
 		fputc(' ', f);
 		fputs(attr, f);
 		fputs("=\"", f);
-		fputs(va_arg(ap, XML_Char *), f);
+		xmlescape(f, va_arg(ap, XML_Char *));
 		fputc('"', f);
 	}
 	va_end(ap);
@@ -338,7 +382,7 @@ xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
-		fputs(atts[1], f);
+		xmlescape(f, atts[1]);
 		fputc('"', f);
 	}
 	if (xmlvoid(s))
