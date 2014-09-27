@@ -189,6 +189,27 @@ xmlescape(FILE *f, const char *cp)
 		}
 }
 
+static size_t
+xmlstrescapesz(const char *cp)
+{
+	size_t	sz;
+
+	for (sz = 0; '\0' != *cp; cp++) 
+		switch (*cp) {
+		case ('"'):
+			sz += strlen("&quot;");
+			break;
+		case ('&'):
+			sz += strlen("&amp;");
+			break;
+		default:
+			sz++;
+			break;
+		}
+
+	return(sz);
+}
+
 static void
 xmlstrescape(char *p, size_t sz, const char *cp)
 {
@@ -242,7 +263,7 @@ xmlstropen(char **p, size_t *sz,
 		 * Use enough as if each word were that.
 		 * FIXME: this is totally unnecessary.
 		 */
-		ssz = 6 * strlen(atts[1]) + 2;
+		ssz = xmlstrescapesz(atts[1]) + 2;
 		*sz += ssz;
 		*p = xrealloc(*p, *sz + 1);
 		strlcat(*p, "\"", *sz + 1);
@@ -252,7 +273,6 @@ xmlstropen(char **p, size_t *sz,
 
 	if (isvoid)
 		strlcat(*p, "/", *sz + 1);
-
 	strlcat(*p, ">", *sz + 1);
 }
 
