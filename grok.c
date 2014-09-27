@@ -339,8 +339,6 @@ grok(XML_Parser p, const char *src, struct article *arg)
 	XML_ParserReset(p, NULL);
 	XML_SetStartElementHandler(p, input_begin);
 	XML_SetUserData(p, &parse);
-	warnx("grok");
-
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
 		fprintf(stderr, "%s:%zu:%zu: %s\n", src, 
@@ -349,8 +347,6 @@ grok(XML_Parser p, const char *src, struct article *arg)
 			XML_ErrorString(XML_GetErrorCode(p)));
 		goto out;
 	} 
-
-	warnx("foo");
 
 	if (NULL == parse.article->title) {
 		assert(NULL == parse.article->titletext);

@@ -175,7 +175,6 @@ static void
 xmlescape(FILE *f, const char *cp)
 {
 
-	warnx("foo2");
 	for ( ; '\0' != *cp; cp++) 
 		switch (*cp) {
 		case ('"'):
@@ -188,7 +187,6 @@ xmlescape(FILE *f, const char *cp)
 			fputc(*cp, f);
 			break;
 		}
-	warnx("bar2");
 }
 
 static void
@@ -197,7 +195,6 @@ xmlstrescape(char *p, size_t sz, const char *cp)
 	size_t	ssz;
 
 	ssz = strlen(p);
-	warnx("foo1");
 
 	for ( ; '\0' != *cp; cp++) 
 		switch (*cp) {
@@ -212,7 +209,6 @@ xmlstrescape(char *p, size_t sz, const char *cp)
 			p[ssz] = '\0';
 			break;
 		}
-	warnx("bar1");
 }
 
 void
@@ -226,7 +222,11 @@ xmlstropen(char **p, size_t *sz,
 
 	ssz = strlen(name) + 2 + isvoid;
 	*sz += ssz;
-	*p = xrealloc(*p, *sz + 1);
+	/* Make sure we zero the initial buffer. */
+	if (NULL == *p)
+		*p = xcalloc(*sz + 1, 1);
+	else 
+		*p = xrealloc(*p, *sz + 1);
 	strlcat(*p, "<", *sz + 1);
 	strlcat(*p, name, *sz + 1);
 
@@ -237,7 +237,12 @@ xmlstropen(char **p, size_t *sz,
 		strlcat(*p, " ", *sz + 1);
 		strlcat(*p, atts[0], *sz + 1);
 		strlcat(*p, "=", *sz + 1);
-		ssz = strlen(atts[1]) + 2;
+		/* 
+		 * Remember to buffer in '&quot;' space. 
+		 * Use enough as if each word were that.
+		 * FIXME: this is totally unnecessary.
+		 */
+		ssz = 6 * strlen(atts[1]) + 2;
 		*sz += ssz;
 		*p = xrealloc(*p, *sz + 1);
 		strlcat(*p, "\"", *sz + 1);
