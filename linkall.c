@@ -369,6 +369,7 @@ linkall(XML_Parser p, const char *templ,
 	fd = -1;
 	f = NULL;
 
+
 	memset(&larg, 0, sizeof(struct linkall));
 	sarg = xcalloc(sz, sizeof(struct article));
 
