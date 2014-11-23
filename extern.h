@@ -41,9 +41,6 @@ struct	article {
 	size_t		 tagsz;
 };
 
-#define	xrealloc realloc
-#define	xstrdup	strdup
-
 int	atom(XML_Parser p, const char *templ,
 		int sz, char *src[], const char *dst);
 int	compile(XML_Parser p, const char *templ,
@@ -74,6 +71,8 @@ void	xmltextx(FILE *f, const XML_Char *s,
 
 void	*xcalloc(size_t, size_t);
 void	*xmalloc(size_t);
+char	*xstrdup(const char *);
+void	*xrealloc(void *, size_t);
 
 __END_DECLS
 

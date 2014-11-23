@@ -26,24 +26,25 @@
 #include "extern.h"
 
 struct	linkall {
-	FILE		*f; /* open template file */
-	const char	*src; /* template file */
-	const char	*dst; /* output file (or empty)*/
-	XML_Parser	 p; /* active parser */
-	struct article	*sargs; /* sorted article contents */
-	int		 spos; /* current sarg being shown */ 
-	int		 sposz; /* size of sargs */
-	int		 ssposz;  /* number of sargs to show */
-	size_t		 stack; /* temporary: tag stack size */
-	size_t		 navlen; /* temporary: nav items to show */
-	char		*navtag; /* temporary: only show tags */
-	int		 navuse; /* use navigation contents */
-	ssize_t		 single; /* page index in -C mode*/
-	char		*nav; /* temporary: nav buffer */
-	size_t		 navsz; /* nav buffer length */
-	char		*buf; /* buffer for text */
-	size_t		 bufsz; /* buffer size */
-	size_t		 bufmax; /* buffer maximum size */
+	FILE		 *f; /* open template file */
+	const char	 *src; /* template file */
+	const char	 *dst; /* output file (or empty)*/
+	XML_Parser	  p; /* active parser */
+	struct article	 *sargs; /* sorted article contents */
+	int		  spos; /* current sarg being shown */ 
+	int		  sposz; /* size of sargs */
+	int		  ssposz;  /* number of sargs to show */
+	size_t		  stack; /* temporary: tag stack size */
+	size_t		  navlen; /* temporary: nav items to show */
+	char		**navtags; /* list of navtags to query */
+	size_t		  navtagsz; /* size of navtags list */
+	int		  navuse; /* use navigation contents */
+	ssize_t		  single; /* page index in -C mode*/
+	char		 *nav; /* temporary: nav buffer */
+	size_t		  navsz; /* nav buffer length */
+	char		 *buf; /* buffer for text */
+	size_t		  bufsz; /* buffer size */
+	size_t		  bufmax; /* buffer maximum size */
 };
 
 static	void	tmpl_begin(void *dat, const XML_Char *s, 
@@ -106,33 +107,33 @@ nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
  * If "haystack" is NULL or the tag wasn't found, return 0.
  */
 static int
-tfind(const char *needle, const char *haystack)
+tagfind(struct linkall *arg, const char *haystack)
 {
-	const char 	*cp;
-	size_t	 	 sz;
+	const char 	*cp, *needle;
+	size_t	 	 i, sz;
 
-	if (NULL == needle)
+	if (0 == arg->navtagsz)
 		return(1);
-
 	if (NULL == haystack) 
 		return(0);
 
-	sz = strlen(needle);
-again:
-	if (NULL == (cp = strstr(haystack, needle)))
-		return(0);
-
-	if (cp > haystack && ' ' != cp[-1]) {
-		haystack = cp + sz;
-		goto again;
+	for (i = 0; i < arg->navtagsz; i++) {
+		needle = arg->navtags[i];
+		sz = strlen(needle);
+		for (;;) {
+			if (NULL == (cp = strstr(haystack, needle)))
+				break;
+			if (cp > haystack && ' ' != cp[-1]) {
+				haystack = cp + sz;
+				continue;
+			}
+			cp += sz;
+			if ('\0' == *cp || ' ' == *cp)
+				return(1);
+			haystack = cp;
+		}
 	}
-
-	cp += sz;
-	if ('\0' == *cp || ' ' == *cp)
-		return(1);
-
-	haystack = cp;
-	goto again;
+	return(0);
 }
 
 static void
@@ -162,7 +163,7 @@ nav_end(void *dat, const XML_Char *s)
 	 */
 	if ( ! arg->navuse || 0 == arg->navsz) {
 		for (i = k = 0; k < arg->sposz; k++) {
-			if ( ! tfind(arg->navtag, arg->sargs[k].tags))
+			if ( ! tagfind(arg, arg->sargs[k].tags))
 				continue;
 			(void)strftime(buf, sizeof(buf), "%F", 
 				localtime(&arg->sargs[k].time));
@@ -178,33 +179,33 @@ nav_end(void *dat, const XML_Char *s)
 			if (i++ >= arg->navlen)
 				break;
 		}
-		xmlclose(arg->f, "ul");
-		xmlclose(arg->f, s);
-		xmlstrflush(arg->nav, &arg->navsz);
-		free(arg->navtag);
-		arg->navtag = NULL;
-		return;
+	} else {
+		/*
+		 * We do have a navigation template.
+		 * Output it, replacing key terms along the way.
+		 */
+		for (i = k = 0; k < arg->sposz; k++) {
+			if ( ! tagfind(arg, arg->sargs[k].tags))
+				continue;
+			xmlopen(arg->f, "li", NULL);
+			xmltextx(arg->f, arg->nav, NULL, 
+				arg->sargs, arg->sposz, k);
+			xmlclose(arg->f, "li");
+			if (++i >= arg->navlen)
+				break;
+		}
 	}
 
-	/*
-	 * We do have a navigation template.
-	 * Output it, replacing key terms along the way.
-	 */
-	for (i = k = 0; k < arg->sposz; k++) {
-		if ( ! tfind(arg->navtag, arg->sargs[k].tags))
-			continue;
-		xmlopen(arg->f, "li", NULL);
-		xmltextx(arg->f, arg->nav, NULL, 
-			arg->sargs, arg->sposz, k);
-		xmlclose(arg->f, "li");
-		if (++i >= arg->navlen)
-			break;
-	}
 	xmlclose(arg->f, "ul");
 	xmlclose(arg->f, s);
 	xmlstrflush(arg->nav, &arg->navsz);
-	free(arg->navtag);
-	arg->navtag = NULL;
+
+	for (i = 0; i < arg->navtagsz; i++)
+		free(arg->navtags[i]);
+
+	free(arg->navtags);
+	arg->navtags = NULL;
+	arg->navtagsz = 0;
 }
 
 static void
@@ -235,6 +236,23 @@ scmp(const void *p1, const void *p2)
 	const struct article *s1 = p1, *s2 = p2;
 
 	return(difftime(s2->time, s1->time));
+}
+
+static void
+tagalloc(struct linkall *arg, const char *in)
+{
+	char	*token, *string, *sv;
+
+	string = sv = xstrdup(in);
+	while ((token = strsep(&string, " ")) != NULL) {
+		if ('\0' == *token)
+			continue;
+		/* XXX: reallocarray(). */
+		arg->navtags = xrealloc(arg->navtags, 
+			(arg->navtagsz + 1) * sizeof(char *));
+		arg->navtags[arg->navtagsz++] = xstrdup(token);
+	}
+	free(sv);
 }
 
 static void
@@ -281,8 +299,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				arg->navuse = xmlbool(attp[1]);
 			} else if (0 == strcasecmp(attp[0], 
 					"data-sblg-navtag")) {
-				free(arg->navtag);
-				arg->navtag = strdup(attp[1]);
+				tagalloc(arg, attp[1]);
 			}
 		}
 
@@ -357,7 +374,7 @@ linkall(XML_Parser p, const char *templ,
 	const char *force, int sz, char *src[], const char *dst)
 {
 	char		*buf;
-	size_t		 ssz;
+	size_t		 j, ssz;
 	int		 i, fd, rc;
 	FILE		*f;
 	struct linkall	 larg;
@@ -442,8 +459,10 @@ out:
 	if (NULL != f && stdout != f)
 		fclose(f);
 
+	for (j = 0; j < larg.navtagsz; j++)
+		free(larg.navtags[j]);
+	free(larg.navtags);
 	free(larg.nav);
-	free(larg.navtag);
 	free(larg.buf);
 	free(sarg);
 	return(rc);
