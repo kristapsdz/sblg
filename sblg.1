@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: August 15 2014 $
+.Dd $Mdocdate: November 23 2014 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -249,7 +249,10 @@ attribute, this is used to limit the number of navigation entries.
 Finally, if the
 .Li data-sblg-navtag
 is specified, only articles with matching tags are shown.
-Tags are extracted from the space-separated
+You can specify multiple space-separated tags, for instance,
+.Li data-sblg-navtag="foo bar"
+will search for foo or bar.
+Tags to be matched against are extracted from the space-separated
 .Li data-sblg-tags
 element of each article's topmost
 .Aq article
@@ -360,6 +363,8 @@ the special strings
 .Li ${sblg-authortext} ,
 .Li ${sblg-base} ,
 .Li ${sblg-date} ,
+.Li ${sblg-first-base} ,
+.Li ${sblg-last-base} ,
 .Li ${sblg-next-base} ,
 .Li ${sblg-prev-base} ,
 .Li ${sblg-source} ,
@@ -369,6 +374,8 @@ and
 .Li ${sblg-url}
 will be replaced by the article's author (with markup), author text,
 basename (i.e., filename with suffix chopped off), publication date,
+first basename (chronologically ordered),
+last basename (chronologically ordered),
 next basename (chronologically ordered, wrapping back to the beginning),
 previous basename (chronologically ordered, wrapping to the end),
 filename, aside content, title (with markup), title text, and output URL
