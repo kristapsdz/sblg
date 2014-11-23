@@ -330,8 +330,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 	if (NULL == s || '\0' == *s)
 		return;
 
-	next = (artpos + 1) % artsz;
-	prev = artpos == 0 ? artsz - 1 : artpos - 1;
+	prev = (artpos + 1) % artsz;
+	next = artpos == 0 ? artsz - 1 : artpos - 1;
 
 #define	STRCMP(_word, _sz) \
 	(sz == (_sz) && 0 == memcmp(start, (_word), (_sz)))
