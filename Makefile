@@ -1,37 +1,37 @@
 .SUFFIXES: .xml .html .1.html .1
 
-VERSION = 0.2.1
-VDATE = 2014-08-15
-PREFIX = /usr/local
-CFLAGS += -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
-OBJS = main.o compile.o linkall.o grok.o echo.o util.o atom.o article.o
-SRCS = main.c compile.c linkall.c grok.c echo.c util.c atom.c article.c
-ARTICLES = article1.html \
-	   article2.html \
-	   article4.html \
-	   article5.html \
-	   article6.html \
-	   article7.html \
-	   article8.html
-VERSIONS = version_0_0_13.xml \
-	   version_0_1_1.xml \
-	   version_0_1_2.xml \
-	   version_0_1_3.xml \
-	   version_0_2_1.xml 
-XMLS = article1.xml \
-       article2.xml \
-       article4.xml \
-       article5.xml \
-       article6.xml \
-       $(VERSIONS)
-ATOM = atom.xml
-XMLGENS = article-template.xml blog-template.xml
-HTMLS = $(ARTICLES) index.html sblg.1.html
-CSSS = article.css blog.css shared.css
-BINDIR = $(PREFIX)/bin
-WWWDIR = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
-MANDIR = $(PREFIX)/man
-DOTAR = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml atom-template.xml sblg.1 extern.h
+VERSION 	 = 0.2.1
+VDATE 		 = 2014-08-15
+PREFIX 		 = /usr/local
+CFLAGS 		+= -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
+OBJS		 = main.o compile.o linkall.o grok.o echo.o util.o atom.o article.o
+SRCS		 = main.c compile.c linkall.c grok.c echo.c util.c atom.c article.c
+ARTICLES 	 = article1.html \
+	 	   article2.html \
+	 	   article4.html \
+	 	   article5.html \
+	 	   article6.html \
+	 	   article7.html \
+	 	   article8.html
+VERSIONS	 = version_0_0_13.xml \
+		   version_0_1_1.xml \
+		   version_0_1_2.xml \
+		   version_0_1_3.xml \
+		   version_0_2_1.xml 
+XMLS		 = article1.xml \
+    		   article2.xml \
+    		   article4.xml \
+    		   article5.xml \
+    		   article6.xml \
+    		   $(VERSIONS)
+ATOM 		 = atom.xml
+XMLGENS 	 = article-template.xml blog-template.xml
+HTMLS 		 = $(ARTICLES) index.html sblg.1.html
+CSSS 		 = article.css blog.css shared.css
+BINDIR 		 = $(PREFIX)/bin
+WWWDIR 		 = /usr/vhosts/kristaps.bsd.lv/www/htdocs/sblg
+MANDIR 		 = $(PREFIX)/man
+DOTAR 		 = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml atom-template.xml sblg.1 extern.h
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
