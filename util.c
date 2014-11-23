@@ -348,6 +348,10 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 				localtime(&arts[artpos].time));
 		if (STRCMP("sblg-base", 9))
 			fputs(arts[artpos].base, f);
+		else if (STRCMP("sblg-first-base", 14))
+			fputs(arts[0].base, f);
+		else if (STRCMP("sblg-last-base", 14))
+			fputs(arts[artsz - 1].base, f);
 		else if (STRCMP("sblg-next-base", 14))
 			fputs(arts[next].base, f);
 		else if (STRCMP("sblg-prev-base", 14))
@@ -413,6 +417,30 @@ xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
 	if (xmlvoid(s))
 		fputs(" /", f);
 	fputc('>', f);
+}
+
+char *
+xstrdup(const char *cp)
+{
+	void	*p;
+
+	if (NULL != (p = strdup(cp)))
+		return(p);
+
+	perror(NULL);
+	exit(EXIT_FAILURE);
+}
+
+void *
+xrealloc(void *cp, size_t sz)
+{
+	void	*p;
+
+	if (NULL != (p = realloc(cp, sz)))
+		return(p);
+
+	perror(NULL);
+	exit(EXIT_FAILURE);
 }
 
 void *
