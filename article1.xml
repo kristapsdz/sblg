@@ -8,45 +8,45 @@
 		Articles are fragments or full XML documents (usually <a href="http://www.w3.org/html/wg/drafts/html/master/">HTML5</a>).
 		The simplest article is structured as follows:
 	</p>
-	<div class="code">
-		<div>&lt;article data-sblg-article="1"&gt;</div>
-		<div class="tab">&lt;header&gt;</div>
-		<div class="dtab">&lt;h1&gt;Title&lt;/h1&gt;</div>
-		<div class="dtab">&lt;address&gt;Kristaps Dzonsons&lt;/address&gt;</div>
-		<div class="dtab">&lt;time datetime="2013-01-01"&gt;1 January, 2013&lt;/time&gt;</div>
-		<div class="tab">&lt;/header&gt;</div>
-		<div class="tab">&lt;aside&gt;</div>
-		<div class="dtab">The article's &lt;b&gt;summary&lt;/b&gt;</div>
-		<div class="tab">&lt;/aside&gt;</div>
-		<div class="tab">&lt;div&gt;Mu.&lt;/div&gt;</div>
-		<div>&lt;/article&gt;</div>
-	</div>
+	<p class="code">
+		<code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;header&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;h1&gt;Title&lt;/h1&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;address&gt;Kristaps Dzonsons&lt;/address&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;time datetime="2013-01-01"&gt;1 January, 2013&lt;/time&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;/header&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;aside&gt;</code>
+		<code class="prettyprint lang-html dtab">The article's &lt;b&gt;summary&lt;/b&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;/aside&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;code&gt;Mu.&lt;/code&gt;</code>
+		<code class="prettyprint lang-html">&lt;/article&gt;</code>
+	</p>
 	<p>
-		An article is any <span class="code">article</span> with the <span class="code">data-sblg-article</span> Boolean attribute.
-		The article publication time is parsed from the <span class="code">datetime</span> attribute of the first <span
-			class="code">time</span> tag in the first <span class="code">header</span>.
-		The title is parsed from the first <span class="code">hn</span> tag (where <var>n</var> = 1&#8211;4), as is the author from the
-		<span class="code">address</span> tag.
+		An article is any <code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code> Boolean attribute.  The
+		article publication time is parsed from the first <code class="prettyprint lang-html">&lt;time datetime=""&gt;</code> first
+		<code class="prettyprint lang-html">&lt;header&gt;</code>.
+		The title is parsed from the first <code class="prettyprint lang-html">&lt;hn&gt;</code> tag (where <var>n</var> = 1&#8211;4),
+		as is the author from the <code class="prettyprint lang-html">&lt;address&gt;</code> tag.
 		These are used to order articles on the main page and title the article page.
 		Both of these are optional &#8212; the system will default to <q>Untitled article</q>, <q>Unknown author</q>, and the file's
-		<span class="code">ctime</span>, if no information is otherwise provided.
-		Furthermore, the first <span class="code">aside</span> element is used for the <a href="article4.html">Atom</a> summary.
+		ctime, if no information is otherwise provided.
+		Furthermore, the first <code class="prettyprint lang-html">&lt;aside&gt;</code> is used for the <a href="article4.html">Atom</a> summary.
 	</p>
 	<p>
 		Articles are linked into a front page as follows (and omitting the surrounding HTML stuff):
 	</p>
-	<div class="code">
-		<div>&lt;body&gt;</div>
-		<div class="tab">&lt;nav data-sblg-nav="1" data-sblg-navsz="1" /&gt;</div>
-		<div class="tab">&lt;article data-sblg-article="1" /&gt;</div>
-		<div class="tab">&lt;article data-sblg-article="1" /&gt;</div>
-		<div>&lt;/body&gt;</div>
-	</div>
+	<p class="code">
+		<code class="prettyprint lang-html">&lt;body&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;nav data-sblg-nav="1" data-sblg-navsz="1" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;article data-sblg-article="1" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;article data-sblg-article="1" /&gt;</code>
+		<code class="prettyprint lang-html">&lt;/body&gt;</code>
+	</p>
 	<p>
-		The <span class="code">article</span> tags, if containing the <span class="code">data-sblg-article</span> atttribute, are
-		replaced by ordered article data, with a little <q>permanent link</q> thing following.  
-		The <span class="code">nav</span> element is replaced by newest-first blog posting history.
-		The rest is up to you.
+		Here, the <code class="prettyprint lang-html">&lt;article&gt;</code> is replaced by ordered article data, with a little
+		<q>permanent link</q> thing following.  
+		The <code class="prettyprint lang-html">&lt;nav&gt;</code> is replaced by newest-first blog posting history.  The rest is up to
+		you.
 		The <a href="sblg.1.html">sblg(1)</a> manual contains all the details.
 	</p>
 </article>

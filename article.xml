@@ -3,9 +3,10 @@
 	<head>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<meta charset='utf-8' /> 
-		<link rel="stylesheet" href="article.css" type="text/css" />
-		<link rel="canonical" href="${sblg-url}" />
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
+		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 		<title>sblg - ${sblg-title}</title>
+		<link rel="stylesheet" href="article.css" type="text/css" />
 	</head>
 	<body>
 		<header>
@@ -14,13 +15,14 @@
 		</header>
 		<div class="version">
 			<span>Version @VERSION@, @VDATE@</span>
-			<a href="sblg.tar.gz">Source</a>
-			<a href="atom.xml">RSS</a>
+			<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
+			<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
+			<a href="atom.xml"><i class="fa fa-rss"></i></a>
 		</div>
 		<section>
 			<p>
 				This is an example of an individual article.
-				It consists of a template (<a href="article-template.xml">article-template.xml</a>) merged with article contents.
+				It consists of a template (<a href="article.xml">article.xml</a>) merged with article contents.
 			</p>
 			<article data-sblg-article="1" >
 				<article>

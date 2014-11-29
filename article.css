@@ -1,1 +1,85 @@
-@import "shared.css";
+html, body		{ margin: 0;
+			  padding: 0; }
+body			{ color: #333; 
+			  font-size: 12pt; }
+a			{ text-decoration: none; }
+p			{ line-height: 120%; }
+aside			{ display: none; }
+article			{ display: block;
+			  padding: 0ex 1ex; }
+article[data-sblg-article]
+			{ border: 2px dashed orange;
+		  	  border-radius: 1em; }
+address			{ display: inline; 
+			  font-style: normal; }
+body			{ background-color: #eeeeee; }
+body > section		{ background-color: #ffffff;
+			  border-bottom-left-radius: 2ex;
+			  border-bottom-right-radius: 2ex;
+			  padding: 1.12em 2% 1.12em 2%; }
+body > section > p:first-child
+			{ margin-top: 0; }
+body > section > div[data-sblg-permlink]
+			{ font-size: smaller;
+			  margin-top: 1ex;
+			  margin-left: 2ex;
+			  margin-bottom: 2em; }
+body > section > div[data-sblg-permlink] > a
+			{ color: #336699; }
+body > section > div[data-sblg-permlink] > a:hover
+			{ border-bottom: thin dashed #336699; }
+body > section > p:last-child 	
+			{ margin-bottom: 0; 
+			  padding-bottom: 1.12em; }
+body > footer		{ padding: 2em 2% 2em 2%; 
+			  font-size: smaller;
+		 	  color: #999999; }
+body > footer a		{ color: #999999; }
+body > footer a:hover	{ border-bottom: thin solid #666666;
+			  color: #666666; }
+p.code			{ background-color: #eeeeee;
+			  border-radius: 0.5ex;
+			  padding: 0.5ex;
+			  border: thin dashed #cccccc; }
+p.code > code.tab	{ padding-left: 4ex; }
+p.code > code.dtab	{ padding-left: 8ex; }
+p.code > code		{ display: block; }
+.name			{ font-weight: bolder; }
+body > header		{ padding: 2em 0;
+			  color: #dddddd;
+			  text-align: center; 
+			  background-color: #336699; }
+body > header h1 	{ font-size: 28pt;
+			  font-weight: normal;
+			  margin: 0;
+			  display: inline-block; }
+body > header h1 a	{ color: #eeeeee; }
+body > header div 	{ font-size: 24pt;
+			  display: inline; }
+body > section > article[data-sblg-article] h1,
+body > section > article[data-sblg-article] h2,
+body > section > article[data-sblg-article] h3
+			{ font-size: large; }
+body > section > article[data-sblg-article] header h1
+			{ margin-bottom: 0; }
+body > section > article[data-sblg-article] header div
+			{ margin-top: 1ex;
+			  font-size: smaller;
+			  color: #999999; }
+body > section > article[data-sblg-article] header address,
+body > section > article[data-sblg-article] header time
+			{ color: #666666; 
+			  font-weight: bold; }
+.noshow			{ display: none; }
+div.version		{ color: #333333;
+			  background-color: #dddddd;
+			  border-bottom: thin solid #aaaaaa;
+			  font-size: 14pt;
+			  padding: 1.5ex; 
+		 	  padding-left: 1.5ex; }
+div.version > span	{ border-right: thin solid #aaaaaa; 
+			  margin-right: 0.75ex; 
+			  padding-right: 1ex; }
+div.version > a		{ color: #333;  
+			  padding: 0 0.5ex; }
+div.version > a:hover	{ color: #000; }

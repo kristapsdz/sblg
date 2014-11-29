@@ -14,51 +14,51 @@
 		First, I stipulate that no <q>alternate</q> links exist, because I don't want to have a separate file for each and every
 		version.
 		Second, I make the article contents be inlined in the feed.
-		I could just use the regular processing of having <code class="code">aside</code> elements with the summary, but I'd basically be
-		duplicating the article's contents.
+		I could just use the regular processing of having <code class="prettyprint lang-html">aside</code> elements with the summary,
+		but I'd basically be duplicating the article's contents.
 	</p>
-	<div class="code">
-		<div>&lt;?xml version="1.0" encoding="utf-8"?&gt;</div>
-		<div>&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;</div>
-		<div class="tab">&lt;title&gt;Example Feed&lt;/title&gt;</div>
-		<div class="tab">&lt;link href="http://example.org/atom.xml" rel="self" /&gt;</div>
-		<div class="tab">&lt;link href="http://example.org/" /&gt;</div>
-		<div class="tab">&lt;id data-sblg-id="1" /&gt;</div>
-		<div class="tab">&lt;updated data-sblg-updated="1" /&gt;</div>
-		<div class="tab">&lt;entry data-sblg-entry="1" data-sblg-content="1" data-sblg-altlink="0" /&gt;</div>
-		<div class="tab">&lt;entry data-sblg-entry="1" data-sblg-content="1" data-sblg-altlink="0" /&gt;</div>
-		<div>&lt;/feed&gt;</div>
-	</div>
+	<p class="code">
+		<code class="prettyprint lang-html">&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>
+		<code class="prettyprint lang-html">&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;title&gt;Example Feed&lt;/title&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;link href="http://example.org/atom.xml" rel="self" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;link href="http://example.org/" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;id data-sblg-id="1" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;updated data-sblg-updated="1" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;entry data-sblg-entry="1" data-sblg-content="1" data-sblg-altlink="0" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;entry data-sblg-entry="1" data-sblg-content="1" data-sblg-altlink="0" /&gt;</code>
+		<code class="prettyprint lang-html">&lt;/feed&gt;</code>
+	</p>
 	<p>
-		I then add articles (raw XML) to an <code class="code">ARTICLES</code> variable in my Makefile, and build an <code
-			class="code">atom.xml</code> that depends on these files.
+		I then add articles (raw XML) to an <code class="prettyprint">ARTICLES</code> variable in my Makefile, and build an <code
+			class="prettyprint">atom.xml</code> that depends on these files.
 	</p>
-	<div class="code">
-		<div>ARTICLES = article1.xml article2.xml</div>
-		<div>atom.xml: $(ARTICLES)</div>
-		<div class="tab">sblg -a -o $@ $(ARTICLES)</div>
-	</div>
+	<p class="code">
+		<code class="prettyprint">ARTICLES = article1.xml article2.xml</code>
+		<code class="prettyprint">atom.xml: $(ARTICLES)</code>
+		<code class="prettyprint tab">sblg -a -o $@ $(ARTICLES)</code>
+	</p>
 	<p>
 		Articles (fragments, really) are written as specified in <a href="sblg.1.html">sblg(1)</a>.
 	</p>
-	<div class="code">
-		<div>&lt;article data-sblg-article="1"&gt;</div>
-		<div class="tab">&lt;header&gt;</div>
-		<div class="dtab">&lt;h3&gt;Version 0.0.10&lt;/h3&gt;</div>
-		<div class="dtab">&lt;time datetime="2013-07-09"&gt;09/07/2013&lt;/time&gt;</div>
-		<div class="dtab">&lt;address&gt;Kristaps Dzonsons&lt;/address&gt;</div>
-		<div class="tab">&lt;/header&gt;</div>
-		<div class="tab">&lt;p&gt;</div>
-		<div class="dtab">Release notes here.</div>
-		<div class="tab">&lt;/p&gt;</div>
-		<div>&lt;/article&gt;</div>
-	</div>
+	<p class="code">
+		<code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;header&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;h3&gt;Version 0.0.10&lt;/h3&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;time datetime="2013-07-09"&gt;09/07/2013&lt;/time&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;address&gt;Kristaps Dzonsons&lt;/address&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;/header&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;p&gt;</code>
+		<code class="prettyprint lang-html dtab">Release notes here.</code>
+		<code class="prettyprint lang-html tab">&lt;/p&gt;</code>
+		<code class="prettyprint lang-html">&lt;/article&gt;</code>
+	</p>
 	<p>
 		Finally, I have the blog template note a selection of recent entries and prohibit the permanent link.
 	</p>
-	<div class="code">
-		<div>&lt;article data-sblg-article="1" data-sblg-permlink="0" /&gt;</div>
-	</div>
+	<p class="code">
+		<code class="prettyprint lang-html">&lt;article data-sblg-article="1" data-sblg-permlink="0" /&gt;</code>
+	</p>
 	<p>
 		That's it!  Now all I need to do is make some release notes and add the release to my Makefile.
 		The rest&#8212;feed, list of recent releases&#8212;is auto-generated by <a href="sblg.1.html">sblg(1)</a>.
