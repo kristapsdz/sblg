@@ -5,32 +5,32 @@
 	</header>
 	<aside>Tips and tricks for using sblg.</aside>
 	<p>
-		<span class="name">sblg</span>'s ability to fill in <code class="code">&lt;nav data-sblg-nav="1" /&gt;</code> is fairly limited,
-		but after version 0.0.12, you can specify exactly how you want to fill in navigation entries.
+		<span class="name">sblg</span>'s ability to fill in <code class="prettyprint lang-html">&lt;nav data-sblg-nav="1" /&gt;</code>
+		is fairly limited, but after version 0.0.12, you can specify exactly how you want to fill in navigation entries.
 	</p>
 	<p>
 		Prior to this, navigation looked as follows after being run through the system:
 	</p>
-	<div class="code">
-		<div>&lt;nav data-sblg-nav="1"&gt;</div>
-		<div class="tab">&lt;ul&gt;</div>
-		<div class="dtab">&lt;li&gt;date: &lt;a href="source"&gt;title&lt;/a&gt;&lt;/li&gt;</div>
-		<div class="tab">&lt;/ul&gt;</div>
-		<div>&lt;/nav&gt;</div>
-	</div>
+	<p class="code">
+		<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;ul&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;li&gt;date: &lt;a href="source"&gt;title&lt;/a&gt;&lt;/li&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;/ul&gt;</code>
+		<code class="prettyprint lang-html">&lt;/nav&gt;</code>
+	</p>
 	<p>
 		Now, one can specify the <code class="code">&lt;nav data-sblg-navcontent="1"&gt;</code> attribute and allow the
 		element's contents be filled in with keyword substitution.
 		Using, for example, the <code class="code">${sblg-base}</code> parameter, you can have a custom navigation entry consisting of an
 		image or otherwise!
 	</p>
-	<div class="code">
-		<div>&lt;nav data-sblg-nav="1" data-sblg-navcontent="1"&gt;</div>
-		<div class="tab">&lt;a href="${sblg-source}"&gt;</div>
-		<div class="dtab">&lt;figure&gt;&lt;img src="${sblg-base}.png" /&gt;&lt;figcaption&gt;${title}&lt;/figcaption&gt;&lt;/figure&gt;</div>
-		<div class="tab">&lt;/a&gt;</div>
-		<div>&lt;/nav&gt;</div>
-	</div>
+	<p class="code">
+		<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navcontent="1"&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;a href="${sblg-source}"&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;figure&gt;&lt;img src="${sblg-base}.png" /&gt;&lt;figcaption&gt;${title}&lt;/figcaption&gt;&lt;/figure&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;/a&gt;</code>
+		<code class="prettyprint lang-html">&lt;/nav&gt;</code>
+	</p>
 	<p>
 		This will have navigation consist of a list of figures with images set to the filename base.
 	</p>
