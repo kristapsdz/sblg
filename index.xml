@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta charset='utf-8' /> 
+		<link href="atom.xml" type="application/atom+xml" rel="alternate" title="sblg Article and Version Feed" />
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
+		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+		<title>simple off-line blog utility</title>
+		<link rel="stylesheet" href="index.css" type="text/css" />
+	</head>
+	<body itemscope="itemscope" itemtype="http://schema.org/SoftwareApplication">
+		<section>
+			<section class="mi">
+				<h2><a href="#makefile">makefile</a></h2>
+				<section id="makefile">
+					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
+					<p>
+						Start with a Makefile.
+						Pretend that your articles (<a href="article1.xml">article1.xml</a>, <a
+							href="article2.xml">article2.xml</a>) are source code.
+						Then object files (<a href="article1.html">article1.html</a>, <a
+							href="article2.html">article2.html</a>) are compiled from single articles and a
+						template, <a href="article.xml">article.xml</a>.
+						Binaries (<a href="index.html">index.html</a> are compiled from object files (or directly from
+						sources) and a template, <a href="index.xml">index.xml</a>.
+					</p>
+					<p class="code">
+						<code class="prettyprint lang-makefile">XMLS = <a href="article1.xml">article1.xml</a> <a href="article2.xml">article2.xml</a></code>
+						<code class="prettyprint lang-makefile">ARTICLES = <a href="article1.html">article1.html</a> <a href="article1.html">article2.html</a></code>
+						<code class="prettyprint lang-makefile">&#x00a0;</code>
+						<code class="prettyprint lang-makefile">all: <a href="index.html">index.html</a> $(ARTICLES)</code>
+						<code class="prettyprint lang-makefile">&#x00a0;</code>
+						<code class="prettyprint lang-makefile"><a href="index.html">index.html</a>: <a href="index.xml">index.xml</a> $(XMLS)</code>
+						<code class="prettyprint lang-makefile indent">sblg -o $@ -t <a href="index.xml">index.xml</a> $(XMLS)</code>
+						<code class="prettyprint lang-makefile">&#x00a0;</code>
+						<code class="prettyprint lang-makefile">.xml.html:</code>
+						<code class="prettyprint lang-makefile indent">sblg -o $@ -t <a href="article.xml">article.xml</a> $&lt;</code>
+					</p>
+				</section>
+			</section>
+			<section class="mo">+</section>
+			<section class="mi">
+				<h2><a href="#content">content</a></h2>
+				<section id="content">
+					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
+					<p>
+						Articles are just content within the <code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code> tag.
+						Some parts of articles are lifted out by <a href="sblg.1.html">sblg(1)</a>.
+						These are used for populating navigation elements in the templates.
+					</p>
+					<p class="code">
+						<code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;header&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;h1&gt;<wbr />Title<wbr />&lt;/h1&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;address&gt;<wbr/>My Name<wbr/>&lt;/address&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;time datetime="2014-04-12"&gt;<wbr />2014-04-12<wbr />&lt;/time&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;/header&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;aside&gt;</code>
+						<code class="prettyprint lang-html dindent">
+							This is pulled out for the page synopsis.
+						</code>
+						<code class="prettyprint lang-html indent">&lt;/aside&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;p&gt;</code>
+						<code class="prettyprint lang-html dindent">
+							And here we have some &lt;q&gt;content&lt;/q&gt;.
+						</code>
+						<code class="prettyprint lang-html indent">&lt;/p&gt;</code>
+						<code class="prettyprint lang-html">&lt;/article&gt;</code>
+					</p>
+					<p>
+						You'll also need a template.
+						For the <q>compile mode</q>, this is just a regular HTML file where the <code class="prettyprint
+							lang-html">&lt;article data-sblg-article="1"&gt;</code> tag is replaced by the page
+						contents.
+						For <q>linking</q> (or just <q>blog</q>) mode, you can also specify 
+						<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> to fill in all known
+						articles, possibly tag-filtered.
+					</p>
+				</section>
+			</section>
+			<section class="mo">+</section>
+			<section class="mi">
+				<h2><a href="#sblg">sblg</a></h2>
+				<section id="sblg">
+					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
+					<p>
+						<a href="sblg.1.html">sblg(1)</a> is a utility for creating static blogs.
+						It's built to work seamlessly with Makefiles, is in <a href="http://opensource.org/licenses/ISC"
+							rel="license">ISC licensed</a> ISO C, and depends only on <a
+							href="http://expat.sourceforge.net/">libexpat</a>, which most most operating systems
+						bundle.
+						You write your content in an HTML fragments; <a href="sblg.1.html">sblg(1)</a> knits it together
+						with templates, formats navigation, and so on.
+						This entire site is built with <a href="sblg.1.html">sblg(1)</a>, as are quite a few others.
+						To see how, look at the <a href="#makefile">Makefile</a> snippet.
+						This is the main page; for articles, see the <a href="#blog">blog</a> section for navigation.
+					</p>
+					<p>
+						To get started, download <a href="sblg.tar.gz">sblg.tar.gz</a> (<a
+							href="sblg.tar.gz.sha512">SHA512</a>), decompress, and run <code class="prettyprint
+							lang-sh">make install</code>.
+						The current version is @VERSION@, released on @VDATE@.  Version notes...
+					</p>
+					<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="2">
+						<div>
+							<i class="fa fa-fw fa-clock-o"></i> ${sblg-date}: version ${sblg-title}
+						</div>
+						<div>
+							${sblg-aside}
+						</div>
+					</nav>
+				</section>
+			</section>
+			<section class="mo">=</section>
+			<section class="mi">
+				<h2><a href="#blog">blog</a></h2>
+				<section id="blog">
+					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
+					<p>
+						To read about the system, read the <a href="sblg.1.html">sblg(1)</a> manual.
+						I take great care in making sure that the manpage is up to date; less so the non-canonical
+						<q>howto</q> and <q>FAQ</q> documents.
+						That said, this is about blogs, so you might as well have some bloggy stuff.
+					</p>
+					<nav data-sblg-nav="1" data-sblg-navtag="howto" data-sblg-navcontent="1">
+						<div>
+							<i class="fa fa-fw fa-clock-o"></i> ${sblg-date}:
+							<a href="${sblg-base}.html">${sblg-title}</a>
+						</div>
+						<div>
+							${sblg-aside}
+						</div>
+					</nav>
+				</section>
+			</section>
+			<footer>
+				&#169; 2013&#8211;2014, <a href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
+				<div>
+					<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
+					<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
+					<a href="snapshots"><i class="fa fa-file-o"></i></a>
+					<a href="http://www.bsd.lv"><i class="fa fa-home"></i></a>
+				</div>
+			</footer>
+		</section>
+	</body>
+</html>

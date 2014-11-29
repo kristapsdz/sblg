@@ -26,23 +26,27 @@ XMLS		 = article1.xml \
     		   article6.xml \
     		   $(VERSIONS)
 ATOM 		 = atom.xml
-XMLGENS 	 = article-template.xml blog-template.xml
+XMLGENS 	 = article.xml index.xml
 HTMLS 		 = $(ARTICLES) index.html sblg.1.html
-CSSS 		 = article.css blog.css shared.css
+CSSS 		 = article.css index.css 
 BINDIR 		 = $(PREFIX)/bin
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 MANDIR 		 = $(PREFIX)/man
-DOTAR 		 = Makefile $(XMLS) $(CSSS) $(SRCS) blog-template.in.xml article-template.in.xml atom-template.xml sblg.1 extern.h
+DOTAR 		 = Makefile $(XMLS) $(CSSS) $(SRCS) $(XMLGENS) atom-template.xml sblg.1 extern.h
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
 
-www: $(HTMLS) $(ATOM) sblg.tar.gz
+www: $(HTMLS) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512
 
 installwww: www
 	mkdir -p $(WWWDIR)
-	install -m 0444 sblg.tar.gz Makefile $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(WWWDIR)
-	install -m 0444 sblg.tar.gz $(WWWDIR)/sblg-$(VERSION).tar.gz
+	mkdir -p $(WWWDIR)/snapshots
+	install -m 0444 Makefile $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(WWWDIR)
+	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz
+	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz.sha512
+	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots
+	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots
 
 install: sblg
 	mkdir -p $(DESTDIR)$(BINDIR)
@@ -56,36 +60,31 @@ sblg.tar.gz:
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
+sblg.tar.gz.sha512: sblg.tar.gz
+	openssl dgst -sha512 sblg.tar.gz >$@
+
 $(OBJS): extern.h
 
 atom.xml index.html $(ARTICLES): sblg
 
 atom.xml: atom-template.xml
 
-index.html: blog-template.xml
+$(ARTICLES): article.xml
 
-blog-template.xml: blog-template.in.xml
-	sed -e "s!@VERSION@!$(VERSION)!g" \
-	    -e "s!@VDATE@!$(VDATE)!g" blog-template.in.xml >$@
-
-article-template.xml: article-template.in.xml
-	sed -e "s!@VERSION@!$(VERSION)!g" \
-	    -e "s!@VDATE@!$(VDATE)!g" article-template.in.xml >$@
-
-$(ARTICLES): article-template.xml
-
-index.html: $(ARTICLES) $(VERSIONS)
-	./sblg -o $@ $(ARTICLES) $(VERSIONS)
+index.html: index.xml $(ARTICLES) $(VERSIONS)
+	./sblg -o- -t index.xml $(ARTICLES) $(VERSIONS) | \
+		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
 
 atom.xml: $(ARTICLES) $(VERSIONS)
 	./sblg -o $@ -a $(ARTICLES) $(VERSIONS)
 
 .xml.html:
-	./sblg -o $@ -c $<
+	./sblg -o- -t article.xml -c $< | \
+		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
 
 .1.1.html:
 	mandoc -Thtml $< >$@
 
 clean:
-	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz $(XMLGENS)
+	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz sblg.tar.gz.sha512
 	rm -rf *.dSYM

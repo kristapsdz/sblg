@@ -1,0 +1,75 @@
+body, html			{ height: 100%;
+				  margin: 0;
+				  width: 100%; }
+a				{ text-decoration: none; }
+body				{ display: table; }
+body > section > footer		{ position: absolute;
+				  width: 100%;
+				  padding-bottom: 1ex;
+				  bottom: 0; 
+				  font-size: 13pt;
+				  text-align: center;
+				  color: #aaa; }
+body > section > footer a	{ color: #bbb; }
+body > section > footer a:hover	{ color: #fff; }
+body > section > footer div	{ display: inline-block; 
+				  margin-left: 1ex;
+				  font-size: 16pt; }
+body > section			{ background-color: #336699;
+				  position: relative;
+				  padding-bottom: 4em;
+				  text-align: center;
+				  display: table-cell;
+				  width: 100%;
+				  height: 100%;
+				  vertical-align: middle; }
+section.mi > section		{ max-height: 0;
+				  position: relative;
+				  overflow: hidden;
+				  margin: 0 1ex;
+				  padding: 0 2em;
+				  border-radius: 1ex;
+				  box-shadow: inset 0 1px 2px #666, inset 0 -1px 2px #666; 
+				  transition: max-height 0.5s ease-in-out;
+				  text-align: left; 
+				  background-color: #eee; }
+section.mi a.close		{ left: 0.5ex;
+				  top: 13pt;
+				  position: absolute;
+				  color: #000; }
+section.mo			{ color: #000;
+				  text-shadow: 1px 1px 1px #aaa; 
+				  font-size: 20pt; }
+section.mi > section:target	{ max-height: 100em;  }
+section.mi > h2			{ font-size: 30pt; 
+				  color: #ddd;
+				  font-weight: normal;
+				  text-shadow: 1px 1px 1px #666;
+				  margin: 0; }
+section.mi > h2:hover 		{ text-shadow: 1px 1px 2px #999; 
+				  color: #fff; }
+section.mi > h2 a		{ color: inherit; }
+section.mi > section > *:not(a)	{ font-size: 13pt; }
+section.mi p			{ line-height: 120%; }
+nav[data-sblg-nav] ul		{ list-style-type: none; 
+				  padding: 0;
+				  margin: 1em 0; }
+nav[data-sblg-nav] li		{ margin: 1ex 0; 
+				  padding: 0; }
+nav[data-sblg-nav] li div:last-child
+				{ padding: 0.5ex 0 0 20pt; 
+				  color: #333; }
+p.code code			{ display: block; }
+p.code code a			{ border-bottom: thin dashed #336699; }
+p.code code.indent		{ padding-left: 4ex; }
+p.code code.dindent		{ padding-left: 8ex; }
+@media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
+p.code code			{ font-size: 11pt; }
+p.code code.indent		{ padding-left: 2ex; }
+p.code code.dindent		{ padding-left: 4ex; }
+body > section > footer div	{ display: block; 
+				  margin: 0; }
+}
+@media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
+p.code code			{ font-size: 9pt; }
+}
