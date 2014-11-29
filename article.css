@@ -31,12 +31,11 @@ body > section > div[data-sblg-permlink] > a:hover
 body > section > p:last-child 	
 			{ margin-bottom: 0; 
 			  padding-bottom: 1.12em; }
-body > footer		{ padding: 2em 2% 2em 2%; 
-			  font-size: smaller;
+body > footer		{ padding: 2em 0; 
+			  text-align: center;
 		 	  color: #999999; }
 body > footer a		{ color: #999999; }
-body > footer a:hover	{ border-bottom: thin solid #666666;
-			  color: #666666; }
+body > footer a:hover	{ color: #666666; }
 p.code			{ background-color: #eeeeee;
 			  border-radius: 0.5ex;
 			  padding: 0.5ex;
