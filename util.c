@@ -14,6 +14,8 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+#include "config.h"
+
 #include <sys/mman.h>
 #include <sys/stat.h>
 
@@ -425,6 +427,18 @@ xstrdup(const char *cp)
 	void	*p;
 
 	if (NULL != (p = strdup(cp)))
+		return(p);
+
+	perror(NULL);
+	exit(EXIT_FAILURE);
+}
+
+void *
+xreallocarray(void *cp, size_t nm, size_t sz)
+{
+	void	*p;
+
+	if (NULL != (p = reallocarray(cp, nm, sz)))
 		return(p);
 
 	perror(NULL);

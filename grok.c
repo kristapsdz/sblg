@@ -14,6 +14,8 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+#include "config.h"
+
 #include <sys/stat.h>
 
 #include <assert.h>
@@ -29,14 +31,14 @@
 
 struct	parse {
 	XML_Parser	 p;
-	struct article	*article;
-	size_t		 stack;
-	size_t		 gstack;
-	int		 flags;
-#define	PARSE_ASIDE	 1
-#define	PARSE_TIME	 2
-#define	PARSE_ADDR	 4
-#define	PARSE_TITLE	 8
+	struct article	*article; /* article being parsed */
+	size_t		 stack; /* stack (many uses) */
+	size_t		 gstack; /* global "article" stack */
+#define	PARSE_ASIDE	 1 /* we've seen an aside */
+#define	PARSE_TIME	 2 /* we've seen a time */
+#define	PARSE_ADDR	 4 /* we've seen an address */
+#define	PARSE_TITLE	 8 /* we've seen a title */
+	unsigned int	 flags;
 };
 
 /*
@@ -286,6 +288,9 @@ static void
 input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct parse	 *arg = dat;
+	char		 *cp, *tok, *tofree, *loc, *start;
+	char		  c;
+	size_t		  sz;
 	const XML_Char	**attp;
 
 	assert(0 == arg->gstack);
@@ -305,6 +310,34 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	 */
 	if (NULL == *attp || ! xmlbool(attp[1]))
 		return;
+
+	/*
+	 * If we have any languages specified, append them here.
+	 */
+	for (attp = atts; NULL != *attp; attp += 2) 
+		if (0 == strcasecmp(*attp, "data-sblg-lang")) {
+			cp = tofree = xstrdup(attp[1]);
+			while ((tok = strsep(&cp, " \t")) != NULL) {
+				if ('\0' == *tok)
+					continue;
+				start = strrchr(arg->article->base, '/');
+				if (NULL == start)
+					start = arg->article->base;
+				else
+					start++;
+				loc = strstr(start, tok);
+				if (NULL == loc || loc == start)
+					continue;
+				if ('.' != loc[-1])
+					continue;
+				c = loc[strlen(tok)];
+				if ('.' != c && '\0' != c)
+					continue;
+				sz = strlen(loc) - strlen(tok) + 1;
+				memmove(loc - 1, loc + strlen(tok), sz);
+			}
+			free(tofree);
+		}
 
 	arg->gstack = 1;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
@@ -331,8 +364,6 @@ grok(XML_Parser p, const char *src, struct article *arg)
 
 	arg->src = src;
 	arg->base = xstrdup(src);
-	if (NULL != (cp = strrchr(arg->base, '.')))
-		*cp = '\0';
 	parse.article = arg;
 	parse.p = p;
 
@@ -347,6 +378,12 @@ grok(XML_Parser p, const char *src, struct article *arg)
 			XML_ErrorString(XML_GetErrorCode(p)));
 		goto out;
 	} 
+
+	if (NULL != (cp = strrchr(arg->base, '.')))
+		if (NULL == strchr(cp, '/'))
+			*cp = '\0';
+
+	fprintf(stderr, "Final base = %s\n", arg->base);
 
 	if (NULL == parse.article->title) {
 		assert(NULL == parse.article->titletext);

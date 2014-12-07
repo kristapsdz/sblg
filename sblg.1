@@ -54,7 +54,7 @@ and
 into
 .Pa foo.html
 from a template of articles and navigation.
-.It 
+.It
 Atom amalgamation mode
 .Pq Fl a
 link multiple articles with an Atom feed template.
@@ -356,30 +356,48 @@ or
 .Fl C ,
 or in an amalgamation navigation entry having
 .Li data-sblg-navcontents="1" ,
-the special strings
-.Li ${sblg-aside} ,
-.Li ${sblg-asidetext} ,
-.Li ${sblg-author} ,
-.Li ${sblg-authortext} ,
-.Li ${sblg-base} ,
-.Li ${sblg-date} ,
-.Li ${sblg-first-base} ,
-.Li ${sblg-last-base} ,
-.Li ${sblg-next-base} ,
-.Li ${sblg-prev-base} ,
-.Li ${sblg-source} ,
-.Li ${sblg-title} ,
-.Li ${sblg-titletext} ,
-and
-.Li ${sblg-url}
-will be replaced by the article's author (with markup), author text,
-basename (i.e., filename with suffix chopped off), publication date,
-first basename (newest),
-last basename (oldest),
-next basename (chronologically ordered, wrapping back to the beginning),
-previous basename (chronologically ordered, wrapping to the end),
-filename, aside content, title (with markup), title text, and output URL
-(in a non-navigation context) respectively.
+the following special strings are replaced:
+.Bl -tag -width -Ds
+.It Li ${sblg-aside}
+The article's first aside with markup.
+.It Li ${sblg-asidetext}
+The article's first aside, textual parts only.
+.It Li ${sblg-author}
+The article's author with markup.
+.It Li ${sblg-authortext}
+The article's author, textual parts only
+.It Li ${sblg-base}
+The full filename (including directory) with the last suffix part
+chopped off.
+This shouldn't be confused with
+.Xr basename 3 .
+.It Li ${sblg-date}
+The publication date.
+.It Li ${sblg-first-base}
+In an amalgamation mode, the first (newest) base name.
+.It Li ${sblg-last-base}
+In an amalgamation mode, the last (oldest) base name.
+.It Li ${sblg-next-base}
+In an amalgamation mode, the next base name when chronologically ordered
+from newest to oldest, wrapping back to the beginning for the last.
+.It Li ${sblg-prev-base}
+In an amalgamation mode, the previous base name when chronologically
+ordered from newest to oldest, wrapping back to the beginning for the
+last.
+.It Li ${sblg-source}
+The source file when passed for parsing.
+.It Li ${sblg-title}
+The article title with markup.
+.It Li ${sblg-titletext}
+The article title, textual parts only.
+.It Li ${sblg-url}
+The output filename, which might be empty if
+.Nm
+output is standar output.
+To prevent ambiguity, this is always empty in
+.Aq nav data-sblg-nav="1"
+contexts.
+.El
 .Pp
 Be careful in using these: the contents are copied directly, so if
 specifying a value within an HTML attribute that has a double-quote, the
@@ -420,7 +438,7 @@ satisfy the Atom 1.0 and Tag ID standards.
 The
 .Nm
 utility was written by
-.Ar Kristaps Dzonsons ,
+.An Kristaps Dzonsons ,
 .Mt kristaps@bsd.lv .
 .Sh CAVEATS
 Boolean XML values must have an attribute specified.

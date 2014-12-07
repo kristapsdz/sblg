@@ -4,8 +4,31 @@ VERSION 	 = 0.2.3
 VDATE 		 = 2014-11-29
 PREFIX 		 = /usr/local
 CFLAGS 		+= -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
-OBJS		 = main.o compile.o linkall.o grok.o echo.o util.o atom.o article.o
-SRCS		 = main.c compile.c linkall.c grok.c echo.c util.c atom.c article.c
+OBJS		 = main.o \
+		   compat-reallocarray.o \
+		   compat-strlcat.o \
+		   compat-strlcpy.o \
+		   compile.o \
+		   linkall.o \
+		   grok.o \
+		   echo.o \
+		   util.o \
+		   atom.o \
+		   article.o
+SRCS		 = main.c \
+		   compile.c \
+		   compat-reallocarray.c \
+		   compat-strlcat.c \
+		   compat-strlcpy.c \
+		   linkall.c \
+		   grok.c \
+		   echo.c \
+		   util.c \
+		   atom.c \
+		   article.c
+TESTS 		 = test-reallocarray.c \
+      		   test-strlcat.c \
+      		   test-strlcpy.c 
 ARTICLES 	 = article1.html \
 	 	   article2.html \
 	 	   article4.html \
@@ -19,7 +42,8 @@ VERSIONS	 = version_0_0_13.xml \
 		   version_0_1_3.xml \
 		   version_0_2_1.xml \
 		   version_0_2_2.xml \
-		   version_0_2_3.xml 
+		   version_0_2_3.xml \
+		   version_0_2_4.xml 
 XMLS		 = article1.xml \
     		   article2.xml \
     		   article4.xml \
@@ -33,7 +57,18 @@ CSSS 		 = article.css index.css
 BINDIR 		 = $(PREFIX)/bin
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 MANDIR 		 = $(PREFIX)/man
-DOTAR 		 = Makefile $(XMLS) $(CSSS) $(SRCS) $(XMLGENS) atom-template.xml sblg.1 extern.h
+DOTAR 		 = Makefile \
+		   $(XMLS) \
+		   $(CSSS) \
+		   $(SRCS) \
+		   $(XMLGENS) \
+		   atom-template.xml \
+		   sblg.1 \
+		   extern.h \
+		   configure \
+		   config.h.post \
+		   config.h.pre \
+		   $(TESTS)
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
@@ -64,7 +99,11 @@ sblg.tar.gz:
 sblg.tar.gz.sha512: sblg.tar.gz
 	openssl dgst -sha512 sblg.tar.gz >$@
 
-$(OBJS): extern.h
+config.h: config.h.pre config.h.post configure $(TESTS)
+	rm -f config.log
+	CC="$(CC)" CFLAGS="$(CFLAGS)" ./configure
+
+$(OBJS): extern.h config.h
 
 atom.xml index.html $(ARTICLES): sblg
 
@@ -88,4 +127,5 @@ atom.xml: $(ARTICLES) $(VERSIONS)
 
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz sblg.tar.gz.sha512
+	rm -f config.h config.log
 	rm -rf *.dSYM
