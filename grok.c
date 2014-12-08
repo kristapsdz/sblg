@@ -383,8 +383,6 @@ grok(XML_Parser p, const char *src, struct article *arg)
 		if (NULL == strchr(cp, '/'))
 			*cp = '\0';
 
-	fprintf(stderr, "Final base = %s\n", arg->base);
-
 	if (NULL == parse.article->title) {
 		assert(NULL == parse.article->titletext);
 		parse.article->title = 

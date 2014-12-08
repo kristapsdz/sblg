@@ -93,7 +93,7 @@ mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 		fprintf(stderr, "%s: not a regular file\n", f);
 		goto out;
 	} else if (st.st_size >= (1U << 31)) {
-		fprintf(stderr, "%s: too large", f);
+		fprintf(stderr, "%s: too large\n", f);
 		goto out;
 	}
 
