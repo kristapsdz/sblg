@@ -81,11 +81,12 @@
 			</section>
 			<section class="mo">+</section>
 			<section class="mi">
-				<h2><a href="#sblg">sblg</a></h2>
+				<h2><a href="#sblg" itemprop="name">sblg</a></h2>
 				<section id="sblg">
 					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
 					<p>
-						<a href="sblg.1.html">sblg(1)</a> is a utility for creating static blogs.
+						<a href="sblg.1.html">sblg(1)</a> is <span itemprop="description">a utility for creating static
+							blogs</span>.
 						It's built to work seamlessly with Makefiles, is in <a href="http://opensource.org/licenses/ISC"
 							rel="license">ISC licensed</a> ISO C, and depends only on <a
 							href="http://expat.sourceforge.net/">libexpat</a>, which most most operating systems
@@ -97,10 +98,12 @@
 						This is the main page; for articles, see the <a href="#blog">blog</a> section for navigation.
 					</p>
 					<p>
-						To get started, download <a href="sblg.tar.gz">sblg.tar.gz</a> (<a
+						To get started, download <a itemprop="downloadURL" href="sblg.tar.gz">sblg.tar.gz</a> (<a
 							href="sblg.tar.gz.sha512">SHA512</a>), decompress, and run <code class="prettyprint
 							lang-sh">make install</code>.
-						The current version is @VERSION@, released on @VDATE@.  Version notes...
+						The current version is <span itemprop="softwareVersion">@VERSION@</span>, released on <time
+							itemprop="dateModified" datetime="@VDATE@">@VDATE@</time>.  
+						Version notes...
 					</p>
 					<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="2">
 						<div>
