@@ -89,7 +89,7 @@
 							blogs</span>.
 						It's built to work seamlessly with Makefiles, is in <a href="http://opensource.org/licenses/ISC"
 							rel="license">ISC licensed</a> ISO C, and depends only on <a
-							href="http://expat.sourceforge.net/">libexpat</a>, which most most operating systems
+							href="http://expat.sourceforge.net/">libexpat</a>, which most operating systems
 						bundle.
 						You write your content in an HTML fragments; <a href="sblg.1.html">sblg(1)</a> knits it together
 						with templates, formats navigation, and so on.
