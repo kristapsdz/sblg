@@ -7,14 +7,14 @@
 	<p>
 		<span class="name">sblg</span> will generate <a href="https://en.wikipedia.org/wiki/Atom_%28standard%29">Atom</a> feeds when
 		given the <code>-<b>a</b></code> flag.
-		These are used for syndication (I guess &#8211; I've never used it).
+		Its behaviour follows <a href="sblg.1.html">sblg(1)</a>'s description of blog amalgamation mode.
 		All you need to do is provide an Atom <a href="atom-template.xml">template</a>; the <code class="prettyprint
 			lang-html">&lt;entry&gt;</code>, <code class="prettyprint lang-html">&lt;updated&gt;</code>, and <code
 			class="prettyprint lang-html">&lt;id&gt;</code> (the <code class="prettyprint lang-html">&lt;id&gt;</code> field must
 		occur after the <code class="prettyprint lang-html">&lt;link&gt;</code>) fields will be automatically filled in.
 	</p>
 	<p>
-		This site has a dummy <a href="atom.xml">atom.xml</a> for Each of this page's <q>articles</q>.
+		This site has a dummy <a href="atom.xml">atom.xml</a> for each of this page's <q>articles</q>.
 	</p>
 	<p class="code">
 		<code class="prettyprint">&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>
@@ -33,8 +33,8 @@
 		Filled-in entries consist of <code class="prettyprint lang-html">&lt;title&gt;</code>, <code class="prettyprint
 			lang-html">&lt;id&gt;</code>, <code class="prettyprint lang-html">&lt;updated&gt;</code>,
 		<code class="prettyprint lang-html">&lt;author&gt;</code>, and alternate <code class="prettyprint lang-html">&lt;link&gt;</code> elements.
-		If specified in the original article, a <code class="prettyprint lang-html">&lt;summary&gt;</code> element will consist of an
-		HTML article summary.  See the <a href="sblg.1.html">sblg(1)</a> manual for details.
+		If specified in the original article, a <code class="prettyprint lang-html">&lt;content&gt;</code> element will consist of an
+		HTML article summary, or the full article if so specified.  See the <a href="sblg.1.html">sblg(1)</a> manual for details.
 	</p>
 	<p>
 		Remember to link to the feed in your <a href="index.xml">blog template</a> or <a href="article.xml">article template</a> file!

@@ -1,0 +1,15 @@
+<article data-sblg-article="1" data-sblg-tags="version">
+	<header>
+		<h1>0.2.6</h1>
+		<address>Kristaps Dzonsons</address>
+		<time datetime="2015-05-24">2015-05-24</time>
+	</header>
+	<aside>
+		<p>
+			Fix the Atom generator (using the -<b>a</b> flag) to use the &lt;content&gt; tag regardless of whether displaying a summary or the content itself.
+			This behaviour conforms to <a href="https://tools.ietf.org/html/rfc4287">RFC 4287</a>.
+			Noted by Svyatoslav Mishyn&#8211;thanks!
+			While here, spend a few hours running the system through <a href="http://lcamtuf.coredump.cx/afl/">AFL</a>.
+		</p>
+	</aside>
+</article>
