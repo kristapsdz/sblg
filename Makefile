@@ -1,7 +1,7 @@
 .SUFFIXES: .xml .html .1.html .1
 
-VERSION 	 = 0.2.4
-VDATE 		 = 2014-12-08
+VERSION 	 = 0.2.5
+VDATE 		 = 2015-05-23
 PREFIX 		 = /usr/local
 CFLAGS 		+= -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
 OBJS		 = main.o \
@@ -11,7 +11,6 @@ OBJS		 = main.o \
 		   compile.o \
 		   linkall.o \
 		   grok.o \
-		   echo.o \
 		   util.o \
 		   atom.o \
 		   article.o
@@ -22,7 +21,6 @@ SRCS		 = main.c \
 		   compat-strlcpy.c \
 		   linkall.c \
 		   grok.c \
-		   echo.c \
 		   util.c \
 		   atom.c \
 		   article.c
@@ -43,7 +41,8 @@ VERSIONS	 = version_0_0_13.xml \
 		   version_0_2_1.xml \
 		   version_0_2_2.xml \
 		   version_0_2_3.xml \
-		   version_0_2_4.xml 
+		   version_0_2_4.xml \
+		   version_0_2_5.xml 
 XMLS		 = article1.xml \
     		   article2.xml \
     		   article4.xml \

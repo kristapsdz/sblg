@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013, 2014 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013--2015 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -190,7 +190,7 @@ nav_end(void *dat, const XML_Char *s)
 			if ( ! tagfind(arg, arg->sargs[k].tags))
 				continue;
 			xmlopen(arg->f, "li", NULL);
-			xmltextx(arg->f, arg->nav, NULL, 
+			xmltextx(arg->f, arg->nav, arg->dst, 
 				arg->sargs, arg->sposz, k);
 			xmlclose(arg->f, "li");
 			if (++i >= arg->navlen)
@@ -349,8 +349,11 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	arg->stack++;
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
-	if ( ! echo(arg->f, 1, arg->sargs[arg->spos++].src))
-		XML_StopParser(arg->p, 0);
+
+	/* Echo the formatted text of the article. */
+	xmltextx(arg->f, arg->sargs[arg->spos].article, 
+		arg->dst, arg->sargs, arg->sposz, arg->spos);
+	arg->spos++;
 
 	for (attp = atts; NULL != *attp; attp += 2) 
 		if (0 == strcasecmp(*attp, "data-sblg-permlink"))

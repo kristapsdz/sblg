@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013, 2014 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013--2015 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -123,8 +123,8 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	arg->stack++;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
-	if ( ! echo(arg->f, 0, arg->src))
-		XML_StopParser(arg->p, 0);
+	xmltextx(arg->f, arg->article.article, 
+		arg->dst, &arg->article, 1, 0);
 }
 
 int

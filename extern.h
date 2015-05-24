@@ -45,7 +45,6 @@ int	atom(XML_Parser p, const char *templ,
 		int sz, char *src[], const char *dst);
 int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);
-int	echo(FILE *f, int linked, const char *src);
 int	grok(XML_Parser p, const char *src, struct article *data);
 int	linkall(XML_Parser p, const char *templ, const char *force, 
 		int sz, char *src[], const char *dst);
