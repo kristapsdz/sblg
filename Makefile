@@ -105,7 +105,7 @@ sblg.tar.gz.sha512: sblg.tar.gz
 
 config.h: config.h.pre config.h.post configure $(TESTS)
 	rm -f config.log
-	CC="$(CC)" CFLAGS="$(CFLAGS)" ./configure
+	CC="$(CC)" CFLAGS="$(CFLAGS)" sh ./configure
 
 $(OBJS): extern.h config.h
 
