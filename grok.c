@@ -271,12 +271,13 @@ article_end(void *dat, const XML_Char *s)
 {
 	struct parse	*arg = dat;
 
+	xmlstrclose(&arg->article->article,
+		&arg->article->articlesz, s);
+
 	if (0 == strcasecmp(s, "article") && 0 == --arg->gstack) {
 		XML_SetElementHandler(arg->p, NULL, NULL);
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
-	} else
-		xmlstrclose(&arg->article->article,
-			&arg->article->articlesz, s);
+	} 
 }
 
 /*
@@ -340,6 +341,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		}
 
 	arg->gstack = 1;
+	xmlstropen(&arg->article->article, &arg->article->articlesz, s, atts);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, article_text);
 	tsearch(arg, s, atts);
