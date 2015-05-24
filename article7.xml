@@ -27,7 +27,7 @@
 	<p class="code">
 		<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navcontent="1"&gt;</code>
 		<code class="prettyprint lang-html tab">&lt;a href="${sblg-source}"&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;figure&gt;&lt;img src="${sblg-base}.png" /&gt;&lt;figcaption&gt;${title}&lt;/figcaption&gt;&lt;/figure&gt;</code>
+		<code class="prettyprint lang-html dtab">&lt;figure&gt;&lt;img src="&#36;{sblg-base}.png" /&gt;&lt;figcaption&gt;&#36;{sblg-title}&lt;/figcaption&gt;&lt;/figure&gt;</code>
 		<code class="prettyprint lang-html tab">&lt;/a&gt;</code>
 		<code class="prettyprint lang-html">&lt;/nav&gt;</code>
 	</p>

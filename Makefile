@@ -33,7 +33,16 @@ ARTICLES 	 = article1.html \
 	 	   article5.html \
 	 	   article6.html \
 	 	   article7.html \
-	 	   article8.html
+	 	   article8.html \
+	 	   article9.html
+ARTICLEXMLS 	 = article1.xml \
+	 	   article2.xml \
+	 	   article4.xml \
+	 	   article5.xml \
+	 	   article6.xml \
+	 	   article7.xml \
+	 	   article8.xml \
+	 	   article9.xml
 VERSIONS	 = version_0_0_13.xml \
 		   version_0_1_1.xml \
 		   version_0_1_2.xml \
@@ -43,11 +52,7 @@ VERSIONS	 = version_0_0_13.xml \
 		   version_0_2_3.xml \
 		   version_0_2_4.xml \
 		   version_0_2_5.xml 
-XMLS		 = article1.xml \
-    		   article2.xml \
-    		   article4.xml \
-    		   article5.xml \
-    		   article6.xml \
+XMLS		 = $(ARTICLEXMLS) \
     		   $(VERSIONS)
 ATOM 		 = atom.xml
 XMLGENS 	 = article.xml index.xml
@@ -119,6 +124,10 @@ atom.xml: $(ARTICLES) $(VERSIONS)
 
 .xml.html:
 	./sblg -o- -t article.xml -c $< | \
+		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
+
+article9.html: $(ARTICLEXMLS)
+	./sblg -o- -t article.xml -C article9.xml $(ARTICLEXMLS) | \
 		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
 
 .1.1.html:
