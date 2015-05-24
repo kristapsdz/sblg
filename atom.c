@@ -98,7 +98,7 @@ atomprint(FILE *f, const struct atom *arg,
 	strftime(buf, sizeof(buf), "%F", tm);
 
 	fprintf(f, "<id>tag:%s,%s:%s/%s</id>\n", 
-			arg->domain, buf, arg->path, src->src);
+		arg->domain, buf, arg->path, src->src);
 	fprintf(f, "<title>%s</title>\n", src->titletext);
 	fprintf(f, "<updated>%sT00:00:00Z</updated>\n", buf);
 	fprintf(f, "<author><name>%s</name></author>\n", src->authortext);
@@ -110,12 +110,10 @@ atomprint(FILE *f, const struct atom *arg,
 		fprintf(f, "<content type=\"html\">");
 		atomputs(f, src->article);
 		fprintf(f, "</content>");
-	}
-
-	if ('\0' != *src->aside) {
-		fprintf(f, "<summary type=\"html\">");
+	} else {
+		fprintf(f, "<content type=\"html\">");
 		atomputs(f, src->aside);
-		fprintf(f, "</summary>");
+		fprintf(f, "</content>");
 	}
 }
 

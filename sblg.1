@@ -165,7 +165,7 @@ They must at least consist of the following within the document:
     <time datetime="2013-06-29">29 June, 2013</time>
   </header>
   <aside>
-    This is used as a feed <b>summary</b>.
+    This is used as the feed <b>content</b>.
   </aside>
   <p>Some text.</p>
 </article>
@@ -199,7 +199,7 @@ and no tags.
 .Pp
 The first
 .Aq aside ,
-if provided, is used for the feed summary.
+if provided, is used for the feed content.
 All content is recorded in case the
 .Li data-sblg-content
 Boolean value is used in an Atom feed.
@@ -360,8 +360,8 @@ attribute is filled in with a
 .Pq in tag format ,
 .Aq author ,
 HTML
-.Aq summary
-.Pq if specified in the article as an Ao aside Ac ,
+.Aq content
+.Pq specified in the article as an Ao aside Ac ,
 and alternate
 .Aq link .
 If the
@@ -375,10 +375,14 @@ Furthermore, if a true
 .Li data-sblg-content
 Boolean attribute exists, the article's contents (everything within the
 .Aq article data-sblg-article="1" )
-are inlined within a
+are inlined within the
 .Aq content
 element with type
 .Li html .
+.Pp
+No
+.Sx Tag Symbols
+are processed.
 .Ss Tag Symbols
 Within the template for
 .Fl c
