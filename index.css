@@ -59,6 +59,8 @@ nav[data-sblg-nav] li		{ margin: 1ex 0;
 nav[data-sblg-nav] li div:last-child
 				{ padding: 0.5ex 0 0 20pt; 
 				  color: #333; }
+nav[data-sblg-nav] li div p:first-child
+				{ margin-top: 0; }
 p.code code			{ display: block; }
 p.code code a			{ border-bottom: thin dashed #336699; }
 p.code code.indent		{ padding-left: 4ex; }
