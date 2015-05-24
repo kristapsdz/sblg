@@ -48,7 +48,7 @@ main(int argc, char *argv[])
 	templ = outfile = force = NULL;
 	op = OP_BLOG;
 
-	while (-1 != (ch = getopt(argc, argv, "acf:o:t:")))
+	while (-1 != (ch = getopt(argc, argv, "acC:o:t:")))
 		switch (ch) {
 		case ('a'):
 			op = OP_ATOM;
@@ -56,7 +56,7 @@ main(int argc, char *argv[])
 		case ('c'):
 			op = OP_COMPILE;
 			break;
-		case ('f'):
+		case ('C'):
 			force = optarg;
 			break;
 		case ('o'):

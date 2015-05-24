@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: November 23 2014 $
+.Dd $Mdocdate: December 7 2014 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -35,16 +35,22 @@ utility knits together XML articles and templates in four ways.
 .It
 Standalone mode
 .Pq Fl c
-links single articles with a template.
+links single articles with a template with an article stub, which is
+filled in with the article.
 For example,
 .Qq sblg -c foo.xml bar.xml
 creates
 .Pa foo.html
 and
 .Pa bar.html
-from an article template.
+from a template populated by the
+.Pa foo.xml
+and
+.Pa bar.xml
+article contents, respectively.
 .It
-Blog amalgamation mode links multiple articles with a template.
+Blog amalgamation mode links multiple articles with a template
+consisting of articles and navigation stubs.
 For example,
 .Qq sblg -o foo.html bar.html baz.html
 links
@@ -53,7 +59,7 @@ and
 .Pa baz.html
 into
 .Pa foo.html
-from a template of articles and navigation.
+from a template.
 .It
 Atom amalgamation mode
 .Pq Fl a
@@ -61,7 +67,8 @@ link multiple articles with an Atom feed template.
 .It
 Standalone amalgamation mode
 .Pq Fl C
-links multiple articles in standalone style.
+links multiple articles in standalone style, i.e., multiple navigation
+stubs, a single article stub.
 For example,
 .Qq sblg -o foo.html -C bar.html baz.html bar.html
 will show only
@@ -278,6 +285,26 @@ with the custom class
 unless a Boolean
 .Qq data-sblg-permlink
 attribute is set to false.
+.Ss Standalone Amalgamation Template
+This is identical to the
+.Sx Blog Amalgamation Template
+except that a single article is noted with
+.Fl C ,
+and this is the only article displayed in the article stub.
+In the given example,
+.Bd -literal
+<body>
+  <header>This consists of two blog entries.</header>
+  <nav data-sblg-nav="1" />
+  <article data-sblg-article="1" />
+  <article data-sblg-article="1" />
+  <footer>Something.</footer>
+</body>
+.Ed
+.Pp
+the navigation would be populated by all articles, but only the first
+article stub would be filled in with the specified article.
+The second would be removed.
 .Ss Atom Amalgamation Template
 The Atom template file must be a well-formed XML file where each
 .Aq entry
@@ -354,9 +381,19 @@ Within the template for
 .Fl c
 or
 .Fl C ,
-or in an amalgamation navigation entry having
-.Li data-sblg-navcontents="1" ,
-the following special strings are replaced:
+or in any article contents written (either into an article or navigation
+entry), the following special strings are replaced.
+These symbols concern the current article being processed: in a
+navigation entry, or as article contents.
+In the event of the positional
+.Dq next
+and
+.Dq prev
+symbols, these refer to the article's position within the input
+articles.
+Obviously,
+.Fl c
+has only a single article.
 .Bl -tag -width -Ds
 .It Li ${sblg-aside}
 The article's first aside with markup.
@@ -374,16 +411,15 @@ This shouldn't be confused with
 .It Li ${sblg-date}
 The publication date.
 .It Li ${sblg-first-base}
-In an amalgamation mode, the first (newest) base name.
+The first (newest) base name in the list of articles.
 .It Li ${sblg-last-base}
-In an amalgamation mode, the last (oldest) base name.
+The last (oldest) base name in the list of articles.
 .It Li ${sblg-next-base}
-In an amalgamation mode, the next base name when chronologically ordered
-from newest to oldest, wrapping back to the beginning for the last.
+The next base name when chronologically ordered from newest to oldest,
+wrapping back to the beginning for the last.
 .It Li ${sblg-prev-base}
-In an amalgamation mode, the previous base name when chronologically
-ordered from newest to oldest, wrapping back to the beginning for the
-last.
+The previous base name when chronologically ordered from newest to
+oldest, wrapping back to the beginning for the last.
 .It Li ${sblg-source}
 The source file when passed for parsing.
 .It Li ${sblg-title}
@@ -391,12 +427,7 @@ The article title with markup.
 .It Li ${sblg-titletext}
 The article title, textual parts only.
 .It Li ${sblg-url}
-The output filename, which might be empty if
-.Nm
-output is standar output.
-To prevent ambiguity, this is always empty in
-.Aq nav data-sblg-nav="1"
-contexts.
+The output filename, which is empty for standard output.
 .El
 .Pp
 Be careful in using these: the contents are copied directly, so if
