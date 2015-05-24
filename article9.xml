@@ -1,0 +1,33 @@
+<article data-sblg-article="1" data-sblg-tags="howto">
+	<header>
+		<h1>Tips and Tricks: Tags</h1>
+		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2015-05-23">23 May, 2015</time></div>
+	</header>
+	<aside>Tips and tricks for using sblg: using tag symbols.</aside>
+	<p>
+		Tag symbols appear in XML input files and templates and are filled in with information pertaining to the current relevant
+		article.
+		For example, the default navigation list can be customised by specifying re-use of internal contents and using tag symbols.
+		This can be seen in the <a href="index.html#blog">blog-roll</a> and are described in <a href="article7.html">Tips and
+			Tricks: Fancy Navigation</a>.
+	</p>
+	<p>
+		Tags are even more useful in standalone amalgamation mode described in <a href="sblg.1.html">sblg(1)</a>, which is how this file
+		was created:
+	</p>
+	<p class="code">
+		<code class="prettyprint lang-sh">% sblg -o article9.html -C article9.xml article1.xml ... article9.xml</code>
+	</p>
+	<p>
+		<strong>Note</strong>: using this invocation is the same reason why the permanent link below this page doesn't work properly!
+		(This is described in <a href="sblg.1.html">sblg(1)</a>, and is a known caveat to be solved later.)
+	</p>
+	<p>
+		Now if I use the &#36;{sblg-prev-base} to show the <a href="${sblg-prev-base}.html">previous article</a> when chronologically
+		ordered.
+		To do this, I embedded the &#36;{sblg-prev-base}.html link into the anchor.
+		If I specify the &#36;{sblg-prev-base} (note that in both cases, I HTML-escaped the dollar sign in this article so it wasn't
+		interpreted as a tag itself!) it goes to the <a href="${sblg-next-base}.html">next article</a>, wrapping around to the oldest if
+		it's the newest.
+	</p>
+</article>
