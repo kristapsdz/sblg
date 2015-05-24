@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: December 7 2014 $
+.Dd $Mdocdate: May 24 2015 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -219,7 +219,7 @@ All of this element's children are removed.
 .Ed
 .Pp
 See
-.Sx Template Symbols
+.Sx Tag Symbols
 for a list of symbols that will be replaced if found in attribute value
 or textual contexts.
 .Ss Blog Amalgamation Template
@@ -246,7 +246,7 @@ The Boolean
 attribute makes the content of the
 .Aq nav
 be replaced as specified in
-.Sx Template Symbols .
+.Sx Tag Symbols .
 .Pp
 If the
 .Aq nav
@@ -285,6 +285,9 @@ with the custom class
 unless a Boolean
 .Qq data-sblg-permlink
 attribute is set to false.
+.Em Note :
+the permanent link is set to the article name, so if you specify an XML
+file, it will be to an XML file!
 .Ss Standalone Amalgamation Template
 This is identical to the
 .Sx Blog Amalgamation Template
@@ -376,7 +379,7 @@ are inlined within a
 .Aq content
 element with type
 .Li html .
-.Ss Template Symbols
+.Ss Tag Symbols
 Within the template for
 .Fl c
 or
