@@ -28,8 +28,8 @@
 	<p>
 		Or in words, first build individual articles from a <a href="article.xml">template</a>  with <code class="prettyprint
 			lang-sh">sblg -o article1.html -c article1.xml</code>.
-		Then knit together individuals into a <a href="blog-template.xml">templated</a> front page with <code class="prettyprint
-			lang-sh">sblg -o index.html article1.html</code>).  
+		Then knit together individuals into a <a href="index.xml">templated</a> front page with <code class="prettyprint
+			lang-sh">sblg -t index.xml -o index.html article1.html</code>).  
 		The rest of this Makefile is dependencies.
 		Not shown are <a href="article4.html">Atom</a> feeds: these use <code class="prettyprint lang-sh">sblg -a atom.xml
 			article1.html</code> with a <a href="atom-template.xml">template</a> just like the <q>linking</q> phase.  See the <a
