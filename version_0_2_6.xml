@@ -10,6 +10,8 @@
 			This behaviour conforms to <a href="https://tools.ietf.org/html/rfc4287">RFC 4287</a>.
 			Noted by Svyatoslav Mishyn&#8211;thanks!
 			While here, spend a few hours running the system through <a href="http://lcamtuf.coredump.cx/afl/">AFL</a>.
+			<strong>Note</strong>: I had accidentally installed version 0.2.5 as version 0.2.6.  
+			This error pointed out by Svyatoslav&#8211;thanks again!
 		</p>
 	</aside>
 </article>
