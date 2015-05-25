@@ -98,8 +98,8 @@
 						This is the main page; for articles, see the <a href="#blog">blog</a> section for navigation.
 					</p>
 					<p>
-						To get started, download <a itemprop="downloadURL" href="sblg.tar.gz">sblg.tar.gz</a> (<a
-							href="sblg.tar.gz.sha512">SHA512</a>), decompress, and run <code class="prettyprint
+						To get started, download <a itemprop="downloadURL" href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
+							href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, and run <code class="prettyprint
 							lang-sh">make install</code>.
 						The current version is <span itemprop="softwareVersion">@VERSION@</span>, released on <time
 							itemprop="dateModified" datetime="@VDATE@">@VDATE@</time>.  
