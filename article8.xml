@@ -30,13 +30,14 @@
 	</p>
 	<p class="code">
 		<code class="prettyprint lang-html">&lt;head prefix="og: http://ogp.me/ns#"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:url" content="${sblg-url}" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:description" content="${sblg-aside}" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:title" content="${sblg-titletext}" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;meta property="og:url" content="&#36;{sblg-url}" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;meta property="og:description" content="&#36;{sblg-asidetext}" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;meta property="og:title" content="&#36;{sblg-titletext}" /&gt;</code>
 		<code class="prettyprint lang-html tab">&lt;title&gt;My Blog Page&lt;/title&gt;</code>
 		<code class="prettyprint lang-html">&lt;/head&gt;</code>
 	</p>
 	<p>
+		Note that I'm using <q>asidetext</q> and <q>titletext</q>, otherwise this would incorporate HTML tags as well.
 		Next, make sure your page (let's call it <code>foo.xml</code>) has the appropriate data.
 		Below is a full article, if an uninteresting one.
 	</p>

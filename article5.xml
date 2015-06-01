@@ -3,7 +3,7 @@
 		<h1>Tips and Tricks: System Release Notes</h1>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2014-08-14">14 August, 2014</time></div>
 	</header>
-	<aside>Tips and tricks for using sblg.</aside>
+	<aside>Tips and tricks for using sblg: articles inlined into blogs and atom feeds.</aside>
 	<p>
 		I use <span class="name">sblg</span> to track versions for several systems.
 		A blog article, then, consists of release notes for a given version of the system.
@@ -14,8 +14,6 @@
 		First, I stipulate that no <q>alternate</q> links exist, because I don't want to have a separate file for each and every
 		version.
 		Second, I make the article contents be inlined in the feed.
-		I could just use the regular processing of having <code class="prettyprint lang-html">aside</code> elements with the summary,
-		but I'd basically be duplicating the article's contents.
 	</p>
 	<p class="code">
 		<code class="prettyprint lang-html">&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>
@@ -30,6 +28,11 @@
 		<code class="prettyprint lang-html">&lt;/feed&gt;</code>
 	</p>
 	<p>
+		Alternatively, I might omit the <code>data-sblg-content</code> attribute and have it print only the <code class="prettyprint
+			lang-html">&lt;aside&gt;</code> content within the entry, which is the default.
+		This is a matter of choice: the <code>data-sblg-content</code> attribute will make the entire article (including the header) be
+		included in the feed.
+		It's up to you.
 		I then add articles (raw XML) to an <code class="prettyprint">ARTICLES</code> variable in my Makefile, and build an <code
 			class="prettyprint">atom.xml</code> that depends on these files.
 	</p>

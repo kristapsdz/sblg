@@ -52,7 +52,8 @@ VERSIONS	 = version_0_0_13.xml \
 		   version_0_2_3.xml \
 		   version_0_2_4.xml \
 		   version_0_2_5.xml \
-		   version_0_2_6.xml 
+		   version_0_2_6.xml \
+		   version_0_2_7.xml 
 XMLS		 = $(ARTICLEXMLS) \
     		   $(VERSIONS)
 ATOM 		 = atom.xml
