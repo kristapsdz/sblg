@@ -3,7 +3,7 @@
 		<h1>Tips and Tricks: Fancy Navigation</h1>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2014-08-15">15 August, 2014</time></div>
 	</header>
-	<aside>Tips and tricks for using sblg.</aside>
+	<aside>Tips and tricks for using sblg: custom navigation.</aside>
 	<p>
 		<span class="name">sblg</span>'s ability to fill in <code class="prettyprint lang-html">&lt;nav data-sblg-nav="1" /&gt;</code>
 		is fairly limited, but after version 0.0.12, you can specify exactly how you want to fill in navigation entries.
@@ -26,7 +26,7 @@
 	</p>
 	<p class="code">
 		<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navcontent="1"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;a href="${sblg-source}"&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;a href="&#36;{sblg-base}.html"&gt;</code>
 		<code class="prettyprint lang-html dtab">&lt;figure&gt;&lt;img src="&#36;{sblg-base}.png" /&gt;&lt;figcaption&gt;&#36;{sblg-title}&lt;/figcaption&gt;&lt;/figure&gt;</code>
 		<code class="prettyprint lang-html tab">&lt;/a&gt;</code>
 		<code class="prettyprint lang-html">&lt;/nav&gt;</code>
@@ -35,7 +35,7 @@
 		This will have navigation consist of a list of figures with images set to the filename base.
 	</p>
 	<p>
-		<em>Note</em>: prior to version 0.2.1, these tags were simply (e.g.) <code>source</code> instead of <code>sblg-source</code>.
+		<em>Note</em>: prior to version 0.2.1, these tags were simply (e.g.) <code>base</code> instead of <code>sblg-base</code>.
 		The extra <code>sblg-</code> was added to prevent namespace issues.
 	</p>
 </article>
