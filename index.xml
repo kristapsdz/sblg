@@ -156,7 +156,7 @@
 					<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
 					<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
 					<a href="snapshots"><i class="fa fa-file-o"></i></a>
-					<a href="http://www.bsd.lv"><i class="fa fa-home"></i></a>
+					<a href="atom.xml"><i class="fa fa-rss"></i></a>
 				</div>
 			</footer>
 		</section>
