@@ -331,7 +331,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		return;
 	}
 
-	if (arg->spos > arg->ssposz) {
+	if (arg->spos >= arg->ssposz) {
 		/*
 		 * We have no articles left to show.
 		 * Just continue throwing away this article element til
