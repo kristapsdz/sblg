@@ -1,0 +1,13 @@
+<article data-sblg-article="1" data-sblg-tags="version">
+	<header>
+		<h1>0.2.8</h1>
+		<address>Kristaps Dzonsons</address>
+		<time datetime="2015-06-21">2015-06-21</time>
+	</header>
+	<aside>
+		<p>
+			Bug-fix: if an amalgamation template had more entries than articles, it would crash.
+			This was found and noted by Hiroshi Hakoyama&#8212;thanks!
+		</p>
+	</aside>
+</article>
