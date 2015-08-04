@@ -238,10 +238,10 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			return;
 		arg->flags |= PARSE_TIME;
 		for (attp = atts; NULL != *attp; attp += 2) {
-			if (strcasecmp(atts[0], "datetime"))
+			if (strcasecmp(attp[0], "datetime"))
 				continue;
 			memset(&tm, 0, sizeof(struct tm));
-			if (NULL == strptime(atts[1], "%F", &tm))
+			if (NULL == strptime(attp[1], "%F", &tm))
 				continue;
 			arg->article->time = mktime(&tm);
 		}
