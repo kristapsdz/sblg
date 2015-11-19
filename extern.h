@@ -22,6 +22,7 @@ __BEGIN_DECLS
 struct	article {
 	const char	*src; /* source filename */
 	char		*base; /* nil-terminated src w/o suffix */
+	char		*stripbase; /* nil-terminated fname w/o suffix */
 	char		*title; /* nil-terminated title */
 	size_t		 titlesz; /* length of title */
 	char		*titletext; /* nil-terminated title text */

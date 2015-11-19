@@ -350,6 +350,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 				localtime(&arts[artpos].time));
 		if (STRCMP("sblg-base", 9))
 			fputs(arts[artpos].base, f);
+		else if (STRCMP("sblg-stripbase", 14))
+			fputs(arts[artpos].stripbase, f);
 		else if (STRCMP("sblg-first-base", 15))
 			fputs(arts[0].base, f);
 		else if (STRCMP("sblg-last-base", 14))

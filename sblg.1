@@ -415,18 +415,26 @@ The full filename (including directory) with the last suffix part
 chopped off.
 This shouldn't be confused with
 .Xr basename 3 .
+.It Li ${sblg-stripbase}
+Like
+.Li ${sblg-base}
+but with only the file-name part, i.e., the directory parts removed.
 .It Li ${sblg-date}
 The publication date.
 .It Li ${sblg-first-base}
 The first (newest) base name in the list of articles.
+.Pq See Li ${sblg-base} .
 .It Li ${sblg-last-base}
 The last (oldest) base name in the list of articles.
+.Pq See Li ${sblg-base} .
 .It Li ${sblg-next-base}
 The next base name when chronologically ordered from newest to oldest,
 wrapping back to the beginning for the last.
+.Pq See Li ${sblg-base} .
 .It Li ${sblg-prev-base}
 The previous base name when chronologically ordered from newest to
 oldest, wrapping back to the beginning for the last.
+.Pq See Li ${sblg-base} .
 .It Li ${sblg-source}
 The source file when passed for parsing.
 .It Li ${sblg-title}
