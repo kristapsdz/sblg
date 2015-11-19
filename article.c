@@ -31,6 +31,7 @@ article_free(struct article *p)
 		return;
 
 	free(p->base);
+	free(p->stripbase);
 	free(p->tags);
 	free(p->title);
 	free(p->titletext);
