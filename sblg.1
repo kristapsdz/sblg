@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: May 24 2015 $
+.Dd $Mdocdate: November 19 2015 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -410,28 +410,31 @@ The article's first aside, textual parts only.
 The article's author with markup.
 .It Li ${sblg-authortext}
 The article's author, textual parts only
-.It Li ${sblg-base}
+.It Li ${sblg-base}, Li ${sblg-stripbase}
 The full filename (including directory) with the last suffix part
 chopped off.
-This shouldn't be confused with
-.Xr basename 3 .
-.It Li ${sblg-stripbase}
-Like
-.Li ${sblg-base}
-but with only the file-name part, i.e., the directory parts removed.
+For example,
+.Pa foo/bar.xml
+becomes
+.Pa foo/bar .
+The stripped version will strip off the directory part.
+For example,
+.Pa foo/bar.xml
+becomes
+.Pa bar .
 .It Li ${sblg-date}
 The publication date.
-.It Li ${sblg-first-base}
+.It Li ${sblg-first-base}, Li ${sblg-first-stripbase}
 The first (newest) base name in the list of articles.
 .Pq See Li ${sblg-base} .
-.It Li ${sblg-last-base}
+.It Li ${sblg-last-base}, Li ${sblg-last-stripbase}
 The last (oldest) base name in the list of articles.
 .Pq See Li ${sblg-base} .
-.It Li ${sblg-next-base}
+.It Li ${sblg-next-base}, Li ${sblg-next-stripbase}
 The next base name when chronologically ordered from newest to oldest,
 wrapping back to the beginning for the last.
 .Pq See Li ${sblg-base} .
-.It Li ${sblg-prev-base}
+.It Li ${sblg-prev-base}, Li ${sblg-prev-stripbase}
 The previous base name when chronologically ordered from newest to
 oldest, wrapping back to the beginning for the last.
 .Pq See Li ${sblg-base} .

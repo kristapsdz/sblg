@@ -354,12 +354,20 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			fputs(arts[artpos].stripbase, f);
 		else if (STRCMP("sblg-first-base", 15))
 			fputs(arts[0].base, f);
+		else if (STRCMP("sblg-first-stripbase", 20))
+			fputs(arts[0].stripbase, f);
 		else if (STRCMP("sblg-last-base", 14))
 			fputs(arts[artsz - 1].base, f);
+		else if (STRCMP("sblg-last-stripbase", 19))
+			fputs(arts[artsz - 1].stripbase, f);
 		else if (STRCMP("sblg-next-base", 14))
 			fputs(arts[next].base, f);
+		else if (STRCMP("sblg-next-stripbase", 19))
+			fputs(arts[next].stripbase, f);
 		else if (STRCMP("sblg-prev-base", 14))
 			fputs(arts[prev].base, f);
+		else if (STRCMP("sblg-prev-base", 19))
+			fputs(arts[prev].stripbase, f);
 		else if (STRCMP("sblg-title", 10))
 			fputs(arts[artpos].title, f);
 		else if (STRCMP("sblg-url", 8))
