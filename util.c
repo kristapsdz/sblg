@@ -352,22 +352,32 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			fputs(arts[artpos].base, f);
 		else if (STRCMP("sblg-stripbase", 14))
 			fputs(arts[artpos].stripbase, f);
+		else if (STRCMP("sblg-striplangbase", 18))
+			fputs(arts[artpos].striplangbase, f);
 		else if (STRCMP("sblg-first-base", 15))
 			fputs(arts[0].base, f);
 		else if (STRCMP("sblg-first-stripbase", 20))
 			fputs(arts[0].stripbase, f);
+		else if (STRCMP("sblg-first-striplangbase", 24))
+			fputs(arts[0].striplangbase, f);
 		else if (STRCMP("sblg-last-base", 14))
 			fputs(arts[artsz - 1].base, f);
 		else if (STRCMP("sblg-last-stripbase", 19))
 			fputs(arts[artsz - 1].stripbase, f);
+		else if (STRCMP("sblg-last-striplangbase", 23))
+			fputs(arts[artsz - 1].striplangbase, f);
 		else if (STRCMP("sblg-next-base", 14))
 			fputs(arts[next].base, f);
 		else if (STRCMP("sblg-next-stripbase", 19))
 			fputs(arts[next].stripbase, f);
+		else if (STRCMP("sblg-next-striplangbase", 23))
+			fputs(arts[next].striplangbase, f);
 		else if (STRCMP("sblg-prev-base", 14))
 			fputs(arts[prev].base, f);
-		else if (STRCMP("sblg-prev-base", 19))
+		else if (STRCMP("sblg-prev-stripbase", 19))
 			fputs(arts[prev].stripbase, f);
+		else if (STRCMP("sblg-prev-striplangbase", 23))
+			fputs(arts[prev].striplangbase, f);
 		else if (STRCMP("sblg-title", 10))
 			fputs(arts[artpos].title, f);
 		else if (STRCMP("sblg-url", 8))

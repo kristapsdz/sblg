@@ -32,6 +32,7 @@ article_free(struct article *p)
 
 	free(p->base);
 	free(p->stripbase);
+	free(p->striplangbase);
 	free(p->tags);
 	free(p->title);
 	free(p->titletext);

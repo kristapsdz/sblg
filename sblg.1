@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: November 19 2015 $
+.Dd $Mdocdate: November 20 2015 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -185,10 +185,6 @@ article publication date is extracted from the first
 and author (both as text data only and inclusive of markup) from the
 first
 .Aq address .
-At any point, if a tag has an
-.Li data-sblg-tags
-attribute consisting of space-separated tag names, these tags are
-extracted for tag operation.
 .Pp
 If unspecified, the default article title text (and mark-up) is
 .Qq Untitled article ,
@@ -203,6 +199,21 @@ if provided, is used for the feed content.
 All content is recorded in case the
 .Li data-sblg-content
 Boolean value is used in an Atom feed.
+.Pp
+There are a number of special attributes that are recognised.
+.Bl -tag -width Ds
+.It Li data-sblg-tags
+This tag may be specified on any element within the article and consists
+of space-separated tag names.
+These tags are extracted for navigation tag operation.
+.It Li data-sblg-lang
+This tag may only be specified on the article element and specifies one
+or more space-separated languages for the document.
+These languages are removed in the
+.Dq stripping
+operations for the
+.Sx Tag Symbols .
+.El
 .Ss Standalone Template
 The standalone template file must be a well-formed XML file where the
 first
@@ -410,33 +421,64 @@ The article's first aside, textual parts only.
 The article's author with markup.
 .It Li ${sblg-authortext}
 The article's author, textual parts only
-.It Li ${sblg-base}, Li ${sblg-stripbase}
+.It Li ${sblg-base}
 The full filename (including directory) with the last suffix part
 chopped off.
 For example,
 .Pa foo/bar.xml
 becomes
 .Pa foo/bar .
-The stripped version will strip off the directory part.
+The
+.Li ${sblg-stripbase}
+variant will strip off the directory part and any sufix.
 For example,
 .Pa foo/bar.xml
 becomes
 .Pa bar .
+The
+.Li ${sblg-striplangbase}
+variant will also strip the language.
+For example, if
+.Dq en
+language was specified on the article,
+.Pa foo/bar.en.xml
+becomes
+.Pa bar .
 .It Li ${sblg-date}
 The publication date.
-.It Li ${sblg-first-base}, Li ${sblg-first-stripbase}
+.It Li ${sblg-first-base}
 The first (newest) base name in the list of articles.
+There are also
+.Li ${sblg-first-stripbase}
+and
+.Li ${sblg-first-striplangbase}
+variants.
 .Pq See Li ${sblg-base} .
-.It Li ${sblg-last-base}, Li ${sblg-last-stripbase}
+.It Li ${sblg-last-base}
 The last (oldest) base name in the list of articles.
+There are also
+.Li ${sblg-last-stripbase}
+and
+.Li ${sblg-last-striplangbase}
+variants.
 .Pq See Li ${sblg-base} .
-.It Li ${sblg-next-base}, Li ${sblg-next-stripbase}
+.It Li ${sblg-next-base}
 The next base name when chronologically ordered from newest to oldest,
 wrapping back to the beginning for the last.
+There are also
+.Li ${sblg-next-stripbase}
+and
+.Li ${sblg-next-striplangbase}
+variants.
 .Pq See Li ${sblg-base} .
-.It Li ${sblg-prev-base}, Li ${sblg-prev-stripbase}
+.It Li ${sblg-prev-base}
 The previous base name when chronologically ordered from newest to
 oldest, wrapping back to the beginning for the last.
+There are also
+.Li ${sblg-prev-stripbase}
+and
+.Li ${sblg-prev-striplangbase}
+variants.
 .Pq See Li ${sblg-base} .
 .It Li ${sblg-source}
 The source file when passed for parsing.
