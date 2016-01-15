@@ -321,7 +321,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			while ((tok = strsep(&cp, " \t")) != NULL) {
 				if ('\0' == *tok)
 					continue;
-				start = arg->article->stripbase;
+				start = arg->article->striplangbase;
 				loc = strstr(start, tok);
 				if (NULL == loc || loc == start)
 					continue;
@@ -366,6 +366,10 @@ grok(XML_Parser p, const char *src, struct article *arg)
 		arg->stripbase = xstrdup(src);
 	else
 		arg->stripbase = xstrdup(strrchr(src, '/') + 1);
+	if (NULL == strrchr(src, '/'))
+		arg->striplangbase = xstrdup(src);
+	else
+		arg->striplangbase = xstrdup(strrchr(src, '/') + 1);
 	parse.article = arg;
 	parse.p = p;
 
@@ -385,6 +389,9 @@ grok(XML_Parser p, const char *src, struct article *arg)
 		if (NULL == strchr(cp, '/'))
 			*cp = '\0';
 	if (NULL != (cp = strrchr(arg->stripbase, '.')))
+		if (NULL == strchr(cp, '/'))
+			*cp = '\0';
+	if (NULL != (cp = strrchr(arg->striplangbase, '.')))
 		if (NULL == strchr(cp, '/'))
 			*cp = '\0';
 
