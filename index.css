@@ -1,20 +1,19 @@
 body, html			{ height: 100%;
 				  margin: 0;
 				  width: 100%; }
-a				{ text-decoration: none; }
+a				{ text-decoration: none; 
+				  color: blue; }
 body				{ display: table; }
 body > section > footer		{ position: absolute;
 				  width: 100%;
 				  padding-bottom: 1ex;
 				  bottom: 0; 
-				  font-size: 13pt;
 				  text-align: center;
 				  color: #aaa; }
 body > section > footer a	{ color: #bbb; }
 body > section > footer a:hover	{ color: #fff; }
 body > section > footer div	{ display: inline-block; 
-				  margin-left: 1ex;
-				  font-size: 16pt; }
+				  margin-left: 1ex; }
 body > section			{ background-color: #336699;
 				  position: relative;
 				  padding-bottom: 4em;
@@ -38,18 +37,14 @@ section.mi a.close		{ left: 0.5ex;
 				  position: absolute;
 				  color: #000; }
 section.mo			{ color: #000;
-				  text-shadow: 1px 1px 1px #aaa; 
-				  font-size: 20pt; }
+				  text-shadow: 1px 1px 1px #aaa; }
 section.mi > section:target	{ max-height: 100em;  }
-section.mi > h2			{ font-size: 30pt; 
-				  color: #ddd;
-				  font-weight: normal;
+section.mi > h2			{ color: #ddd;
 				  text-shadow: 1px 1px 1px #666;
 				  margin: 0; }
 section.mi > h2:hover 		{ text-shadow: 1px 1px 2px #999; 
 				  color: #fff; }
 section.mi > h2 a		{ color: inherit; }
-section.mi > section > *:not(a)	{ font-size: 13pt; }
 section.mi p			{ line-height: 120%; }
 nav[data-sblg-nav] ul		{ list-style-type: none; 
 				  padding: 0;
@@ -66,12 +61,41 @@ p.code code a			{ border-bottom: thin dashed #336699; }
 p.code code.indent		{ padding-left: 4ex; }
 p.code code.dindent		{ padding-left: 8ex; }
 @media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
-p.code code			{ font-size: 11pt; }
 p.code code.indent		{ padding-left: 2ex; }
 p.code code.dindent		{ padding-left: 4ex; }
 body > section > footer div	{ display: block; 
 				  margin: 0; }
 }
 @media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
-p.code code			{ font-size: 9pt; }
 }
+
+h2 {
+	font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
+	font-size: 48px;
+	z-index: 3;
+	position: relative;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 50.4px; }
+.mo, h3 {
+	font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
+	font-size: 32px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 34.4px; }
+footer, p {
+	font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
+	font-size: 14px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 20px; }
+
+code {
+	font-size: 13px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 18.5667px; }

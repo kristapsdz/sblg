@@ -1,6 +1,6 @@
 <article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
-		<h1>Tips and Tricks: Tag Indexes</h1>
+		<h2>Tips and Tricks: Tag Indexes</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2014-08-02">02 August, 2014</time></div>
 	</header>
 	<aside>How to make tag indexes and clouds.  (Don't use clouds: they're ridiculous.)</aside>

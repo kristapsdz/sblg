@@ -1,7 +1,6 @@
 html, body		{ margin: 0;
 			  padding: 0; }
-body			{ color: #333; 
-			  font-size: 12pt; }
+body			{ color: #333; }
 a			{ text-decoration: none; }
 p			{ line-height: 120%; }
 aside			{ display: none; }
@@ -31,11 +30,11 @@ body > section > div[data-sblg-permlink] > a:hover
 body > section > p:last-child 	
 			{ margin-bottom: 0; 
 			  padding-bottom: 1.12em; }
-body > footer		{ padding: 2em 0; 
+body > footer		{ padding: 1em 0; 
 			  text-align: center;
 		 	  color: #999999; }
-body > footer a		{ color: #999999; }
-body > footer a:hover	{ color: #666666; }
+body > footer a		{ color: #444; }
+body > footer a:hover	{ color: #000; }
 p.code			{ background-color: #eeeeee;
 			  border-radius: 0.5ex;
 			  padding: 0.5ex;
@@ -48,17 +47,10 @@ body > header		{ padding: 2em 0;
 			  color: #dddddd;
 			  text-align: center; 
 			  background-color: #336699; }
-body > header h1 	{ font-size: 28pt;
-			  font-weight: normal;
-			  margin: 0;
+body > header h1 	{ margin: 0;
 			  display: inline-block; }
 body > header h1 a	{ color: #eeeeee; }
-body > header div 	{ font-size: 24pt;
-			  display: inline; }
-body > section > article[data-sblg-article] h1,
-body > section > article[data-sblg-article] h2,
-body > section > article[data-sblg-article] h3
-			{ font-size: large; }
+body > header div 	{ display: inline; }
 body > section > article[data-sblg-article] header h1
 			{ margin-bottom: 0; }
 body > section > article[data-sblg-article] header div
@@ -73,7 +65,6 @@ body > section > article[data-sblg-article] header time
 div.version		{ color: #333333;
 			  background-color: #dddddd;
 			  border-bottom: thin solid #aaaaaa;
-			  font-size: 14pt;
 			  padding: 1.5ex; 
 		 	  padding-left: 1.5ex; }
 div.version > span	{ border-right: thin solid #aaaaaa; 
@@ -82,3 +73,34 @@ div.version > span	{ border-right: thin solid #aaaaaa;
 div.version > a		{ color: #333;  
 			  padding: 0 0.5ex; }
 div.version > a:hover	{ color: #000; }
+
+
+body > header div, h1 {
+	font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
+	font-size: 24px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 26.4px; }
+h2 {
+	font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
+	font-size: 18px;
+	margin-bottom: 0;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 20.4px; }
+footer, p {
+	font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
+	font-size: 14px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 20px; }
+
+code {
+	font-size: 13px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 18.5667px; }

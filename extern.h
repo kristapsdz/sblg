@@ -19,6 +19,12 @@
 
 __BEGIN_DECLS
 
+enum	sort {
+	SORT_DEFAULT = 0,
+	SORT_FIRST,
+	SORT_LAST
+};
+
 struct	article {
 	const char	*src; /* source filename */
 	char		*base; /* nil-terminated src w/o suffix */
@@ -41,6 +47,7 @@ struct	article {
 	size_t		 articlesz; /* length of article */
 	char		*tags; /* any article tags */
 	size_t		 tagsz;
+	enum sort	 sort;
 };
 
 int	atom(XML_Parser p, const char *templ,
