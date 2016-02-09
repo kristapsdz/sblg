@@ -1,6 +1,6 @@
 <article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
-		<h1>How does it work?</h1>
+		<h2>How does it work?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-07-01">01 July, 2013</time></div>
 	</header>
 	<aside>How sblg merges blog articles into amalgamations.</aside>

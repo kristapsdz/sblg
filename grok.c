@@ -334,10 +334,16 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				memmove(loc - 1, loc + strlen(tok), sz);
 			}
 			free(tofree);
+		} else if (0 == strcasecmp(*attp, "data-sblg-sort")) {
+			if (0 == strcasecmp(attp[1], "first"))
+				arg->article->sort = SORT_FIRST;
+			else if (0 == strcasecmp(attp[1], "last"))
+				arg->article->sort = SORT_LAST;
 		}
 
 	arg->gstack = 1;
-	xmlstropen(&arg->article->article, &arg->article->articlesz, s, atts);
+	xmlstropen(&arg->article->article, 
+		&arg->article->articlesz, s, atts);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, article_text);
 	tsearch(arg, s, atts);
