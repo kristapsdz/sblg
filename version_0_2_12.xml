@@ -1,0 +1,14 @@
+<article data-sblg-article="1" data-sblg-tags="version">
+	<header>
+		<h1>0.2.12</h1>
+		<address>Kristaps Dzonsons</address>
+		<time datetime="2016-02-09">2016-02-09</time>
+	</header>
+	<aside>
+		<p>
+			Implement Darwin's <a
+				href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man3/sandbox_init.3.html">sandbox</a>
+			for security's sake.
+		</p>
+	</aside>
+</article>
