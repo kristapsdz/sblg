@@ -202,10 +202,6 @@ Boolean value is used in an Atom feed.
 .Pp
 There are a number of special attributes that are recognised.
 .Bl -tag -width Ds
-.It Li data-sblg-tags
-This tag may be specified on any element within the article and consists
-of space-separated tag names.
-These tags are extracted for navigation tag operation.
 .It Li data-sblg-lang
 This tag may only be specified on the article element and specifies one
 or more space-separated languages for the document.
@@ -213,6 +209,18 @@ These languages are removed in the
 .Dq stripping
 operations for the
 .Sx Tag Symbols .
+.It Li data-sblg-sort
+Override the article's position relative to other articles.
+This can be either
+.Li first
+or
+.Li last .
+If multiple articles have the same sort override, they are ordered in
+the natural way.
+.It Li data-sblg-tags
+This tag may be specified on any element within the article and consists
+of space-separated tag names.
+These tags are extracted for navigation tag operation.
 .El
 .Ss Standalone Template
 The standalone template file must be a well-formed XML file where the
