@@ -11,11 +11,15 @@ The system is an ISC licensed ISO C utility that depends only on
 (Where "simple" encompasses Atom feeds, multi-language support, tag
 filtering, etc.) 
 
+This is the README file for display with
+[GitHub](https://www.github.com), which hosts a read-only source
+repository of the project. 
+
 ## Examples
 
 Read [sblg(1)](http://kristaps.bsd.lv/sblg/sblg.1.html) for a detailed
 runthrough of operation, or visit the
-[sblg blog](http://kristaps.bsd.lv/sblg/index.html#blog) blog for some
+[sblg blog](http://kristaps.bsd.lv/sblg/index.html#blog) for some
 examples.
 
 ## Installation
