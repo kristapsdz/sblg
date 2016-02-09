@@ -46,6 +46,8 @@
 							lang-sh">make install</code>.
 						The current version is <span itemprop="softwareVersion">@VERSION@</span>, released on <time
 							itemprop="dateModified" datetime="@VDATE@">@VDATE@</time>.  
+						The repository is mirrored on <a href="https://github.com/kristapsdz/sblg">GitHub</a>, if that's
+						easier for you.
 					</p>
 					<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="2">
 						<div>
@@ -157,6 +159,7 @@
 					<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
 					<a href="snapshots"><i class="fa fa-file-o"></i></a>
 					<a href="atom.xml"><i class="fa fa-rss"></i></a>
+					<a href="https://github.com/kristapsdz/sblg"><i class="fa fa-github"></i></a>
 				</div>
 			</footer>
 		</section>

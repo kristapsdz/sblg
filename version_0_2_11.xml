@@ -10,6 +10,7 @@
 			Change all the <q>strip</q> tags to refer only to directory and suffix stripping, then add the <q>lang</q> addition
 			(e.g., <code>${sblg-striplangbase}</code> to remove both.
 			Add the <code>data-sblg-sort</code> attribute to articles that allows them to override their relative positioning.
+			Prepare for importing a read-only repository into <a href="https://github.com/kristapsdz/sblg">GitHub</a>.
 		</p>
 	</aside>
 </article>
