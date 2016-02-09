@@ -18,6 +18,9 @@
 
 #include <expat.h>
 #include <getopt.h>
+#ifdef __APPLE__
+#include <sandbox.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +34,22 @@ enum	op {
 	OP_BLOG
 };
 
+#ifdef	__APPLE__
+static void
+sandbox_apple(void)
+{
+	char	*ep;
+	int	 rc;
+
+	rc = sandbox_init(kSBXProfileNoNetwork, SANDBOX_NAMED, &ep);
+	if (0 == rc)
+		return;
+	perror(ep);
+	sandbox_free_error(ep);
+	exit(EXIT_FAILURE);
+}
+#endif
+
 int
 main(int argc, char *argv[])
 {
@@ -38,6 +57,10 @@ main(int argc, char *argv[])
 	const char	*progname, *templ, *outfile, *force;
 	enum op		 op;
 	XML_Parser	 p;
+
+#ifdef	__APPLE__
+	sandbox_apple();
+#endif
 
 	progname = strrchr(argv[0], '/');
 	if (progname == NULL)

@@ -1,6 +1,6 @@
 .SUFFIXES: .xml .html .1.html .1
 
-VERSION 	 = 0.2.11
+VERSION 	 = 0.2.12
 VDATE 		 = 2016-02-09
 PREFIX 		 = /usr/local
 CFLAGS 		+= -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
@@ -57,7 +57,8 @@ VERSIONS	 = version_0_0_13.xml \
 		   version_0_2_8.xml \
 		   version_0_2_9.xml \
 		   version_0_2_10.xml \
-		   version_0_2_11.xml 
+		   version_0_2_11.xml \
+		   version_0_2_12.xml 
 XMLS		 = $(ARTICLEXMLS) \
     		   $(VERSIONS)
 ATOM 		 = atom.xml
