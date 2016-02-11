@@ -24,6 +24,7 @@
 .Nm sblg
 .Op Fl C Ar file
 .Op Fl o Ar file
+.Op Fl s Ar sort
 .Op Fl t Ar template
 .Op Fl ac
 .Ar
@@ -121,6 +122,15 @@ is used by default.
 Use
 .Fl o Ar \-
 for standard output.
+.It Fl s Ar sort
+Change how articles are sorted before being written into navigation or
+article entries.
+The default is
+.Ar date ,
+which sorts newest-oldest by date.
+You can also specify
+.Ar filename ,
+which sorts in increasing A-Z alphabetical order of the source filename.
 .It Fl t Ar template
 Template for standalone or amalgamation files.
 If unspecified, defaults to
