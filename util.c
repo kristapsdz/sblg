@@ -70,6 +70,41 @@ xmlvoid(const XML_Char *s)
 	return(0);
 }
 
+int
+filenamecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+
+	if (s1->sort != s2->sort) {
+		if (SORT_FIRST == s1->sort || 
+		    SORT_LAST == s2->sort)
+			return(-1);
+		else if (SORT_LAST == s1->sort || 
+			 SORT_FIRST == s2->sort)
+			return(1);
+	}
+
+	return(strcmp(s1->src, s2->src));
+}
+
+int
+datecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+
+	if (s1->sort != s2->sort) {
+		if (SORT_FIRST == s1->sort || 
+		    SORT_LAST == s2->sort)
+			return(-1);
+		else if (SORT_LAST == s1->sort || 
+			 SORT_FIRST == s2->sort)
+			return(1);
+	}
+
+	return(difftime(s2->time, s1->time));
+}
+
+
 /*
  * Map a regular file into memory for parsing.
  * Make sure it's not too large, first.
