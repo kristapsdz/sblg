@@ -85,13 +85,13 @@ h2 {
 	font-variant: normal;
 	font-weight: 500;
 	line-height: 34.4px; }
-footer, p {
+footer, p, nav[data-sblg-nav] li {
 	font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
-	font-size: 14px;
+	font-size: 16px;
 	font-style: normal;
 	font-variant: normal;
 	font-weight: 400;
-	line-height: 20px; }
+	line-height: 22px; }
 
 code {
 	font-size: 13px;
