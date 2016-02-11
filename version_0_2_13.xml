@@ -1,0 +1,12 @@
+<article data-sblg-article="1" data-sblg-tags="version">
+	<header>
+		<h1>0.2.13</h1>
+		<address>Kristaps Dzonsons</address>
+		<time datetime="2016-02-10">2016-02-10</time>
+	</header>
+	<aside>
+		<p>
+			Add the <code>-s</code> flag to override the default sort order of newest-oldest when displaying articles.
+		</p>
+	</aside>
+</article>
