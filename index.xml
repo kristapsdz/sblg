@@ -32,11 +32,11 @@
 					</p>
 					<p>
 						How does it work?
-						You write your HTML content and templates (usually with a <a href="#makefile">Makefile</a>); <a
-							href="sblg.1.html">sblg(1)</a> pulls content and
-						metadata from the articles and merges this into the the templates.
-						There are different ways of populating templates: a standalone mode, which pasts a single
-						article into a template; and amalgation mode, with multiple articles.
+						You write your HTML content and templates; <a href="sblg.1.html">sblg(1)</a> pulls content and
+						metadata from the articles and merges it into the templates (usually orchestrated with a <a
+							href="#makefile">Makefile</a>).
+						There are two basic ways of populating templates: a standalone mode, which pasts a single
+						article into a template; and amalgation mode, which posts multiple articles.
 						Amalgamation mode can merge entire articles as well as just article snippets and metadata for
 						navigation and summary purposes.
 					</p>
@@ -69,8 +69,10 @@
 							data-sblg-article="1"&gt;</code> tag of an HTML (or really XML) document.
 						<a href="sblg.1.html">sblg(1)</a> pulls articles and article metadata for populating navigation
 						elements and article elements in the templates.
+						The following is an example article:
 					</p>
 					<p class="code">
+						<code class="prettyprint lang-html">&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>
 						<code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code>
 						<code class="prettyprint lang-html indent">&lt;header&gt;</code>
 						<code class="prettyprint lang-html dindent">&lt;h1&gt;<wbr />Title<wbr />&lt;/h1&gt;</code>
@@ -94,9 +96,34 @@
 						For standalone mode, this is just a regular HTML file where the <code class="prettyprint
 							lang-html">&lt;article data-sblg-article="1"&gt;</code> tag is replaced by the page
 						contents.
+					</p>
+					<p class="code">
+						<code class="prettyprint lang-html">&lt;!DOCTYPE html&gt;</code>
+						<code class="prettyprint lang-html">&lt;html&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;head&gt;&lt;title&gt;${sblg-title}&lt;/title&gt;&lt;/head&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;body&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;/body&gt;</code>
+						<code class="prettyprint lang-html">&lt;/html&gt;</code>
+					</p>
+					<p>
 						For amalgamation (<q>blog</q>) mode it's the same; however, you can also specify <code
 							class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> to fill in meta-data
 						from all articles passed into the command.
+						The <code class="prettyprint lang-html">&lt;article&gt;</code> elements will be filled in with articles.
+					</p>
+					<p class="code">
+						<code class="prettyprint lang-html">&lt;!DOCTYPE html&gt;</code>
+						<code class="prettyprint lang-html">&lt;html&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;head&gt;&lt;title&gt;My Blarg&lt;/title&gt;&lt;/head&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;body&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;nav data-sblg-nav="1"&gt;&lt;/nav&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
+						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
+						<code class="prettyprint lang-html indent">&lt;/body&gt;</code>
+						<code class="prettyprint lang-html">&lt;/html&gt;</code>
 					</p>
 				</section>
 			</section>
