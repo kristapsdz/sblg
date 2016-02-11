@@ -153,13 +153,18 @@
 				</section>
 			</section>
 			<footer>
-				&#169; 2013&#8211;2016, <a rel="author" href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
+				<div>
+					&#169; 2013&#8211;2016, <a rel="author" href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
+				</div>
 				<div>
 					<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
 					<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
 					<a href="snapshots"><i class="fa fa-file-o"></i></a>
 					<a href="atom.xml"><i class="fa fa-rss"></i></a>
 					<a href="https://github.com/kristapsdz/sblg"><i class="fa fa-github"></i></a>
+					<a href="https://scan.coverity.com/projects/sblg">
+						<img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/7910/badge.svg" />
+					</a>
 				</div>
 			</footer>
 		</section>

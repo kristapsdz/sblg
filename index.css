@@ -10,10 +10,10 @@ body > section > footer		{ position: absolute;
 				  bottom: 0; 
 				  text-align: center;
 				  color: #aaa; }
+body > section > footer div	{ margin-bottom: 4pt; }
+body > section > footer img	{ margin-bottom: -4pt; }
 body > section > footer a	{ color: #bbb; }
 body > section > footer a:hover	{ color: #fff; }
-body > section > footer div	{ display: inline-block; 
-				  margin-left: 1ex; }
 body > section			{ background-color: #336699;
 				  position: relative;
 				  padding-bottom: 4em;
