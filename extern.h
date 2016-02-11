@@ -25,6 +25,11 @@ enum	sort {
 	SORT_LAST
 };
 
+enum	asort {
+	ASORT_DATE = 0,
+	ASORT_FILENAME
+};
+
 struct	article {
 	const char	*src; /* source filename */
 	char		*base; /* nil-terminated src w/o suffix */
@@ -50,13 +55,13 @@ struct	article {
 	enum sort	 sort;
 };
 
-int	atom(XML_Parser p, const char *templ,
-		int sz, char *src[], const char *dst);
+int	atom(XML_Parser p, const char *templ, int sz, 
+		char *src[], const char *dst, enum asort asort);
 int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);
 int	grok(XML_Parser p, const char *src, struct article *data);
 int	linkall(XML_Parser p, const char *templ, const char *force, 
-		int sz, char *src[], const char *dst);
+		int sz, char *src[], const char *dst, enum asort asort);
 
 void	article_free(struct article *p);
 void	mmap_close(int fd, void *buf, size_t sz);
@@ -82,6 +87,9 @@ void	*xmalloc(size_t);
 char	*xstrdup(const char *);
 void	*xrealloc(void *, size_t);
 void	*xreallocarray(void *, size_t, size_t);
+
+int	 datecmp(const void *, const void *);
+int	 filenamecmp(const void *, const void *);
 
 __END_DECLS
 

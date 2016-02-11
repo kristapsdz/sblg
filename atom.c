@@ -53,7 +53,6 @@ static	void	entry_end(void *userdata, const XML_Char *name);
 static	void	id_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
 static	void	id_end(void *userdata, const XML_Char *name);
-static	int	scmp(const void *p1, const void *p2);
 static	void	tmpl_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
 static	void	tmpl_end(void *userdata, const XML_Char *name);
@@ -118,8 +117,8 @@ atomprint(FILE *f, const struct atom *arg,
 }
 
 int
-atom(XML_Parser p, const char *templ, 
-		int sz, char *src[], const char *dst)
+atom(XML_Parser p, const char *templ, int sz, 
+	char *src[], const char *dst, enum asort asort)
 {
 	char		*buf;
 	size_t		 ssz;
@@ -146,7 +145,10 @@ atom(XML_Parser p, const char *templ,
 		if ( ! grok(p, src[i], &sarg[i]))
 			goto out;
 
-	qsort(sarg, sz, sizeof(struct article), scmp);
+	if (ASORT_DATE == asort)
+		qsort(sarg, sz, sizeof(struct article), datecmp);
+	else 
+		qsort(sarg, sz, sizeof(struct article), filenamecmp);
 
 	f = stdout;
 	if (strcmp(dst, "-") && NULL == (f = fopen(dst, "w"))) {
@@ -405,12 +407,4 @@ entry_end(void *userdata, const XML_Char *name)
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
-}
-
-static int
-scmp(const void *p1, const void *p2)
-{
-	const struct article *s1 = p1, *s2 = p2;
-
-	return(difftime(s2->time, s1->time));
 }
