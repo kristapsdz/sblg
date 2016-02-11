@@ -56,6 +56,7 @@ main(int argc, char *argv[])
 	int		 ch, i, rc;
 	const char	*progname, *templ, *outfile, *force;
 	enum op		 op;
+	enum asort	 asort;
 	XML_Parser	 p;
 
 #ifdef	__APPLE__
@@ -70,8 +71,9 @@ main(int argc, char *argv[])
 
 	templ = outfile = force = NULL;
 	op = OP_BLOG;
+	asort = ASORT_DATE;
 
-	while (-1 != (ch = getopt(argc, argv, "acC:o:t:")))
+	while (-1 != (ch = getopt(argc, argv, "acC:o:s:t:")))
 		switch (ch) {
 		case ('a'):
 			op = OP_ATOM;
@@ -84,6 +86,14 @@ main(int argc, char *argv[])
 			break;
 		case ('o'):
 			outfile = optarg;
+			break;
+		case ('s'):
+			if (0 == strcasecmp(optarg, "date"))
+				asort = ASORT_DATE;
+			else if (0 == strcasecmp(optarg, "filename"))
+				asort = ASORT_FILENAME;
+			else
+				goto usage;
 			break;
 		case ('t'):
 			templ = optarg;
@@ -134,7 +144,8 @@ main(int argc, char *argv[])
 			templ = "atom-template.xml";
 		if (NULL == outfile)
 			outfile = "atom.xml";
-		rc = atom(p, templ, argc, argv, outfile);
+		rc = atom(p, templ, argc, 
+			argv, outfile, asort);
 		break;
 	default:
 		/*
@@ -145,17 +156,19 @@ main(int argc, char *argv[])
 			templ = "blog-template.xml";
 		if (NULL == outfile)
 			outfile = "blog.html";
-		rc = linkall(p, templ, force, argc, argv, outfile);
+		rc = linkall(p, templ, force, 
+			argc, argv, outfile, asort);
 		break;
 	}
 
 	XML_ParserFree(p);
 	return(rc ? EXIT_SUCCESS : EXIT_FAILURE);
 usage:
-	fprintf(stderr, "usage: %s [-o file] [-t templ] -c file...\n"
-			"       %s [-o file] [-t templ] -a file...\n"
-			"       %s [-o file] [-t templ] -C file...\n"
-			"       %s [-o file] [-t templ] file...\n",
-			progname, progname, progname, progname);
+	fprintf(stderr, 
+		"usage: %s [-o file] [-t templ] -c file...\n"
+		"       %s [-o file] [-t templ] [-s sort] -a file...\n"
+		"       %s [-o file] [-t templ] [-s sort] -C file...\n"
+		"       %s [-o file] [-t templ] [-s sort] file...\n",
+		progname, progname, progname, progname);
 	return(EXIT_FAILURE);
 }

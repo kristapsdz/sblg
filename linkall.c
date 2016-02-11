@@ -232,23 +232,6 @@ article_end(void *dat, const XML_Char *s)
 	}
 }
 
-static int
-scmp(const void *p1, const void *p2)
-{
-	const struct article *s1 = p1, *s2 = p2;
-
-	if (s1->sort != s2->sort) {
-		if (SORT_FIRST == s1->sort || 
-		    SORT_LAST == s2->sort)
-			return(-1);
-		else if (SORT_LAST == s1->sort || 
-			 SORT_FIRST == s2->sort)
-			return(1);
-	}
-
-	return(difftime(s2->time, s1->time));
-}
-
 static void
 tagalloc(struct linkall *arg, const char *in)
 {
@@ -384,8 +367,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
  * fill in a template that's usually the blog "front page".
  */
 int
-linkall(XML_Parser p, const char *templ, 
-	const char *force, int sz, char *src[], const char *dst)
+linkall(XML_Parser p, const char *templ, const char *force, 
+	int sz, char *src[], const char *dst, enum asort asort)
 {
 	char		*buf;
 	size_t		 j, ssz;
@@ -409,7 +392,10 @@ linkall(XML_Parser p, const char *templ,
 		if ( ! grok(p, src[i], &sarg[i]))
 			goto out;
 
-	qsort(sarg, sz, sizeof(struct article), scmp);
+	if (ASORT_DATE == asort)
+		qsort(sarg, sz, sizeof(struct article), datecmp);
+	else 
+		qsort(sarg, sz, sizeof(struct article), filenamecmp);
 
 	/* Open a FILE to the output file or stream. */
 	f = stdout;
