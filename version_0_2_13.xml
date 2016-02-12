@@ -7,6 +7,8 @@
 	<aside>
 		<p>
 			Add the <code>-s</code> flag to override the default sort order of newest-oldest when displaying articles.
+			The project has also been scanned by <a href="https://scan.coverity.com/projects/sblg">Coverity</a> for errors.
+			For this, I now have a <a href="https://github.com/kristapsdz/sblg">GitHub</a> mirror of the repository.
 		</p>
 	</aside>
 </article>
