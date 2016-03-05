@@ -44,6 +44,7 @@ struct	linkall {
 	ssize_t		  single; /* page index in -C mode*/
 	char		 *nav; /* temporary: nav buffer */
 	size_t		  navsz; /* nav buffer length */
+	size_t		  navstart; /* nav buffer length */
 	char		 *buf; /* buffer for text */
 	size_t		  bufsz; /* buffer size */
 	size_t		  bufmax; /* buffer maximum size */
@@ -103,24 +104,24 @@ nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 }
 
 /*
- * Find a given tag "needle" in the space-separated set of tags
+ * Find the given tags of "arg" in the space-separated set of tags
  * "haystack".
- * If "needle" is NULL or the tag was found, return 1.
+ * If "arg" is NULL or the tag was found, return 1.
  * If "haystack" is NULL or the tag wasn't found, return 0.
  */
 static int
-tagfind(struct linkall *arg, const char *haystack)
+tagfind(char **tags, size_t tagsz, const char *haystack)
 {
 	const char 	*cp, *needle;
 	size_t	 	 i, sz;
 
-	if (0 == arg->navtagsz)
+	if (0 == tagsz)
 		return(1);
 	if (NULL == haystack) 
 		return(0);
 
-	for (i = 0; i < arg->navtagsz; i++) {
-		needle = arg->navtags[i];
+	for (i = 0; i < tagsz; i++) {
+		needle = tags[i];
 		sz = strlen(needle);
 		for (;;) {
 			if (NULL == (cp = strstr(haystack, needle)))
@@ -164,8 +165,8 @@ nav_end(void *dat, const XML_Char *s)
 	 * consisting of a list entry.
 	 */
 	if ( ! arg->navuse || 0 == arg->navsz) {
-		for (i = k = 0; k < arg->sposz; k++) {
-			if ( ! tagfind(arg, arg->sargs[k].tags))
+		for (i = k = arg->navstart; k < arg->sposz; k++) {
+			if ( ! tagfind(arg->navtags, arg->navtagsz, arg->sargs[k].tags))
 				continue;
 			(void)strftime(buf, sizeof(buf), "%F", 
 				localtime(&arg->sargs[k].time));
@@ -186,8 +187,8 @@ nav_end(void *dat, const XML_Char *s)
 		 * We do have a navigation template.
 		 * Output it, replacing key terms along the way.
 		 */
-		for (i = k = 0; k < arg->sposz; k++) {
-			if ( ! tagfind(arg, arg->sargs[k].tags))
+		for (i = k = arg->navstart; k < arg->sposz; k++) {
+			if ( ! tagfind(arg->navtags, arg->navtagsz, arg->sargs[k].tags))
 				continue;
 			xmlopen(arg->f, "li", NULL);
 			xmltextx(arg->f, arg->nav, arg->dst, 
@@ -241,9 +242,8 @@ tagalloc(struct linkall *arg, const char *in)
 	while ((token = strsep(&string, " ")) != NULL) {
 		if ('\0' == *token)
 			continue;
-		/* XXX: reallocarray(). */
-		arg->navtags = xrealloc(arg->navtags, 
-			(arg->navtagsz + 1) * sizeof(char *));
+		arg->navtags = xreallocarray(arg->navtags, 
+			arg->navtagsz + 1, sizeof(char *));
 		arg->navtags[arg->navtagsz++] = xstrdup(token);
 	}
 	free(sv);
@@ -254,6 +254,9 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct linkall	 *arg = dat;
 	const XML_Char	**attp;
+	char		**tags;
+	char		 *str, *tok, *tfr;
+	size_t		  i, tagsz;
 
 	assert(0 == arg->stack);
 
@@ -282,12 +285,18 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		 */
 		arg->navuse = 0;
 		arg->navlen = arg->sposz;
+		arg->navstart = 0;
 		for (attp = atts; NULL != *attp; attp += 2) {
 			if (0 == strcasecmp(attp[0], 
 					"data-sblg-navsz")) {
 				arg->navlen = atoi(attp[1]);
 				if (arg->navlen > (size_t)arg->sposz)
 					arg->navlen = arg->sposz;
+			/*} else if (0 == strcasecmp(attp[0],
+					"data-sblg-navstart")) {
+				arg->navstart = atoi(attp[1]);
+				if (arg->navstart > (size_t)arg->sposz)
+					arg->navstart = arg->sposz;*/
 			} else if (0 == strcasecmp(attp[0], 
 					"data-sblg-navcontent")) {
 				arg->navuse = xmlbool(attp[1]);
@@ -322,6 +331,35 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		xmlopens(arg->f, s, atts);
 		return;
 	}
+
+	/*
+	 * See if we should only output certain tags.
+	 * To accomplish this, we first parse the requested tags in
+	 * "articletag" into an array of tags.
+	 * This attribute may happen multiple times.
+	 */
+	tags = NULL;
+	tagsz = 0;
+	for (attp = atts; NULL != *attp; attp += 2) {
+		if (strcasecmp(*attp, "data-sblg-articletag")) 
+			continue;
+		tfr = str = xstrdup(attp[1]);
+		while (NULL != (tok = strsep(&str, " \t"))) {
+			tags = xreallocarray(tags,
+				tagsz + 1, sizeof(char *));
+			tags[tagsz++] = xstrdup(tok);
+		}
+		free(tfr);
+	}
+
+	/* Look for the next article mathing the given tag. */
+	for ( ; arg->spos < arg->ssposz; arg->spos++)
+		if (tagfind(tags, tagsz, arg->sargs[arg->spos].tags))
+			break;
+
+	for (i = 0; i < tagsz; i++)
+		free(tags[i]);
+	free(tags);
 
 	if (arg->spos >= arg->ssposz) {
 		/*
