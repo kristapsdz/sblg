@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: February 11 2016 $
+.Dd $Mdocdate: March 6 2016 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -286,10 +286,7 @@ will be followed by a
 anchor within a
 .Aq div
 with the custom class
-.Qq data-sblg-permlink
-unless a Boolean
-.Qq data-sblg-permlink
-attribute is set to false.
+.Qq data-sblg-permlink .
 .Em Note :
 the permanent link is set to the article name, so if you specify an XML
 file, it will be to an XML file!
@@ -335,6 +332,9 @@ This is similar in function to the
 .Li data-sblg-navtag
 attribute in limiting displayed articles to those matching the
 space-separated tags.
+You may also set a Boolean
+.Li data-sblg-permlink
+attribute that stipulates whether the permanent link is specified.
 .Ss Standalone Amalgamation Template
 This is identical to the
 .Sx Blog Amalgamation Template
@@ -355,6 +355,13 @@ In the given example,
 the navigation would be populated by all articles, but only the first
 article stub would be filled in with the specified article.
 The second would be removed.
+.Pp
+.Em Note :
+this follows the usual rules of
+.Li data-sblg-articletag ,
+so if the article you specify with
+.Fl C
+doesn't have the correct tag, it won't inline the article.
 .Ss Atom Amalgamation Template
 The Atom template file must be a well-formed XML file where each
 .Aq entry
