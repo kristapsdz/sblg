@@ -255,44 +255,20 @@ or textual contexts.
 The amalgamation template file must also be a well-formed XML file where
 each
 .Aq article data-sblg-article="1"
-element is replaced by ordered (newest to oldest) article text.
+element is replaced by ordered (by default, newest to oldest) article
+contents.
 If there aren't enough articles, the element is removed.
-Furthermore, any
+Furthermore,
 .Aq nav data-sblg-nav="1"
-elements are replaced by a list of all available articles in an
-unordered list consisting of article dates followed by the title text,
-linked to the page itself.
-.Po
-.Em Note :
-if you're running
-.Fl o
-with XML files, the linked file will consist of an XML target, not
-an HTML target.
-.Pc
+elements are replaced by the same list of articles within an
+unordered list.
 .Pp
-The Boolean
-.Li data-sbgl-navcontent
-attribute makes the content of the
-.Aq nav
-be replaced as specified in
-.Sx Tag Symbols .
-.Pp
-If the
-.Aq nav
-element contains a positive integer
-.Li data-sblg-navsz
-attribute, this is used to limit the number of navigation entries.
-Finally, if the
-.Li data-sblg-navtag
-is specified, only articles with matching tags are shown.
-You can specify multiple space-separated tags, for instance,
-.Li data-sblg-navtag="foo bar"
-will search for foo or bar.
-Tags to be matched against are extracted from the space-separated
-.Li data-sblg-tags
-element of each article's topmost
+Usually, the
 .Aq article
-element.
+tags are used for displaying full articles, while
+.Aq nav
+tags are used for displaying navigation to articles, such as just their
+titles, dates, and links.
 .Bd -literal
 <body>
   <header>This consists of two blog entries.</header>
@@ -317,6 +293,48 @@ attribute is set to false.
 .Em Note :
 the permanent link is set to the article name, so if you specify an XML
 file, it will be to an XML file!
+.Pp
+The navigation element may contain several attributes.
+The Boolean
+.Li data-sbgl-navcontent
+attribute makes the mark-up content of the
+.Aq nav
+be processed as specified in
+.Sx Tag Symbols .
+If not specified,
+.Nm
+populates the list with article title text in a link and the publication
+date.
+If the
+.Aq nav
+element contains a positive integer
+.Li data-sblg-navsz
+attribute, this is used to limit the number of navigation entries.
+Finally, if the
+.Li data-sblg-navtag
+is specified, only articles with matching tags are shown.
+You can specify multiple space-separated tags, for instance,
+.Li data-sblg-navtag="foo bar"
+will search for foo or bar.
+Tags to be matched against are extracted from the space-separated
+.Li data-sblg-tags
+element of each article's topmost
+.Aq article
+element.
+Lastly, the
+.Li data-sblg-navstart
+attribute specifies how many articles will skip being displayed (so if
+you have tags, it will only account for articles that would meet those
+tags) before showing the first navigation entry.
+This starts at one (a value of zero is the same as a value of one).
+.Pp
+The article element may contain only the
+.Li data-sblg-articletag
+attribute.
+This is similar in function to the
+.Li data-sblg-navtag
+attribute in limiting displayed articles to those matching the
+space-separated tags.
 .Ss Standalone Amalgamation Template
 This is identical to the
 .Sx Blog Amalgamation Template
