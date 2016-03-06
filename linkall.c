@@ -37,6 +37,7 @@ struct	linkall {
 	int		  sposz; /* size of sargs */
 	int		  ssposz;  /* number of sargs to show */
 	size_t		  stack; /* temporary: tag stack size */
+	size_t		  navstart; /* temporary: nav items to show */
 	size_t		  navlen; /* temporary: nav items to show */
 	char		**navtags; /* list of navtags to query */
 	size_t		  navtagsz; /* size of navtags list */
@@ -44,7 +45,6 @@ struct	linkall {
 	ssize_t		  single; /* page index in -C mode*/
 	char		 *nav; /* temporary: nav buffer */
 	size_t		  navsz; /* nav buffer length */
-	size_t		  navstart; /* nav buffer length */
 	char		 *buf; /* buffer for text */
 	size_t		  bufsz; /* buffer size */
 	size_t		  bufmax; /* buffer maximum size */
@@ -104,9 +104,9 @@ nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 }
 
 /*
- * Find the given tags of "arg" in the space-separated set of tags
- * "haystack".
- * If "arg" is NULL or the tag was found, return 1.
+ * Find at least one of the given "tags" in the space-separated set of
+ * tags "haystack".
+ * If "tags" is NULL or the tag was found, return 1.
  * If "haystack" is NULL or the tag wasn't found, return 0.
  */
 static int
@@ -145,7 +145,7 @@ nav_end(void *dat, const XML_Char *s)
 	struct linkall	*arg = dat;
 	size_t		 i;
 	char		 buf[32]; 
-	int		 k;
+	int		 k, rc;
 
 	if (strcasecmp(s, "nav") || 0 != --arg->stack) {
 		xmlstrclose(&arg->nav, &arg->navsz, s);
@@ -160,14 +160,30 @@ nav_end(void *dat, const XML_Char *s)
 	fputc('\n', arg->f);
 
 	/*
+	 * Advance until "k" is at the article we want to start
+	 * printing.
+	 * This accounts for the starting article to show; which, due to
+	 * tagging, might not be a true offset.
+	 */
+	for (i = k = 0; i < arg->navstart && k < arg->sposz; k++) {
+		rc = tagfind(arg->navtags, 
+			arg->navtagsz, arg->sargs[k].tags);
+		i += 0 != rc;
+	}
+
+	/*
+	 * Start showing articles from the first one, above.
 	 * If we haven't been provided a navigation template (i.e., what
 	 * was within the navigation tags), then make a simple default
 	 * consisting of a list entry.
 	 */
-	if ( ! arg->navuse || 0 == arg->navsz) {
-		for (i = k = arg->navstart; k < arg->sposz; k++) {
-			if ( ! tagfind(arg->navtags, arg->navtagsz, arg->sargs[k].tags))
-				continue;
+	for (i = 0; k < arg->sposz; k++) {
+		rc = tagfind(arg->navtags, 
+			arg->navtagsz, arg->sargs[k].tags);
+		/* Tag not found! */
+		if (0 == rc)
+			continue;
+		if ( ! arg->navuse || 0 == arg->navsz) {
 			(void)strftime(buf, sizeof(buf), "%F", 
 				localtime(&arg->sargs[k].time));
 			xmlopen(arg->f, "li", NULL);
@@ -179,24 +195,14 @@ nav_end(void *dat, const XML_Char *s)
 			xmlclose(arg->f, "a");
 			xmlclose(arg->f, "li");
 			fputc('\n', arg->f);
-			if (i++ >= arg->navlen)
-				break;
-		}
-	} else {
-		/*
-		 * We do have a navigation template.
-		 * Output it, replacing key terms along the way.
-		 */
-		for (i = k = arg->navstart; k < arg->sposz; k++) {
-			if ( ! tagfind(arg->navtags, arg->navtagsz, arg->sargs[k].tags))
-				continue;
+		} else {
 			xmlopen(arg->f, "li", NULL);
 			xmltextx(arg->f, arg->nav, arg->dst, 
 				arg->sargs, arg->sposz, k);
 			xmlclose(arg->f, "li");
-			if (++i >= arg->navlen)
-				break;
 		}
+		if (++i >= arg->navlen)
+			break;
 	}
 
 	xmlclose(arg->f, "ul");
@@ -292,11 +298,13 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				arg->navlen = atoi(attp[1]);
 				if (arg->navlen > (size_t)arg->sposz)
 					arg->navlen = arg->sposz;
-			/*} else if (0 == strcasecmp(attp[0],
+			} else if (0 == strcasecmp(attp[0],
 					"data-sblg-navstart")) {
 				arg->navstart = atoi(attp[1]);
 				if (arg->navstart > (size_t)arg->sposz)
-					arg->navstart = arg->sposz;*/
+					arg->navstart = arg->sposz;
+				if (arg->navstart)
+					arg->navstart--;
 			} else if (0 == strcasecmp(attp[0], 
 					"data-sblg-navcontent")) {
 				arg->navuse = xmlbool(attp[1]);
