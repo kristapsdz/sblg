@@ -37,8 +37,8 @@ struct	atom {
 	char		 domain[MAXHOSTNAMELEN];
 	char		 path[MAXPATHLEN];
 	struct article	*sargs;
-	int		 spos;
-	int		 sposz;
+	size_t		 spos;
+	size_t		 sposz;
 	int		 hasid;
 	size_t		 stack;
 };
@@ -121,11 +121,11 @@ atom(XML_Parser p, const char *templ, int sz,
 	char *src[], const char *dst, enum asort asort)
 {
 	char		*buf;
-	size_t		 ssz;
+	size_t		 ssz, j, sargsz;
 	int		 i, fd, rc;
 	FILE		*f;
 	struct atom	 larg;
-	struct article	*sarg;
+	struct article	*sargs;
 
 	ssz = 0;
 	rc = 0;
@@ -134,7 +134,8 @@ atom(XML_Parser p, const char *templ, int sz,
 	f = NULL;
 
 	memset(&larg, 0, sizeof(struct atom));
-	sarg = xcalloc(sz, sizeof(struct article));
+	sargs = NULL;
+	sargsz = 0;
 
 	getdomainname(larg.domain, MAXHOSTNAMELEN);
 	if ('\0' == larg.domain[0])
@@ -142,13 +143,13 @@ atom(XML_Parser p, const char *templ, int sz,
 	strlcpy(larg.path, "/", MAXPATHLEN);
 
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, src[i], &sarg[i]))
+		if ( ! grok(p, src[i], &sargs, &sargsz))
 			goto out;
 
 	if (ASORT_DATE == asort)
-		qsort(sarg, sz, sizeof(struct article), datecmp);
+		qsort(sargs, sargsz, sizeof(struct article), datecmp);
 	else 
-		qsort(sarg, sz, sizeof(struct article), filenamecmp);
+		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
 
 	f = stdout;
 	if (strcmp(dst, "-") && NULL == (f = fopen(dst, "w"))) {
@@ -159,8 +160,8 @@ atom(XML_Parser p, const char *templ, int sz,
 	if ( ! mmap_open(templ, &fd, &buf, &ssz))
 		goto out;
 
-	larg.sargs = sarg;
-	larg.sposz = sz;
+	larg.sargs = sargs;
+	larg.sposz = sargsz;
 	larg.p = p;
 	larg.src = templ;
 	larg.dst = dst;
@@ -182,13 +183,13 @@ atom(XML_Parser p, const char *templ, int sz,
 	fputc('\n', f);
 	rc = 1;
 out:
-	for (i = 0; i < sz; i++)
-		article_free(&sarg[i]);
+	for (j = 0; j < sargsz; j++)
+		article_free(&sargs[j]);
 	mmap_close(fd, buf, ssz);
 	if (NULL != f && stdout != f)
 		fclose(f);
 
-	free(sarg);
+	free(sargs);
 	return(rc);
 }
 

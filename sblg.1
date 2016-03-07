@@ -232,6 +232,20 @@ This tag may be specified on any element within the article and consists
 of space-separated tag names.
 These tags are extracted for navigation tag operation.
 .El
+.Pp
+There may be be multiple articles within a single document, for example,
+.Bd -literal
+<articles>
+  <article data-sblg-article="1"></article>
+  <article data-sblg-article="1"></article>
+  <article data-sblg-article="1"></article>
+</articles>
+.Ed
+.Pp
+The element(s) containing the articles is ignored.
+If you have multiple articles and are using
+.Fl c ,
+only the first article is compiled.
 .Ss Standalone Template
 The standalone template file must be a well-formed XML file where the
 first

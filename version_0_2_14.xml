@@ -1,14 +1,16 @@
-<article data-sblg-article="1" data-sblg-tags="version">
-	<header>
-		<h1>0.2.14</h1>
-		<address>Kristaps Dzonsons</address>
-		<time datetime="2016-03-10">2016-03-10</time>
-	</header>
-	<aside>
-		<p>
-			Add the <code>data-sblg-articletag</code> attribute for articles (like <code>data-sblg-navtag</code>) and allow for
-			<code>data-sblg-navstart</code> for navigation (the first article to show of those that would be shown).
-			Also clean up the manpage in the interests of readability.
-		</p>
-	</aside>
-</article>
+<articles>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.14</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-03-10">2016-03-10</time>
+		</header>
+		<aside>
+			<p>
+				Add the <code>data-sblg-articletag</code> attribute for articles (like <code>data-sblg-navtag</code>) and allow for
+				<code>data-sblg-navstart</code> for navigation (the first article to show of those that would be shown).
+				Also clean up the manpage in the interests of readability.
+			</p>
+		</aside>
+	</article>
+</articles>
