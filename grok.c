@@ -30,15 +30,19 @@
 #include "extern.h"
 
 struct	parse {
-	XML_Parser	 p;
-	struct article	*article; /* article being parsed */
-	size_t		 stack; /* stack (many uses) */
-	size_t		 gstack; /* global "article" stack */
-#define	PARSE_ASIDE	 1 /* we've seen an aside */
-#define	PARSE_TIME	 2 /* we've seen a time */
-#define	PARSE_ADDR	 4 /* we've seen an address */
-#define	PARSE_TITLE	 8 /* we've seen a title */
-	unsigned int	 flags;
+	XML_Parser	  p;
+	struct article	 *article; /* article being parsed */
+	struct article	**articles;
+	size_t		 *articlesz;
+	size_t		  stack; /* stack (many uses) */
+	size_t		  gstack; /* global "article" stack */
+#define	PARSE_ASIDE	  1 /* we've seen an aside */
+#define	PARSE_TIME	  2 /* we've seen a time */
+#define	PARSE_ADDR	  4 /* we've seen an address */
+#define	PARSE_TITLE	  8 /* we've seen a title */
+	unsigned int	  flags;
+	int		  fd; /* underlying descriptor */
+	const char	 *src; /* underlying file */
 };
 
 /*
@@ -47,6 +51,8 @@ struct	parse {
 static void	article_begin(void *dat, const XML_Char *s, 
 			const XML_Char **atts);
 static void	article_end(void *dat, const XML_Char *s);
+static void	input_begin(void *, const XML_Char *, 
+			const XML_Char **);
 
 static void
 article_text(void *dat, const XML_Char *s, int len)
@@ -270,14 +276,62 @@ static void
 article_end(void *dat, const XML_Char *s)
 {
 	struct parse	*arg = dat;
+	char		*cp;
+	struct stat	 st;
 
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (0 == strcasecmp(s, "article") && 0 == --arg->gstack) {
-		XML_SetElementHandler(arg->p, NULL, NULL);
-		XML_SetDefaultHandlerExpand(arg->p, NULL);
-	} 
+	if (strcasecmp(s, "article") || 0 != --arg->gstack) 
+		return;
+
+	XML_SetElementHandler(arg->p, input_begin, NULL);
+
+	if (NULL != (cp = strrchr(arg->article->base, '.')))
+		if (NULL == strchr(cp, '/'))
+			*cp = '\0';
+	if (NULL != (cp = strrchr(arg->article->stripbase, '.')))
+		if (NULL == strchr(cp, '/'))
+			*cp = '\0';
+	if (NULL != (cp = strrchr(arg->article->striplangbase, '.')))
+		if (NULL == strchr(cp, '/'))
+			*cp = '\0';
+
+	if (NULL == arg->article->title) {
+		assert(NULL == arg->article->titletext);
+		arg->article->title = 
+			xstrdup("Untitled article");
+		arg->article->titlesz = 
+			strlen(arg->article->title);
+		arg->article->titletext = 
+			xstrdup("Untitled article");
+		arg->article->titletextsz = 
+			strlen(arg->article->titletext);
+	}
+	if (NULL == arg->article->author) {
+		assert(NULL == arg->article->authortext);
+		arg->article->author = 
+			xstrdup("Untitled author");
+		arg->article->authorsz = 
+			strlen(arg->article->author);
+		arg->article->authortext = 
+			xstrdup("Untitled author");
+		arg->article->authortextsz = 
+			strlen(arg->article->authortext);
+	}
+	if (0 == arg->article->time) {
+		if (-1 == fstat(arg->fd, &st))
+			perror(arg->article->src);
+		else
+			arg->article->time = st.st_ctime;
+	}
+	if (NULL == arg->article->aside) {
+		assert(NULL == arg->article->asidetext);
+		arg->article->aside = xstrdup("");
+		arg->article->asidetext = xstrdup("");
+		arg->article->asidesz =
+			arg->article->asidetextsz = 0;
+	}
 }
 
 /*
@@ -311,6 +365,35 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	 */
 	if (NULL == *attp || ! xmlbool(attp[1]))
 		return;
+
+	arg->flags = 0;
+	arg->stack = 0;
+	arg->gstack = 0;
+
+	/* 
+	 * We have an article.
+	 * Allocates its bits.
+	 */
+	*arg->articles = xreallocarray
+		(*arg->articles, 
+		 *arg->articlesz + 1,
+		 sizeof(struct article));
+	arg->article = &(*arg->articles)[*arg->articlesz];
+	(*arg->articlesz)++;
+	memset(arg->article, 0, sizeof(struct article));
+
+	arg->article->src = arg->src;
+	arg->article->base = xstrdup(arg->src);
+	if (NULL == strrchr(arg->src, '/'))
+		arg->article->stripbase = xstrdup(arg->src);
+	else
+		arg->article->stripbase = xstrdup
+			(strrchr(arg->src, '/') + 1);
+	if (NULL == strrchr(arg->src, '/'))
+		arg->article->striplangbase = xstrdup(arg->src);
+	else
+		arg->article->striplangbase = xstrdup
+			(strrchr(arg->src, '/') + 1);
 
 	/*
 	 * If we have any languages specified, append them here.
@@ -350,15 +433,13 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 }
 
 int
-grok(XML_Parser p, const char *src, struct article *arg)
+grok(XML_Parser p, const char *src, struct article **arg, size_t *argsz)
 {
-	char		*buf, *cp;
+	char		*buf;
 	size_t		 sz;
 	int		 fd, rc;
 	struct parse	 parse;
-	struct stat	 st;
 
-	memset(arg, 0, sizeof(struct article));
 	memset(&parse, 0, sizeof(struct parse));
 
 	rc = 0;
@@ -366,18 +447,11 @@ grok(XML_Parser p, const char *src, struct article *arg)
 	if ( ! mmap_open(src, &fd, &buf, &sz))
 		goto out;
 
-	arg->src = src;
-	arg->base = xstrdup(src);
-	if (NULL == strrchr(src, '/'))
-		arg->stripbase = xstrdup(src);
-	else
-		arg->stripbase = xstrdup(strrchr(src, '/') + 1);
-	if (NULL == strrchr(src, '/'))
-		arg->striplangbase = xstrdup(src);
-	else
-		arg->striplangbase = xstrdup(strrchr(src, '/') + 1);
-	parse.article = arg;
+	parse.articles = arg;
+	parse.articlesz = argsz;
+	parse.src = src;
 	parse.p = p;
+	parse.fd = fd;
 
 	XML_ParserReset(p, NULL);
 	XML_SetStartElementHandler(p, input_begin);
@@ -390,53 +464,6 @@ grok(XML_Parser p, const char *src, struct article *arg)
 			XML_ErrorString(XML_GetErrorCode(p)));
 		goto out;
 	} 
-
-	if (NULL != (cp = strrchr(arg->base, '.')))
-		if (NULL == strchr(cp, '/'))
-			*cp = '\0';
-	if (NULL != (cp = strrchr(arg->stripbase, '.')))
-		if (NULL == strchr(cp, '/'))
-			*cp = '\0';
-	if (NULL != (cp = strrchr(arg->striplangbase, '.')))
-		if (NULL == strchr(cp, '/'))
-			*cp = '\0';
-
-	if (NULL == parse.article->title) {
-		assert(NULL == parse.article->titletext);
-		parse.article->title = 
-			xstrdup("Untitled article");
-		parse.article->titlesz = 
-			strlen(parse.article->title);
-		parse.article->titletext = 
-			xstrdup("Untitled article");
-		parse.article->titletextsz = 
-			strlen(parse.article->titletext);
-	}
-	if (NULL == parse.article->author) {
-		assert(NULL == parse.article->authortext);
-		parse.article->author = 
-			xstrdup("Untitled author");
-		parse.article->authorsz = 
-			strlen(parse.article->author);
-		parse.article->authortext = 
-			xstrdup("Untitled author");
-		parse.article->authortextsz = 
-			strlen(parse.article->authortext);
-	}
-	if (0 == parse.article->time) {
-		if (-1 == fstat(fd, &st)) {
-			perror(src);
-			goto out;
-		}
-		parse.article->time = st.st_ctime;
-	}
-	if (NULL == parse.article->aside) {
-		assert(NULL == parse.article->asidetext);
-		parse.article->aside = xstrdup("");
-		parse.article->asidetext = xstrdup("");
-		parse.article->asidesz =
-			parse.article->asidetextsz = 0;
-	}
 
 	rc = 1;
 out:

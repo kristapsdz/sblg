@@ -33,9 +33,9 @@ struct	linkall {
 	const char	 *dst; /* output file (or empty)*/
 	XML_Parser	  p; /* active parser */
 	struct article	 *sargs; /* sorted article contents */
-	int		  spos; /* current sarg being shown */ 
-	int		  sposz; /* size of sargs */
-	int		  ssposz;  /* number of sargs to show */
+	size_t		  spos; /* current sarg being shown */ 
+	size_t		  sposz; /* size of sargs */
+	size_t		  ssposz;  /* number of sargs to show */
 	size_t		  stack; /* temporary: tag stack size */
 	size_t		  navstart; /* temporary: nav items to show */
 	size_t		  navlen; /* temporary: nav items to show */
@@ -143,9 +143,9 @@ static void
 nav_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
-	size_t		 i;
+	size_t		 i, k;
 	char		 buf[32]; 
-	int		 k, rc;
+	int		 rc;
 
 	if (strcasecmp(s, "nav") || 0 != --arg->stack) {
 		xmlstrclose(&arg->nav, &arg->navsz, s);
@@ -421,7 +421,8 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	int		 i, fd, rc;
 	FILE		*f;
 	struct linkall	 larg;
-	struct article	*sarg;
+	struct article	*sargs;
+	size_t		 sargsz;
 
 	ssz = 0;
 	rc = 0;
@@ -429,19 +430,19 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	fd = -1;
 	f = NULL;
 
-
 	memset(&larg, 0, sizeof(struct linkall));
-	sarg = xcalloc(sz, sizeof(struct article));
+	sargs = NULL;
+	sargsz = 0;
 
 	/* Grok all article data and sort by date. */
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, src[i], &sarg[i]))
+		if ( ! grok(p, src[i], &sargs, &sargsz))
 			goto out;
 
 	if (ASORT_DATE == asort)
-		qsort(sarg, sz, sizeof(struct article), datecmp);
+		qsort(sargs, sargsz, sizeof(struct article), datecmp);
 	else 
-		qsort(sarg, sz, sizeof(struct article), filenamecmp);
+		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
 
 	/* Open a FILE to the output file or stream. */
 	f = stdout;
@@ -459,8 +460,8 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	 * input; however, if we're going to force a single entry to be
 	 * shown, then find it in our arguments.
 	 */
-	larg.sargs = sarg;
-	larg.sposz = larg.ssposz = sz;
+	larg.sargs = sargs;
+	larg.sposz = larg.ssposz = sargsz;
 	larg.p = p;
 	larg.src = templ;
 	larg.dst = strcmp(dst, "-") ? dst : NULL;
@@ -468,13 +469,13 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	larg.single = -1;
 
 	if (NULL != force) {
-		for (i = 0; i < sz; i++)
-			if (0 == strcmp(force, sarg[i].src))
+		for (j = 0; j < sargsz; j++)
+			if (0 == strcmp(force, sargs[j].src))
 				break;
-		if (i < sz) {
-			larg.single = i;
-			larg.spos = i;
-			larg.ssposz = i + 1;
+		if (j < sargsz) {
+			larg.single = j;
+			larg.spos = j;
+			larg.ssposz = j + 1;
 		} else {
 			fprintf(stderr, "%s: does not "
 				"appear in input list\n", force);
@@ -499,8 +500,8 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	fputc('\n', f);
 	rc = 1;
 out:
-	for (i = 0; i < sz; i++) 
-		article_free(&sarg[i]);
+	for (j = 0; j < sargsz; j++) 
+		article_free(&sargs[j]);
 	mmap_close(fd, buf, ssz);
 	if (NULL != f && stdout != f)
 		fclose(f);
@@ -510,7 +511,7 @@ out:
 	free(larg.navtags);
 	free(larg.nav);
 	free(larg.buf);
-	free(sarg);
+	free(sargs);
 	return(rc);
 }
 

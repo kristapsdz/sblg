@@ -62,7 +62,7 @@ VERSIONS	 = version_0_0_13.xml \
 		   version_0_2_13.xml \
 		   version_0_2_14.xml 
 XMLS		 = $(ARTICLEXMLS) \
-    		   $(VERSIONS)
+		   versions.xml
 ATOM 		 = atom.xml
 XMLGENS 	 = article.xml index.xml
 HTMLS 		 = $(ARTICLES) index.html sblg.1.html
@@ -124,12 +124,12 @@ atom.xml: atom-template.xml
 
 $(ARTICLES): article.xml
 
-index.html: index.xml $(ARTICLES) $(VERSIONS)
-	./sblg -o- -t index.xml $(ARTICLES) $(VERSIONS) | \
+index.html: index.xml $(ARTICLES) versions.xml
+	./sblg -o- -t index.xml $(ARTICLES) versions.xml | \
 		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
 
-atom.xml: $(ARTICLES) $(VERSIONS)
-	./sblg -o $@ -a $(ARTICLES) $(VERSIONS)
+atom.xml: $(ARTICLES) versions.xml
+	./sblg -o $@ -a $(ARTICLES) versions.xml
 
 .xml.html:
 	./sblg -o- -t article.xml -c $< | \
