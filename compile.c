@@ -33,7 +33,7 @@ struct	pargs {
 	FILE		*f; /* output stream */
 	XML_Parser	 p; /* active parser */
 	size_t		 stack; /* temporary: tag stack size */
-	struct article	 article; /* standalone article */
+	struct article	*article; /* standalone article */
 	char		*buf; /* buffer for text */
 	size_t		 bufsz; /* buffer size */
 	size_t		 bufmax; /* buffer maximum size */
@@ -52,7 +52,7 @@ template_end(void *dat, const XML_Char *name)
 {
 	struct pargs	*arg = dat;
 
-	xmltextx(arg->f, arg->buf, arg->dst, &arg->article, 1, 0);
+	xmltextx(arg->f, arg->buf, arg->dst, arg->article, 1, 0);
 	xmlstrflush(arg->buf, &arg->bufsz);
 	xmlclose(arg->f, name);
 }
@@ -96,12 +96,12 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 
 	assert(0 == arg->stack);
 
-	xmltextx(arg->f, arg->buf, arg->dst, &arg->article, 1, 0);
+	xmltextx(arg->f, arg->buf, arg->dst, arg->article, 1, 0);
 	xmlstrflush(arg->buf, &arg->bufsz);
 
 	if (strcasecmp(name, "article")) {
 		xmlopensx(arg->f, name, atts, 
-			arg->dst, &arg->article, 1, 0);
+			arg->dst, arg->article, 1, 0);
 		return;
 	}
 
@@ -111,7 +111,7 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 
 	if (NULL == *attp || ! xmlbool(attp[1])) {
 		xmlopensx(arg->f, name, atts, 
-			arg->dst, &arg->article, 1, 0);
+			arg->dst, arg->article, 1, 0);
 		return;
 	}
 
@@ -123,8 +123,8 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	arg->stack++;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
-	xmltextx(arg->f, arg->article.article, 
-		arg->dst, &arg->article, 1, 0);
+	xmltextx(arg->f, arg->article->article, 
+		arg->dst, arg->article, 1, 0);
 }
 
 int
@@ -132,10 +132,11 @@ compile(XML_Parser p, const char *templ,
 	const char *src, const char *dst)
 {
 	char		*out, *cp, *buf;
-	size_t		 sz;
+	size_t		 i, sz, sargsz;
 	int		 fd, rc;
 	FILE		*f;
 	struct pargs	 arg;
+	struct article	*sargs;
 
 	memset(&arg, 0, sizeof(struct pargs));
 
@@ -144,9 +145,20 @@ compile(XML_Parser p, const char *templ,
 	fd = -1;
 	f = NULL;
 	sz = 0;
+	sargs = NULL;
+	sargsz = 0;
 
-	if ( ! grok(p, src, &arg.article))
+	if ( ! grok(p, src, &sargs, &sargsz))
 		goto out;
+
+	if (0 == sargsz) {
+		fprintf(stderr, "%s: contains no article\n", src);
+		goto out;
+	} else if (sargsz > 1)
+		fprintf(stderr, "%s: contains multiple "
+			"articles (using the first)\n", src);
+
+	arg.article = &sargs[0];
 
 	if (NULL == dst) {
 		/*
@@ -197,7 +209,7 @@ compile(XML_Parser p, const char *templ,
 		goto out;
 	} 
 
-	xmltextx(arg.f, arg.buf, arg.dst, &arg.article, 1, 0);
+	xmltextx(arg.f, arg.buf, arg.dst, arg.article, 1, 0);
 	xmlstrflush(arg.buf, &arg.bufsz);
 	fputc('\n', f);
 	rc = 1;
@@ -206,8 +218,11 @@ out:
 	if (NULL != f && stdin != f)
 		fclose(f);
 
+	for (i = 0; i < sargsz; i++)
+		article_free(&sargs[i]);
+
 	free(out);
-	article_free(&arg.article);
+	free(sargs);
 	free(arg.buf);
 	return(rc);
 }
