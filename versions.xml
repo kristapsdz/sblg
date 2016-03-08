@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<articles>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.0.13</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2014-04-12">2014-04-12</time>
+		</header>
+		<aside>
+			Fix download so that it compiles properly.
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.1.1</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2014-08-01">2014-08-01</time>
+		</header>
+		<aside>
+			Overhaul documentation (web, articles, manual, in-line) for simplicity.
+			Add tag indexing (see Tags article).
+			Simplify the flow of standalone to amalgamated articles by mandating that
+			<code>data-sblg-article="1"</code> appear in input articles.
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.1.2</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2014-08-04">2014-08-04</time>
+		</header>
+		<aside>
+			Stipulate that all content is used when <code>data-sblg-content="1"</code> is used in an Atom template.
+			Allowed <code>&lt;hN&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;time&gt;</code>, and <code>&lt;author&gt;</code> tags to
+			appear anywhere in the article instead of just in the <code>&lt;header&gt;</code>.
+			Disable expansion of internal entity references (e.g., &amp;lt;) so that input is completely preserved.
+			Added <code>titletext</code> to filled-in parameters such as to differentiate from <code>title</code>, which includes any markup
+			within the parse context.
+			While there, add <code>author</code> and <code>authortext</code>.
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.1.3</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2014-08-13">2014-08-13</time>
+		</header>
+		<aside>
+			Fix tagging to allow for <code>data-sblg-tags</code>
+			attributes anywhere in an article.
+			Also fix off-by-one in replacing <code>.xml</code> with <code>.html</code> in <b>-c</b> mode.
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.1</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2014-08-15">2014-08-15</time>
+		</header>
+		<aside>
+			Bumped minor after changing the symbols replaced within <code>&lt;nav data-sblg-navcontent="1"&gt;</code>.
+			These are all now prefixed with <code>sblg-</code>.
+			Also switched <code>-f</code> to <code>-C</code> for consistency.
+			Lastly, allowed all non-article and non-navigation text and attribute values within the templates for <code>-c</code> and
+			<code>-C</code> to have the same symbols as for navigation replacement.
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.2</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2014-11-24">2014-11-24</time>
+		</header>
+		<aside>
+			Document (and fix) the <code>${sblg-next-base}</code> and <code>${sblg-prev-base}</code> keywords.
+			Add the <code>${sblg-first-base}</code> and <code>${sblg-last-base}</code> keywords.
+			Allow multiple tags in <code>data-sblg-navtag</code> attributes.
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.4</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2014-12-06">2014-12-06</time>
+		</header>
+		<aside>
+			<p>
+				Add the <code class="prettyprint lang-html">&lt;article data-sblg-lang="en lv ru"&gt;</code> attribute for controlling how
+				filenames are stripped for the <code>${sblg-base}</code> symbol (see <a href="sblg.1.html">sblg(1)</a>), specifically that a
+				language of (e.g.) <code>en</code> would, in a filename of <code>index.en.html</code> or <code>index.html.en</code>, have the
+				<code>.en</code> part stripped out before the suffix is stripped.  
+				This makes multilanguage sites much easier to manage.
+			</p>
+			<p>
+				Also add a small portability framework, automatically invoked by the Makefile, that provides compatibility functions for
+				<a href="http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man3/strlcat.3">strlcat(3)</a>, 
+				<a href="http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man3/strlcat.3">strlcpy(3)</a>, and
+				<a href="http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man3/reallocarray.3">reallocarray(3)</a>.
+				So now the system is portable across most UNIX systems, not just BSD!
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.3</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2014-11-29">2014-11-29</time>
+		</header>
+		<aside>
+			<p>
+				Polish documentation and web-site.
+				No significant functional changes.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.5</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2015-05-23">2015-05-23</time>
+		</header>
+		<aside>
+			<p>
+				First, actually use the -<b>C</b> (the prior -<b>f</b> was still specified).
+				Second, have the blog amalgamation, standalone amalgamation, and compile modes properly treat the template symbols
+				described in <a href="sblg.1.html">sblg(1)</a>.
+				In doing so, the system was made much more efficient by re-using the saved buffer of article contents instead of
+				re-parsing for each treatment.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.6</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2015-05-24">2015-05-24</time>
+		</header>
+		<aside>
+			<p>
+				Fix the Atom generator (using the -<b>a</b> flag) to use the &lt;content&gt; tag regardless of whether displaying a summary or the content itself.
+				This behaviour conforms to <a href="https://tools.ietf.org/html/rfc4287">RFC 4287</a>.
+				Noted by Svyatoslav Mishyn&#8211;thanks!
+				While here, spend a few hours running the system through <a href="http://lcamtuf.coredump.cx/afl/">AFL</a>.
+				<strong>Note</strong>: I had accidentally installed version 0.2.5 as version 0.2.6.  
+				This error pointed out by Svyatoslav&#8211;thanks again!
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.7</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2015-06-01">2015-06-01</time>
+		</header>
+		<aside>
+			<p>
+				Spruce up documentation and web content for clarity, including fixing some of the older <q>Tips and Tricks</q> articles in the blog section.
+				No functional change.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.8</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2015-06-21">2015-06-21</time>
+		</header>
+		<aside>
+			<p>
+				Bug-fix: if an amalgamation template had more entries than articles, it would crash.
+				This was found and noted by Hiroshi Hakoyama&#8212;thanks!
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.9</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2015-08-04">2015-08-04</time>
+		</header>
+		<aside>
+			<p>
+				Bug-fix: when reading the time from an article (via the <code class="prettyprint lang-html">&lt;time&gt;</code> element), <span class="nm">sblg</span> was looking only at the first attribute.
+				This has been fixed: all attributes are examined until finding the time.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.10</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2015-11-19">2015-11-19</time>
+		</header>
+		<aside>
+			<p>
+				Add a <code>${sblg-stripbase}</code> version of <code>${sblg-base}</code> that also removes the directory part.
+				The same has been added to the positional references like <code>${sblg-next-base}</code>.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.12</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-02-09">2016-02-09</time>
+		</header>
+		<aside>
+			<p>
+				Implement Darwin's <a
+					href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man3/sandbox_init.3.html">sandbox</a>
+				for security's sake.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.11</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-02-08">2016-02-08</time>
+		</header>
+		<aside>
+			<p>
+				Fix <code>${sblg-prev-stripbase}</code>, which was accidentally behaving the same as <code>${sblg-prev-base}</code>.
+				Change all the <q>strip</q> tags to refer only to directory and suffix stripping, then add the <q>lang</q> addition
+				(e.g., <code>${sblg-striplangbase}</code> to remove both.
+				Add the <code>data-sblg-sort</code> attribute to articles that allows them to override their relative positioning.
+				Prepare for importing a read-only repository into <a href="https://github.com/kristapsdz/sblg">GitHub</a>.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.13</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-02-10">2016-02-10</time>
+		</header>
+		<aside>
+			<p>
+				Add the <code>-s</code> flag to override the default sort order of newest-oldest when displaying articles.
+				The project has also been scanned by <a href="https://scan.coverity.com/projects/sblg">Coverity</a> for errors.
+				For this, I now have a <a href="https://github.com/kristapsdz/sblg">GitHub</a> mirror of the repository.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.2.14</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-03-10">2016-03-10</time>
+		</header>
+		<aside>
+			<p>
+				Add the <code>data-sblg-articletag</code> attribute for articles (like <code>data-sblg-navtag</code>) and allow for
+				<code>data-sblg-navstart</code> for navigation (the first article to show of those that would be shown).
+				Also clean up the manpage in the interests of readability.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.1</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-03-11">2016-03-11</time>
+		</header>
+		<aside>
+			<p>
+				Allow multiple articles to be specified within a single input file.
+				This warrants a minor bump because the internals changed quite significantly, as did the default behaviour of
+				handling multiple articles per file (earlier they were just ignored).
+			</p>
+		</aside>
+	</article>
+</articles>
