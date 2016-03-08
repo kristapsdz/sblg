@@ -43,24 +43,6 @@ ARTICLEXMLS 	 = article1.xml \
 	 	   article7.xml \
 	 	   article8.xml \
 	 	   article9.xml
-VERSIONS	 = version_0_0_13.xml \
-		   version_0_1_1.xml \
-		   version_0_1_2.xml \
-		   version_0_1_3.xml \
-		   version_0_2_1.xml \
-		   version_0_2_2.xml \
-		   version_0_2_3.xml \
-		   version_0_2_4.xml \
-		   version_0_2_5.xml \
-		   version_0_2_6.xml \
-		   version_0_2_7.xml \
-		   version_0_2_8.xml \
-		   version_0_2_9.xml \
-		   version_0_2_10.xml \
-		   version_0_2_11.xml \
-		   version_0_2_12.xml \
-		   version_0_2_13.xml \
-		   version_0_2_14.xml 
 XMLS		 = $(ARTICLEXMLS) \
 		   versions.xml
 ATOM 		 = atom.xml
