@@ -25,6 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#ifdef __OpenBSD__
+#include <unistd.h> /* pledge */
+#endif
 
 #include "extern.h"
 
@@ -55,8 +58,8 @@ static void
 sandbox_openbsd(void)
 {
 
-	if (-1 == pledge("stdio cpath rpath")) {
-		perror();
+	if (-1 == pledge("stdio cpath rpath wpath", NULL)) {
+		perror("pledge");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -71,8 +74,10 @@ main(int argc, char *argv[])
 	enum asort	 asort;
 	XML_Parser	 p;
 
-#ifdef	__APPLE__
+#if defined(__APPLE__)
 	sandbox_apple();
+#elif defined(__OpenBSD__)
+	sandbox_openbsd();
 #endif
 
 	progname = strrchr(argv[0], '/');
