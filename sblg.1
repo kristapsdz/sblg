@@ -95,7 +95,7 @@ Like
 .Fl c ,
 but creating a blog amalgamation.
 In effect, an amalgamation with a single
-.Aq article data-sblg-article="1" .
+<article data-sblg-article="1">.
 Ignored when used with
 .Fl a
 or
@@ -162,7 +162,7 @@ HTML is assumed only with the default suffix re-write rule for
 without
 .Fl o .
 Input articles may be XML fragments or full documents: only the
-.Aq article data-sblg-article="1"
+<article data-sblg-article="1">
 tree within the article is considered.
 .Ss Article Input
 Article input files consist of XML fragments or whole documents.
@@ -184,17 +184,17 @@ They must at least consist of the following within the document:
 When processed with
 .Nm ,
 all data outside of the
-.Aq article data-sblg-article="1"
+<article data-sblg-article="1">
 element is discarded.
 Then the article title (both as text data only and inclusive of markup)
 is extracted from the first
-.Aq hn
+<hn>
 .Pq header 1\(en4 ,
 article publication date is extracted from the first
-.Aq time ,
+<time>,
 and author (both as text data only and inclusive of markup) from the
 first
-.Aq address .
+<address>.
 .Pp
 If unspecified, the default article title text (and mark-up) is
 .Qq Untitled article ,
@@ -204,7 +204,7 @@ the publication time is set to the document's file-system creation time,
 and no tags.
 .Pp
 The first
-.Aq aside ,
+<aside>,
 if provided, is used for the feed content.
 All content is recorded in case the
 .Li data-sblg-content
@@ -249,7 +249,7 @@ only the first article is compiled.
 .Ss Standalone Template
 The standalone template file must be a well-formed XML file where the
 first
-.Aq article data-sblg-article="1"
+<article data-sblg-article="1">
 element is replaced by the article text.
 All of this element's children are removed.
 .Bd -literal
@@ -268,19 +268,19 @@ or textual contexts.
 .Ss Blog Amalgamation Template
 The amalgamation template file must also be a well-formed XML file where
 each
-.Aq article data-sblg-article="1"
+<article data-sblg-article="1">
 element is replaced by ordered (by default, newest to oldest) article
 contents.
 If there aren't enough articles, the element is removed.
 Furthermore,
-.Aq nav data-sblg-nav="1"
+<nav data-sblg-nav="1">
 elements are replaced by the same list of articles within an
 unordered list.
 .Pp
 Usually, the
-.Aq article
+<article>
 tags are used for displaying full articles, while
-.Aq nav
+<nav>
 tags are used for displaying navigation to articles, such as just their
 titles, dates, and links.
 .Bd -literal
@@ -294,11 +294,11 @@ titles, dates, and links.
 .Ed
 .Pp
 Each
-.Aq article
+<article>
 will be followed by a
 .Pq permanent link
 anchor within a
-.Aq div
+<div>
 with the custom class
 .Qq data-sblg-permlink .
 .Em Note :
@@ -309,7 +309,7 @@ The navigation element may contain several attributes.
 The Boolean
 .Li data-sbgl-navcontent
 attribute makes the mark-up content of the
-.Aq nav
+<nav>
 be processed as specified in
 .Sx Tag Symbols .
 If not specified,
@@ -317,7 +317,7 @@ If not specified,
 populates the list with article title text in a link and the publication
 date.
 If the
-.Aq nav
+<nav>
 element contains a positive integer
 .Li data-sblg-navsz
 attribute, this is used to limit the number of navigation entries.
@@ -330,7 +330,7 @@ will search for foo or bar.
 Tags to be matched against are extracted from the space-separated
 .Li data-sblg-tags
 element of each article's topmost
-.Aq article
+<article>
 element.
 Lastly, the
 .Li data-sblg-navstart
@@ -378,7 +378,7 @@ so if the article you specify with
 doesn't have the correct tag, it won't inline the article.
 .Ss Atom Amalgamation Template
 The Atom template file must be a well-formed XML file where each
-.Aq entry
+<entry>
 element with a Boolean
 .Li data-sblg-entry
 attribute is replaced by ordered (newest to oldest) article information.
@@ -398,53 +398,53 @@ If there aren't enough articles, the element is removed.
 .Ed
 .Pp
 The
-.Aq updated
+<updated>
 element with a Boolean
 .Li data-sblg-updated
 attribute is replaced with the newest article date (or the current date,
 if no articles are listed).
 The
-.Aq id
+<id>
 element with a Boolean
 .Li data-sblg-id
 attributed is replaced with an identifier in the form of
 .Li tag:domain,2013:path ,
 where the domain is initialised to the current domain or extracted from
 the
-.Aq link
+<link>
 to the self.
 The path is also extracted from the self
-.Aq link ,
+<link>,
 initialised to the root path
 .Sq \&/ .
 .Pp
 Each
-.Aq entry
+<entry>
 element with a Boolean
 .Li data-sblg-entry
 attribute is filled in with a
-.Aq title ,
-.Aq id
+<title>,
+<id>
 .Pq in tag format ,
-.Aq author ,
+<author>,
 HTML
-.Aq content
+<content>,
 .Pq specified in the article as an Ao aside Ac ,
 and alternate
-.Aq link .
+<link>.
 If the
 .Ar entry
 element contains a false
 .Li data-sblg-altlink
 Boolean attribute, the alternate
-.Aq link
+<link>
 is not printed.
 Furthermore, if a true
 .Li data-sblg-content
 Boolean attribute exists, the article's contents (everything within the
-.Aq article data-sblg-article="1" )
+<article data-sblg-article="1">)
 are inlined within the
-.Aq content
+<content>
 element with type
 .Li html .
 .Pp
@@ -591,7 +591,7 @@ utility was written by
 .Sh CAVEATS
 Boolean XML values must have an attribute specified.
 In other words,
-.Aq foo bar="1"
+<foo bar="1">
 is valid, while
-.Aq foo bar
+<foo bar>
 is not.
