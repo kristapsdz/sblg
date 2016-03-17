@@ -4,7 +4,7 @@ int
 main(void)
 {
 
-	if (-1 == pledge("", NULL))
+	if (-1 == pledge("stdio", NULL))
 		return(1);
 
 	return(0);
