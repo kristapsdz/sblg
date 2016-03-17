@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#ifdef __OpenBSD__
+#ifdef HAVE_PLEDGE
 #include <unistd.h> /* pledge */
 #endif
 
@@ -53,7 +53,7 @@ sandbox_apple(void)
 }
 #endif
 
-#ifdef __OpenBSD__
+#ifdef HAVE_PLEDGE
 static void
 sandbox_openbsd(void)
 {
@@ -76,7 +76,7 @@ main(int argc, char *argv[])
 
 #if defined(__APPLE__)
 	sandbox_apple();
-#elif defined(__OpenBSD__)
+#elif defined(HAVE_PLEDGE)
 	sandbox_openbsd();
 #endif
 

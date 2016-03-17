@@ -24,7 +24,8 @@ SRCS		 = main.c \
 		   util.c \
 		   atom.c \
 		   article.c
-TESTS 		 = test-reallocarray.c \
+TESTS 		 = test-pledge.c \
+		   test-reallocarray.c \
       		   test-strlcat.c \
       		   test-strlcpy.c 
 ARTICLES 	 = article1.html \
