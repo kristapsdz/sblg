@@ -270,4 +270,19 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.2</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-03-17">2016-03-17</time>
+		</header>
+		<aside>
+			<p>
+				Supplement the existing Darwin <a
+					href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man3/sandbox_init.3.html">sandbox</a>
+				with an OpenBSD <a href="http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man2/pledge.2">pledge(2)</a>.
+				Also fix the manual to correctly markup HTML tags as noted by Anthony Bentley&#8212;thanks!
+			</p>
+		</aside>
+	</article>
 </articles>
