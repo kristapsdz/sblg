@@ -50,6 +50,18 @@ sandbox_apple(void)
 }
 #endif
 
+#ifdef __OpenBSD__
+static void
+sandbox_openbsd(void)
+{
+
+	if (-1 == pledge("stdio cpath rpath")) {
+		perror();
+		exit(EXIT_FAILURE);
+	}
+}
+#endif
+
 int
 main(int argc, char *argv[])
 {
