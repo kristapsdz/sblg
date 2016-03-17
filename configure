@@ -28,6 +28,7 @@ runtest() {
 }
 
 cat config.h.pre
+runtest pledge PLEDGE  ""
 runtest strlcat STRLCAT ""
 runtest strlcpy STRLCPY ""
 runtest reallocarray REALLOCARRAY ""
