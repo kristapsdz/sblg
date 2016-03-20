@@ -285,4 +285,17 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.3</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-03-20">2016-03-20</time>
+		</header>
+		<aside>
+			<p>
+				Require a valid ISO 3339 date-time for the article time, which now lets articles have a time as well as the date component.
+				Add a <code>${sblg-pos}</code> tag for specifying the article's shown position.
+			</p>
+		</aside>
+	</article>
 </articles>
