@@ -190,8 +190,10 @@ Then the article title (both as text data only and inclusive of markup)
 is extracted from the first
 .Li <hn>
 .Pq header 1\(en4 ,
-article publication date is extracted from the first
-.Li <time> ,
+article publication date is extracted from the datetime attribute of the
+first
+.Li <time>
+(which must be a date, YYYY-MM-DD, or time, YYYY-MM-DDTHH:MM:SSZ),
 and author (both as text data only and inclusive of markup) from the
 first
 .Li <address> .
