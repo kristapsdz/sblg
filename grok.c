@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <expat.h>
 #include <fcntl.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +54,26 @@ static void	article_begin(void *dat, const XML_Char *s,
 static void	article_end(void *dat, const XML_Char *s);
 static void	input_begin(void *, const XML_Char *, 
 			const XML_Char **);
+
+static void
+logerrx(const struct parse *p, const char *fmt, ...)
+{
+	va_list	ap;
+
+	fprintf(stderr, "%s:%zu:%zu: ", p->src, 
+		XML_GetCurrentLineNumber(p->p),
+		XML_GetCurrentColumnNumber(p->p));
+	va_start(ap, fmt);
+	vfprintf(stderr, fmt, ap);
+	va_end(ap);
+}
+
+static void
+logerr(const struct parse *p)
+{
+
+	logerrx(p, "%s\n", XML_ErrorString(XML_GetErrorCode(p->p)));
+}
 
 static void
 article_text(void *dat, const XML_Char *s, int len)
@@ -225,6 +246,8 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct parse	 *arg = dat;
 	const XML_Char	**attp;
 	struct tm	  tm;
+	char		 *erp;
+	size_t		  sz;
 
 	assert(0 == arg->stack);
 
@@ -247,8 +270,26 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			if (strcasecmp(attp[0], "datetime"))
 				continue;
 			memset(&tm, 0, sizeof(struct tm));
-			if (NULL == strptime(attp[1], "%F", &tm))
+			sz = strlen(attp[1]);
+			if (10 == sz) {
+				erp = strptime(attp[1], "%F", &tm);
+				if (NULL == erp || '\0' != *erp) {
+					logerrx(arg, "malformed "
+						"ISO 3339 date\n");
+					continue;
+				}
+			} else if (20 == sz) {
+				erp = strptime(attp[1], "%FT%TZ", &tm);
+				if (NULL == erp || '\0' != *erp) {
+					logerrx(arg, "malformed "
+						"ISO 3339 datetime\n");
+					continue;
+				}
+			} else {
+				logerrx(arg, "malformed "
+					"ISO 3339 datetime\n");
 				continue;
+			}
 			arg->article->time = mktime(&tm);
 		}
 	} else if (0 == strcasecmp(s, "address")) {
@@ -458,10 +499,7 @@ grok(XML_Parser p, const char *src, struct article **arg, size_t *argsz)
 	XML_SetUserData(p, &parse);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
-		fprintf(stderr, "%s:%zu:%zu: %s\n", src, 
-			XML_GetCurrentLineNumber(p),
-			XML_GetCurrentColumnNumber(p),
-			XML_ErrorString(XML_GetErrorCode(p)));
+		logerr(&parse);
 		goto out;
 	} 
 
