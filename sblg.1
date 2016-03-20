@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: March 7 2016 $
+.Dd $Mdocdate: March 17 2016 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -545,6 +545,14 @@ The article title with markup.
 The article title, textual parts only.
 .It Li ${sblg-url}
 The output filename, which is empty for standard output.
+.It Li ${sblg-pos}
+The position (from 1) of the articles actually shown.
+(So if
+.Li data-sblg-navstart
+is used, this will still show 1.)
+This is only valid in a
+.Li <nav data-sblg-nav="1">
+context.
 .El
 .Pp
 Be careful in using these: the contents are copied directly, so if

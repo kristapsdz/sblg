@@ -383,6 +383,9 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		if (STRCMP("sblg-date", 9))
 			strftime(buf, sizeof(buf), "%F", 
 				localtime(&arts[artpos].time));
+		else if (STRCMP("sblg-pos", 8))
+			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
+
 		if (STRCMP("sblg-base", 9))
 			fputs(arts[artpos].base, f);
 		else if (STRCMP("sblg-stripbase", 14))
@@ -426,6 +429,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-source", 11))
 			fputs(arts[artpos].src, f);
 		else if (STRCMP("sblg-date", 9))
+			fputs(buf, f);
+		else if (STRCMP("sblg-pos", 8))
 			fputs(buf, f);
 		else if (STRCMP("sblg-aside", 10))
 			fputs(arts[artpos].aside, f);
