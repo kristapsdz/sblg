@@ -53,6 +53,7 @@ struct	article {
 	char		*tags; /* any article tags */
 	size_t		 tagsz;
 	enum sort	 sort;
+	size_t		 curpos;
 };
 
 int	atom(XML_Parser p, const char *templ, int sz, 

@@ -143,7 +143,7 @@ static void
 nav_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
-	size_t		 i, k;
+	size_t		 i, j, k;
 	char		 buf[32]; 
 	int		 rc;
 
@@ -177,12 +177,13 @@ nav_end(void *dat, const XML_Char *s)
 	 * was within the navigation tags), then make a simple default
 	 * consisting of a list entry.
 	 */
-	for (i = 0; k < arg->sposz; k++) {
+	for (i = j = 0; k < arg->sposz; k++) {
 		rc = tagfind(arg->navtags, 
 			arg->navtagsz, arg->sargs[k].tags);
 		/* Tag not found! */
 		if (0 == rc)
 			continue;
+		arg->sargs[k].curpos = j++;
 		if ( ! arg->navuse || 0 == arg->navsz) {
 			(void)strftime(buf, sizeof(buf), "%F", 
 				localtime(&arg->sargs[k].time));
@@ -387,6 +388,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	arg->stack++;
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
+
+	arg->sargs[arg->spos].curpos = 0;
 
 	/* Echo the formatted text of the article. */
 	xmltextx(arg->f, arg->sargs[arg->spos].article, 
