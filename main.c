@@ -109,6 +109,8 @@ main(int argc, char *argv[])
 				asort = ASORT_DATE;
 			else if (0 == strcasecmp(optarg, "filename"))
 				asort = ASORT_FILENAME;
+			else if (0 == strcasecmp(optarg, "cmdline"))
+				asort = ASORT_CMDLINE;
 			else
 				goto usage;
 			break;
