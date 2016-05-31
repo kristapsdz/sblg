@@ -444,7 +444,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 
 	if (ASORT_DATE == asort)
 		qsort(sargs, sargsz, sizeof(struct article), datecmp);
-	else 
+	else if (ASORT_FILENAME == asort)
 		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
 
 	/* Open a FILE to the output file or stream. */

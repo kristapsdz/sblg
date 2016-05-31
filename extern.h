@@ -27,7 +27,8 @@ enum	sort {
 
 enum	asort {
 	ASORT_DATE = 0,
-	ASORT_FILENAME
+	ASORT_FILENAME,
+	ASORT_CMDLINE
 };
 
 struct	article {

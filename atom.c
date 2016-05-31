@@ -148,7 +148,7 @@ atom(XML_Parser p, const char *templ, int sz,
 
 	if (ASORT_DATE == asort)
 		qsort(sargs, sargsz, sizeof(struct article), datecmp);
-	else 
+	else if (ASORT_FILENAME == asort)
 		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
 
 	f = stdout;
