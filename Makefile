@@ -1,7 +1,7 @@
 .SUFFIXES: .xml .html .1.html .1
 
-VERSION 	 = 0.3.3
-VDATE 		 = 2016-03-20
+VERSION 	 = 0.3.4
+VDATE 		 = 2016-06-14
 PREFIX 		 = /usr/local
 CFLAGS 		+= -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings 
 OBJS		 = main.o \
@@ -49,7 +49,7 @@ XMLS		 = $(ARTICLEXMLS) \
 ATOM 		 = atom.xml
 XMLGENS 	 = article.xml index.xml
 HTMLS 		 = $(ARTICLES) index.html sblg.1.html
-CSSS 		 = article.css index.css 
+CSSS 		 = article.css index.css mandoc.css
 BINDIR 		 = $(PREFIX)/bin
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 MANDIR 		 = $(PREFIX)/man
@@ -123,7 +123,7 @@ article9.html: $(ARTICLEXMLS)
 		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
 
 .1.1.html:
-	mandoc -Thtml $< >$@
+	mandoc -Ostyle=mandoc.css -Thtml $< >$@
 
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz sblg.tar.gz.sha512

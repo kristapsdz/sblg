@@ -3,20 +3,21 @@ body, html			{ height: 100%;
 				  width: 100%; }
 a				{ text-decoration: none; 
 				  color: blue; }
-body				{ display: table; }
-body > section > footer		{ position: absolute;
+body				{ display: table; 
+				  position: relative; }
+body > footer			{ position: absolute;
 				  width: 100%;
 				  padding-bottom: 1ex;
 				  bottom: 0; 
+				  left: 0;
 				  text-align: center;
 				  color: #aaa; }
-body > section > footer div	{ margin-bottom: 4pt; }
-body > section > footer img	{ margin-bottom: -4pt; }
-body > section > footer a	{ color: #bbb; }
-body > section > footer a:hover	{ color: #fff; }
+body > footer div		{ margin-bottom: 4pt; }
+body > footer img		{ margin-bottom: -4pt; }
+body > footer a			{ color: #ddd; }
+body > footer a:hover		{ color: #fff; }
 body > section			{ background-color: #336699;
-				  position: relative;
-				  padding-bottom: 4em;
+				  padding-bottom: 6em;
 				  text-align: center;
 				  display: table-cell;
 				  width: 100%;
