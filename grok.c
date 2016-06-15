@@ -323,10 +323,11 @@ article_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (strcasecmp(s, "article") || 0 != --arg->gstack) 
+	if (strcasecmp(s, "article") || --arg->gstack > 0) 
 		return;
 
 	XML_SetElementHandler(arg->p, input_begin, NULL);
+	XML_SetDefaultHandlerExpand(arg->p, NULL);
 
 	if (NULL != (cp = strrchr(arg->article->base, '.')))
 		if (NULL == strchr(cp, '/'))
