@@ -298,4 +298,18 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.4</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-06-14">2016-06-14</time>
+		</header>
+		<aside>
+			<p>
+				Add sorting by command-line (natural) invocation order.
+				Fix an issue reported by <a href="https://github.com/trondd555">trondd555</a> where text after the end of an
+				input article would continue to be printed.  Thanks!
+			</p>
+		</aside>
+	</article>
 </articles>
