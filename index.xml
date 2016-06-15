@@ -3,11 +3,11 @@
 	<head>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<meta charset='utf-8' /> 
+		<title>simple off-line blog utility</title>
 		<link href="atom.xml" type="application/atom+xml" rel="alternate" title="sblg Article and Version Feed" />
 		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
-		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-		<title>simple off-line blog utility</title>
-		<link rel="stylesheet" href="index.css" type="text/css" />
+		<link href="index.css" rel="stylesheet" />
+		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 	</head>
 	<body itemscope="itemscope" itemtype="http://schema.org/SoftwareApplication">
 		<section>
@@ -19,9 +19,8 @@
 						<a href="sblg.1.html">sblg(1)</a> is <span itemprop="description">a utility for creating static
 							blogs</span>: it knits together articles and templates, generating static HTML files
 						and Atom feeds.
-						It's built for use with <a
-							href="www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man1/make.1">make(1)</a>, as
-						blogs depend upon articles, etc.
+						It's built for use with <a href="http://man.openbsd.org/make.1">make(1)</a>, just like any
+						source code.
 						No <a href="https://daringfireball.net/projects/markdown/">markdown</a>, no <q>CMS</q>, no CGI,
 						no PHP.
 						Just a simple tool for pulling data from articles and populating templates.
@@ -32,13 +31,13 @@
 					</p>
 					<p>
 						How does it work?
-						You write your HTML content and templates; <a href="sblg.1.html">sblg(1)</a> pulls content and
-						metadata from the articles and merges it into the templates (usually orchestrated with a <a
-							href="#makefile">Makefile</a>).
+						You write your HTML content and templates. <a href="sblg.1.html">sblg(1)</a> pulls content and
+						metadata from the articles and merges it into the templates.
+						This is all usually orchestrated with a <a href="#makefile">Makefile</a>.
 						There are two basic ways of populating templates: a standalone mode, which pasts a single
-						article into a template; and amalgation mode, which posts multiple articles.
-						Amalgamation mode can merge entire articles as well as just article snippets and metadata for
-						navigation and summary purposes.
+						article into a template (a blog-post permanent link); and amalgation mode, which posts multiple
+						articles (the blog front page).  Amalgamation mode can merge entire articles as well as just
+						article snippets and metadata for navigation and summary purposes.
 					</p>
 					<p>
 						To get started, download <a itemprop="downloadURL" href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
@@ -179,9 +178,10 @@
 					</nav>
 				</section>
 			</section>
+		</section>
 			<footer>
 				<div>
-					&#169; 2013&#8211;2016, <a rel="author" href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
+					&#169; 2013&#8211;2016, <a rel="author" href="https://kristaps.bsd.lv">Kristaps Dzonsons</a>
 				</div>
 				<div>
 					<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
@@ -194,6 +194,5 @@
 					</a>
 				</div>
 			</footer>
-		</section>
 	</body>
 </html>
