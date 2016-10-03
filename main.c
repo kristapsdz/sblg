@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013--2016 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013--2016 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -34,7 +34,8 @@
 enum	op {
 	OP_ATOM,
 	OP_COMPILE,
-	OP_BLOG
+	OP_BLOG,
+	OP_JSON
 };
 
 #ifdef	__APPLE__
@@ -90,7 +91,7 @@ main(int argc, char *argv[])
 	op = OP_BLOG;
 	asort = ASORT_DATE;
 
-	while (-1 != (ch = getopt(argc, argv, "acC:o:s:t:")))
+	while (-1 != (ch = getopt(argc, argv, "acC:jo:s:t:")))
 		switch (ch) {
 		case ('a'):
 			op = OP_ATOM;
@@ -100,6 +101,9 @@ main(int argc, char *argv[])
 			break;
 		case ('C'):
 			force = optarg;
+			break;
+		case ('j'):
+			op = OP_JSON;
 			break;
 		case ('o'):
 			outfile = optarg;
@@ -166,6 +170,15 @@ main(int argc, char *argv[])
 		rc = atom(p, templ, argc, 
 			argv, outfile, asort);
 		break;
+	case (OP_JSON):
+		/*
+		 * Merge multiple input files into an Atom feed
+		 * amalgamation.
+		 */
+		if (NULL == outfile)
+			outfile = "blog.json";
+		rc = json(p, argc, argv, outfile, asort);
+		break;
 	default:
 		/*
 		 * Merge multiple input files into a regular (we'll call
@@ -186,8 +199,9 @@ usage:
 	fprintf(stderr, 
 		"usage: %s [-o file] [-t templ] -c file...\n"
 		"       %s [-o file] [-t templ] [-s sort] -a file...\n"
+		"       %s [-o file] [-s sort] -j file...\n"
 		"       %s [-o file] [-t templ] [-s sort] -C file...\n"
 		"       %s [-o file] [-t templ] [-s sort] file...\n",
-		progname, progname, progname, progname);
+		progname, progname, progname, progname, progname);
 	return(EXIT_FAILURE);
 }
