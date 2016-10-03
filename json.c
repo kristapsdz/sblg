@@ -159,6 +159,8 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 	}
 
 	fputc('{', f);
+	json_text("version", VERSION, f);
+	fputc(',', f);
 	json_quoted("articles", f);
 	fputs(": [", f);
 
