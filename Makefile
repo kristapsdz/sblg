@@ -53,6 +53,7 @@ XMLGENS 	 = article.xml index.xml
 HTMLS 		 = $(ARTICLES) index.html sblg.1.html
 CSSS 		 = article.css index.css mandoc.css
 BINDIR 		 = $(PREFIX)/bin
+SHAREDIR	 = $(PREFIX)/share/sblg
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 MANDIR 		 = $(PREFIX)/man
 DOTAR 		 = Makefile \
@@ -68,10 +69,15 @@ DOTAR 		 = Makefile \
 		   config.h.pre \
 		   $(TESTS)
 
+all: sblg sblg.1
+
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
 
 www: $(HTMLS) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512
+
+sblg.1: sblg.in.1
+	sed "s!@SHAREDIR@!$(SHAREDIR)!g" sblg.in.1 >$@
 
 installwww: www
 	mkdir -p $(WWWDIR)
@@ -82,11 +88,13 @@ installwww: www
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots
 
-install: sblg
+install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
+	mkdir -p $(DESTDIR)$(SHAREDIR)
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	install -m 0755 sblg $(DESTDIR)$(BINDIR)
 	install -m 0444 sblg.1 $(DESTDIR)$(MANDIR)/man1
+	install -m 0444 schema.json $(DESTDIR)$(SHAREDIR)
 
 sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/
@@ -128,6 +136,6 @@ article9.html: $(ARTICLEXMLS)
 	mandoc -Ostyle=mandoc.css -Thtml $< >$@
 
 clean:
-	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz sblg.tar.gz.sha512
+	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
 	rm -f config.h config.log
 	rm -rf *.dSYM

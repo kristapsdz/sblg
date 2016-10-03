@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: March 20 2016 $
+.Dd $Mdocdate: May 31 2016 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -26,12 +26,12 @@
 .Op Fl o Ar file
 .Op Fl s Ar sort
 .Op Fl t Ar template
-.Op Fl ac
+.Op Fl acj
 .Ar
 .Sh DESCRIPTION
 The
 .Nm
-utility knits together XML articles and templates in four ways.
+utility knits together XML articles and templates in five ways.
 .Bl -bullet
 .It
 Standalone mode
@@ -64,7 +64,11 @@ from a template.
 .It
 Atom amalgamation mode
 .Pq Fl a
-link multiple articles with an Atom feed template.
+links multiple articles with an Atom feed template.
+.It
+JSON amalgamation mode
+.Pq Fl j
+formats all articles as a JSON feeed.
 .It
 Standalone amalgamation mode
 .Pq Fl C
@@ -456,6 +460,13 @@ element with type
 No
 .Sx Tag Symbols
 are processed.
+.Ss JSON Schema
+.Nm
+can produce a JSON amalgamation with the
+.Fl j
+flag.
+The schema is documented in
+.Pa @SHAREDIR@/schema.json .
 .Ss Tag Symbols
 Within the template for
 .Fl c
