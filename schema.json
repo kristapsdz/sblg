@@ -1,0 +1,79 @@
+{
+	"title": "sblg JSON output",
+	"type": "object",
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"properties": {
+		"articles": {
+			"type": "array",
+			"description": "Sorted articles in blog",
+			"items": {
+				"$ref": "#/definitions/article"
+			}
+		}
+	},
+	"definitions": {
+		"article": {
+			"type": "object",
+			"description": "A single article in a blog",
+			"properties": {
+				"src": {
+					"description": "Source file for article as passed on command line",
+					"type": "string"
+				},
+				"base": {
+					"description": "Source file without suffix",
+					"type": "string"
+				},
+				"stripbase": {
+					"description": "Source file without suffix or leading path",
+					"type": "string"
+				},
+				"striplangbase": {
+					"description": "Source file without suffix, leading path, or suffixed language extensions",
+					"type": "string"
+				},
+				"time": {
+					"description": "Date of publication",
+					"type": "integer"
+				},
+				"title": {
+					"description": "Title of article",
+					"$ref": "#/definitions/markup"
+				},
+				"aside": {
+					"description": "Aside of article",
+					"$ref": "#/definitions/markup"
+				},
+				"author": {
+					"description": "Author of article",
+					"$ref": "#/definitions/markup"
+				},
+				"article": {
+					"description": "Article contents (text portion is null)",
+					"$ref": "#/definitions/markup"
+				},
+				"tags": {
+					"type": "array",
+					"description": "Set of tags associated with article",
+					"items": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"markup": {
+			"type": "object",
+			"properties": {
+				"text": {
+					"type": "string",
+					"description": "Text nodes of XML (usually HTML5) content"
+				},
+				"xml": {
+					"type": "string",
+					"description": "XML (usually HTML5) content"
+				}
+			},
+			"required": ["xml"]
+		}
+	}
+}
