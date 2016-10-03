@@ -84,8 +84,8 @@ json_text(const char *key, const char *text, FILE *f)
 }
 
 static void
-json_texthtml(const char *key, 
-	const char *text, const char *html, FILE *f)
+json_textxml(const char *key, 
+	const char *text, const char *xml, FILE *f)
 {
 
 	json_quoted(key, f);
@@ -97,9 +97,9 @@ json_texthtml(const char *key,
 		json_quoted(text, f);
 		fputc(',', f);
 	}
-	json_quoted("html", f);
+	json_quoted("xml", f);
 	fputc(':', f);
-	json_quoted(html, f);
+	json_quoted(xml, f);
 	fputc('}', f);
 }
 
@@ -176,19 +176,19 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 		fputc(',', f);
 		json_time("time", sargs[j].time, f);
 		fputc(',', f);
-		json_texthtml("title", 
+		json_textxml("title", 
 			sargs[j].titletext, 
 			sargs[j].title, f);
 		fputc(',', f);
-		json_texthtml("aside", 
+		json_textxml("aside", 
 			sargs[j].asidetext, 
 			sargs[j].aside, f);
 		fputc(',', f);
-		json_texthtml("author", 
+		json_textxml("author", 
 			sargs[j].authortext, 
 			sargs[j].author, f);
 		fputc(',', f);
-		json_texthtml("article", NULL,
+		json_textxml("article", NULL,
 			sargs[j].article, f);
 		fputc(',', f);
 		json_textlist("tags", 
