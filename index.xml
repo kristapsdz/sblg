@@ -17,8 +17,9 @@
 					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
 					<p>
 						<a href="sblg.1.html">sblg(1)</a> is <span itemprop="description">a utility for creating static
-							blogs</span>: it knits together articles and templates, generating static HTML files
-						and Atom feeds.
+							blogs</span>. 
+						It knits together articles with templates, generating static HTML files,
+						Atom feeds, and JSON files.
 						It's built for use with <a href="http://man.openbsd.org/make.1">make(1)</a>, just like any
 						source code.
 						No <a href="https://daringfireball.net/projects/markdown/">markdown</a>, no <q>CMS</q>, no CGI,
@@ -27,7 +28,7 @@
 						<a href="sblg.1.html">sblg(1)</a> is an <a href="http://opensource.org/licenses/ISC"
 							rel="license">ISC licensed</a> ISO C utility that depends only on <a
 							href="http://expat.sourceforge.net/">libexpat</a>.
-						(Where <q>simple</q> encompasses Atom feeds, multi-language support, tag filtering, etc.)
+						(Where <q>simple</q> encompasses Atom feeds, JSON, multi-language support, tag filtering, etc.)
 					</p>
 					<p>
 						How does it work?
@@ -184,11 +185,11 @@
 					&#169; 2013&#8211;2016, <a rel="author" href="https://kristaps.bsd.lv">Kristaps Dzonsons</a>
 				</div>
 				<div>
-					<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
-					<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
-					<a href="snapshots"><i class="fa fa-file-o"></i></a>
-					<a href="atom.xml"><i class="fa fa-rss"></i></a>
-					<a href="https://github.com/kristapsdz/sblg"><i class="fa fa-github"></i></a>
+					<a href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
+					<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
+					<a href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
+					<a href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
+					<a href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
 					<a href="https://scan.coverity.com/projects/sblg">
 						<img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/7910/badge.svg" />
 					</a>
