@@ -1,19 +1,23 @@
 ## Synopsis
 
-[sblg](http://kristaps.bsd.lv/sblg) is a utility for
-creating static blogs: it knits together articles and templates,
-generating static HTML files and Atom feeds.
-It's built for use with `make`, as blogs depend upon articles, etc. 
-No markdown, no "CMS", no CGI, no PHP. Just a simple tool for pulling
-data from articles and populating templates. 
-The system is an ISC licensed ISO C utility that depends only on
-[libexpat](http://expat.sourceforge.net/). 
-(Where "simple" encompasses Atom feeds, multi-language support, tag
-filtering, etc.) 
+[sblg](http://kristaps.bsd.lv/sblg) is a utility for creating static
+blogs. 
+It knits a articles together with templates, generating static HTML
+files, Atom feeds, and JSON files.
+It's built for use with `make`-style build environments insofar as a
+blog depends upon articles.
 
-This is the README file for display with
-[GitHub](https://www.github.com), which hosts a read-only source
-repository of the project. 
+Benefits?  
+No markdown, no "CMS", no CGI, no PHP. 
+Just a simple [open source](https://opensource.org/licenses/ISC) tool
+for pulling data from articles and populating templates. 
+The only dependency is [libexpat](http://expat.sourceforge.net/) for
+parsing article content.
+
+This GitHub repository is a read-only mirror of the main repository,
+which is held on [BSD.lv](https://www.bsd.lv).
+I keep it up to date between versions; so if you have issues to report,
+please do so here.
 
 ## Examples
 
@@ -27,9 +31,8 @@ examples.
 sblg works out-of-the-box with modern UNIX systems.
 Simply download the latest version's [source
 archive](http://kristaps.bsd.lv/sblg/snapshots/sblg.tar.gz) (or download
-the project from GitHub), compile with `make`, then `sudo make install`.
-Your operating system might already have kcgi as one of its third-party
-libraries: check to make sure!
+the project from GitHub), compile with `make`, then `sudo make install`
+(or `doas make install`, if you're on OpenBSD).
 
 ## License
 
