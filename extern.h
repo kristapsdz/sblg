@@ -51,13 +51,15 @@ struct	article {
 	time_t	 	 time; /* date of publication */
 	char		*article; /* nil-terminated entire article */
 	size_t		 articlesz; /* length of article */
-	char		*tags; /* any article tags */
-	size_t		 tagsz;
-	enum sort	 sort;
+	char		*tags; /* space-separated article tags */
+	size_t		 tagsz; /* length of tags */
+	enum sort	 sort; /* overriden sort order parameters */
 	size_t		 curpos;
 };
 
 int	atom(XML_Parser p, const char *templ, int sz, 
+		char *src[], const char *dst, enum asort asort);
+int	json(XML_Parser p, int sz, 
 		char *src[], const char *dst, enum asort asort);
 int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);
