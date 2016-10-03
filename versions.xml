@@ -312,4 +312,19 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.5</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-10-03">2016-10-03</time>
+		</header>
+		<aside>
+			<p>
+				Add support for JSON output with the <b>-j</b> flag.
+				This generates a dump of all articles in JSON format.
+				This makes it easy to mingle your static content with a dynamic feed, such as one coming from <a
+					href="https://github.com/kristapsdz/dblg">dblg</a>.
+			</p>
+		</aside>
+	</article>
 </articles>
