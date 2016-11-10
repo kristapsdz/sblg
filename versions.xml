@@ -327,4 +327,16 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.6</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-11-10">2016-11-10</time>
+		</header>
+		<aside>
+			<p>
+				Implement a new option, <b>-l</b>, that prints all tags for a given set of filenames.
+			</p>
+		</aside>
+	</article>
 </articles>
