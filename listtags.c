@@ -27,26 +27,17 @@
 int
 listtags(XML_Parser p, int sz, char *src[])
 {
-	size_t		 j, sargsz = 0;
+	size_t		 j, k, sargsz = 0;
 	int		 i, rc = 0;
 	struct article	*sargs = NULL;
-	char 		*token, *string, *tofree;
 
 	for (i = 0; i < sz; i++) 
 		if ( ! grok(p, src[i], &sargs, &sargsz))
 			goto out;
 
-	for (j = 0; j < sargsz; j++) {
-		if (NULL == sargs[j].tags)
-			continue;
-		tofree = string = strdup(sargs[j].tags);
-		while (NULL != (token = strsep(&string, " "))) {
-			if ('\0' == *token)
-				continue;
-			printf("%s\t%s\n", token, sargs[j].src);
-		}
-		free(tofree);
-	}
+	for (j = 0; j < sargsz; j++)
+		for (k = 0; k < sargs[j].tagmapsz; k++)
+			printf("%s\t%s\n", sargs[j].tagmap[k], sargs[j].src);
 
 	rc = 1;
 out:
