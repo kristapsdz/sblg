@@ -26,7 +26,7 @@
 .Op Fl o Ar file
 .Op Fl s Ar sort
 .Op Fl t Ar template
-.Op Fl acj
+.Op Fl acjl
 .Ar
 .Sh DESCRIPTION
 The
@@ -94,6 +94,16 @@ operates as blog amalgamation mode, specifically as if
 were specified.
 Its arguments are as follows:
 .Bl -tag -width Ds
+.It Fl a
+Creates an Atom feed amalgamation from its input files.
+.It Fl c
+Create standalone articles instead of merging together articles into an
+amalgamation.
+.It Fl l
+Instead of emitting any output files, simply process the input and
+report a table of tags.
+This table consists of a tag name, a tab, then the filename where it was
+found.
 .It Fl C Ar file
 Like
 .Fl c ,
@@ -153,11 +163,6 @@ for
 and
 .Ar blog-template.xml
 otherwise.
-.It Fl a
-Creates an Atom feed amalgamation from its input files.
-.It Fl c
-Create standalone articles instead of merging together articles into an
-amalgamation.
 .It Ar
 Input files.
 In standalone mode with
@@ -243,6 +248,7 @@ the natural way.
 This tag may be specified on any element within the article and consists
 of space-separated tag names.
 These tags are extracted for navigation tag operation.
+It may not contain any tabs.
 .El
 .Pp
 There may be be multiple articles within a single document, for example,
