@@ -175,6 +175,60 @@ addr_end(void *dat, const XML_Char *s)
 }
 
 static void
+tadd(struct article *a, const XML_Char *attp)
+{
+	char		*start, *end, *cur, *tofree;
+	size_t		 i;
+
+	tofree = cur = xstrdup(attp);
+
+	for (;;) {
+		/* Skip past leading whitespace. */
+		while (' ' == cur[0])
+			cur++;
+		if ('\0' == cur[0])
+			break;
+
+		/* Parse word til next non-escaped whitespace. */
+		for (start = end = cur; '\0' != end[0]; end++)
+			if (' ' == end[0] && '\\' != end[-1])
+				break;
+
+		/* Set us at the next token. */
+		cur = end;
+		if ('\0' != *end)
+			cur++;
+		*end = '\0';
+
+		/* Inefficiently search for a match. */
+		for (i = 0; i < a->tagmapsz; i++)
+			if (0 == strcmp(a->tagmap[i], start))
+				break;
+
+		if (i < a->tagmapsz)
+			continue;
+
+		/* Reallocate the map. */
+		a->tagmap = xreallocarray(a->tagmap,
+			a->tagmapsz + 1, sizeof(char *));
+
+		/* Fill in, stripping out the escaped space. */
+		a->tagmap[a->tagmapsz] = xmalloc(strlen(start) + 1);
+		i = 0;
+		while ('\0' != *start) {
+			if ('\\' == *start && ' ' == start[1])
+				start++;
+			a->tagmap[a->tagmapsz][i++] = *start++;
+		}
+		a->tagmap[a->tagmapsz][i] = '\0';
+
+		a->tagmapsz++;
+	}
+
+	free(tofree);
+}
+
+static void
 tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 {
 	const XML_Char	**attp;
@@ -192,6 +246,7 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 			strlcat(arg->article->tags, attp[1], sz);
 			strlcat(arg->article->tags, " ", sz);
 			arg->article->tagsz = sz;
+			tadd(arg->article, attp[1]);
 		}
 }
 

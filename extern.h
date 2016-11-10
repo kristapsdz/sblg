@@ -53,6 +53,8 @@ struct	article {
 	size_t		 articlesz; /* length of article */
 	char		*tags; /* space-separated article tags */
 	size_t		 tagsz; /* length of tags */
+	char		**tagmap;
+	size_t		  tagmapsz;
 	enum sort	 sort; /* overriden sort order parameters */
 	size_t		 curpos;
 };
