@@ -26,6 +26,7 @@
 void
 article_free(struct article *p)
 {
+	size_t	 i;
 
 	if (NULL == p) 
 		return;
@@ -41,4 +42,9 @@ article_free(struct article *p)
 	free(p->aside);
 	free(p->asidetext);
 	free(p->article);
+
+	for (i = 0; i < p->tagmapsz; i++)
+		free(p->tagmap[i]);
+
+	free(p->tagmap);
 }
