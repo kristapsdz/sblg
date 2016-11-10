@@ -61,6 +61,7 @@ int	atom(XML_Parser p, const char *templ, int sz,
 		char *src[], const char *dst, enum asort asort);
 int	json(XML_Parser p, int sz, 
 		char *src[], const char *dst, enum asort asort);
+int	listtags(XML_Parser, int, char *[]);
 int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);
 int	grok(XML_Parser p, const char *src, struct article **, size_t *);

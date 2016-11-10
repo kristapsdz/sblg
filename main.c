@@ -35,7 +35,8 @@ enum	op {
 	OP_ATOM,
 	OP_COMPILE,
 	OP_BLOG,
-	OP_JSON
+	OP_JSON,
+	OP_LISTTAGS
 };
 
 #ifdef	__APPLE__
@@ -91,7 +92,7 @@ main(int argc, char *argv[])
 	op = OP_BLOG;
 	asort = ASORT_DATE;
 
-	while (-1 != (ch = getopt(argc, argv, "acC:jo:s:t:")))
+	while (-1 != (ch = getopt(argc, argv, "acC:jlo:s:t:")))
 		switch (ch) {
 		case ('a'):
 			op = OP_ATOM;
@@ -104,6 +105,9 @@ main(int argc, char *argv[])
 			break;
 		case ('j'):
 			op = OP_JSON;
+			break;
+		case ('l'):
+			op = OP_LISTTAGS;
 			break;
 		case ('o'):
 			outfile = optarg;
@@ -169,6 +173,12 @@ main(int argc, char *argv[])
 			outfile = "atom.xml";
 		rc = atom(p, templ, argc, 
 			argv, outfile, asort);
+		break;
+	case (OP_LISTTAGS):
+		/*
+		 * List all tags and the filename(s) they're found in.
+		 */
+		rc = listtags(p, argc, argv);
 		break;
 	case (OP_JSON):
 		/*
