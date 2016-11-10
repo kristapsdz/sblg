@@ -14,7 +14,8 @@ OBJS		 = main.o \
 		   util.o \
 		   atom.o \
 		   article.o \
-		   json.o
+		   json.o \
+		   listtags.o
 SRCS		 = main.c \
 		   compile.c \
 		   compat-reallocarray.c \
@@ -25,7 +26,8 @@ SRCS		 = main.c \
 		   util.c \
 		   atom.c \
 		   article.c \
-		   json.c
+		   json.c \
+		   listtags.c
 TESTS 		 = test-pledge.c \
 		   test-reallocarray.c \
       		   test-strlcat.c \
