@@ -22,11 +22,11 @@
 .Nd simple off-line blog utility
 .Sh SYNOPSIS
 .Nm sblg
+.Op Fl acjl
 .Op Fl C Ar file
 .Op Fl o Ar file
 .Op Fl s Ar sort
 .Op Fl t Ar template
-.Op Fl acjl
 .Ar
 .Sh DESCRIPTION
 The
@@ -232,6 +232,9 @@ There are a number of special attributes that are recognised.
 .It Li data-sblg-lang
 This tag may only be specified on the article element and specifies one
 or more space-separated languages for the document.
+You can escape spaces with a backslash
+.Pq Dq \e
+if you have spaces in the tag name.
 These languages are removed in the
 .Dq stripping
 operations for the
@@ -247,6 +250,9 @@ the natural way.
 .It Li data-sblg-tags
 This tag may be specified on any element within the article and consists
 of space-separated tag names.
+You can escape spaces with a backslash
+.Pq Dq \e
+if you have spaces in the tag name.
 These tags are extracted for navigation tag operation.
 It may not contain any tabs.
 .El
