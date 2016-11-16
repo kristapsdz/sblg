@@ -17,46 +17,14 @@
 #ifndef EXTERN_H
 #define EXTERN_H
 
-__BEGIN_DECLS
+#include "sblg.h"
 
-enum	sort {
-	SORT_DEFAULT = 0,
-	SORT_FIRST,
-	SORT_LAST
-};
+__BEGIN_DECLS
 
 enum	asort {
 	ASORT_DATE = 0,
 	ASORT_FILENAME,
 	ASORT_CMDLINE
-};
-
-struct	article {
-	const char	*src; /* source filename */
-	char		*base; /* nil-terminated src w/o suffix */
-	char		*stripbase; /* nil-terminated fname w/o suffix */
-	char		*striplangbase; /* stripbase w/o langs */
-	char		*title; /* nil-terminated title */
-	size_t		 titlesz; /* length of title */
-	char		*titletext; /* nil-terminated title text */
-	size_t		 titletextsz; /* length of titletext */
-	char		*aside; /* nil-terminated aside content */
-	size_t		 asidesz; /* length of aside */
-	char		*asidetext; /* nil-terminated aside text */
-	size_t		 asidetextsz; /* length of asidetext */
-	char		*author; /* nil-terminated author name */
-	size_t		 authorsz; /* length of author */
-	char		*authortext; /* nil-terminated author name text */
-	size_t		 authortextsz; /* length of authortext */
-	time_t	 	 time; /* date of publication */
-	char		*article; /* nil-terminated entire article */
-	size_t		 articlesz; /* length of article */
-	char		*tags; /* space-separated article tags */
-	size_t		 tagsz; /* length of tags */
-	char		**tagmap;
-	size_t		  tagmapsz;
-	enum sort	 sort; /* overriden sort order parameters */
-	size_t		 curpos;
 };
 
 int	atom(XML_Parser p, const char *templ, int sz, 
@@ -66,11 +34,9 @@ int	json(XML_Parser p, int sz,
 int	listtags(XML_Parser, int, char *[]);
 int	compile(XML_Parser p, const char *templ,
 		const char *src, const char *dst);
-int	grok(XML_Parser p, const char *src, struct article **, size_t *);
 int	linkall(XML_Parser p, const char *templ, const char *force, 
 		int sz, char *src[], const char *dst, enum asort asort);
 
-void	article_free(struct article *p);
 void	mmap_close(int fd, void *buf, size_t sz);
 int	mmap_open(const char *f, int *fd, char **buf, size_t *sz);
 

@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <assert.h>
+#include <ctype.h>
 #include <expat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,21 +31,25 @@ listtags(XML_Parser p, int sz, char *src[])
 	size_t		 j, k, sargsz = 0;
 	int		 i, rc = 0;
 	struct article	*sargs = NULL;
+	const char	*cp;
 
 	for (i = 0; i < sz; i++) 
-		if ( ! grok(p, src[i], &sargs, &sargsz))
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
 
 	for (j = 0; j < sargsz; j++)
-		for (k = 0; k < sargs[j].tagmapsz; k++)
-			printf("%s\t%s\n", sargs[j].tagmap[k], sargs[j].src);
+		for (k = 0; k < sargs[j].tagmapsz; k++) {
+			for (cp = sargs[j].tagmap[k]; '\0' != *cp; cp++) {
+				if ('\\' == cp[0] && ' ' == cp[1])
+					continue;
+				putchar(*cp);
+			}
+			printf("\t%s\n", sargs[j].src);
+		}
 
 	rc = 1;
 out:
-	for (j = 0; j < sargsz; j++)
-		article_free(&sargs[j]);
-
-	free(sargs);
+	sblg_free(sargs, sargsz);
 	return(rc);
 }
 

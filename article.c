@@ -34,7 +34,6 @@ article_free(struct article *p)
 	free(p->base);
 	free(p->stripbase);
 	free(p->striplangbase);
-	free(p->tags);
 	free(p->title);
 	free(p->titletext);
 	free(p->author);
@@ -47,4 +46,18 @@ article_free(struct article *p)
 		free(p->tagmap[i]);
 
 	free(p->tagmap);
+}
+
+void
+sblg_free(struct article *p, size_t sz)
+{
+	size_t	 i;
+
+	if (NULL == p)
+		return;
+
+	for (i = 0; i < sz; i++)
+		article_free(&p[i]);
+
+	free(p);
 }

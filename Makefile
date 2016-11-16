@@ -71,10 +71,13 @@ DOTAR 		 = Makefile \
 		   config.h.pre \
 		   $(TESTS)
 
-all: sblg sblg.1
+all: sblg sblg.a sblg.1
 
 sblg: $(OBJS)
 	$(CC) -o $@ $(OBJS) -lexpat
+
+sblg.a: $(OBJS)
+	$(AR) rs $@ $(OBJS)
 
 www: $(HTMLS) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512
 

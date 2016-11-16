@@ -104,27 +104,20 @@ json_textxml(const char *key,
 }
 
 static void
-json_textlist(const char *key, const char *list, FILE *f)
+json_textlist(const char *key, char **tags, size_t tagsz, FILE *f)
 {
-	char	*token, *string, *tofree;
-	int	 first = 1;
+	size_t	 i;
 	
 	json_quoted("tags", f);
 	fputc(':', f);
 	fputc('[', f);
 
-	if (NULL != list) {
-		tofree = string = xstrdup(list);
-		while (NULL != (token = strsep(&string, " "))) {
-			if ('\0' == *token)
-				continue;
-			if ( ! first) 
-				fputc(',', f);
-			json_quoted(token, f);
-			first = 0;
-		}
-		free(tofree);
+	for (i = 0; i < tagsz; i++) {
+		if (i > 0)
+			fputc(',', f);
+		json_quoted(tags[i], f);
 	}
+
 	fputc(']', f);
 }
 
@@ -144,7 +137,7 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 	sargsz = 0;
 
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, src[i], &sargs, &sargsz))
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
 
 	if (ASORT_DATE == asort)
@@ -193,8 +186,8 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 		json_textxml("article", NULL,
 			sargs[j].article, f);
 		fputc(',', f);
-		json_textlist("tags", 
-			sargs[j].tags, f);
+		json_textlist("tags", sargs[j].tagmap, 
+			sargs[j].tagmapsz, f);
 		fputc('}', f);
 		if (j < sargsz - 1)
 			fputc(',', f);
@@ -203,12 +196,9 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 
 	rc = 1;
 out:
-	for (j = 0; j < sargsz; j++)
-		article_free(&sargs[j]);
+	sblg_free(sargs, sargsz);
 	if (NULL != f && stdout != f)
 		fclose(f);
-
-	free(sargs);
 	return(rc);
 }
 
