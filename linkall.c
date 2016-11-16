@@ -104,38 +104,25 @@ nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 }
 
 /*
- * Find at least one of the given "tags" in the space-separated set of
- * tags "haystack".
+ * Find at least one of the given "tags" in "tagmap".
  * If "tags" is NULL or the tag was found, return 1.
- * If "haystack" is NULL or the tag wasn't found, return 0.
+ * If "tagmap" is empty or the tag wasn't found, return 0.
  */
 static int
-tagfind(char **tags, size_t tagsz, const char *haystack)
+tagfind(char **tags, size_t tagsz, char **tagmap, size_t tagmapsz)
 {
-	const char 	*cp, *needle;
-	size_t	 	 i, sz;
+	size_t	 	 i, j;
 
 	if (0 == tagsz)
 		return(1);
-	if (NULL == haystack) 
+	if (0 == tagmapsz) 
 		return(0);
 
-	for (i = 0; i < tagsz; i++) {
-		needle = tags[i];
-		sz = strlen(needle);
-		for (;;) {
-			if (NULL == (cp = strstr(haystack, needle)))
-				break;
-			if (cp > haystack && ' ' != cp[-1]) {
-				haystack = cp + sz;
-				continue;
-			}
-			cp += sz;
-			if ('\0' == *cp || ' ' == *cp)
+	for (i = 0; i < tagsz; i++) 
+		for (j = 0; j < tagmapsz; j++) 
+			if (0 == strcmp(tags[i], tagmap[j]))
 				return(1);
-			haystack = cp;
-		}
-	}
+
 	return(0);
 }
 
@@ -166,8 +153,8 @@ nav_end(void *dat, const XML_Char *s)
 	 * tagging, might not be a true offset.
 	 */
 	for (i = k = 0; i < arg->navstart && k < arg->sposz; k++) {
-		rc = tagfind(arg->navtags, 
-			arg->navtagsz, arg->sargs[k].tags);
+		rc = tagfind(arg->navtags, arg->navtagsz, 
+			arg->sargs[k].tagmap, arg->sargs[k].tagmapsz);
 		i += 0 != rc;
 	}
 
@@ -178,8 +165,8 @@ nav_end(void *dat, const XML_Char *s)
 	 * consisting of a list entry.
 	 */
 	for (i = j = 0; k < arg->sposz; k++) {
-		rc = tagfind(arg->navtags, 
-			arg->navtagsz, arg->sargs[k].tags);
+		rc = tagfind(arg->navtags, arg->navtagsz, 
+			arg->sargs[k].tagmap, arg->sargs[k].tagmapsz);
 		/* Tag not found! */
 		if (0 == rc)
 			continue;
@@ -363,7 +350,9 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	/* Look for the next article mathing the given tag. */
 	for ( ; arg->spos < arg->ssposz; arg->spos++)
-		if (tagfind(tags, tagsz, arg->sargs[arg->spos].tags))
+		if (tagfind(tags, tagsz, 
+		    arg->sargs[arg->spos].tagmap,
+		    arg->sargs[arg->spos].tagmapsz))
 			break;
 
 	for (i = 0; i < tagsz; i++)
@@ -439,7 +428,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 
 	/* Grok all article data and sort by date. */
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, src[i], &sargs, &sargsz))
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
 
 	if (ASORT_DATE == asort)
@@ -503,8 +492,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	fputc('\n', f);
 	rc = 1;
 out:
-	for (j = 0; j < sargsz; j++) 
-		article_free(&sargs[j]);
+	sblg_free(sargs, sargsz);
 	mmap_close(fd, buf, ssz);
 	if (NULL != f && stdout != f)
 		fclose(f);
@@ -514,7 +502,6 @@ out:
 	free(larg.navtags);
 	free(larg.nav);
 	free(larg.buf);
-	free(sargs);
 	return(rc);
 }
 
