@@ -331,11 +331,12 @@
 		<header>
 			<h1>0.3.6</h1>
 			<address>Kristaps Dzonsons</address>
-			<time datetime="2016-11-10">2016-11-10</time>
+			<time datetime="2016-11-16">2016-11-16</time>
 		</header>
 		<aside>
 			<p>
 				Implement a new option, <b>-l</b>, that prints all tags for a given set of filenames.
+				Also allow tags to have spaces if backslash-escaped.
 			</p>
 		</aside>
 	</article>
