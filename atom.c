@@ -121,7 +121,7 @@ atom(XML_Parser p, const char *templ, int sz,
 	char *src[], const char *dst, enum asort asort)
 {
 	char		*buf;
-	size_t		 ssz, j, sargsz;
+	size_t		 ssz, sargsz;
 	int		 i, fd, rc;
 	FILE		*f;
 	struct atom	 larg;
@@ -143,7 +143,7 @@ atom(XML_Parser p, const char *templ, int sz,
 	strlcpy(larg.path, "/", MAXPATHLEN);
 
 	for (i = 0; i < sz; i++)
-		if ( ! grok(p, src[i], &sargs, &sargsz))
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
 
 	if (ASORT_DATE == asort)
@@ -183,13 +183,10 @@ atom(XML_Parser p, const char *templ, int sz,
 	fputc('\n', f);
 	rc = 1;
 out:
-	for (j = 0; j < sargsz; j++)
-		article_free(&sargs[j]);
+	sblg_free(sargs, sargsz);
 	mmap_close(fd, buf, ssz);
 	if (NULL != f && stdout != f)
 		fclose(f);
-
-	free(sargs);
 	return(rc);
 }
 

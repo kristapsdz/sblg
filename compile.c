@@ -132,7 +132,7 @@ compile(XML_Parser p, const char *templ,
 	const char *src, const char *dst)
 {
 	char		*out, *cp, *buf;
-	size_t		 i, sz, sargsz;
+	size_t		 sz, sargsz;
 	int		 fd, rc;
 	FILE		*f;
 	struct pargs	 arg;
@@ -148,7 +148,7 @@ compile(XML_Parser p, const char *templ,
 	sargs = NULL;
 	sargsz = 0;
 
-	if ( ! grok(p, src, &sargs, &sargsz))
+	if ( ! sblg_parse(p, src, &sargs, &sargsz))
 		goto out;
 
 	if (0 == sargsz) {
@@ -218,11 +218,8 @@ out:
 	if (NULL != f && stdin != f)
 		fclose(f);
 
-	for (i = 0; i < sargsz; i++)
-		article_free(&sargs[i]);
-
+	sblg_free(sargs, sargsz);
 	free(out);
-	free(sargs);
 	free(arg.buf);
 	return(rc);
 }

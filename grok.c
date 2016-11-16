@@ -211,17 +211,7 @@ tadd(struct article *a, const XML_Char *attp)
 		/* Reallocate the map. */
 		a->tagmap = xreallocarray(a->tagmap,
 			a->tagmapsz + 1, sizeof(char *));
-
-		/* Fill in, stripping out the escaped space. */
-		a->tagmap[a->tagmapsz] = xmalloc(strlen(start) + 1);
-		i = 0;
-		while ('\0' != *start) {
-			if ('\\' == *start && ' ' == start[1])
-				start++;
-			a->tagmap[a->tagmapsz][i++] = *start++;
-		}
-		a->tagmap[a->tagmapsz][i] = '\0';
-
+		a->tagmap[a->tagmapsz] = xstrdup(start);
 		a->tagmapsz++;
 	}
 
@@ -232,22 +222,11 @@ static void
 tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 {
 	const XML_Char	**attp;
-	size_t		  sz;
 
 	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-tags")) {
-			if (0 == (sz = strlen(attp[1])))
-				continue;
-			sz += arg->article->tagsz + 2;
-			arg->article->tags = xrealloc
-				(arg->article->tags, sz);
-			if (0 == arg->article->tagsz)
-				*arg->article->tags = '\0';
-			strlcat(arg->article->tags, attp[1], sz);
-			strlcat(arg->article->tags, " ", sz);
-			arg->article->tagsz = sz;
-			tadd(arg->article, attp[1]);
-		}
+		if (0 == strcasecmp(*attp, "data-sblg-tags"))
+			if ('\0' != attp[1][0])
+				tadd(arg->article, attp[1]);
 }
 
 static void
@@ -530,7 +509,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 }
 
 int
-grok(XML_Parser p, const char *src, struct article **arg, size_t *argsz)
+sblg_parse(XML_Parser p, const char *src, struct article **arg, size_t *argsz)
 {
 	char		*buf;
 	size_t		 sz;
