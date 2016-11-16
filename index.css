@@ -26,7 +26,7 @@ body > section			{ background-color: #336699;
 section.mi > section		{ max-height: 0;
 				  position: relative;
 				  overflow: hidden;
-				  margin: 0 1ex;
+				  margin: 0 15%;
 				  padding: 0 2em;
 				  border-radius: 1ex;
 				  box-shadow: inset 0 1px 2px #666, inset 0 -1px 2px #666; 
@@ -66,8 +66,10 @@ p.code code.indent		{ padding-left: 2ex; }
 p.code code.dindent		{ padding-left: 4ex; }
 body > section > footer div	{ display: block; 
 				  margin: 0; }
+section.mi > section		{ margin: 0 7.5%; }
 }
 @media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
+section.mi > section		{ margin: 0 1ex; }
 }
 
 h2 {
