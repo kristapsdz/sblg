@@ -88,22 +88,22 @@ atomputs(FILE *f, const char *cp)
 
 static void
 atomprint(FILE *f, const struct atom *arg, 
-		int altlink, int content, const struct article *src)
+	int altlink, int content, const struct article *src)
 {
 	char		 buf[1024];
 	struct tm	*tm;
 
-	tm = localtime(&src->time);
-	strftime(buf, sizeof(buf), "%F", tm);
+	tm = gmtime(&src->time);
+	strftime(buf, sizeof(buf), "%FT%TZ", tm);
 
 	fprintf(f, "<id>tag:%s,%s:%s/%s</id>\n", 
 		arg->domain, buf, arg->path, src->src);
 	fprintf(f, "<title>%s</title>\n", src->titletext);
-	fprintf(f, "<updated>%sT00:00:00Z</updated>\n", buf);
+	fprintf(f, "<updated>%s</updated>\n", buf);
 	fprintf(f, "<author><name>%s</name></author>\n", src->authortext);
 	if (altlink)
 		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
-				 "href=\"%s/%s\" />\n", arg->path, src->src);
+			 "href=\"%s/%s\" />\n", arg->path, src->src);
 
 	if (content && NULL != src->article) {
 		fprintf(f, "<content type=\"html\">");
