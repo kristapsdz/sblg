@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: November 10 2016 $
+.Dd $Mdocdate: November 16 2016 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -89,7 +89,7 @@ in its navigation.
 .Pp
 By default,
 .Nm
-operates as blog amalgamation mode, specifically as if
+operates in blog amalgamation mode as if
 .Qq sblg -o blog.html -t blog-template.xml ...
 were specified.
 Its arguments are as follows:
@@ -171,7 +171,7 @@ input XML files are merged with a template into an output file.
 Otherwise, multiple input files are merged into a single amalgamation.
 .El
 .Pp
-All input and output must be well-formed XML.
+All input must be well-formed XML.
 HTML is assumed only with the default suffix re-write rule for
 .Fl c
 without
@@ -181,7 +181,7 @@ Input articles may be XML fragments or full documents: only the
 tree within the article is considered.
 .Ss Article Input
 Article input files consist of XML fragments or whole documents.
-They must at least consist of the following within the document:
+They usually consist of the following within the document:
 .Bd -literal
 <article data-sblg-article="1">
   <header>
@@ -190,9 +190,12 @@ They must at least consist of the following within the document:
     <time datetime="2013-06-29">29 June, 2013</time>
   </header>
   <aside>
-    This is used as the feed <b>content</b>.
+    This is used as the feed <b>abstract</b>.
   </aside>
-  <p>Some text.</p>
+  <p>
+    Some text in the <b>content</b>.
+    <img src="foo.jpg" alt="An image for the feed" />
+  </p>
 </article>
 .Ed
 .Pp
@@ -201,34 +204,52 @@ When processed with
 all data outside of the
 .Li <article data-sblg-article="1">
 element is discarded.
-Then the article title (both as text data only and inclusive of markup)
-is extracted from the first
+Then the article is scanned for the following:
+.Bl -bullet
+.It
+the article title (both as text data only and inclusive of markup) is
+extracted from the first
 .Li <hn>
-.Pq header 1\(en4 ,
-article publication date is extracted from the datetime attribute of the
-first
+.Pq header 1\(en4 ;
+.It
+the article publication date is extracted from the datetime attribute of
+the first
 .Li <time>
-(which must be a date, YYYY-MM-DD, or time, YYYY-MM-DDTHH:MM:SSZ),
-and author (both as text data only and inclusive of markup) from the
+(which must be a date, YYYY-MM-DD, or time, YYYY-MM-DDTHH:MM:SSZ)
+interpreted in UTC,
+.It
+the author (both as text data only and inclusive of markup) from the
 first
-.Li <address> .
+.Li <address> ; 
+the first
+.Li <aside>
+is used for the feed abstract; and
+.It
+the first
+.Li <img>
+is associated as the article's image.
+.El
 .Pp
 If unspecified, the default article title text (and mark-up) is
 .Qq Untitled article ,
 the default author text (and mark-up) is the
 .Qq Unknown author ,
 the publication time is set to the document's file-system creation time,
-and no tags.
+the abstract is left empty, and the image is empty.
 .Pp
-The first
-.Li <aside> ,
-if provided, is used for the feed content.
 All content is recorded in case the
 .Li data-sblg-content
 Boolean value is used in an Atom feed.
 .Pp
-There are a number of special attributes that are recognised.
+There are a number of special attributes that are recognised in the
+input file.
 .Bl -tag -width Ds
+.It Li data-sblg-img
+A URL that overrides the first
+.Li <img>
+link to be the image associated with the article.
+It doesn't matter where this appears: it will always override any images
+in the article.
 .It Li data-sblg-lang
 This tag may only be specified on the article element and specifies one
 or more space-separated languages for the document.
@@ -500,6 +521,16 @@ articles.
 Obviously,
 .Fl c
 has only a single article.
+.Pp
+In general, these must be considered strict values, e.g.,
+.Li ${sblg-aside}
+and not
+.Li ${ sblg-aside } .
+Some symbols accept optional arguments, which have the format
+.Li ${sblg-tags|argument} .
+Here,
+.Li \&|argument
+may be omitted.
 .Bl -tag -width -Ds
 .It Li ${sblg-aside}
 The article's first aside with markup.
@@ -533,7 +564,12 @@ language was specified on the article,
 becomes
 .Pa bar .
 .It Li ${sblg-date}
-The publication date.
+The publication date as YYYY-MM-DD (UTC).
+.It Li ${sblg-datetime}
+The publication date and time as YYYY-MM-DDTHH:MM:SSZ (UTC).
+.It Li ${sblg-img}
+The article's associated image.
+This will be an empty string if no image was specified.
 .It Li ${sblg-first-base}
 The first (newest) base name in the list of articles.
 There are also
@@ -559,6 +595,14 @@ and
 .Li ${sblg-next-striplangbase}
 variants.
 .Pq See Li ${sblg-base} .
+.It Li ${sblg-pos}
+The position (from 1) of the articles actually shown.
+(So if
+.Li data-sblg-navstart
+is used, this will still show 1.)
+This is only valid in a
+.Li <nav data-sblg-nav="1">
+context.
 .It Li ${sblg-prev-base}
 The previous base name when chronologically ordered from newest to
 oldest, wrapping back to the beginning for the last.
@@ -570,20 +614,22 @@ variants.
 .Pq See Li ${sblg-base} .
 .It Li ${sblg-source}
 The source file when passed for parsing.
+.It Li ${sblg-tags[|tagspec]}
+List of unique tags in the article, optionally filtered by those having
+the prefix
+.Li tagspec .
+If the prefix is not specified, all tags.
+Each tag (e.g., TAG) is listed as
+.Li <span class="sblg-tag">TAG</span> .
+If no tags were found, a single
+.Li <span class="sblg-tags-notfound"></span>
+is emitted.
 .It Li ${sblg-title}
 The article title with markup.
 .It Li ${sblg-titletext}
 The article title, textual parts only.
 .It Li ${sblg-url}
 The output filename, which is empty for standard output.
-.It Li ${sblg-pos}
-The position (from 1) of the articles actually shown.
-(So if
-.Li data-sblg-navstart
-is used, this will still show 1.)
-This is only valid in a
-.Li <nav data-sblg-nav="1">
-context.
 .El
 .Pp
 Be careful in using these: the contents are copied directly, so if
