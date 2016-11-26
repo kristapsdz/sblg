@@ -41,6 +41,7 @@ struct	parse {
 #define	PARSE_TIME	  2 /* we've seen a time */
 #define	PARSE_ADDR	  4 /* we've seen an address */
 #define	PARSE_TITLE	  8 /* we've seen a title */
+#define	PARSE_IMG	  16 /* we've seen an image */
 	unsigned int	  flags;
 	int		  fd; /* underlying descriptor */
 	const char	 *src; /* underlying file */
@@ -180,6 +181,8 @@ tadd(struct article *a, const XML_Char *attp)
 	char		*start, *end, *cur, *tofree;
 	size_t		 i;
 
+	if ('\0' == attp[0])
+		return;
 	tofree = cur = xstrdup(attp);
 
 	for (;;) {
@@ -218,15 +221,25 @@ tadd(struct article *a, const XML_Char *attp)
 	free(tofree);
 }
 
+/*
+ * Look for sblg attributes defined on any given element.
+ * This should be run by each and every element within the article.
+ */
 static void
 tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 {
 	const XML_Char	**attp;
 
-	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-tags"))
-			if ('\0' != attp[1][0])
-				tadd(arg->article, attp[1]);
+	for (attp = atts; NULL != *attp; attp += 2) {
+		if ('\0' == attp[1][0])
+			continue;
+		if (0 == strcasecmp(*attp, "data-sblg-img")) {
+			free(arg->article->img);
+			arg->article->img = xstrdup(attp[1]);
+			arg->flags |= PARSE_IMG;
+		} else if (0 == strcasecmp(*attp, "data-sblg-tags"))
+			tadd(arg->article, attp[1]);
+	}
 }
 
 static void
@@ -296,6 +309,17 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->flags |= PARSE_ASIDE;
 		XML_SetDefaultHandlerExpand(arg->p, aside_text);
 		XML_SetElementHandler(arg->p, aside_begin, aside_end);
+	} else if (0 == strcasecmp(s, "img")) {
+		if (PARSE_IMG & arg->flags) 
+			return;
+		for (attp = atts; NULL != *attp; attp += 2)
+			if (0 == strcmp(*attp, "src"))
+				break;
+		if (NULL != attp[0] && 
+		    NULL != attp[1] && '\0' != *attp[1]) {
+			arg->article->img = xstrdup(attp[1]);
+			arg->flags |= PARSE_IMG;
+		}
 	} else if (0 == strcasecmp(s, "time")) {
 		if (PARSE_TIME & arg->flags)
 			return;
