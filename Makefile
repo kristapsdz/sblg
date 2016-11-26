@@ -65,6 +65,7 @@ DOTAR 		 = Makefile \
 		   $(XMLGENS) \
 		   atom-template.xml \
 		   sblg.1 \
+		   sblg.h \
 		   extern.h \
 		   configure \
 		   config.h.post \
@@ -114,7 +115,7 @@ config.h: config.h.pre config.h.post configure $(TESTS)
 	rm -f config.log
 	CC="$(CC)" CFLAGS="$(CFLAGS)" sh ./configure
 
-$(OBJS): extern.h config.h
+$(OBJS): sblg.h extern.h config.h
 
 atom.xml index.html $(ARTICLES): sblg
 
