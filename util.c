@@ -487,6 +487,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			fputs(arts[artpos].src, f);
 		else if (STRCMP("sblg-date", 9))
 			fputs(buf, f);
+		else if (STRCMP("sblg-datetime", 13))
+			fputs(buf, f);
 		else if (STRCMP("sblg-pos", 8))
 			fputs(buf, f);
 		else if (STRCMP("sblg-aside", 10))
