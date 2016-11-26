@@ -24,29 +24,29 @@ enum	sort {
 };
 
 struct	article {
-	const char	*src; /* source filename */
-	char		*base; /* nil-terminated src w/o suffix */
-	char		*stripbase; /* nil-terminated fname w/o suffix */
-	char		*striplangbase; /* stripbase w/o langs */
-	char		*title; /* nil-terminated title */
-	size_t		 titlesz; /* length of title */
-	char		*titletext; /* nil-terminated title text */
-	size_t		 titletextsz; /* length of titletext */
-	char		*aside; /* nil-terminated aside content */
-	size_t		 asidesz; /* length of aside */
-	char		*asidetext; /* nil-terminated aside text */
-	size_t		 asidetextsz; /* length of asidetext */
-	char		*author; /* nil-terminated author name */
-	size_t		 authorsz; /* length of author */
-	char		*authortext; /* nil-terminated author name text */
-	size_t		 authortextsz; /* length of authortext */
-	time_t	 	 time; /* date of publication */
-	char		*article; /* nil-terminated entire article */
-	size_t		 articlesz; /* length of article */
-	char		**tagmap;
-	size_t		  tagmapsz;
-	enum sort	 sort; /* overriden sort order parameters */
-	size_t		 curpos;
+	const char	 *src; /* source filename */
+	char		 *base; /* nil-terminated src w/o suffix */
+	char		 *stripbase; /* nil-terminated fname w/o suffix */
+	char		 *striplangbase; /* stripbase w/o langs */
+	char		 *title; /* nil-terminated title */
+	size_t		  titlesz; /* length of title */
+	char		 *titletext; /* nil-terminated title text */
+	size_t		  titletextsz; /* length of titletext */
+	char		 *aside; /* nil-terminated aside content */
+	size_t		  asidesz; /* length of aside */
+	char		 *asidetext; /* nil-terminated aside text */
+	size_t		  asidetextsz; /* length of asidetext */
+	char		 *author; /* nil-terminated author name */
+	size_t		  authorsz; /* length of author */
+	char		 *authortext; /* nil-terminated author name text */
+	size_t		  authortextsz; /* length of authortext */
+	time_t	 	  time; /* date of publication */
+	char		 *article; /* nil-terminated entire article */
+	size_t		  articlesz; /* length of article */
+	char		**tagmap; /* array of tags */
+	size_t		  tagmapsz; /* length of tag array */
+	char		 *img; /* image associated with article */
+	enum sort	  sort; /* overriden sort order parameters */
 };
 
 __BEGIN_DECLS
