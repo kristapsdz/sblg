@@ -340,4 +340,22 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.7</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-11-16">2016-11-16</time>
+		</header>
+		<aside>
+			<p>
+				Add the ability to attach an image to an article.
+				This is selected from the first <code>&lt;img&gt;</code> or as overriden by the <code>data-sblg-img</code>
+				attribute.
+				Also add the ability to list tags in an article with <code>${sblg-tags}</code>, which accepts a filter prefix as
+				<code>${sblg-tags|filter}</code>.
+				Lastly, add <code>${sblg-datetime}</code> to format time-date pairs.
+				While documenting these, polish up <a href="sblg.1.html">sblg(1)</a>.
+			</p>
+		</aside>
+	</article>
 </articles>
