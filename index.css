@@ -49,7 +49,7 @@ nav[data-sblg-nav] li > div:last-child
 				{ padding: 4pt 12pt 0 12pt; }
 nav[data-sblg-nav] i[class~="fa-clock-o"]
 				{ font-size: 11pt; }
-code.prettyprint		{ font-size: 11pt; }
+code				{ font-size: 11pt; }
 div.prettyprint			{ font-size: 10pt; 
 				  line-height: 14pt;
 				  padding: 0 20%; }
@@ -64,3 +64,21 @@ footer nav			{ font-size: 12pt;
 footer a			{ color: #000; 
 				  border-bottom: thin transparent; }
 footer a:hover			{ border-bottom: thin solid rgba(0, 0, 0, 0.5); }
+
+
+@media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
+article > p,
+nav[data-sblg-nav] ul,
+div.prettyprint			{ padding: 0 10%; }
+div.prettyprint			{ overflow: hidden; }
+}
+
+@media only screen and (max-width: 360px), only screen and (max-device-width: 360px) {
+article > p,
+nav[data-sblg-nav] ul,
+div.prettyprint			{ padding: 0 1%; }
+body > header			{ font-size: 24pt; 
+				  line-height: 24pt; }
+article .intro			{ font-size: 13pt;
+				  line-height: 17pt; }
+}
