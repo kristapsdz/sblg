@@ -356,13 +356,56 @@ xmlopen(FILE *f, const XML_Char *name, ...)
 	fputc('>', f);
 }
 
+/*
+ * List all tags for article "art".
+ * The tag listing appears as a set of <span class"sblg-tag"> elements
+ * filled with the tag name (escaped space normalised).
+ * If no tags are found, then prints <span class="sblg-tags-notfound">.
+ * If given a prefix "arg" of non-zero size "argsz", only tags with the
+ * matching case-sensitive prefix are printed.
+ */
+static void
+taglist(FILE *f, const struct article *art, const char *arg, size_t argsz)
+{
+	size_t	 	 i, sz, found;
+	const char	*cp;
+
+	for (found = i = 0; i < art->tagmapsz; i++) {
+		if (argsz > 0) {
+			sz = strlen(art->tagmap[i]);
+			if (sz <= argsz || 
+			    strncmp(arg, art->tagmap[i], argsz)) 
+				continue;
+		}
+		fputs("<span class=\"sblg-tag\">", f);
+		for (cp = art->tagmap[i] + argsz; '\0' != *cp; cp++) {
+			if ('\\' == cp[0] && ' ' == cp[1])
+				continue;
+			if ('<' == *cp)
+				fputs("&lt;", f);
+			else if ('>' == *cp)
+				fputs("&gt;", f);
+			else if ('"' == *cp)
+				fputs("&quot;", f);
+			else if ('&' == *cp)
+				fputs("&amp;", f);
+			else
+				fputc(*cp, f);
+		}
+		fputs("</span>", f);
+		found = 1;
+	}
+	if (0 == found)
+		fputs("<span class=\"sblg-tags-notfound\"></span>", f);
+}
+
 void
 xmltextx(FILE *f, const XML_Char *s, const char *url, 
 	const struct article *arts, size_t artsz, size_t artpos)
 {
-	const char	*cp, *start, *end;
+	const char	*cp, *start, *end, *arg;
 	char		 buf[32];
-	size_t		 sz, next, prev;
+	size_t		 sz, next, prev, argsz;
 
 	if (NULL == s || '\0' == *s)
 		return;
@@ -380,6 +423,15 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		fprintf(f, "%.*s", (int)(cp - start), start);
 		start = cp + 2;
 		sz = end - start;
+		arg = NULL;
+		argsz = 0;
+
+		if (NULL != (arg = memchr(start, '|', sz))) {
+			sz = arg - start;
+			arg++;
+			argsz = end - arg;
+		} 
+
 		if (STRCMP("sblg-date", 9))
 			strftime(buf, sizeof(buf), "%F", 
 				localtime(&arts[artpos].time));
@@ -388,6 +440,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 
 		if (STRCMP("sblg-base", 9))
 			fputs(arts[artpos].base, f);
+		else if (STRCMP("sblg-tags", 9))
+			taglist(f, &arts[artpos], arg, argsz);
 		else if (STRCMP("sblg-stripbase", 14))
 			fputs(arts[artpos].stripbase, f);
 		else if (STRCMP("sblg-striplangbase", 18))
@@ -436,6 +490,10 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			fputs(arts[artpos].aside, f);
 		else if (STRCMP("sblg-asidetext", 14))
 			fputs(arts[artpos].asidetext, f);
+		else if (STRCMP("sblg-img", 8) &&
+		         NULL != arts[artpos].img)
+			fputs(arts[artpos].img, f);
+
 		start = end + 1;
 	}
 

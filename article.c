@@ -31,6 +31,7 @@ article_free(struct article *p)
 	if (NULL == p) 
 		return;
 
+	free(p->img);
 	free(p->base);
 	free(p->stripbase);
 	free(p->striplangbase);
