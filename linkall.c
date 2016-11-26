@@ -170,7 +170,7 @@ nav_end(void *dat, const XML_Char *s)
 		/* Tag not found! */
 		if (0 == rc)
 			continue;
-		arg->sargs[k].curpos = j++;
+		j++;
 		if ( ! arg->navuse || 0 == arg->navsz) {
 			(void)strftime(buf, sizeof(buf), "%F", 
 				localtime(&arg->sargs[k].time));
@@ -377,8 +377,6 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	arg->stack++;
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
-
-	arg->sargs[arg->spos].curpos = 0;
 
 	/* Echo the formatted text of the article. */
 	xmltextx(arg->f, arg->sargs[arg->spos].article, 
