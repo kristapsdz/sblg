@@ -10,190 +10,193 @@
 		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 	</head>
 	<body itemscope="itemscope" itemtype="http://schema.org/SoftwareApplication">
-		<section>
-			<section class="mi">
-				<h2><a href="#sblg" itemprop="name">sblg</a></h2>
-				<section id="sblg">
-					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
-					<p>
-						<a href="sblg.1.html">sblg(1)</a> is <span itemprop="description">a utility for creating static
-							blogs</span>. 
-						It knits together articles with templates, generating static HTML files,
-						Atom feeds, and JSON files.
-						It's built for use with <a href="http://man.openbsd.org/make.1">make(1)</a>, just like any
-						source code.
-						No <a href="https://daringfireball.net/projects/markdown/">markdown</a>, no <q>CMS</q>, no CGI,
-						no PHP.
-						Just a simple tool for pulling data from articles and populating templates.
-						<a href="sblg.1.html">sblg(1)</a> is an <a href="http://opensource.org/licenses/ISC"
-							rel="license">ISC licensed</a> ISO C utility that depends only on <a
-							href="http://expat.sourceforge.net/">libexpat</a>.
-						(Where <q>simple</q> encompasses Atom feeds, JSON, multi-language support, tag filtering, etc.)
-					</p>
-					<p>
-						How does it work?
-						You write your HTML content and templates. <a href="sblg.1.html">sblg(1)</a> pulls content and
-						metadata from the articles and merges it into the templates.
-						This is all usually orchestrated with a <a href="#makefile">Makefile</a>.
-						There are two basic ways of populating templates: a standalone mode, which pasts a single
-						article into a template (a blog-post permanent link); and amalgation mode, which posts multiple
-						articles (the blog front page).  Amalgamation mode can merge entire articles as well as just
-						article snippets and metadata for navigation and summary purposes.
-					</p>
-					<p>
-						To get started, download <a itemprop="downloadURL" href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
-							href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, and run <code class="prettyprint
-							lang-sh">make install</code>.
-						The current version is <span itemprop="softwareVersion">@VERSION@</span>, released on <time
-							itemprop="dateModified" datetime="@VDATE@">@VDATE@</time>.  
-						The repository is mirrored on <a href="https://github.com/kristapsdz/sblg">GitHub</a>, if that's
-						easier for you.
-					</p>
-					<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="2">
-						<div>
-							<i class="fa fa-fw fa-clock-o"></i> ${sblg-date}: version ${sblg-title}
-						</div>
-						<div>
-							${sblg-aside}
-						</div>
-					</nav>
-				</section>
-			</section>
-			<section class="mo">+</section>
-			<section class="mi">
-				<h2><a href="#content">content</a></h2>
-				<section id="content">
-					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
-					<p>
-						Articles are just content within the <code class="prettyprint lang-html">&lt;article
-							data-sblg-article="1"&gt;</code> tag of an HTML (or really XML) document.
-						<a href="sblg.1.html">sblg(1)</a> pulls articles and article metadata for populating navigation
-						elements and article elements in the templates.
-						The following is an example article:
-					</p>
-					<p class="code">
-						<code class="prettyprint lang-html">&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>
-						<code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;header&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;h1&gt;<wbr />Title<wbr />&lt;/h1&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;address&gt;<wbr/>My Name<wbr/>&lt;/address&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;time datetime="2014-04-12"&gt;<wbr />2014-04-12<wbr />&lt;/time&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;/header&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;aside&gt;</code>
-						<code class="prettyprint lang-html dindent">
-							This is pulled out for the page synopsis.
-						</code>
-						<code class="prettyprint lang-html indent">&lt;/aside&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;p&gt;</code>
-						<code class="prettyprint lang-html dindent">
-							And here we have some &lt;q&gt;content&lt;/q&gt;.
-						</code>
-						<code class="prettyprint lang-html indent">&lt;/p&gt;</code>
-						<code class="prettyprint lang-html">&lt;/article&gt;</code>
-					</p>
-					<p>
-						You'll also need a template.
-						For standalone mode, this is just a regular HTML file where the <code class="prettyprint
-							lang-html">&lt;article data-sblg-article="1"&gt;</code> tag is replaced by the page
-						contents.
-					</p>
-					<p class="code">
-						<code class="prettyprint lang-html">&lt;!DOCTYPE html&gt;</code>
-						<code class="prettyprint lang-html">&lt;html&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;head&gt;&lt;title&gt;${sblg-title}&lt;/title&gt;&lt;/head&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;body&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;/body&gt;</code>
-						<code class="prettyprint lang-html">&lt;/html&gt;</code>
-					</p>
-					<p>
-						For amalgamation (<q>blog</q>) mode it's the same; however, you can also specify <code
-							class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> to fill in meta-data
-						from all articles passed into the command.
-						The <code class="prettyprint lang-html">&lt;article&gt;</code> elements will be filled in with articles.
-					</p>
-					<p class="code">
-						<code class="prettyprint lang-html">&lt;!DOCTYPE html&gt;</code>
-						<code class="prettyprint lang-html">&lt;html&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;head&gt;&lt;title&gt;My Blarg&lt;/title&gt;&lt;/head&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;body&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;nav data-sblg-nav="1"&gt;&lt;/nav&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
-						<code class="prettyprint lang-html dindent">&lt;article data-sblg-article="1"&gt;&lt;/article&gt;</code>
-						<code class="prettyprint lang-html indent">&lt;/body&gt;</code>
-						<code class="prettyprint lang-html">&lt;/html&gt;</code>
-					</p>
-				</section>
-			</section>
-			<section class="mo">+</section>
-			<section class="mi">
-				<h2><a href="#makefile">makefile</a></h2>
-				<section id="makefile">
-					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
-					<p>
-						A Makefile makes this easy.
-						Pretend that your articles (<a href="article1.xml">article1.xml</a>, <a
-							href="article2.xml">article2.xml</a>) are source code.
-						Then object files (<a href="article1.html">article1.html</a>, <a
-							href="article2.html">article2.html</a>) are compiled from single articles and a
-						template, <a href="article.xml">article.xml</a>.
-						Binaries (<a href="index.html">index.html</a> are compiled from object files (or directly from
-						sources) and a template, <a href="index.xml">index.xml</a>.
-					</p>
-					<p class="code">
-						<code class="prettyprint lang-makefile">XMLS = <a href="article1.xml">article1.xml</a> <a href="article2.xml">article2.xml</a></code>
-						<code class="prettyprint lang-makefile">ARTICLES = <a href="article1.html">article1.html</a> <a href="article1.html">article2.html</a></code>
-						<code class="prettyprint lang-makefile">&#x00a0;</code>
-						<code class="prettyprint lang-makefile">all: <a href="index.html">index.html</a> $(ARTICLES)</code>
-						<code class="prettyprint lang-makefile">&#x00a0;</code>
-						<code class="prettyprint lang-makefile"><a href="index.html">index.html</a>: <a href="index.xml">index.xml</a> $(ARTICLES)</code>
-						<code class="prettyprint lang-makefile indent">sblg -o $@ -t <a href="index.xml">index.xml</a> $(ARTICLES)</code>
-						<code class="prettyprint lang-makefile">&#x00a0;</code>
-						<code class="prettyprint lang-makefile">.xml.html:</code>
-						<code class="prettyprint lang-makefile indent">sblg -o $@ -t <a href="article.xml">article.xml</a> $&lt;</code>
-					</p>
-				</section>
-			</section>
-			<section class="mo">=</section>
-			<section class="mi">
-				<h2><a href="#blog">blog</a></h2>
-				<section id="blog">
-					<a class="close" href="#"><i class="fa fa-fw fa-close"></i></a>
-					<p>
-						To read about the system, read the <a href="sblg.1.html">sblg(1)</a> manual.
-						I take great care in making sure that the manpage is up to date; less so the non-canonical
-						<q>howto</q> and <q>FAQ</q> documents.
-						That said, this is about blogs, so you might as well have some bloggy stuff.
-						Obviously, this page itself was generated using <a href="sblg.1.html">sblg(1)</a>!
-					</p>
-					<nav data-sblg-nav="1" data-sblg-navtag="howto" data-sblg-navcontent="1">
-						<div>
-							<i class="fa fa-fw fa-clock-o"></i> ${sblg-date}:
-							<a href="${sblg-base}.html">${sblg-title}</a>
-						</div>
-						<div>
-							${sblg-aside}
-						</div>
-					</nav>
-				</section>
-			</section>
-		</section>
-			<footer>
-				<div>
-					&#169; 2013&#8211;2016, <a rel="author" href="https://kristaps.bsd.lv">Kristaps Dzonsons</a>
+		<nav>
+			<a id="nav-gears" href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
+			<a id="nav-lock" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
+			<a id="nav-file" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
+			<a id="nav-rss" href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
+			<a id="nav-github" href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
+			<span class="explain">
+				<span id="explain-gears">Download source</span>
+				<span id="explain-lock">Download checksum</span>
+				<span id="explain-file">Source archive</span>
+				<span id="explain-rss">Atom feed</span>
+				<span id="explain-github">GitHub repository</span>
+			</span>
+		</nav>
+		<header>
+			<h1 itemprop="name">sblg</h1>
+			<div>+</div>
+			<h2>articles</h2>
+			<div>+</div>
+			<h2>makefile</h2>
+			<div>+</div>
+			<h2>template</h2>
+			<div>=</div>
+			<h2>blog</h2>
+		</header>
+		<article>
+				<p class="intro">
+					<a href="sblg.1.html">sblg(1)</a> is <span itemprop="description">a utility for creating static
+						blogs</span>. 
+					It knits together articles with templates, generating static HTML files,
+					Atom feeds, and JSON files.
+					It's built for use with <a href="http://man.openbsd.org/make.1">make(1)</a>, just like any
+					source code.
+					No <a href="https://daringfireball.net/projects/markdown/">markdown</a>, no <q>CMS</q>, no CGI,
+					no PHP.
+					Just a simple tool for pulling data from articles and populating templates.
+					<a href="sblg.1.html">sblg(1)</a> is an <a href="http://opensource.org/licenses/ISC"
+						rel="license">open source</a> ISO C utility that depends only on <a
+						href="http://expat.sourceforge.net/">libexpat</a>.
+				</p>
+				<p>
+					How does it work?
+					You write your HTML articles and templates. 
+					<a href="sblg.1.html">sblg(1)</a> pulls data from the articles and merges it into the templates.
+					This is all usually orchestrated with a <a href="#makefile">Makefile</a>.
+					There are two basic ways of populating templates: a standalone mode, which pasts a single
+					article into a template (a blog-post permanent link); and amalgation mode, which posts multiple
+					articles (the blog front page).  
+					Amalgamation mode can merge entire articles as well as just article snippets and metadata for navigation
+					and summary purposes.
+					You can also do specialty modes of Atom and JSON feeds.
+				</p>
+				<p>
+					This page itself was created with <a href="sblg.1.html">sblg(1)</a> in <q>amalgamation mode</q>.
+				</p>
+				<p>
+					To get started, download <a itemprop="downloadURL" href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
+						href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, and run <code class="prettyprint
+						lang-sh">make install</code>.
+					The current version is <span itemprop="softwareVersion">@VERSION@</span>, released on <time
+						itemprop="dateModified" datetime="@VDATE@">@VDATE@</time>.  
+					The repository is mirrored on <a href="https://github.com/kristapsdz/sblg">GitHub</a>, if that's
+					easier for you.
+					The last few versions featured the following (this was created by showing only select bits of newest
+					three <q>version</q> articles):
+				</p>
+				<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="3">
+					<div>
+						<i class="fa fa-clock-o"></i> 
+						<time datetime="${sblg-date}">${sblg-date}</time>: 
+						version ${sblg-title}
+					</div>
+					<div>
+						${sblg-aside}
+					</div>
+				</nav>
+				<p>
+					Articles are just content within the <code class="prettyprint lang-html">&lt;article
+						data-sblg-article="1"&gt;</code> tag of an HTML (or really XML) document.
+					<a href="sblg.1.html">sblg(1)</a> pulls articles and article metadata for populating navigation
+					elements and article elements in the templates.
+					The following is an example article:
+				</p>
+				<div class="prettyprint">
+					<pre class="prettyprint lang-html">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;article data-sblg-article="1"&gt;
+  &lt;header&gt;
+    &lt;h1&gt;Title&lt;/h1&gt;
+    &lt;address&gt;My Name&lt;/address&gt;
+    &lt;time datetime="2014-04-12"&gt;2014-04-12&lt;/time&gt;
+  &lt;/header&gt;
+  &lt;aside&gt;
+    This is pulled out for the page synopsis.
+  &lt;/aside&gt;
+  &lt;p&gt;
+    And here we have some &lt;q&gt;content&lt;/q&gt;.
+  &lt;/p&gt;
+&lt;/article&gt;</pre>
 				</div>
-				<div>
-					<a href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
-					<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
-					<a href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
-					<a href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
-					<a href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
-					<a href="https://scan.coverity.com/projects/sblg">
-						<img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/7910/badge.svg" />
-					</a>
+				<p>
+					You'll also need a template.
+					For standalone mode, this is just a regular HTML file where the <code class="prettyprint
+						lang-html">&lt;article data-sblg-article="1"&gt;</code> tag is replaced by the page
+					contents.
+				</p>
+				<div class="prettyprint">
+					<pre class="prettyprint lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;${sblg-title}&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;article data-sblg-article="1"&gt;&lt;/article&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
 				</div>
-			</footer>
+				<p>
+					For amalgamation (<q>blog</q>) mode it's the same; however, you can also specify <code
+						class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> to fill in meta-data
+					from all articles passed into the command.
+					The <code class="prettyprint lang-html">&lt;article&gt;</code> elements will be filled in with articles.
+				</p>
+				<div class="prettyprint">
+					<pre class="prettyprint lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;My Blarg&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;nav data-sblg-nav="1"&gt;&lt;/nav&gt;
+    &lt;article data-sblg-article="1"&gt;&lt;/article&gt;
+    &lt;article data-sblg-article="1"&gt;&lt;/article&gt;
+    &lt;article data-sblg-article="1"&gt;&lt;/article&gt;
+    &lt;article data-sblg-article="1"&gt;&lt;/article&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+				</div>
+				<p>
+					A Makefile makes this easy.
+					Pretend that your articles (<a href="article1.xml">article1.xml</a>, <a
+						href="article2.xml">article2.xml</a>) are source code.
+					Then object files (<a href="article1.html">article1.html</a>, <a
+						href="article2.html">article2.html</a>) are compiled from single articles and a
+					template, <a href="article.xml">article.xml</a>.
+					Binaries (<a href="index.html">index.html</a> are compiled from object files (or directly from
+					sources) and a template, <a href="index.xml">index.xml</a>.
+				</p>
+				<div class="prettyprint">
+					<pre class="prettyprint lang-sh">XMLS = <a href="article1.xml">article1.xml</a> <a href="article2.xml">article2.xml</a>
+ARTICLES = <a href="article1.html">article1.html</a> <a href="article1.html">article2.html</a>
+all: <a href="index.html">index.html</a> $(ARTICLES)
+<a href="index.html">index.html</a>: <a href="index.xml">index.xml</a> $(ARTICLES)
+	sblg -o $@ -t <a href="index.xml">index.xml</a> $(ARTICLES)
+.xml.html:
+	sblg -o $@ -t <a href="article.xml">article.xml</a> $&lt;</pre>
+				</div>
+				<p>
+					To read about the system, read the <a href="sblg.1.html">sblg(1)</a> manual.
+					I take great care in making sure that the manpage is up to date; less so the non-canonical
+					<q>howto</q> and <q>FAQ</q> documents.
+					That said, this is about blogs, so you might as well have some bloggy stuff.
+					This index is also created dynamically from all <q>howto</q> articles.
+					Unlike the version index above, each links to the full articles, all of which were created with <a
+						href="sblg.1.html">sblg(1)</a>'s <q>standalone mode</q>.
+				</p>
+				<nav data-sblg-nav="1" data-sblg-navtag="howto" data-sblg-navcontent="1">
+					<div>
+						<i class="fa fa-fw fa-clock-o"></i> ${sblg-date}:
+						<a href="${sblg-base}.html">${sblg-title}</a>
+					</div>
+					<div>
+						${sblg-aside}
+					</div>
+				</nav>
+		</article>
+		<footer>
+			<div>
+				&#169; 2013&#8211;2016, <a rel="author" href="https://kristaps.bsd.lv">Kristaps Dzonsons</a>
+			</div>
+			<nav>
+				<a href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
+				<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
+				<a href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
+				<a href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
+				<a href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
+			</nav>
+			<div>
+				<a href="https://scan.coverity.com/projects/sblg">
+					<img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/7910/badge.svg" />
+				</a>
+			</div>
+		</footer>
 	</body>
 </html>
