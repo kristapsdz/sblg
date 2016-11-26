@@ -348,7 +348,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 					"ISO 3339 datetime\n");
 				continue;
 			}
-			arg->article->time = mktime(&tm);
+			arg->article->time = timegm(&tm);
 		}
 	} else if (0 == strcasecmp(s, "address")) {
 		if (PARSE_ADDR & arg->flags) 
