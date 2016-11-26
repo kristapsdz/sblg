@@ -434,7 +434,10 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 
 		if (STRCMP("sblg-date", 9))
 			strftime(buf, sizeof(buf), "%F", 
-				localtime(&arts[artpos].time));
+				gmtime(&arts[artpos].time));
+		else if (STRCMP("sblg-datetime", 13))
+			strftime(buf, sizeof(buf), "%FT%TZ", 
+				gmtime(&arts[artpos].time));
 		else if (STRCMP("sblg-pos", 8))
 			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
 
