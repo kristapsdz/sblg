@@ -80,7 +80,7 @@
 					<div>
 						<i class="fa fa-clock-o"></i> 
 						<time datetime="${sblg-date}">${sblg-date}</time>: 
-						version ${sblg-title}
+						version ${sblg-titletext}
 					</div>
 					<div>
 						${sblg-aside}
@@ -118,7 +118,7 @@
 				<div class="prettyprint">
 					<pre class="prettyprint lang-html">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
-  &lt;head&gt;&lt;title&gt;${sblg-title}&lt;/title&gt;&lt;/head&gt;
+  &lt;head&gt;&lt;title&gt;${sblg-titletext}&lt;/title&gt;&lt;/head&gt;
   &lt;body&gt;
     &lt;article data-sblg-article="1"&gt;&lt;/article&gt;
   &lt;/body&gt;
@@ -174,7 +174,7 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 				<nav data-sblg-nav="1" data-sblg-navtag="howto" data-sblg-navcontent="1">
 					<div>
 						<i class="fa fa-fw fa-clock-o"></i> ${sblg-date}:
-						<a href="${sblg-base}.html">${sblg-title}</a>
+						<a href="${sblg-base}.html">${sblg-titletext}</a>
 					</div>
 					<div>
 						${sblg-aside}
