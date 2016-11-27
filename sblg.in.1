@@ -567,6 +567,18 @@ becomes
 The publication date as YYYY-MM-DD (UTC).
 .It Li ${sblg-datetime}
 The publication date and time as YYYY-MM-DDTHH:MM:SSZ (UTC).
+.It Li ${sblg-datetime-fmt[|fmt]}
+A human-readable representation of the date and, if specified, time in
+local time.
+This accepts an optional format string passed to
+.Xr strftime 3 .
+If the format string is empty or
+.Dq auto ,
+a human-readable date
+.Pq with Li %x
+or date-time
+.Pq Li %c
+is printed.
 .It Li ${sblg-img}
 The article's associated image.
 This will be an empty string if no image was specified.
