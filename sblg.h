@@ -41,6 +41,7 @@ struct	article {
 	char		 *authortext; /* nil-terminated author name text */
 	size_t		  authortextsz; /* length of authortext */
 	time_t	 	  time; /* date of publication */
+	int		  isdatetime; /* whether the date has a time */
 	char		 *article; /* nil-terminated entire article */
 	size_t		  articlesz; /* length of article */
 	char		**tagmap; /* array of tags */

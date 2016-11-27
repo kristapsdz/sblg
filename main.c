@@ -18,15 +18,16 @@
 
 #include <expat.h>
 #include <getopt.h>
+#include <locale.h>
 #ifdef __APPLE__
-#include <sandbox.h>
+# include <sandbox.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #ifdef HAVE_PLEDGE
-#include <unistd.h> /* pledge */
+# include <unistd.h> /* pledge */
 #endif
 
 #include "extern.h"
@@ -76,12 +77,13 @@ main(int argc, char *argv[])
 	enum asort	 asort;
 	XML_Parser	 p;
 
+	setlocale(LC_ALL, "");
+
 #if defined(__APPLE__)
 	sandbox_apple();
 #elif defined(HAVE_PLEDGE)
 	sandbox_openbsd();
 #endif
-
 	progname = strrchr(argv[0], '/');
 	if (progname == NULL)
 		progname = argv[0];

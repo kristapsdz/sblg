@@ -357,6 +357,29 @@ xmlopen(FILE *f, const XML_Char *name, ...)
 }
 
 /*
+ * Format an article's localtime.
+ * We accept "auto" or a string that's pumped into strftime(3).
+ * If "auto", this determines which to use based upon we were given both
+ * a date and a time.
+ * The result is meant to be human-readable.
+ */
+static void
+fmttime(char *buf, size_t bufsz, const char *arg, 
+	size_t argsz, int isdatetime, struct tm *tm)
+{
+	char	*fmt;
+
+	if (0 == argsz || 
+	    (4 == argsz && 0 == strncmp(arg, "auto", argsz))) 
+		fmt = xstrdup(isdatetime ? "%c" : "%x");
+	else
+		fmt = xstrndup(arg, argsz);
+
+	strftime(buf, bufsz, fmt, tm);
+	free(fmt);
+}
+
+/*
  * List all tags for article "art".
  * The tag listing appears as a set of <span class"sblg-tag"> elements
  * filled with the tag name (escaped space normalised).
@@ -438,6 +461,10 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-datetime", 13))
 			strftime(buf, sizeof(buf), "%FT%TZ", 
 				gmtime(&arts[artpos].time));
+		else if (STRCMP("sblg-datetime-fmt", 17))
+			fmttime(buf, sizeof(buf), arg, argsz,
+				arts[artpos].isdatetime,
+				localtime(&arts[artpos].time));
 		else if (STRCMP("sblg-pos", 8))
 			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
 
@@ -488,6 +515,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-date", 9))
 			fputs(buf, f);
 		else if (STRCMP("sblg-datetime", 13))
+			fputs(buf, f);
+		else if (STRCMP("sblg-datetime-fmt", 17))
 			fputs(buf, f);
 		else if (STRCMP("sblg-pos", 8))
 			fputs(buf, f);
@@ -542,6 +571,18 @@ xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
 	if (xmlvoid(s))
 		fputs(" /", f);
 	fputc('>', f);
+}
+
+char *
+xstrndup(const char *cp, size_t sz)
+{
+	void	*p;
+
+	if (NULL != (p = strndup(cp, sz)))
+		return(p);
+
+	perror(NULL);
+	exit(EXIT_FAILURE);
 }
 
 char *

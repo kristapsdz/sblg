@@ -58,6 +58,7 @@ void	xmltextx(FILE *f, const XML_Char *s,
 void	*xcalloc(size_t, size_t);
 void	*xmalloc(size_t);
 char	*xstrdup(const char *);
+char	*xstrndup(const char *, size_t);
 void	*xrealloc(void *, size_t);
 void	*xreallocarray(void *, size_t, size_t);
 
