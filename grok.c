@@ -336,6 +336,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 						"ISO 3339 date\n");
 					continue;
 				}
+				arg->article->isdatetime = 0;
 			} else if (20 == sz) {
 				erp = strptime(attp[1], "%FT%TZ", &tm);
 				if (NULL == erp || '\0' != *erp) {
@@ -343,6 +344,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 						"ISO 3339 datetime\n");
 					continue;
 				}
+				arg->article->isdatetime = 1;
 			} else {
 				logerrx(arg, "malformed "
 					"ISO 3339 datetime\n");
@@ -420,6 +422,7 @@ article_end(void *dat, const XML_Char *s)
 			strlen(arg->article->authortext);
 	}
 	if (0 == arg->article->time) {
+		arg->article->isdatetime = 1;
 		if (-1 == fstat(arg->fd, &st))
 			perror(arg->article->src);
 		else
