@@ -344,7 +344,7 @@
 		<header>
 			<h1>0.3.7</h1>
 			<address>Kristaps Dzonsons</address>
-			<time datetime="2016-11-16">2016-11-16</time>
+			<time datetime="2016-11-27">2016-11-27</time>
 		</header>
 		<aside>
 			<p>
@@ -353,7 +353,9 @@
 				attribute.
 				Also add the ability to list tags in an article with <code>${sblg-tags}</code>, which accepts a filter prefix as
 				<code>${sblg-tags|filter}</code>.
-				Lastly, add <code>${sblg-datetime}</code> to format time-date pairs.
+				Then add <code>${sblg-datetime}</code> to format time-date UTC pairs and
+				<code>${sblg-datetime-fmt}</code> for human-formatted dates and times.
+				These collectively make date and time formatting much more rigorous.
 				While documenting these, polish up <a href="sblg.1.html">sblg(1)</a>.
 			</p>
 		</aside>
