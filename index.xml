@@ -79,7 +79,7 @@
 				<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="3">
 					<div>
 						<i class="fa fa-clock-o"></i> 
-						<time datetime="${sblg-date}">${sblg-date}</time>: 
+						<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>: 
 						version ${sblg-titletext}
 					</div>
 					<div>
@@ -173,7 +173,8 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 				</p>
 				<nav data-sblg-nav="1" data-sblg-navtag="howto" data-sblg-navcontent="1">
 					<div>
-						<i class="fa fa-fw fa-clock-o"></i> ${sblg-date}:
+						<i class="fa fa-fw fa-clock-o"></i> 
+						<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>:
 						<a href="${sblg-base}.html">${sblg-titletext}</a>
 					</div>
 					<div>
