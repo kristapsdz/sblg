@@ -64,8 +64,9 @@ DOTAR 		 = Makefile \
 		   $(SRCS) \
 		   $(XMLGENS) \
 		   atom-template.xml \
-		   sblg.1 \
+		   sblg.in.1 \
 		   sblg.h \
+		   schema.json \
 		   extern.h \
 		   configure \
 		   config.h.post \
