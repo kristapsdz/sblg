@@ -110,7 +110,7 @@ sblg.tar.gz:
 	rm -rf .dist/
 
 sblg.tar.gz.sha512: sblg.tar.gz
-	openssl dgst -sha512 sblg.tar.gz >$@
+	sha512 sblg.tar.gz >$@
 
 config.h: config.h.pre config.h.post configure $(TESTS)
 	rm -f config.log
