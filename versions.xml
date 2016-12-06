@@ -360,4 +360,17 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.8</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-12-07">2016-12-07</time>
+		</header>
+		<aside>
+			<p>
+				Fix the installation tarball.
+				No code/functionality change.
+			</p>
+		</aside>
+	</article>
 </articles>
