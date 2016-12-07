@@ -87,6 +87,9 @@
 					</div>
 				</nav>
 				<p>
+					(<a href="archive.html">See all versions</a>.)
+				</p>
+				<p>
 					Articles are just content within the <code class="prettyprint lang-html">&lt;article
 						data-sblg-article="1"&gt;</code> tag of an HTML (or really XML) document.
 					<a href="sblg.1.html">sblg(1)</a> pulls articles and article metadata for populating navigation

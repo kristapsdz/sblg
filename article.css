@@ -79,7 +79,9 @@ div.version > div > a	{ color: #333;
 			  padding: 0 0.5ex; }
 div.version > div > a:hover	
 			{ color: #000; }
-
+nav[data-sblg-nav] ul	{ list-style-type: none; 
+			  padding: 1em;
+			  margin: 0 15%; }
 
 body > header div, h1 {
 	font-family: Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif;
@@ -117,4 +119,5 @@ body > section > p:first-child { margin: 0 2% 1em 2%; padding: 0 1ex; }
 div.version { padding: 1.5ex 2%; }
 div.version > div { padding: 0 1ex; }
 div.version > div > span { display: block; border-right: none; }
+nav[data-sblg-nav] ul { margin: 0 2%; padding: 1ex; }
 }

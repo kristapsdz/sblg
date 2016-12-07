@@ -54,7 +54,7 @@ XMLS		 = $(ARTICLEXMLS) \
 		   versions.xml
 ATOM 		 = atom.xml
 XMLGENS 	 = article.xml index.xml
-HTMLS 		 = $(ARTICLES) index.html sblg.1.html
+HTMLS 		 = $(ARTICLES) index.html archive.html sblg.1.html
 CSSS 		 = article.css index.css mandoc.css
 MDS		 = article10.md
 BINDIR 		 = $(PREFIX)/bin
@@ -129,6 +129,10 @@ $(ARTICLES): article.xml
 
 index.html: index.xml $(ARTICLES) versions.xml
 	./sblg -o- -t index.xml $(ARTICLES) versions.xml | \
+		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
+
+archive.html: archive.xml $(ARTICLES) versions.xml
+	./sblg -o- -t archive.xml $(ARTICLES) versions.xml | \
 		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
 
 atom.xml: $(ARTICLES) versions.xml
