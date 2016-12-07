@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta charset='utf-8' /> 
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
+		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+		<title>sblg - version archive</title>
+		<link rel="stylesheet" href="article.css" type="text/css" />
+	</head>
+	<body>
+		<header>
+			<h1><a href="index.html">sblg</a></h1>
+			<div>&#8211; simple off-line blog utility</div>
+		</header>
+		<div class="version">
+			<div>
+				<span>Version @VERSION@, @VDATE@</span>
+				<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
+				<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
+				<a href="atom.xml"><i class="fa fa-rss"></i></a>
+			</div>
+		</div>
+		<section>
+			<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1">
+				<div>
+					<i class="fa fa-clock-o"></i> 
+					<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>: 
+					version ${sblg-titletext}
+				</div>
+				<div>
+					${sblg-aside}
+				</div>
+			</nav>
+		</section>
+		<footer>
+			&#169; 2013&#8211;2016, <a rel="author" href="http://kristaps.bsd.lv">Kristaps Dzonsons</a>
+		</footer>
+	</body>
+</html>
