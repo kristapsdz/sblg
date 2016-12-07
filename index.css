@@ -11,9 +11,10 @@ body > header			{ padding-top: 5%;
 				  background-color: #ccc; }
 body > header h1,
 body > header h2		{ color: #555; }
-body > header div		{ font-size: 24pt; }
+body > header div		{ font-size: 16pt; }
 h1, h2				{ font-size: inherit; 
 				  margin: 0; 
+				  font-weight: normal;
 				  text-shadow: 0 0 1px #fff; }
 body > nav			{ background-color: #666; 
 				  font-size: 14pt;

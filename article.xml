@@ -14,10 +14,12 @@
 			<div>&#8211; simple off-line blog utility</div>
 		</header>
 		<div class="version">
-			<span>Version @VERSION@, @VDATE@</span>
-			<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
-			<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
-			<a href="atom.xml"><i class="fa fa-rss"></i></a>
+			<div>
+				<span>Version @VERSION@, @VDATE@</span>
+				<a href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
+				<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
+				<a href="atom.xml"><i class="fa fa-rss"></i></a>
+			</div>
 		</div>
 		<section>
 			<p>
