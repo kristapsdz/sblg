@@ -1,4 +1,4 @@
-.SUFFIXES: .xml .html .1.html .1
+.SUFFIXES: .xml .html .1.html .1 .md
 
 VERSION 	 = 0.3.8
 VDATE 		 = 2016-12-07
@@ -39,7 +39,8 @@ ARTICLES 	 = article1.html \
 	 	   article6.html \
 	 	   article7.html \
 	 	   article8.html \
-	 	   article9.html
+	 	   article9.html \
+	 	   article10.html 
 ARTICLEXMLS 	 = article1.xml \
 	 	   article2.xml \
 	 	   article4.xml \
@@ -47,13 +48,15 @@ ARTICLEXMLS 	 = article1.xml \
 	 	   article6.xml \
 	 	   article7.xml \
 	 	   article8.xml \
-	 	   article9.xml
+	 	   article9.xml \
+		   article10.xml
 XMLS		 = $(ARTICLEXMLS) \
 		   versions.xml
 ATOM 		 = atom.xml
 XMLGENS 	 = article.xml index.xml
 HTMLS 		 = $(ARTICLES) index.html sblg.1.html
 CSSS 		 = article.css index.css mandoc.css
+MDS		 = article10.md
 BINDIR 		 = $(PREFIX)/bin
 SHAREDIR	 = $(PREFIX)/share/sblg
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
@@ -89,7 +92,7 @@ sblg.1: sblg.in.1
 installwww: www
 	mkdir -p $(WWWDIR)
 	mkdir -p $(WWWDIR)/snapshots
-	install -m 0444 Makefile $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(CSSS) $(WWWDIR)
+	install -m 0444 Makefile $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(MDS) $(CSSS) $(WWWDIR)
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz.sha512
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots
@@ -142,7 +145,14 @@ article9.html: $(ARTICLEXMLS)
 .1.1.html:
 	mandoc -Ostyle=mandoc.css -Thtml $< >$@
 
+.md.xml:
+	( echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" ; \
+	  echo "<article data-sblg-article=\"1\" data-sblg-tags=\"howto\">" ; \
+	  lowdown $< ; \
+	  echo "</article>" ; ) >$@
+
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
+	rm -f article10.xml
 	rm -f config.h config.log
 	rm -rf *.dSYM
