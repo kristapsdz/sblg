@@ -7,7 +7,9 @@
 			<time datetime="2014-04-12">2014-04-12</time>
 		</header>
 		<aside>
-			Fix download so that it compiles properly.
+			<p>
+				Fix download so that it compiles properly.
+			</p>
 		</aside>
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="version">
@@ -17,10 +19,12 @@
 			<time datetime="2014-08-01">2014-08-01</time>
 		</header>
 		<aside>
-			Overhaul documentation (web, articles, manual, in-line) for simplicity.
-			Add tag indexing (see Tags article).
-			Simplify the flow of standalone to amalgamated articles by mandating that
-			<code>data-sblg-article="1"</code> appear in input articles.
+			<p>
+				Overhaul documentation (web, articles, manual, in-line) for simplicity.
+				Add tag indexing (see Tags article).
+				Simplify the flow of standalone to amalgamated articles by mandating that
+				<code>data-sblg-article="1"</code> appear in input articles.
+			</p>
 		</aside>
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="version">
@@ -30,13 +34,15 @@
 			<time datetime="2014-08-04">2014-08-04</time>
 		</header>
 		<aside>
-			Stipulate that all content is used when <code>data-sblg-content="1"</code> is used in an Atom template.
-			Allowed <code>&lt;hN&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;time&gt;</code>, and <code>&lt;author&gt;</code> tags to
-			appear anywhere in the article instead of just in the <code>&lt;header&gt;</code>.
-			Disable expansion of internal entity references (e.g., &amp;lt;) so that input is completely preserved.
-			Added <code>titletext</code> to filled-in parameters such as to differentiate from <code>title</code>, which includes any markup
-			within the parse context.
-			While there, add <code>author</code> and <code>authortext</code>.
+			<p>
+				Stipulate that all content is used when <code>data-sblg-content="1"</code> is used in an Atom template.
+				Allowed <code>&lt;hN&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;time&gt;</code>, and <code>&lt;author&gt;</code> tags to
+				appear anywhere in the article instead of just in the <code>&lt;header&gt;</code>.
+				Disable expansion of internal entity references (e.g., &amp;lt;) so that input is completely preserved.
+				Added <code>titletext</code> to filled-in parameters such as to differentiate from <code>title</code>, which includes any markup
+				within the parse context.
+				While there, add <code>author</code> and <code>authortext</code>.
+			</p>
 		</aside>
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="version">
@@ -46,9 +52,11 @@
 			<time datetime="2014-08-13">2014-08-13</time>
 		</header>
 		<aside>
-			Fix tagging to allow for <code>data-sblg-tags</code>
-			attributes anywhere in an article.
-			Also fix off-by-one in replacing <code>.xml</code> with <code>.html</code> in <b>-c</b> mode.
+			<p>
+				Fix tagging to allow for <code>data-sblg-tags</code>
+				attributes anywhere in an article.
+				Also fix off-by-one in replacing <code>.xml</code> with <code>.html</code> in <b>-c</b> mode.
+			</p>
 		</aside>
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="version">
@@ -58,11 +66,13 @@
 			<time datetime="2014-08-15">2014-08-15</time>
 		</header>
 		<aside>
-			Bumped minor after changing the symbols replaced within <code>&lt;nav data-sblg-navcontent="1"&gt;</code>.
-			These are all now prefixed with <code>sblg-</code>.
-			Also switched <code>-f</code> to <code>-C</code> for consistency.
-			Lastly, allowed all non-article and non-navigation text and attribute values within the templates for <code>-c</code> and
-			<code>-C</code> to have the same symbols as for navigation replacement.
+			<p>
+				Bumped minor after changing the symbols replaced within <code>&lt;nav data-sblg-navcontent="1"&gt;</code>.
+				These are all now prefixed with <code>sblg-</code>.
+				Also switched <code>-f</code> to <code>-C</code> for consistency.
+				Lastly, allowed all non-article and non-navigation text and attribute values within the templates for <code>-c</code> and
+				<code>-C</code> to have the same symbols as for navigation replacement.
+			</p>
 		</aside>
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="version">
@@ -72,9 +82,11 @@
 			<time datetime="2014-11-24">2014-11-24</time>
 		</header>
 		<aside>
-			Document (and fix) the <code>${sblg-next-base}</code> and <code>${sblg-prev-base}</code> keywords.
-			Add the <code>${sblg-first-base}</code> and <code>${sblg-last-base}</code> keywords.
-			Allow multiple tags in <code>data-sblg-navtag</code> attributes.
+			<p>
+				Document (and fix) the <code>${sblg-next-base}</code> and <code>${sblg-prev-base}</code> keywords.
+				Add the <code>${sblg-first-base}</code> and <code>${sblg-last-base}</code> keywords.
+				Allow multiple tags in <code>data-sblg-navtag</code> attributes.
+			</p>
 		</aside>
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="version">
@@ -369,6 +381,20 @@
 		<aside>
 			<p>
 				Fix the installation tarball.
+				No code/functionality change.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.9</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-12-08">2016-12-08</time>
+		</header>
+		<aside>
+			<p>
+				Add some notes on how to use <a href="article10.html">markdown</a>.
+				Also added a version <a href="archive.html">archive</a>.
 				No code/functionality change.
 			</p>
 		</aside>
