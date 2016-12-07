@@ -43,7 +43,7 @@
 					Atom feeds, and JSON files.
 					It's built for use with <a href="http://man.openbsd.org/make.1">make(1)</a>, just like any
 					source code.
-					No <a href="https://daringfireball.net/projects/markdown/">markdown</a>, no <q>CMS</q>, no CGI,
+					No <a href="https://daringfireball.net/projects/markdown/">markdown</a> (<a href="article10.html">unless&#8230;</a>), no <q>CMS</q>, no CGI,
 					no PHP.
 					Just a simple tool for pulling data from articles and populating templates.
 					<a href="sblg.1.html">sblg(1)</a> is an <a href="http://opensource.org/licenses/ISC"
@@ -174,7 +174,7 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 				<nav data-sblg-nav="1" data-sblg-navtag="howto" data-sblg-navcontent="1">
 					<div>
 						<i class="fa fa-fw fa-clock-o"></i> 
-						<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>:
+						<time datetime="${sblg-datetime}">${sblg-date}</time>:
 						<a href="${sblg-base}.html">${sblg-titletext}</a>
 					</div>
 					<div>
