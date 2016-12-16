@@ -397,7 +397,6 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	fputc('\n', arg->f);
 }
 
-
 /*
  * Given a set of articles "src", grok articles from the files, then
  * fill in a template that's usually the blog "front page".
@@ -503,3 +502,112 @@ out:
 	return(rc);
 }
 
+/*
+ * Like linkall() but does the output in place: groks all input files,
+ * then converts them to output.
+ * This prevents needing to run -C with each input file.
+ */
+int
+linkall_r(XML_Parser p, const char *templ, 
+	int sz, char *src[], enum asort asort)
+{
+	char		*buf = NULL, *dst = NULL;
+	size_t		 j, ssz = 0, wsz;
+	int		 i, fd = -1, rc = 0;
+	FILE		*f = NULL;
+	struct linkall	 larg;
+	struct article	*sargs = NULL;
+	size_t		 sargsz = 0;
+	const char	*cp;
+
+	memset(&larg, 0, sizeof(struct linkall));
+
+	/* Grok all article data then sort. */
+
+	for (i = 0; i < sz; i++)
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
+			goto out;
+
+	if (ASORT_DATE == asort)
+		qsort(sargs, sargsz, sizeof(struct article), datecmp);
+	else if (ASORT_FILENAME == asort)
+		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
+
+	/* Map the template into memory for parsing. */
+
+	if ( ! mmap_open(templ, &fd, &buf, &ssz))
+		goto out;
+
+	/*
+	 * Iterate through each input article.
+	 * Replace its filename with HTML and use that as the output.
+	 */
+
+	for (j = 0; j < sargsz; j++) {
+		wsz = strlen(sargs[j].src);
+		if (NULL == (cp = strrchr(sargs[j].src, '.')) ||
+				strcasecmp(cp + 1, "xml")) {
+			/* Append .html to input name. */
+			dst = xmalloc(wsz + 6);
+			strlcpy(dst, sargs[j].src, wsz + 6);
+			strlcat(dst, ".html", wsz + 6);
+		} else {
+			/* Replace .xml with .html. */
+			dst = xmalloc(wsz + 2);
+			strlcpy(dst, sargs[j].src, wsz - 2);
+			strlcat(dst, "html", wsz + 2);
+		} 
+
+		/* Open the output filename. */
+		
+		if (NULL == (f = fopen(dst, "w"))) {
+			perror(dst);
+			goto out;
+		} 
+
+		larg.sargs = sargs;
+		larg.sposz = sargsz;
+		larg.p = p;
+		larg.src = templ;
+		larg.dst = dst;
+		larg.f = f;
+		larg.single = j;
+		larg.spos = j;
+		larg.ssposz = j + 1;
+
+		/* Run the XML parser on the template. */
+
+		XML_ParserReset(p, NULL);
+		XML_SetDefaultHandlerExpand(p, tmpl_text);
+		XML_SetElementHandler(p, tmpl_begin, tmpl_end);
+		XML_SetUserData(p, &larg);
+
+		if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
+			fprintf(stderr, "%s:%zu:%zu: %s\n", templ, 
+				XML_GetCurrentLineNumber(p),
+				XML_GetCurrentColumnNumber(p),
+				XML_ErrorString(XML_GetErrorCode(p)));
+			goto out;
+		} 
+
+		fputc('\n', f);
+		fclose(f);
+		f = NULL;
+		free(dst);
+		dst = NULL;
+	}
+	rc = 1;
+
+out:
+	sblg_free(sargs, sargsz);
+	mmap_close(fd, buf, ssz);
+	if (NULL != f)
+		fclose(f);
+	for (j = 0; j < larg.navtagsz; j++)
+		free(larg.navtags[j]);
+	free(larg.navtags);
+	free(larg.nav);
+	free(larg.buf);
+	free(dst);
+	return(rc);
+}
