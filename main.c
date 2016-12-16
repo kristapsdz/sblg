@@ -229,6 +229,7 @@ usage:
 		"       %s [-o file] [-s sort] -j file...\n"
 		"       %s [-o file] [-t templ] [-s sort] -C file...\n"
 		"       %s [-o file] [-t templ] [-s sort] file...\n",
-		progname, progname, progname, progname, progname, progname);
+		progname, progname, progname, 
+		progname, progname, progname, progname);
 	return(EXIT_FAILURE);
 }
