@@ -22,7 +22,7 @@
 .Nd simple off-line blog utility
 .Sh SYNOPSIS
 .Nm sblg
-.Op Fl acjl
+.Op Fl acjlL
 .Op Fl C Ar file
 .Op Fl o Ar file
 .Op Fl s Ar sort
@@ -50,7 +50,7 @@ and
 .Pa bar.xml
 article contents, respectively.
 .It
-Blog amalgamation mode links multiple articles with a template
+Blog amalgamation (default) mode links multiple articles with a template
 consisting of articles and navigation stubs.
 For example,
 .Qq sblg -o foo.html bar.html baz.html
@@ -85,6 +85,9 @@ but both
 and
 .Pa baz.html
 in its navigation.
+You can also use
+.Fl L
+to run the process for each input file (much faster).
 .El
 .Pp
 By default,
@@ -109,11 +112,29 @@ Like
 .Fl c ,
 but creating a blog amalgamation.
 In effect, an amalgamation with a single
-.Li <article data-sblg-article="1"> .
-Ignored when used with
-.Fl a
-or
-.Fl c .
+.Li <article data-sblg-article="1">
+for the
+.Ar file
+while using the remaining arguments are other files used in
+.Li <nav data-sblg-nav="1"> .
+.It Fl L
+Like
+.Fl C ,
+but acting on all input files, translating the input to output files
+such as in
+.Fl c
+without
+.Fl o .
+If there are multiple articles in an output file, the output is
+recreated for each (so only the last will remain).
+So running with
+.Dq article0.xml article1.xml
+will produce
+.Dq article0.html article1.html
+as if
+.Fl C
+were seperately specified for both.
+This avoids needing to parse all inputs for each input.
 .It Fl o Ar file
 Output file.
 If unspecified, standalone articles have
