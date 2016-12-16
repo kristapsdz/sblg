@@ -224,7 +224,8 @@ usage:
 	fprintf(stderr, 
 		"usage: %s [-o file] [-t templ] -c file...\n"
 		"       %s [-o file] [-t templ] [-s sort] -a file...\n"
-		"       %s [-o file] [-t templ] [-s sort] -L file...\n"
+		"       %s -l file...\n"
+		"       %s [-t templ] [-s sort] -L file...\n"
 		"       %s [-o file] [-s sort] -j file...\n"
 		"       %s [-o file] [-t templ] [-s sort] -C file...\n"
 		"       %s [-o file] [-t templ] [-s sort] file...\n",
