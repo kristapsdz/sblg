@@ -37,7 +37,8 @@ enum	op {
 	OP_COMPILE,
 	OP_BLOG,
 	OP_JSON,
-	OP_LISTTAGS
+	OP_LISTTAGS,
+	OP_LINK_INPLACE
 };
 
 #ifdef	__APPLE__
@@ -94,7 +95,7 @@ main(int argc, char *argv[])
 	op = OP_BLOG;
 	asort = ASORT_DATE;
 
-	while (-1 != (ch = getopt(argc, argv, "acC:jlo:s:t:")))
+	while (-1 != (ch = getopt(argc, argv, "acjlLC:o:s:t:")))
 		switch (ch) {
 		case ('a'):
 			op = OP_ATOM;
@@ -110,6 +111,9 @@ main(int argc, char *argv[])
 			break;
 		case ('l'):
 			op = OP_LISTTAGS;
+			break;
+		case ('L'):
+			op = OP_LINK_INPLACE;
 			break;
 		case ('o'):
 			outfile = optarg;
@@ -191,6 +195,15 @@ main(int argc, char *argv[])
 			outfile = "blog.json";
 		rc = json(p, argc, argv, outfile, asort);
 		break;
+	case (OP_LINK_INPLACE):
+		/*
+		 * Merge multiple input files into multiple output files
+		 * in a sort of multi-mode blog output.
+		 */
+		if (NULL == templ)
+			templ = "blog-template.xml";
+		rc = linkall_r(p, templ, argc, argv, asort);
+		break;
 	default:
 		/*
 		 * Merge multiple input files into a regular (we'll call
@@ -211,9 +224,10 @@ usage:
 	fprintf(stderr, 
 		"usage: %s [-o file] [-t templ] -c file...\n"
 		"       %s [-o file] [-t templ] [-s sort] -a file...\n"
+		"       %s [-o file] [-t templ] [-s sort] -L file...\n"
 		"       %s [-o file] [-s sort] -j file...\n"
 		"       %s [-o file] [-t templ] [-s sort] -C file...\n"
 		"       %s [-o file] [-t templ] [-s sort] file...\n",
-		progname, progname, progname, progname, progname);
+		progname, progname, progname, progname, progname, progname);
 	return(EXIT_FAILURE);
 }
