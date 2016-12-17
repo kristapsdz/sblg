@@ -399,4 +399,24 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.3.10</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2016-12-17">2016-12-17</time>
+		</header>
+		<aside>
+			<p>
+				Added a new flag, <b>-L</b>, documented in <a href="sblg.1.html">sblg(1)</a>.
+				This acts as if <b>-C</b> were specified for each article in its input without needing to run <a
+					href="sblg.1.html">sblg(1)</a> again and again.
+				(Obviously, it will re-write the suffix just like <b>-c</b> without <b>-o</b>.)
+				This makes the compile time for our <a href="https://divelog.blue">divelog</a>, which has many articles that
+				used to be run with <b>-C</b>, much faster.
+			</p>
+			<p>
+				While plumbing, add some examples to the manpage and note the caveat regarding HTML entity names.
+			</p>
+		</aside>
+	</article>
 </articles>
