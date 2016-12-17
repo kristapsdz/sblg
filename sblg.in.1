@@ -14,7 +14,7 @@
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .\"
-.Dd $Mdocdate: November 27 2016 $
+.Dd $Mdocdate: December 16 2016 $
 .Dt SBLG 1
 .Os
 .Sh NAME
@@ -682,10 +682,17 @@ Default template for creating a front page.
 .Sh EXIT STATUS
 .Ex -std
 .Sh EXAMPLES
-First, create standalone HTML5 files from article fragments.
+First, create standalone HTML5 files 
+.Pq filled-in Li <article data-sblg-article="1">
+from article fragments.
 An
 .Pa article-template.xml
 file is assumed to exist.
+This will create
+.Pa article1.html
+and
+.Pa article2.html
+from the re-write rule for the XML suffix.
 .Pp
 .Dl % sblg -c article1.xml article2.xml
 .Pp
@@ -695,6 +702,47 @@ A
 file is assumed to exist.
 .Pp
 .Dl % sblg -o index.html article1.html article2.html
+.Pp
+This will create
+.Pa index.html
+with filled-in
+.Li <article data-sblg-article="1">
+and
+.Li <nav data-sblg-nav="1">
+elements.
+.Pp
+Combining the above two examples, we can specify a single article to be
+displayed along with a full navigation as follows:
+.Pp
+.Dl % sblg -o article1.html -C article1.xml article1.xml article2.xml
+.Pp
+This will fill the contents of
+.Pa article1.xml
+into the
+.Li <article data-sblg-article="1">
+but use both (along with any others) in the
+.Li <nav data-sblg-nav="1"> .
+.Pp
+If we want to make an output article as in the above example for each
+element of the input, we could either run
+.Fl C
+for each input element, or use
+.Fl L
+to avoid re-running
+.Nm
+for each input article, which can be costly for many articles!
+.Pp
+.Dl % sblg -L article1.xml article2.xml
+.Pp
+This re-writes the suffixes and fills in the
+.Li <article data-sblg-article="1">
+for
+.Pa article1.xml
+in
+.Pa article1.html ,
+and so on.
+For each of these, it will fill in
+.Li <nav data-sblg-nav="1"> .
 .Sh STANDARDS
 Input files and templates must be properly-formed XML files.
 Output files are guranteed to be XML as well.
@@ -713,3 +761,12 @@ In other words,
 is valid, while
 .Li <foo bar>
 is not.
+.Pp
+Since input is recognised as XML and
+.Em not
+HTML5, special characters must be specified as unicode code-point
+numbers and not HTML element names.
+For example, you must use
+.Li &#8230;
+instead of
+.Li &hellip; .
