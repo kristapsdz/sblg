@@ -36,7 +36,6 @@ enum	op {
 	OP_ATOM,
 	OP_COMPILE,
 	OP_BLOG,
-	OP_JSON,
 	OP_LISTTAGS,
 	OP_LINK_INPLACE
 };
@@ -72,7 +71,7 @@ sandbox_openbsd(void)
 int
 main(int argc, char *argv[])
 {
-	int		 ch, i, rc;
+	int		 ch, i, rc, fmtjson = 0;
 	const char	*progname, *templ, *outfile, *force;
 	enum op		 op;
 	enum asort	 asort;
@@ -107,7 +106,7 @@ main(int argc, char *argv[])
 			force = optarg;
 			break;
 		case ('j'):
-			op = OP_JSON;
+			fmtjson = 1;
 			break;
 		case ('l'):
 			op = OP_LISTTAGS;
@@ -141,6 +140,9 @@ main(int argc, char *argv[])
 	if (0 == argc)
 		goto usage;
 
+	if (OP_BLOG == op && fmtjson)
+		op = OP_ATOM;
+
 	/*
 	 * Avoid constantly re-using a parser by specifying one here.
 	 * We'll just use the same one over and over whilst parsing our
@@ -169,6 +171,12 @@ main(int argc, char *argv[])
 			rc = compile(p, templ, argv[i], NULL);
 		break;
 	case (OP_ATOM):
+		if (fmtjson) {
+			if (NULL == outfile)
+				outfile = "blog.json";
+			rc = json(p, argc, argv, outfile, asort);
+			break;
+		}
 		/*
 		 * Merge multiple input files into an Atom feed
 		 * amalgamation.
@@ -184,16 +192,7 @@ main(int argc, char *argv[])
 		/*
 		 * List all tags and the filename(s) they're found in.
 		 */
-		rc = listtags(p, argc, argv);
-		break;
-	case (OP_JSON):
-		/*
-		 * Merge multiple input files into an Atom feed
-		 * amalgamation.
-		 */
-		if (NULL == outfile)
-			outfile = "blog.json";
-		rc = json(p, argc, argv, outfile, asort);
+		rc = listtags(p, argc, argv, fmtjson, 0);
 		break;
 	case (OP_LINK_INPLACE):
 		/*
