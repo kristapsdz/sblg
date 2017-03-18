@@ -128,10 +128,10 @@ mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 		warn("%s", f);
 		goto out;
 	} else if ( ! S_ISREG(st.st_mode)) {
-		warnx("%s: not a regular file\n", f);
+		warnx("%s: not a regular file", f);
 		goto out;
 	} else if (st.st_size >= (1U << 31)) {
-		warnx("%s: too large\n", f);
+		warnx("%s: too large", f);
 		goto out;
 	}
 
