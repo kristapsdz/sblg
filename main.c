@@ -64,6 +64,8 @@ static void
 sandbox_openbsd(void)
 {
 
+	/* We can do much better than this! */
+
 	if (-1 == pledge("stdio cpath rpath wpath", NULL))
 		err(EXIT_FAILURE, "pledge");
 }
