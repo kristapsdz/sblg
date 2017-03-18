@@ -72,7 +72,7 @@ sandbox_openbsd(void)
 int
 main(int argc, char *argv[])
 {
-	int		 ch, i, rc, fmtjson = 0;
+	int		 ch, i, rc, fmtjson = 0, rev = 0;
 	const char	*progname, *templ, *outfile, *force;
 	enum op		 op;
 	enum asort	 asort;
@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 	op = OP_BLOG;
 	asort = ASORT_DATE;
 
-	while (-1 != (ch = getopt(argc, argv, "acjlLC:o:s:t:")))
+	while (-1 != (ch = getopt(argc, argv, "acjlLrC:o:s:t:")))
 		switch (ch) {
 		case ('a'):
 			op = OP_ATOM;
@@ -117,6 +117,9 @@ main(int argc, char *argv[])
 			break;
 		case ('o'):
 			outfile = optarg;
+			break;
+		case ('r'):
+			rev = 1;
 			break;
 		case ('s'):
 			if (0 == strcasecmp(optarg, "date"))
@@ -191,7 +194,7 @@ main(int argc, char *argv[])
 		/*
 		 * List all tags and the filename(s) they're found in.
 		 */
-		rc = listtags(p, argc, argv, fmtjson, 0);
+		rc = listtags(p, argc, argv, fmtjson, rev);
 		break;
 	case (OP_LINK_INPLACE):
 		/*
