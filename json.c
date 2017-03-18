@@ -128,12 +128,11 @@ int
 json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 {
 	size_t		 j, sargsz;
-	int		 i, fd, rc;
+	int		 i, rc;
 	FILE		*f;
 	struct article	*sargs;
 
 	rc = 0;
-	fd = -1;
 	f = NULL;
 
 	sargs = NULL;
