@@ -19,7 +19,7 @@
 #include <expat.h>
 #include <getopt.h>
 #include <locale.h>
-#ifdef __APPLE__
+#if HAVE_SANDBOX_INIT
 # include <sandbox.h>
 #endif
 #include <stdio.h>
@@ -40,7 +40,7 @@ enum	op {
 	OP_LINK_INPLACE
 };
 
-#ifdef	__APPLE__
+#if HAVE_SANDBOX_INIT
 static void
 sandbox_apple(void)
 {
@@ -56,7 +56,7 @@ sandbox_apple(void)
 }
 #endif
 
-#ifdef HAVE_PLEDGE
+#if HAVE_PLEDGE
 static void
 sandbox_openbsd(void)
 {
@@ -79,9 +79,9 @@ main(int argc, char *argv[])
 
 	setlocale(LC_ALL, "");
 
-#if defined(__APPLE__)
+#if HAVE_SANDBOX_INIT
 	sandbox_apple();
-#elif defined(HAVE_PLEDGE)
+#elif HAVE_PLEDGE
 	sandbox_openbsd();
 #endif
 	progname = strrchr(argv[0], '/');
