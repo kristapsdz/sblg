@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013--2016 Kristaps Dzonsons <kristaps@bsd.lv>
+ * Copyright (c) 2013--2017 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,6 +16,9 @@
  */
 #include "config.h"
 
+#if HAVE_ERR
+# include <err.h>
+#endif
 #include <expat.h>
 #include <getopt.h>
 #include <locale.h>
@@ -50,7 +53,7 @@ sandbox_apple(void)
 	rc = sandbox_init(kSBXProfileNoNetwork, SANDBOX_NAMED, &ep);
 	if (0 == rc)
 		return;
-	perror(ep);
+	warn("%s", ep);
 	sandbox_free_error(ep);
 	exit(EXIT_FAILURE);
 }
@@ -61,10 +64,8 @@ static void
 sandbox_openbsd(void)
 {
 
-	if (-1 == pledge("stdio cpath rpath wpath", NULL)) {
-		perror("pledge");
-		exit(EXIT_FAILURE);
-	}
+	if (-1 == pledge("stdio cpath rpath wpath", NULL))
+		err(EXIT_FAILURE, "pledge");
 }
 #endif
 
@@ -148,10 +149,8 @@ main(int argc, char *argv[])
 	 * We'll just use the same one over and over whilst parsing our
 	 * documents.
 	 */
-	if (NULL == (p = XML_ParserCreate(NULL))) {
-		perror(NULL);
-		return(EXIT_FAILURE);
-	}
+	if (NULL == (p = XML_ParserCreate(NULL)))
+		err(EXIT_FAILURE, "XML_ParserCreate");
 
 	switch (op) {
 	case (OP_COMPILE):
