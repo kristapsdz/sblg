@@ -176,7 +176,7 @@ atom(XML_Parser p, const char *templ, int sz,
 	XML_SetUserData(p, &larg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
-		warnx("%s:%zu:%zu: %s\n", templ, 
+		warnx("%s:%zu:%zu: %s", templ, 
 			XML_GetCurrentLineNumber(p),
 			XML_GetCurrentColumnNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));
@@ -278,7 +278,7 @@ tmpl_begin(void *userdata,
 	} else if (0 == strcasecmp(name, "link")) {
 		if (arg->spos > 0) {
 			warnx("%s: link appears"
-				"after entry\n", arg->src);
+				"after entry", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
@@ -293,25 +293,25 @@ tmpl_begin(void *userdata,
 			if (0 == strcasecmp(attp[0], "href"))
 				break;
 		if (NULL == *attp) {
-			warnx("%s: no href\n", arg->src);
+			warnx("%s: no href", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
 		if (NULL == (start = strcasestr(attp[1], "://"))) {
-			warnx("%s: bad uri\n", arg->src);
+			warnx("%s: bad uri", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
 		strlcpy(arg->domain, start + 3, MAXHOSTNAMELEN);
 		if (NULL == (cp = strchr(arg->domain, '/'))) {
-			warnx("%s: bad uri\n", arg->src);
+			warnx("%s: bad uri", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
 		strlcpy(arg->path, cp, MAXPATHLEN);
 		*cp = '\0';
 		if (NULL == (cp = strrchr(arg->path, '/'))) {
-			warnx("%s: bad uri\n", arg->src);
+			warnx("%s: bad uri", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
