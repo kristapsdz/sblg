@@ -19,6 +19,9 @@
 #include <sys/param.h>
 
 #include <assert.h>
+#if HAVE_ERR
+# include <err.h>
+#endif
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -153,7 +156,7 @@ atom(XML_Parser p, const char *templ, int sz,
 
 	f = stdout;
 	if (strcmp(dst, "-") && NULL == (f = fopen(dst, "w"))) {
-		perror(dst);
+		warn("%s", dst);
 		goto out;
 	}
 
@@ -173,7 +176,7 @@ atom(XML_Parser p, const char *templ, int sz,
 	XML_SetUserData(p, &larg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
-		fprintf(stderr, "%s:%zu:%zu: %s\n", templ, 
+		warnx("%s:%zu:%zu: %s\n", templ, 
 			XML_GetCurrentLineNumber(p),
 			XML_GetCurrentColumnNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));
@@ -274,7 +277,7 @@ tmpl_begin(void *userdata,
 		return;
 	} else if (0 == strcasecmp(name, "link")) {
 		if (arg->spos > 0) {
-			fprintf(stderr, "%s: link appears"
+			warnx("%s: link appears"
 				"after entry\n", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
@@ -290,25 +293,25 @@ tmpl_begin(void *userdata,
 			if (0 == strcasecmp(attp[0], "href"))
 				break;
 		if (NULL == *attp) {
-			fprintf(stderr, "%s: no href\n", arg->src);
+			warnx("%s: no href\n", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
 		if (NULL == (start = strcasestr(attp[1], "://"))) {
-			fprintf(stderr, "%s: bad uri\n", arg->src);
+			warnx("%s: bad uri\n", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
 		strlcpy(arg->domain, start + 3, MAXHOSTNAMELEN);
 		if (NULL == (cp = strchr(arg->domain, '/'))) {
-			fprintf(stderr, "%s: bad uri\n", arg->src);
+			warnx("%s: bad uri\n", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
 		strlcpy(arg->path, cp, MAXPATHLEN);
 		*cp = '\0';
 		if (NULL == (cp = strrchr(arg->path, '/'))) {
-			fprintf(stderr, "%s: bad uri\n", arg->src);
+			warnx("%s: bad uri\n", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
