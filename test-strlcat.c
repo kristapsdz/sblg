@@ -3,9 +3,7 @@
 int
 main(void)
 {
-	char a[] = "foo";
-	char b[1024];
-	b[0] = '\0';
-	strlcat(b, a, sizeof(b));
-	return(0);
+	char buf[3] = "a";
+	return ! (strlcat(buf, "b", sizeof(buf)) == 2 &&
+	    buf[0] == 'a' && buf[1] == 'b' && buf[2] == '\0');
 }
