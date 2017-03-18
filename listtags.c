@@ -40,7 +40,7 @@ TAILQ_HEAD(filenq, filen);
 
 struct	tagn {
 	struct filenq	 *fq;
-	const char	 *tag;
+	char	 	 *tag;
 	TAILQ_ENTRY(tagn) entries;
 };
 
@@ -51,6 +51,7 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 {
 	size_t	 	 i, j;
 	const char	*cp;
+	char		*copy;
 	ENTRY		 e;
 	ENTRY		*ep;
 	struct filenq	*fq;
@@ -73,10 +74,11 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 				fq = xmalloc(sizeof(struct filenq));
 				TAILQ_INIT(fq);
 				e.data = fq;
-				e.key = xstrdup(sargs[i].tagmap[j]);
+				copy = xstrdup(sargs[i].tagmap[j]);
+				e.key = copy;
 				ep = hsearch(e, ENTER);
 				tn = xmalloc(sizeof(struct tagn));
-				tn->tag = sargs[i].tagmap[j];
+				tn->tag = copy;
 				tn->fq = fq;
 				TAILQ_INSERT_TAIL(&tq, tn, entries);
 			}
@@ -121,6 +123,10 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 			free(fn);
 		}
 		TAILQ_REMOVE(&tq, tn, entries);
+#ifdef __linux__
+		free(tn->tag);
+#endif
+		free(tn->fq);
 		free(tn);
 	}
 
