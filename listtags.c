@@ -76,7 +76,10 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 				e.data = fq;
 				copy = xstrdup(sargs[i].tagmap[j]);
 				e.key = copy;
-				ep = hsearch(e, ENTER);
+				if (NULL == (ep = hsearch(e, ENTER))) {
+					warnx("hsearch");
+					return(0);
+				}
 				tn = xmalloc(sizeof(struct tagn));
 				tn->tag = copy;
 				tn->fq = fq;
@@ -123,6 +126,10 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 			free(fn);
 		}
 		TAILQ_REMOVE(&tq, tn, entries);
+		/* 
+		 * OpenBSD and FreeBSD frees the key of entries, while
+		 * Linux does not.
+		 */
 #ifdef __linux__
 		free(tn->tag);
 #endif
