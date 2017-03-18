@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013--2015 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013--2015, 2017 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,6 +17,9 @@
 #include "config.h"
 
 #include <assert.h>
+#if HAVE_ERR
+# include <err.h>
+#endif
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -185,7 +188,7 @@ compile(XML_Parser p, const char *templ,
 
 	f = stdout;
 	if (strcmp(out, "-") && NULL == (f = fopen(out, "w"))) {
-		perror(out);
+		warn("%s", out);
 		goto out;
 	} 
 	if ( ! mmap_open(templ, &fd, &buf, &sz))

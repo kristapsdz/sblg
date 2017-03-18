@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2016 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2016--2017 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,6 +19,9 @@
 #include <sys/param.h>
 
 #include <assert.h>
+#if HAVE_ERR
+# include <err.h>
+#endif
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -147,7 +150,7 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 
 	f = stdout;
 	if (strcmp(dst, "-") && NULL == (f = fopen(dst, "w"))) {
-		perror(dst);
+		warn("%s", dst);
 		goto out;
 	}
 

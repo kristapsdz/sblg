@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013--2016 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013--2017 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,6 +17,9 @@
 #include "config.h"
 
 #include <assert.h>
+#if HAVE_ERR
+# include <err.h>
+#endif
 #include <expat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -436,7 +439,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	/* Open a FILE to the output file or stream. */
 	f = stdout;
 	if (strcmp(dst, "-") && (NULL == (f = fopen(dst, "w")))) {
-		perror(dst);
+		warn("%s", dst);
 		goto out;
 	} 
 	
@@ -561,7 +564,7 @@ linkall_r(XML_Parser p, const char *templ,
 		/* Open the output filename. */
 		
 		if (NULL == (f = fopen(dst, "w"))) {
-			perror(dst);
+			warn("%s", dst);
 			goto out;
 		} 
 
