@@ -23,7 +23,7 @@
 
 #include "extern.h"
 
-void
+static void
 article_free(struct article *p)
 {
 	size_t	 i;
