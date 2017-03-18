@@ -155,11 +155,11 @@ compile(XML_Parser p, const char *templ,
 		goto out;
 
 	if (0 == sargsz) {
-		fprintf(stderr, "%s: contains no article\n", src);
+		warnx("%s: contains no article", src);
 		goto out;
 	} else if (sargsz > 1)
-		fprintf(stderr, "%s: contains multiple "
-			"articles (using the first)\n", src);
+		warnx("%s: contains multiple "
+			"articles (using the first)", src);
 
 	arg.article = &sargs[0];
 
@@ -205,7 +205,7 @@ compile(XML_Parser p, const char *templ,
 	XML_SetUserData(p, &arg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
-		fprintf(stderr, "%s:%zu:%zu: %s\n", templ, 
+		warnx("%s:%zu:%zu: %s", templ, 
 			XML_GetCurrentLineNumber(p),
 			XML_GetCurrentColumnNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));

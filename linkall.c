@@ -469,8 +469,8 @@ linkall(XML_Parser p, const char *templ, const char *force,
 			larg.spos = j;
 			larg.ssposz = j + 1;
 		} else {
-			fprintf(stderr, "%s: does not "
-				"appear in input list\n", force);
+			warnx("%s: does not "
+				"appear in input list", force);
 			goto out;
 		}
 	}
@@ -482,7 +482,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	XML_SetUserData(p, &larg);
 
 	if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
-		fprintf(stderr, "%s:%zu:%zu: %s\n", templ, 
+		warnx("%s:%zu:%zu: %s", templ, 
 			XML_GetCurrentLineNumber(p),
 			XML_GetCurrentColumnNumber(p),
 			XML_ErrorString(XML_GetErrorCode(p)));
@@ -586,7 +586,7 @@ linkall_r(XML_Parser p, const char *templ,
 		XML_SetUserData(p, &larg);
 
 		if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
-			fprintf(stderr, "%s:%zu:%zu: %s\n", templ, 
+			warnx("%s:%zu:%zu: %s", templ, 
 				XML_GetCurrentLineNumber(p),
 				XML_GetCurrentColumnNumber(p),
 				XML_ErrorString(XML_GetErrorCode(p)));

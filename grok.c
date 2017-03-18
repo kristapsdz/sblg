@@ -63,20 +63,22 @@ static void
 logerrx(const struct parse *p, const char *fmt, ...)
 {
 	va_list	ap;
+	char	buf[BUFSIZ];
 
-	fprintf(stderr, "%s:%zu:%zu: ", p->src, 
-		XML_GetCurrentLineNumber(p->p),
-		XML_GetCurrentColumnNumber(p->p));
 	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
+	vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
+
+	warnx("%s:%zu:%zu: %s", p->src, 
+		XML_GetCurrentLineNumber(p->p),
+		XML_GetCurrentColumnNumber(p->p), buf);
 }
 
 static void
 logerr(const struct parse *p)
 {
 
-	logerrx(p, "%s\n", XML_ErrorString(XML_GetErrorCode(p->p)));
+	logerrx(p, "%s", XML_ErrorString(XML_GetErrorCode(p->p)));
 }
 
 static void
@@ -336,7 +338,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				erp = strptime(attp[1], "%F", &tm);
 				if (NULL == erp || '\0' != *erp) {
 					logerrx(arg, "malformed "
-						"ISO 3339 date\n");
+						"ISO 3339 date");
 					continue;
 				}
 				arg->article->isdatetime = 0;
@@ -344,13 +346,13 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				erp = strptime(attp[1], "%FT%TZ", &tm);
 				if (NULL == erp || '\0' != *erp) {
 					logerrx(arg, "malformed "
-						"ISO 3339 datetime\n");
+						"ISO 3339 datetime");
 					continue;
 				}
 				arg->article->isdatetime = 1;
 			} else {
 				logerrx(arg, "malformed "
-					"ISO 3339 datetime\n");
+					"ISO 3339 datetime");
 				continue;
 			}
 			arg->article->time = timegm(&tm);
