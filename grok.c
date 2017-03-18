@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013, 2014 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013, 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,6 +19,9 @@
 #include <sys/stat.h>
 
 #include <assert.h>
+#if HAVE_ERR
+# include <err.h>
+#endif
 #include <expat.h>
 #include <fcntl.h>
 #include <stdarg.h>
@@ -424,7 +427,7 @@ article_end(void *dat, const XML_Char *s)
 	if (0 == arg->article->time) {
 		arg->article->isdatetime = 1;
 		if (-1 == fstat(arg->fd, &st))
-			perror(arg->article->src);
+			warn("%s", arg->article->src);
 		else
 			arg->article->time = st.st_ctime;
 	}

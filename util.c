@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013, 2014 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013, 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,6 +19,9 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+#if HAVE_ERR
+# include <err.h>
+#endif
 #include <expat.h>
 #include <fcntl.h>
 #include <stdarg.h>
@@ -119,16 +122,16 @@ mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 	*sz = 0;
 
 	if (-1 == (*fd = open(f, O_RDONLY, 0))) {
-		perror(f);
+		warn("%s", f);
 		goto out;
 	} else if (-1 == fstat(*fd, &st)) {
-		perror(f);
+		warn("%s", f);
 		goto out;
 	} else if ( ! S_ISREG(st.st_mode)) {
-		fprintf(stderr, "%s: not a regular file\n", f);
+		warnx("%s: not a regular file\n", f);
 		goto out;
 	} else if (st.st_size >= (1U << 31)) {
-		fprintf(stderr, "%s: too large\n", f);
+		warnx("%s: too large\n", f);
 		goto out;
 	}
 
@@ -136,7 +139,7 @@ mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 	*buf = mmap(NULL, *sz, PROT_READ, MAP_FILE|MAP_SHARED, *fd, 0);
 
 	if (MAP_FAILED == *buf) {
-		perror(f);
+		warn("%s", f);
 		goto out;
 	}
 
@@ -578,11 +581,9 @@ xstrndup(const char *cp, size_t sz)
 {
 	void	*p;
 
-	if (NULL != (p = strndup(cp, sz)))
-		return(p);
-
-	perror(NULL);
-	exit(EXIT_FAILURE);
+	if (NULL == (p = strndup(cp, sz)))
+		err(EXIT_FAILURE, NULL);
+	return(p);
 }
 
 char *
@@ -590,11 +591,9 @@ xstrdup(const char *cp)
 {
 	void	*p;
 
-	if (NULL != (p = strdup(cp)))
-		return(p);
-
-	perror(NULL);
-	exit(EXIT_FAILURE);
+	if (NULL == (p = strdup(cp)))
+		err(EXIT_FAILURE, NULL);
+	return(p);
 }
 
 void *
@@ -602,11 +601,9 @@ xreallocarray(void *cp, size_t nm, size_t sz)
 {
 	void	*p;
 
-	if (NULL != (p = reallocarray(cp, nm, sz)))
-		return(p);
-
-	perror(NULL);
-	exit(EXIT_FAILURE);
+	if (NULL == (p = reallocarray(cp, nm, sz)))
+		err(EXIT_FAILURE, NULL);
+	return(p);
 }
 
 void *
@@ -614,11 +611,9 @@ xrealloc(void *cp, size_t sz)
 {
 	void	*p;
 
-	if (NULL != (p = realloc(cp, sz)))
-		return(p);
-
-	perror(NULL);
-	exit(EXIT_FAILURE);
+	if (NULL == (p = realloc(cp, sz)))
+		err(EXIT_FAILURE, NULL);
+	return(p);
 }
 
 void *
@@ -626,11 +621,9 @@ xcalloc(size_t nm, size_t sz)
 {
 	void	*p;
 
-	if (NULL != (p = calloc(nm, sz)))
-		return(p);
-
-	perror(NULL);
-	exit(EXIT_FAILURE);
+	if (NULL == (p = calloc(nm, sz)))
+		err(EXIT_FAILURE, NULL);
+	return(p);
 }
 
 void *
@@ -638,9 +631,7 @@ xmalloc(size_t sz)
 {
 	void	*p;
 
-	if (NULL != (p = malloc(sz)))
-		return(p);
-
-	perror(NULL);
-	exit(EXIT_FAILURE);
+	if (NULL == (p = malloc(sz)))
+		err(EXIT_FAILURE, NULL);
+	return(p);
 }
