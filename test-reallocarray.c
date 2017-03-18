@@ -3,6 +3,5 @@
 int
 main(void)
 {
-	char *a = reallocarray(NULL, 0, 0);
-	return(NULL == a);
+	return !reallocarray(NULL, 2, 2);
 }

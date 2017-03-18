@@ -3,8 +3,7 @@
 int
 main(void)
 {
-	char a[] = "foo";
-	char b[1024];
-	strlcpy(b, a, sizeof(b));
-	return(0);
+	char buf[2] = "";
+	return ! (strlcpy(buf, "a", sizeof(buf)) == 1 &&
+	    buf[0] == 'a' && buf[1] == '\0');
 }

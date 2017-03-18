@@ -1,13 +1,18 @@
 .SUFFIXES: .xml .html .1.html .1 .md
 
+include Makefile.configure
+
 VERSION 	 = 0.3.10
 VDATE 		 = 2016-12-17
-PREFIX 		 = /usr/local
-CFLAGS 		+= -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings -DVERSION=\"$(VERSION)\"
-OBJS		 = main.o \
-		   compat-reallocarray.o \
-		   compat-strlcat.o \
-		   compat-strlcpy.o \
+CFLAGS		+= -DVERSION=\"$(VERSION)\"
+COMPAT_OBJS	 = compat_err.o \
+		   compat_progname.o \
+		   compat_reallocarray.o \
+		   compat_strlcat.o \
+		   compat_strlcpy.o \
+		   compat_strtonum.o
+OBJS		 = $(COMPAT_OBJS) \
+		   main.o \
 		   compile.o \
 		   linkall.o \
 		   grok.o \
@@ -16,11 +21,15 @@ OBJS		 = main.o \
 		   article.o \
 		   json.o \
 		   listtags.o
-SRCS		 = main.c \
+COMPAT_SRCS	 = compat_err.c \
+		   compat_progname.c \
+		   compat_reallocarray.c \
+		   compat_strlcat.c \
+		   compat_strlcpy.c \
+		   compat_strtonum.c
+SRCS		 = $(COMPAT_SRCS) \
+		   main.c \
 		   compile.c \
-		   compat-reallocarray.c \
-		   compat-strlcat.c \
-		   compat-strlcpy.c \
 		   linkall.c \
 		   grok.c \
 		   util.c \
@@ -28,10 +37,10 @@ SRCS		 = main.c \
 		   article.c \
 		   json.c \
 		   listtags.c
-TESTS 		 = test-pledge.c \
-		   test-reallocarray.c \
-      		   test-strlcat.c \
-      		   test-strlcpy.c 
+TESTS 		 = test_pledge.c \
+		   test_reallocarray.c \
+      		   test_strlcat.c \
+      		   test_strlcpy.c 
 ARTICLES 	 = article1.html \
 	 	   article2.html \
 	 	   article4.html \
@@ -57,10 +66,8 @@ XMLGENS 	 = article.xml index.xml
 HTMLS 		 = $(ARTICLES) index.html archive.html sblg.1.html
 CSSS 		 = article.css index.css mandoc.css
 MDS		 = article10.md
-BINDIR 		 = $(PREFIX)/bin
 SHAREDIR	 = $(PREFIX)/share/sblg
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
-MANDIR 		 = $(PREFIX)/man
 DOTAR 		 = Makefile \
 		   $(XMLS) \
 		   $(CSSS) \
@@ -72,8 +79,6 @@ DOTAR 		 = Makefile \
 		   schema.json \
 		   extern.h \
 		   configure \
-		   config.h.post \
-		   config.h.pre \
 		   $(TESTS)
 
 all: sblg sblg.a sblg.1
@@ -115,10 +120,6 @@ sblg.tar.gz:
 sblg.tar.gz.sha512: sblg.tar.gz
 	sha512 sblg.tar.gz >$@
 
-config.h: config.h.pre config.h.post configure $(TESTS)
-	rm -f config.log
-	CC="$(CC)" CFLAGS="$(CFLAGS)" sh ./configure
-
 $(OBJS): sblg.h extern.h config.h
 
 atom.xml index.html $(ARTICLES): sblg
@@ -158,5 +159,7 @@ article9.html: $(ARTICLEXMLS)
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
 	rm -f article10.xml
-	rm -f config.h config.log
 	rm -rf *.dSYM
+
+distclean: clean
+	rm -f Makefile.configure config.h config.log
