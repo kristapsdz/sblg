@@ -1,6 +1,6 @@
 .\"	$Id$
 .\"
-.\" Copyright (c) 2013--2016 Kristaps Dzonsons <kristaps@bsd.lv>
+.\" Copyright (c) 2013--2017 Kristaps Dzonsons <kristaps@bsd.lv>
 .\"
 .\" Permission to use, copy, modify, and distribute this software for any
 .\" purpose with or without fee is hereby granted, provided that the above
@@ -22,7 +22,7 @@
 .Nd simple off-line blog utility
 .Sh SYNOPSIS
 .Nm sblg
-.Op Fl acjlL
+.Op Fl acjlLr
 .Op Fl C Ar file
 .Op Fl o Ar file
 .Op Fl s Ar sort
@@ -31,7 +31,7 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility knits together XML articles and templates in five ways.
+utility knits together XML articles and templates in a number of ways.
 .Bl -bullet
 .It
 Standalone mode
@@ -88,6 +88,9 @@ in its navigation.
 You can also use
 .Fl L
 to run the process for each input file (much faster).
+.It
+Tag-listing mode with
+.Fl l .
 .El
 .Pp
 By default,
@@ -105,8 +108,34 @@ amalgamation.
 .It Fl l
 Instead of emitting any output files, simply process the input and
 report a table of tags.
-This table consists of a tag name, a tab, then the filename where it was
-found.
+This table consists of the input file name, a tab, then the tag.
+.Pq Also known as article-major order.
+The tag has escaped white-space printed as unescaped.
+You can also use
+.Fl r
+to have tag-major order and
+.Fl j
+for JSON output.
+.It Fl r
+Print the
+.Fl l
+tag listing in
+.Dq tag-major
+order wherein the first column is the tag and the second column is the
+article.
+If the
+.Fl j
+flag is specified, this is JSON formatted.
+.It Fl j
+JSON output mode.
+This behaves as in blog amalgamation mode, but outputs JSON instead of
+XML.
+If
+.Fl l
+is specified, the tag listing will be displayed in JSON instead.
+See
+.Sx JSON Schema
+for details.
 .It Fl C Ar file
 Like
 .Fl c ,
@@ -524,6 +553,34 @@ can produce a JSON amalgamation with the
 flag.
 The schema is documented in
 .Pa @SHAREDIR@/schema.json .
+If
+.Fl l
+is specified, the output schema is simply an array as follows.
+Let
+.Pa source1.xml
+and
+.Pa source2.xml
+be input files with a variety of tags.
+.Bd -literal
+[
+ {"src": "source1.xml", 
+  "tags": ["tag1","tag2"]},
+ {"src": "source2.xml", 
+  "tags": ["tag1"]}
+]
+.Ed
+.Pp
+If, however,
+.Fl r
+is also specified, the reverse format is used:
+.Bd -literal
+[
+ {"tag": "tag1", 
+  "srcs": ["source1.xml","source2.xml"]},
+ {"tag": "tag2", 
+  "srcs": ["source1.xml"]}
+]
+.Ed
 .Ss Tag Symbols
 Within the template for
 .Fl c
