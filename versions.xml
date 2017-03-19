@@ -419,4 +419,24 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.1</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2017-03-19">2017-03-19</time>
+		</header>
+		<aside>
+			<p>
+				Enpower <b>-l</b> (tag-listing mode).
+				This is now able to emit all tags in JSON formatted output via <b>-j</b>, which makes it easy for dynamic sites
+				to play with tag listings in any way they choose.
+				(See <a href="sblg.1.html">sblg(1)</a> for an explanation of the output format.)
+				Also add <b>-r</b>, which stipulates that <b>-l</b> will print tag-first.
+				This is most useful for <b>-j</b>, as it allows for easy browsing by tag name.
+			</p>
+			<p>
+				Also internally start using a new way to <code>configure</code> the build.
+			</p>
+		</aside>
+	</article>
 </articles>
