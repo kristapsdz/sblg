@@ -73,6 +73,8 @@
 						itemprop="dateModified" datetime="@VDATE@">@VDATE@</time>.  
 					The repository is mirrored on <a href="https://github.com/kristapsdz/sblg">GitHub</a>, if that's
 					easier for you.
+					There's also a <a href="https://brew.sh">Homebrew</a> formula in 
+					<a href="https://github.com/kristapsdz/homebrew-repo">BSD.lv's tap</a>.
 					The last few versions featured the following (this was created by showing only select bits of newest
 					three <q>version</q> articles):
 				</p>
