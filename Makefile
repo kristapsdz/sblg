@@ -2,8 +2,8 @@
 
 include Makefile.configure
 
-VERSION 	 = 0.3.10
-VDATE 		 = 2016-12-17
+VERSION 	 = 0.4.1
+VDATE 		 = 2017-03-19
 CFLAGS		+= -DVERSION=\"$(VERSION)\"
 COMPAT_OBJS	 = compat_err.o \
 		   compat_progname.o \
@@ -37,10 +37,16 @@ SRCS		 = $(COMPAT_SRCS) \
 		   article.c \
 		   json.c \
 		   listtags.c
-TESTS 		 = test_pledge.c \
-		   test_reallocarray.c \
-      		   test_strlcat.c \
-      		   test_strlcpy.c 
+TESTS 		 = test-PATH_MAX.c \
+		   test-capsicum.c \
+		   test-err.c \
+		   test-pledge.c \
+		   test-progname.c \
+		   test-reallocarray.c \
+		   test-sandbox_init.c \
+		   test-strlcat.c \
+		   test-strlcpy.c \
+		   test-strtonum.c
 ARTICLES 	 = article1.html \
 	 	   article2.html \
 	 	   article4.html \
@@ -78,7 +84,6 @@ DOTAR 		 = Makefile \
 		   sblg.h \
 		   schema.json \
 		   extern.h \
-		   configure \
 		   $(TESTS)
 
 all: sblg sblg.a sblg.1
@@ -114,6 +119,7 @@ install: all
 sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/
 	install -m 0644 $(DOTAR) .dist/sblg-$(VERSION)
+	install -m 0755 configure .dist/sblg-$(VERSION)
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
