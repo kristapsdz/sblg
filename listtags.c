@@ -46,11 +46,29 @@ struct	tagn {
 
 TAILQ_HEAD(tagnq, tagn);
 
+/*
+ * Strip escaped white-space.
+ * XXX: should we do any escaping here?
+ */
+static void
+unescape(const char *cp)
+{
+ 
+	for ( ; '\0' != *cp; cp++)
+		if ( ! ('\\' == cp[0] && ' ' == cp[1]))
+			putchar(*cp);
+}
+
+/*
+ * Print tags in tag-major ordering.
+ * This will print the articles referencing individual tags.
+ * This is more complicated because our data comes in article-major
+ * ordering so we need to hash entries and bucket.
+ */
 static int
 dorlist(const struct article *sargs, size_t sargsz, int json)
 {
 	size_t	 	 i, j;
-	const char	*cp;
 	char		*copy;
 	ENTRY		 e;
 	ENTRY		*ep;
@@ -58,6 +76,12 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 	struct filen	*fn;
 	struct tagnq	 tq;
 	struct tagn	*tn;
+
+	/*
+	 * Start by creating a table of all tags and the files that
+	 * reference those tags.
+	 * Use the shitty hcreate() interface.
+	 */
 
 	if ( ! hcreate(256)) {
 		warnx("hcreate");
@@ -93,22 +117,21 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 	}
 
 	TAILQ_FOREACH(tn, &tq, entries) {
-		if (json)
+		if (json) {
 			printf("{\"tag\": \"");
-			for (cp = tn->tag; '\0' != *cp; cp++) {
-				if ('\\' == cp[0] && ' ' == cp[1])
-					continue;
-				putchar(*cp);
-			}
+			unescape(tn->tag);
 			printf("\", \n \"srcs\": [");
+		}
 		TAILQ_FOREACH(fn, tn->fq, entries) {
 			if (json)
 				putchar('"');
+			else
+				printf("%s\t", tn->tag);
 			printf("%s", fn->fn);
 			if (json)
 				putchar('"');
 			else
-				printf("\t%s\n", sargs[i].src);
+				putchar('\n');
 			if (json && TAILQ_NEXT(fn, entries))
 				putchar(',');
 		}
@@ -118,6 +141,12 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 			puts("]}");
 	}
 
+	/*
+	 * Clean up the hashtable entries.
+	 * XXX: on Linux, the "key" value to the ENTER-created table
+	 * entries is not destroyed, so we do that later.
+	 */
+
 	hdestroy();
 
 	while (NULL != (tn = TAILQ_FIRST(&tq))) {
@@ -126,10 +155,6 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 			free(fn);
 		}
 		TAILQ_REMOVE(&tq, tn, entries);
-		/* 
-		 * OpenBSD and FreeBSD frees the key of entries, while
-		 * Linux does not.
-		 */
 #ifdef __linux__
 		free(tn->tag);
 #endif
@@ -148,7 +173,6 @@ static int
 dolist(const struct article *sargs, size_t sargsz, int json)
 {
 	size_t	 	 i, j;
-	const char	*cp;
 
 	for (i = 0; i < sargsz; i++) {
 		if (json)
@@ -159,15 +183,13 @@ dolist(const struct article *sargs, size_t sargsz, int json)
 				putchar(',');
 			if (json)
 				putchar('"');
-			for (cp = sargs[i].tagmap[j]; '\0' != *cp; cp++) {
-				if ('\\' == cp[0] && ' ' == cp[1])
-					continue;
-				putchar(*cp);
-			}
+			else
+				printf("%s\t", sargs[i].src);
+			unescape(sargs[i].tagmap[j]);
 			if (json)
 				putchar('"');
 			else
-				printf("\t%s\n", sargs[i].src);
+				putchar('\n');
 		}
 		if (json && i < sargsz - 1)
 			puts("]},");
