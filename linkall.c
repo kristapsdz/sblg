@@ -231,22 +231,6 @@ article_end(void *dat, const XML_Char *s)
 }
 
 static void
-tagalloc(struct linkall *arg, const char *in)
-{
-	char	*token, *string, *sv;
-
-	string = sv = xstrdup(in);
-	while ((token = strsep(&string, " ")) != NULL) {
-		if ('\0' == *token)
-			continue;
-		arg->navtags = xreallocarray(arg->navtags, 
-			arg->navtagsz + 1, sizeof(char *));
-		arg->navtags[arg->navtagsz++] = xstrdup(token);
-	}
-	free(sv);
-}
-
-static void
 tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct linkall	 *arg = dat;
@@ -301,7 +285,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				arg->navuse = xmlbool(attp[1]);
 			} else if (0 == strcasecmp(attp[0], 
 					"data-sblg-navtag")) {
-				tagalloc(arg, attp[1]);
+				hashtag(&arg->navtags, 
+					&arg->navtagsz, attp[1]);
 			}
 		}
 
