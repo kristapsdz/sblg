@@ -576,6 +576,10 @@ xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
 	fputc('>', f);
 }
 
+/*
+ * Wrapper for strndup(3).
+ * Exits on memory allocation failure.
+ */
 char *
 xstrndup(const char *cp, size_t sz)
 {
@@ -586,6 +590,10 @@ xstrndup(const char *cp, size_t sz)
 	return(p);
 }
 
+/*
+ * Wrapper for strdup(3).
+ * Exits on memory allocation failure.
+ */
 char *
 xstrdup(const char *cp)
 {
@@ -596,6 +604,10 @@ xstrdup(const char *cp)
 	return(p);
 }
 
+/*
+ * Wrapper for reallocarray(3).
+ * Exits on memory allocation failure.
+ */
 void *
 xreallocarray(void *cp, size_t nm, size_t sz)
 {
@@ -606,6 +618,10 @@ xreallocarray(void *cp, size_t nm, size_t sz)
 	return(p);
 }
 
+/*
+ * Wrapper for realloc(3).
+ * Exits on memory allocation failure.
+ */
 void *
 xrealloc(void *cp, size_t sz)
 {
@@ -616,6 +632,10 @@ xrealloc(void *cp, size_t sz)
 	return(p);
 }
 
+/*
+ * Wrapper for calloc(3).
+ * Exits on memory allocation failure.
+ */
 void *
 xcalloc(size_t nm, size_t sz)
 {
@@ -626,6 +646,10 @@ xcalloc(size_t nm, size_t sz)
 	return(p);
 }
 
+/*
+ * Wrapper for malloc(3).
+ * Exits on memory allocation failure.
+ */
 void *
 xmalloc(size_t sz)
 {
@@ -634,4 +658,55 @@ xmalloc(size_t sz)
 	if (NULL == (p = malloc(sz)))
 		err(EXIT_FAILURE, NULL);
 	return(p);
+}
+
+/*
+ * Break apart "in" into navigation tags "map" of size "in".
+ * The input is a string of space-separated except for those with
+ * backslash-escaped spaces.
+ * Use this for data-sblg-navtags or data-sblg-tag.
+ */
+void
+hashtag(char ***map, size_t *sz, const char *in)
+{
+	char	*start, *end, *cur, *tofree;
+	size_t	 i;
+
+	if ('\0' == in[0])
+		return;
+
+	tofree = cur = xstrdup(in);
+
+	for (;;) {
+		/* Skip past leading whitespace. */
+		while (' ' == cur[0])
+			cur++;
+		if ('\0' == cur[0])
+			break;
+
+		/* Parse word til next non-escaped whitespace. */
+		for (start = end = cur; '\0' != end[0]; end++)
+			if (' ' == end[0] && '\\' != end[-1])
+				break;
+
+		/* Set us at the next token. */
+		cur = end;
+		if ('\0' != *end)
+			cur++;
+		*end = '\0';
+
+		/* Search for duplicates. */
+		for (i = 0; i < *sz; i++)
+			if (0 == strcmp((*map)[i], start))
+				break;
+
+		if (i < *sz)
+			continue;
+
+		*map = xreallocarray(*map, *sz + 1, sizeof(char *));
+		(*map)[*sz] = xstrdup(start);
+		(*sz)++;
+	}
+
+	free(tofree);
 }

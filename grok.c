@@ -180,52 +180,6 @@ addr_end(void *dat, const XML_Char *s)
 			&arg->article->authorsz, s);
 }
 
-static void
-tadd(struct article *a, const XML_Char *attp)
-{
-	char		*start, *end, *cur, *tofree;
-	size_t		 i;
-
-	if ('\0' == attp[0])
-		return;
-	tofree = cur = xstrdup(attp);
-
-	for (;;) {
-		/* Skip past leading whitespace. */
-		while (' ' == cur[0])
-			cur++;
-		if ('\0' == cur[0])
-			break;
-
-		/* Parse word til next non-escaped whitespace. */
-		for (start = end = cur; '\0' != end[0]; end++)
-			if (' ' == end[0] && '\\' != end[-1])
-				break;
-
-		/* Set us at the next token. */
-		cur = end;
-		if ('\0' != *end)
-			cur++;
-		*end = '\0';
-
-		/* Inefficiently search for a match. */
-		for (i = 0; i < a->tagmapsz; i++)
-			if (0 == strcmp(a->tagmap[i], start))
-				break;
-
-		if (i < a->tagmapsz)
-			continue;
-
-		/* Reallocate the map. */
-		a->tagmap = xreallocarray(a->tagmap,
-			a->tagmapsz + 1, sizeof(char *));
-		a->tagmap[a->tagmapsz] = xstrdup(start);
-		a->tagmapsz++;
-	}
-
-	free(tofree);
-}
-
 /*
  * Look for sblg attributes defined on any given element.
  * This should be run by each and every element within the article.
@@ -243,7 +197,8 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 			arg->article->img = xstrdup(attp[1]);
 			arg->flags |= PARSE_IMG;
 		} else if (0 == strcasecmp(*attp, "data-sblg-tags"))
-			tadd(arg->article, attp[1]);
+			hashtag(&arg->article->tagmap,
+				&arg->article->tagmapsz, attp[1]);
 	}
 }
 
