@@ -57,6 +57,8 @@ void	xmlopensx(FILE *, const XML_Char *, const XML_Char **,
 void	xmltextx(FILE *f, const XML_Char *s, 
 		const char *, const struct article *, size_t, size_t);
 
+void	 hashtag(char ***, size_t *, const char *);
+
 void	*xcalloc(size_t, size_t);
 void	*xmalloc(size_t);
 char	*xstrdup(const char *);
