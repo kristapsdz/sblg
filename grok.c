@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013, 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013, 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -447,11 +447,17 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	arg->article->src = arg->src;
 	arg->article->base = xstrdup(arg->src);
-	if (NULL == strrchr(arg->src, '/'))
+
+	if (NULL == strrchr(arg->src, '/')) {
 		arg->article->stripbase = xstrdup(arg->src);
-	else
+		arg->article->stripsrc = arg->src;
+	} else {
 		arg->article->stripbase = xstrdup
 			(strrchr(arg->src, '/') + 1);
+		arg->article->stripsrc = 
+			strrchr(arg->src, '/') + 1;
+	}
+
 	if (NULL == strrchr(arg->src, '/'))
 		arg->article->striplangbase = xstrdup(arg->src);
 	else
