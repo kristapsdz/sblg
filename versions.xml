@@ -451,4 +451,18 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.3</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2017-06-20">2017-06-20</time>
+		</header>
+		<aside>
+			<p>
+				Make Atom feeds aware of the <code>data-sblg-striplink</code> attribute.
+				This attribute strips the directory part from the altlink (if requested), allowing input files to have arbitrary
+				directory parts harmlessly.
+			</p>
+		</aside>
+	</article>
 </articles>
