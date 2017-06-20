@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2016 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2016--2017 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -25,6 +25,7 @@ enum	sort {
 
 struct	article {
 	const char	 *src; /* source filename */
+	const char	 *stripsrc; /* source filename w/o directory */
 	char		 *base; /* nil-terminated src w/o suffix */
 	char		 *stripbase; /* nil-terminated fname w/o suffix */
 	char		 *striplangbase; /* stripbase w/o langs */
