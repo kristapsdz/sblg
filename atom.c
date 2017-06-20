@@ -47,7 +47,7 @@ struct	atom {
 };
 
 static	void	atomprint(FILE *f, const struct atom *arg, 
-			int altlink, int content, 
+			int altlink, int striplink, int content, 
 			const struct article *src);
 static	void	entry_begin(void *userdata, const XML_Char *name, 
 			const XML_Char **atts);
@@ -90,8 +90,8 @@ atomputs(FILE *f, const char *cp)
 }
 
 static void
-atomprint(FILE *f, const struct atom *arg, 
-	int altlink, int content, const struct article *src)
+atomprint(FILE *f, const struct atom *arg, int altlink, 
+	int striplink, int content, const struct article *src)
 {
 	char		 buf[1024];
 	struct tm	*tm;
@@ -104,9 +104,12 @@ atomprint(FILE *f, const struct atom *arg,
 	fprintf(f, "<title>%s</title>\n", src->titletext);
 	fprintf(f, "<updated>%s</updated>\n", buf);
 	fprintf(f, "<author><name>%s</name></author>\n", src->authortext);
-	if (altlink)
+	if (altlink && ! striplink)
 		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
 			 "href=\"%s/%s\" />\n", arg->path, src->src);
+	else if (altlink)
+		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
+			 "href=\"%s/%s\" />\n", arg->path, src->stripsrc);
 
 	if (content && NULL != src->article) {
 		fprintf(f, "<content type=\"html\">");
@@ -235,7 +238,7 @@ tmpl_begin(void *userdata,
 	struct atom	 *arg = userdata;
 	time_t		  t;
 	char		  buf[1024];
-	int		  altlink, content;
+	int		  altlink, content, striplink;
 	const char	 *start;
 	char		 *cp;
 	struct tm	 *tm;
@@ -331,15 +334,16 @@ tmpl_begin(void *userdata,
 		return;
 	}
 
-	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-altlink"))
-			break;
-	altlink = NULL == *attp || xmlbool(attp[1]);
+	altlink = 1;
+	striplink = content = 0;
 
 	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-content"))
-			break;
-	content = NULL != *attp && xmlbool(attp[1]);
+		if (0 == strcasecmp(*attp, "data-sblg-altlink"))
+			altlink = xmlbool(attp[1]);
+		else if (0 == strcasecmp(*attp, "data-sblg-striplink"))
+			striplink = xmlbool(attp[1]);
+		else if (0 == strcasecmp(*attp, "data-sblg-content"))
+			content = xmlbool(attp[1]);
 
 	arg->stack++;
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
@@ -347,7 +351,7 @@ tmpl_begin(void *userdata,
 		fprintf(arg->f, "<%s>", name);
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		XML_SetElementHandler(arg->p, entry_begin, entry_end);
-		atomprint(arg->f, arg, altlink, 
+		atomprint(arg->f, arg, altlink, striplink,
 			content, &arg->sargs[arg->spos++]);
 	} else {
 		XML_SetElementHandler(arg->p, entry_begin, entry_empty);
