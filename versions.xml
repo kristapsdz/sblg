@@ -465,4 +465,16 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.4</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2017-07-20">2017-07-20</time>
+		</header>
+		<aside>
+			<p>
+				Fix <code>&lt;id&gt;</code> element in Atom feeds as patched by Reyk Flöter.  Thanks!
+			</p>
+		</aside>
+	</article>
 </articles>
