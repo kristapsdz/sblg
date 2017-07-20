@@ -97,12 +97,15 @@ atomprint(FILE *f, const struct atom *arg, int altlink,
 	struct tm	*tm;
 
 	tm = gmtime(&src->time);
-	strftime(buf, sizeof(buf), "%FT%TZ", tm);
 
+	strftime(buf, sizeof(buf), "%F", tm);
 	fprintf(f, "<id>tag:%s,%s:%s/%s</id>\n", 
 		arg->domain, buf, arg->path, src->src);
-	fprintf(f, "<title>%s</title>\n", src->titletext);
+
+	strftime(buf, sizeof(buf), "%FT%TZ", tm);
 	fprintf(f, "<updated>%s</updated>\n", buf);
+
+	fprintf(f, "<title>%s</title>\n", src->titletext);
 	fprintf(f, "<author><name>%s</name></author>\n", src->authortext);
 	if (altlink && ! striplink)
 		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
