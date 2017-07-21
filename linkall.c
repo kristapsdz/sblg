@@ -45,6 +45,7 @@ struct	linkall {
 	char		**navtags; /* list of navtags to query */
 	size_t		  navtagsz; /* size of navtags list */
 	int		  navuse; /* use navigation contents */
+	int		  navxml; /* don't print html elements */
 	ssize_t		  single; /* page index in -C mode*/
 	char		 *nav; /* temporary: nav buffer */
 	size_t		  navsz; /* nav buffer length */
@@ -145,9 +146,11 @@ nav_end(void *dat, const XML_Char *s)
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 
-	fputc('\n', arg->f);
-	xmlopen(arg->f, "ul", NULL);
-	fputc('\n', arg->f);
+	if ( ! arg->navxml ) {
+		fputc('\n', arg->f);
+		xmlopen(arg->f, "ul", NULL);
+		fputc('\n', arg->f);
+	}
 
 	/*
 	 * Advance until "k" is at the article we want to start
@@ -174,7 +177,10 @@ nav_end(void *dat, const XML_Char *s)
 		if (0 == rc)
 			continue;
 		j++;
-		if ( ! arg->navuse || 0 == arg->navsz) {
+		if ( arg->navxml ) {
+			xmltextx(arg->f, arg->nav, arg->dst,
+				arg->sargs, arg->sposz, k);
+		} else if ( ! arg->navuse || 0 == arg->navsz) {
 			(void)strftime(buf, sizeof(buf), "%F", 
 				localtime(&arg->sargs[k].time));
 			xmlopen(arg->f, "li", NULL);
@@ -196,8 +202,10 @@ nav_end(void *dat, const XML_Char *s)
 			break;
 	}
 
-	xmlclose(arg->f, "ul");
-	xmlclose(arg->f, s);
+	if ( ! arg->navxml ) {
+		xmlclose(arg->f, "ul");
+		xmlclose(arg->f, s);
+	}
 	xmlstrflush(arg->nav, &arg->navsz);
 
 	for (i = 0; i < arg->navtagsz; i++)
@@ -252,19 +260,21 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		 * Only handle if containing the "data-sblg-nav"
 		 * attribute, otherwise continue.
 		 */
-		xmlopens(arg->f, s, atts);
 		for (attp = atts; NULL != *attp; attp += 2) 
 			if (0 == strcasecmp(*attp, "data-sblg-nav"))
 				break;
 
-		if (NULL == *attp || ! xmlbool(attp[1]))
+		if (NULL == *attp || ! xmlbool(attp[1])) {
+			xmlopens(arg->f, s, atts);
 			return;
+		}
 
 		/*
 		 * Take the number of elements to show to be the min of
 		 * the full count or as user-specified.
 		 */
 		arg->navuse = 0;
+		arg->navxml = 0;
 		arg->navlen = arg->sposz;
 		arg->navstart = 0;
 		for (attp = atts; NULL != *attp; attp += 2) {
@@ -283,12 +293,18 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			} else if (0 == strcasecmp(attp[0], 
 					"data-sblg-navcontent")) {
 				arg->navuse = xmlbool(attp[1]);
+			} else if (0 == strcasecmp(attp[0],
+					"data-sblg-navxml")) {
+				arg->navxml = xmlbool(attp[1]);
 			} else if (0 == strcasecmp(attp[0], 
 					"data-sblg-navtag")) {
 				hashtag(&arg->navtags, 
 					&arg->navtagsz, attp[1]);
 			}
 		}
+
+		if ( ! arg->navxml )
+			xmlopens(arg->f, s, atts);
 
 		arg->stack++;
 		XML_SetElementHandler(arg->p, nav_begin, nav_end);
