@@ -426,19 +426,32 @@ taglist(FILE *f, const struct article *art, const char *arg, size_t argsz)
 		fputs("<span class=\"sblg-tags-notfound\"></span>", f);
 }
 
+/*
+ * Given the nil-terminated string "s", emit all of its characters to
+ * "f" while substituting ${sblg-xxxxx} tags in the process.
+ * This uses the current array of articles "arts" length "artsz",
+ * currently at position "artpos".
+ * The "url" is the current file being written (naming "f").
+ * FIXME: the contents written are not escaped in any way.
+ */
 void
 xmltextx(FILE *f, const XML_Char *s, const char *url, 
 	const struct article *arts, size_t artsz, size_t artpos)
 {
-	const char	*cp, *start, *end, *arg;
+	const char	*cp, *start, *end, *arg, *bufp;
 	char		 buf[32];
-	size_t		 sz, next, prev, argsz;
+	size_t		 sz, next, prev, argsz, i, asz;
 
 	if (NULL == s || '\0' == *s)
 		return;
 
 	prev = (artpos + 1) % artsz;
 	next = artpos == 0 ? artsz - 1 : artpos - 1;
+
+	/*
+	 * Check whether "_word", string length "_sz", is the same as
+	 * the value currently at "start".
+	 */
 
 #define	STRCMP(_word, _sz) \
 	(sz == (_sz) && 0 == memcmp(start, (_word), (_sz)))
@@ -452,6 +465,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		sz = end - start;
 		arg = NULL;
 		argsz = 0;
+		bufp = "";
 
 		if (NULL != (arg = memchr(start, '|', sz))) {
 			sz = arg - start;
@@ -459,21 +473,44 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			argsz = end - arg;
 		} 
 
-		if (STRCMP("sblg-date", 9))
+		/*
+		 * The following tags all dynamically construct a value
+		 * that we put into the "bufp" pointer, which defaults
+		 * to the empty string.
+		 */
+
+		if (STRCMP("sblg-date", 9)) {
 			strftime(buf, sizeof(buf), "%F", 
 				gmtime(&arts[artpos].time));
-		else if (STRCMP("sblg-datetime", 13))
+			bufp = buf;
+		} else if (STRCMP("sblg-datetime", 13)) {
 			strftime(buf, sizeof(buf), "%FT%TZ", 
 				gmtime(&arts[artpos].time));
-		else if (STRCMP("sblg-datetime-fmt", 17))
+			bufp = buf;
+		} else if (STRCMP("sblg-datetime-fmt", 17)) {
 			fmttime(buf, sizeof(buf), arg, argsz,
 				arts[artpos].isdatetime,
 				localtime(&arts[artpos].time));
-		else if (STRCMP("sblg-pos", 8))
+			bufp = buf;
+		} else if (STRCMP("sblg-pos", 8)) {
 			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
+			bufp = buf;
+		} else if (STRCMP("sblg-get", 8))
+			for (i = 0; i < arts[artpos].setmapsz; i += 2) {
+				asz = strlen(arts[artpos].setmap[i]);
+				/* Ugly and slow, but effective. */
+				if (asz == argsz && 0 == memcmp
+				    (arts[artpos].setmap[i], 
+				     arg, argsz)) {
+					bufp = arts[artpos].setmap[i + 1];
+					break;
+				}
+			}
 
 		if (STRCMP("sblg-base", 9))
 			fputs(arts[artpos].base, f);
+		else if (STRCMP("sblg-get", 8))
+			fputs(bufp, f);
 		else if (STRCMP("sblg-tags", 9))
 			taglist(f, &arts[artpos], arg, argsz);
 		else if (STRCMP("sblg-stripbase", 14))
@@ -517,13 +554,13 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-source", 11))
 			fputs(arts[artpos].src, f);
 		else if (STRCMP("sblg-date", 9))
-			fputs(buf, f);
+			fputs(bufp, f);
 		else if (STRCMP("sblg-datetime", 13))
-			fputs(buf, f);
+			fputs(bufp, f);
 		else if (STRCMP("sblg-datetime-fmt", 17))
-			fputs(buf, f);
+			fputs(bufp, f);
 		else if (STRCMP("sblg-pos", 8))
-			fputs(buf, f);
+			fputs(bufp, f);
 		else if (STRCMP("sblg-aside", 10))
 			fputs(arts[artpos].aside, f);
 		else if (STRCMP("sblg-asidetext", 14))
@@ -538,6 +575,12 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 	fputs(start, f);
 }
 
+/*
+ * Emits to "f" an XML element named "s" with NULL-terminated argument
+ * list "atts" of key-value string pairs (libexpat style).
+ * Passes all of the attribute values through xmltextx().
+ * See xmltextx() for an explanation of the remaining variables.
+ */
 void
 xmlopensx(FILE *f, const XML_Char *s, 
 	const XML_Char **atts, const char *url, 
@@ -559,6 +602,10 @@ xmlopensx(FILE *f, const XML_Char *s,
 	fputc('>', f);
 }
 
+/*
+ * Open an XML element named "s" with NULL-terminated argument list
+ * "atts" of key-value string pairs (libexpat style).
+ */
 void
 xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
 {
