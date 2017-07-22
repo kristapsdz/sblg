@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2014 Kristaps Dzonsons <kristaps@bsd.lv>
+ * Copyright (c) 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -45,8 +45,11 @@ article_free(struct article *p)
 
 	for (i = 0; i < p->tagmapsz; i++)
 		free(p->tagmap[i]);
+	for (i = 0; i < p->setmapsz; i++)
+		free(p->setmap[i]);
 
 	free(p->tagmap);
+	free(p->setmap);
 }
 
 void

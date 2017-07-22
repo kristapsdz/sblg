@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2016--2017 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2016--2017 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -47,6 +47,8 @@ struct	article {
 	size_t		  articlesz; /* length of article */
 	char		**tagmap; /* array of tags */
 	size_t		  tagmapsz; /* length of tag array */
+	char		**setmap; /* array of key-value custom keys */
+	size_t		  setmapsz; /* both keys and vals of setmap */
 	char		 *img; /* image associated with article */
 	enum sort	  sort; /* overriden sort order parameters */
 };

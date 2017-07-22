@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013, 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013, 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,6 +19,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+#include <assert.h>
 #if HAVE_ERR
 # include <err.h>
 #endif
@@ -658,6 +659,29 @@ xmalloc(size_t sz)
 	if (NULL == (p = malloc(sz)))
 		err(EXIT_FAILURE, NULL);
 	return(p);
+}
+
+void
+hashset(char ***map, size_t *sz, const char *key, const char *val)
+{
+	size_t	 i;
+
+	assert(NULL != key && '\0' != *key);
+
+	for (i = 0; i < *sz; i += 2)
+		if (0 == strcmp(key, (*map)[i]))
+			break;
+
+	if (i < *sz) {
+		free((*map)[i + 1]);
+		(*map)[i + 1] = xstrdup(val);
+		return;
+	}
+
+	*map = xreallocarray(*map, *sz + 2, sizeof(char *));
+	(*map)[*sz] = xstrdup(key);
+	(*map)[*sz + 1] = xstrdup(val);
+	(*sz) += 2;
 }
 
 /*
