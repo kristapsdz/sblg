@@ -310,6 +310,20 @@ These languages are removed in the
 .Dq stripping
 operations for the
 .Sx Tag Symbols .
+.It Li data-sblg-set-xxx
+This allows arbitrary values to be attached to the article.
+For example, specifying
+.Li data-sblg-set-foo="bar"
+sets the
+.Li foo
+keyword to
+.Li bar .
+If specified multiple times for the same key, only the last value is
+used.
+These may be retrieved with
+.Li ${sblg-get}
+of the
+.Sx Tag Symbols .
 .It Li data-sblg-sort
 Override the article's position relative to other articles.
 This can be either
@@ -716,6 +730,14 @@ and
 .Li ${sblg-prev-striplangbase}
 variants.
 .Pq See Li ${sblg-base} .
+.It Li ${sblg-get[|key]}
+Print the value of
+.Li key
+assigned in
+.Li data-sblg-set-key .
+If unspecified or the key was not found, this is ignored and omitted
+from output.
+The lookup is case sensitive.
 .It Li ${sblg-source}
 The source file when passed for parsing.
 .It Li ${sblg-tags[|tagspec]}
