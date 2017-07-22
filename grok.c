@@ -192,7 +192,12 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 	for (attp = atts; NULL != *attp; attp += 2) {
 		if ('\0' == attp[1][0])
 			continue;
-		if (0 == strcasecmp(*attp, "data-sblg-img")) {
+		if (0 == strncasecmp(*attp, "data-sblg-set-", 14) &&
+		    '\0' != (*attp)[14]) {
+			hashset(&arg->article->setmap,
+			        &arg->article->setmapsz,
+				*attp + 14, attp[1]);
+		} else if (0 == strcasecmp(*attp, "data-sblg-img")) {
 			free(arg->article->img);
 			arg->article->img = xstrdup(attp[1]);
 			arg->flags |= PARSE_IMG;
