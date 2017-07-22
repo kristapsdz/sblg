@@ -403,7 +403,9 @@ file, it will be to an XML file!
 The navigation element may contain several attributes.
 The Boolean
 .Li data-sbgl-navcontent
-attribute makes the mark-up content of the
+and
+.Li data-sbgl-navxml
+attributes make the mark-up content of the
 .Li <nav>
 be processed as specified in
 .Sx Tag Symbols .
@@ -411,6 +413,14 @@ If not specified,
 .Nm
 populates the list with article title text in a link and the publication
 date.
+The
+.Li data-sbgl-navxml
+attribute does not print any additional
+.Li <nav> ,
+.Li <ul> ,
+or
+.Li <li>
+HTML tags and can be used to generate custom XML files, such as sitemaps.
 If the
 .Li <nav>
 element contains a positive integer
