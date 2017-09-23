@@ -439,6 +439,8 @@ linkall(XML_Parser p, const char *templ, const char *force,
 
 	if (ASORT_DATE == asort)
 		qsort(sargs, sargsz, sizeof(struct article), datecmp);
+	else if (ASORT_RDATE == asort)
+		qsort(sargs, sargsz, sizeof(struct article), rdatecmp);
 	else if (ASORT_FILENAME == asort)
 		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
 
@@ -539,6 +541,8 @@ linkall_r(XML_Parser p, const char *templ,
 
 	if (ASORT_DATE == asort)
 		qsort(sargs, sargsz, sizeof(struct article), datecmp);
+	else if (ASORT_RDATE == asort)
+		qsort(sargs, sargsz, sizeof(struct article), rdatecmp);
 	else if (ASORT_FILENAME == asort)
 		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
 

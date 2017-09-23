@@ -126,6 +126,8 @@ main(int argc, char *argv[])
 		case ('s'):
 			if (0 == strcasecmp(optarg, "date"))
 				asort = ASORT_DATE;
+			else if (0 == strcasecmp(optarg, "rdate"))
+				asort = ASORT_RDATE;
 			else if (0 == strcasecmp(optarg, "filename"))
 				asort = ASORT_FILENAME;
 			else if (0 == strcasecmp(optarg, "cmdline"))
