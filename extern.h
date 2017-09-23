@@ -23,6 +23,7 @@ __BEGIN_DECLS
 
 enum	asort {
 	ASORT_DATE = 0,
+	ASORT_RDATE,
 	ASORT_FILENAME,
 	ASORT_CMDLINE
 };
@@ -68,6 +69,7 @@ void	*xrealloc(void *, size_t);
 void	*xreallocarray(void *, size_t, size_t);
 
 int	 datecmp(const void *, const void *);
+int	 rdatecmp(const void *, const void *);
 int	 filenamecmp(const void *, const void *);
 
 __END_DECLS

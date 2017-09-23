@@ -144,6 +144,8 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 
 	if (ASORT_DATE == asort)
 		qsort(sargs, sargsz, sizeof(struct article), datecmp);
+	if (ASORT_RDATE == asort)
+		qsort(sargs, sargsz, sizeof(struct article), rdatecmp);
 	else if (ASORT_FILENAME == asort)
 		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
 
