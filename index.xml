@@ -2,15 +2,25 @@
 <html>
 	<head>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-		<meta charset='utf-8' /> 
+		<meta charset="utf-8" /> 
 		<title>simple off-line blog utility</title>
-		<link href="atom.xml" type="application/atom+xml" rel="alternate" title="sblg Article and Version Feed" />
-		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
-		<link href="index.css" rel="stylesheet" />
 		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+		<link href="atom.xml" type="application/atom+xml" rel="alternate" title="sblg Article and Version Feed" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:300,300italic,400" />
+		<link rel="stylesheet" href="index.css" />
 	</head>
 	<body itemscope="itemscope" itemtype="http://schema.org/SoftwareApplication">
 		<nav>
+			<div>
+				<a href="https://www.bsd.lv">BSD.lv</a> tools for text processing: 
+				<a href="https://kristaps.bsd.lv/lowdown">lowdown</a>,
+				<a href="https://kristaps.bsd.lv/sblg">sblg</a>,
+				<a href="https://mandoc.bsd.lv">mandoc</a>
+			</div>
+			<div class="logo">
+				sblg <span>&#8211; simple off-line blog utility</span>
+			</div>
 			<a id="nav-gears" href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
 			<a id="nav-lock" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
 			<a id="nav-file" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
@@ -41,7 +51,7 @@
 						blogs</span>. 
 					It knits together articles with templates, generating static HTML files,
 					Atom feeds, and JSON files.
-					It's built for use with <a href="http://man.openbsd.org/make.1">make(1)</a>, just like any
+					It's built for use with <a href="https://man.openbsd.org/make.1">make(1)</a>, just like any
 					source code.
 					No <a href="https://daringfireball.net/projects/markdown/">markdown</a> (<a href="article10.html">unless&#8230;</a>), no <q>CMS</q>, no CGI,
 					no PHP.
@@ -189,7 +199,8 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 		</article>
 		<footer>
 			<div>
-				&#169; 2013&#8211;2016, <a rel="author" href="https://kristaps.bsd.lv">Kristaps Dzonsons</a>
+				&#169; 2013&#8211;2017, 
+				<a rel="author" href="https://github.com/kristapsdz">Kristaps Dzonsons</a>
 			</div>
 			<nav>
 				<a href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
@@ -198,11 +209,6 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 				<a href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
 				<a href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
 			</nav>
-			<div>
-				<a href="https://scan.coverity.com/projects/sblg">
-					<img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/7910/badge.svg" />
-				</a>
-			</div>
 		</footer>
 	</body>
 </html>
