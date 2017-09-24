@@ -495,4 +495,17 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.6</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2017-09-23">2017-09-23</time>
+		</header>
+		<aside>
+			<p>
+				Allow for <code>data-sblg-navsort</code> attribute to override the search order set by <b>-s</b>.
+				Also add the <b>rdate</b> search order (reverse date).
+			</p>
+		</aside>
+	</article>
 </articles>
