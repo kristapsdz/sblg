@@ -51,6 +51,7 @@ struct	article {
 	size_t		  setmapsz; /* both keys and vals of setmap */
 	char		 *img; /* image associated with article */
 	enum sort	  sort; /* overriden sort order parameters */
+	size_t		  order; /* cmdline sort order */
 };
 
 __BEGIN_DECLS

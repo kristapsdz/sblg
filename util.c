@@ -75,6 +75,14 @@ xmlvoid(const XML_Char *s)
 }
 
 int
+cmdlinecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+
+	return(s1->order - s2->order);
+}
+
+int
 filenamecmp(const void *p1, const void *p2)
 {
 	const struct article *s1 = p1, *s2 = p2;

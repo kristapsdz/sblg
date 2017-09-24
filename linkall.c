@@ -45,6 +45,8 @@ struct	linkall {
 	char		**navtags; /* list of navtags to query */
 	size_t		  navtagsz; /* size of navtags list */
 	int		  navuse; /* use navigation contents */
+	enum asort	  navsort; /* override sort order */
+	int		  usesort; /* whether to use navsort */
 	int		  navxml; /* don't print html elements */
 	ssize_t		  single; /* page index in -C mode*/
 	char		 *nav; /* temporary: nav buffer */
@@ -137,6 +139,7 @@ nav_end(void *dat, const XML_Char *s)
 	size_t		 i, j, k;
 	char		 buf[32]; 
 	int		 rc;
+	struct article	*sv = NULL;
 
 	if (strcasecmp(s, "nav") || 0 != --arg->stack) {
 		xmlstrclose(&arg->nav, &arg->navsz, s);
@@ -152,6 +155,24 @@ nav_end(void *dat, const XML_Char *s)
 		fputc('\n', arg->f);
 		xmlopen(arg->f, "ul", NULL);
 		fputc('\n', arg->f);
+	}
+
+	if (arg->usesort) {
+		sv = arg->sargs;
+		arg->sargs = calloc(arg->sposz, sizeof(struct article));
+		memcpy(arg->sargs, sv, arg->sposz * sizeof(struct article));
+		if (ASORT_DATE == arg->navsort)
+			qsort(arg->sargs, arg->sposz, 
+				sizeof(struct article), datecmp);
+		else if (ASORT_RDATE == arg->navsort)
+			qsort(arg->sargs, arg->sposz, 
+				sizeof(struct article), rdatecmp);
+		else if (ASORT_FILENAME == arg->navsort)
+			qsort(arg->sargs, arg->sposz, 
+				sizeof(struct article), filenamecmp);
+		else if (ASORT_CMDLINE == arg->navsort)
+			qsort(arg->sargs, arg->sposz, 
+				sizeof(struct article), cmdlinecmp);
 	}
 
 	/*
@@ -217,6 +238,11 @@ nav_end(void *dat, const XML_Char *s)
 	free(arg->navtags);
 	arg->navtags = NULL;
 	arg->navtagsz = 0;
+
+	if (NULL != sv) {
+		free(arg->sargs);
+		arg->sargs = sv;
+	}
 }
 
 static void
@@ -246,6 +272,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct linkall	 *arg = dat;
 	const XML_Char	**attp;
+	const XML_Char	 *sort = NULL;
 	char		**tags;
 	char		 *str, *tok, *tfr;
 	size_t		  i, tagsz;
@@ -278,6 +305,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		 */
 
 		arg->navuse = 0;
+		arg->navsort = ASORT_DATE;
+		arg->usesort = 0;
 		arg->navxml = 0;
 		arg->navlen = arg->sposz;
 		arg->navstart = 0;
@@ -305,7 +334,26 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 					"data-sblg-navtag")) {
 				hashtag(&arg->navtags, 
 					&arg->navtagsz, attp[1]);
+			} else if (0 == strcasecmp(attp[0],
+					"data-sblg-navsort")) {
+				sort = attp[1];
 			}
+		}
+
+		/* Are we overriding the sort order? */
+
+		if (NULL != sort) {
+			arg->usesort = 1;
+			if (0 == strcasecmp(sort, "date"))
+				arg->navsort = ASORT_DATE;
+			else if (0 == strcasecmp(sort, "rdate"))
+				arg->navsort = ASORT_RDATE;
+			else if (0 == strcasecmp(sort, "filename"))
+				arg->navsort = ASORT_FILENAME;
+			else if (0 == strcasecmp(sort, "cmdline"))
+				arg->navsort = ASORT_CMDLINE;
+			else
+				arg->usesort = 0;
 		}
 
 		if ( ! arg->navxml)
@@ -533,18 +581,24 @@ linkall_r(XML_Parser p, const char *templ,
 
 	memset(&larg, 0, sizeof(struct linkall));
 
-	/* Grok all article data then sort. */
+	/* 
+	 * Grok all article data then sort.
+	 * Ignore cmdline sort order: it's already like that.
+	 */
 
 	for (i = 0; i < sz; i++)
 		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
 
 	if (ASORT_DATE == asort)
-		qsort(sargs, sargsz, sizeof(struct article), datecmp);
+		qsort(sargs, sargsz, 
+			sizeof(struct article), datecmp);
 	else if (ASORT_RDATE == asort)
-		qsort(sargs, sargsz, sizeof(struct article), rdatecmp);
+		qsort(sargs, sargsz, 
+			sizeof(struct article), rdatecmp);
 	else if (ASORT_FILENAME == asort)
-		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
+		qsort(sargs, sargsz, 
+			sizeof(struct article), filenamecmp);
 
 	/* Map the template into memory for parsing. */
 

@@ -450,6 +450,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	(*arg->articlesz)++;
 	memset(arg->article, 0, sizeof(struct article));
 
+	arg->article->order = *arg->articlesz;
 	arg->article->src = arg->src;
 	arg->article->base = xstrdup(arg->src);
 
@@ -507,7 +508,8 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 }
 
 int
-sblg_parse(XML_Parser p, const char *src, struct article **arg, size_t *argsz)
+sblg_parse(XML_Parser p, const char *src, 
+	struct article **arg, size_t *argsz)
 {
 	char		*buf;
 	size_t		 sz;
