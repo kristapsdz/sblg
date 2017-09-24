@@ -1,28 +1,35 @@
 body, html			{ height: 100%;
 				  margin: 0; }
-body				{ font-size: 12pt; 
+body				{ font-size: 13pt; 
+				  font-family: "Alegreya sans", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif; 
+				  font-weight: 300;
 				  line-height: 17pt; }
 a				{ text-decoration: none; }
-body > header			{ padding-top: 5%;
-				  padding-bottom: 5%;
+body > header			{ padding: 1.8em 0;
 				  text-align: center;
 				  font-size: 36pt;
 				  line-height: 36pt;
 				  background-color: #ccc; }
 body > header h1,
 body > header h2		{ color: #555; }
-body > header div		{ font-size: 16pt; }
 h1, h2				{ font-size: inherit; 
 				  margin: 0; 
 				  font-weight: normal;
 				  text-shadow: 0 0 1px #fff; }
 body > nav			{ background-color: #666; 
 				  font-size: 14pt;
-				  padding: 24pt; }
+				  padding: 24pt 20%; }
+body > nav div			{ margin: 2em 0; 
+				  color: #aaa; }
+body > nav div.logo		{ color: #fff; 
+				  margin-bottom: 12pt; 
+				  font-size: 24pt; }
+body > nav div.logo span	{ color: #aaa; }
+body > nav div a		{ color: #eee; }
 body > nav a			{ color: #ccc; 
 				  border-bottom: 2px transparent; }
 body > nav a:hover		{ color: #eee; 
-				  border-bottom: 2px solid rgba(255, 255, 255, 0.5); }
+				  border-bottom: 2px solid rgba(255, 255, 255, 0.8); }
 article				{ color: #333; }
 article > p			{ padding: 0 20%; }
 article .intro			{ font-size: 16pt; 
@@ -50,8 +57,8 @@ nav[data-sblg-nav] li > div:last-child
 				{ padding: 4pt 12pt 0 12pt; }
 nav[data-sblg-nav] i[class~="fa-clock-o"]
 				{ font-size: 11pt; }
-code				{ font-size: 11pt; }
-div.prettyprint			{ font-size: 10pt; 
+code				{ font-size: smaller; }
+div.prettyprint			{ font-size: smaller; 
 				  line-height: 14pt;
 				  padding: 0 20%; }
 pre.prettyprint			{ border: none !important; }
@@ -70,14 +77,15 @@ footer a:hover			{ border-bottom: thin solid rgba(0, 0, 0, 0.5); }
 @media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
 article > p,
 nav[data-sblg-nav] ul,
-div.prettyprint			{ padding: 0 10%; }
+div.prettyprint			{ padding: 0 2%; }
 div.prettyprint			{ overflow: hidden; }
+body > nav			{ padding: 12pt 2%; }
+body > nav div			{ margin: 1em 0; }
+body > nav div.logo		{ font-size: 16pt; 
+				  margin-bottom: 0.5em; }
 }
 
 @media only screen and (max-width: 360px), only screen and (max-device-width: 360px) {
-article > p,
-nav[data-sblg-nav] ul,
-div.prettyprint			{ padding: 0 1%; }
 body > header			{ font-size: 24pt; 
 				  line-height: 24pt; }
 article .intro			{ font-size: 13pt;
