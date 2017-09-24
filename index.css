@@ -5,7 +5,7 @@ body				{ font-size: 13pt;
 				  font-weight: 300;
 				  line-height: 17pt; }
 a				{ text-decoration: none; }
-body > header			{ padding: 1.8em 0;
+body > header			{ padding: 1.5em 0;
 				  text-align: center;
 				  font-size: 36pt;
 				  line-height: 36pt;
@@ -16,7 +16,7 @@ h1, h2				{ font-size: inherit;
 				  margin: 0; 
 				  font-weight: normal;
 				  text-shadow: 0 0 1px #fff; }
-body > nav			{ background-color: #666; 
+body > nav			{ background-color: #336699; 
 				  font-size: 14pt;
 				  padding: 24pt 20%; }
 body > nav div			{ margin: 2em 0; 
@@ -83,11 +83,7 @@ body > nav			{ padding: 12pt 2%; }
 body > nav div			{ margin: 1em 0; }
 body > nav div.logo		{ font-size: 16pt; 
 				  margin-bottom: 0.5em; }
-}
-
-@media only screen and (max-width: 360px), only screen and (max-device-width: 360px) {
 body > header			{ font-size: 24pt; 
-				  line-height: 24pt; }
-article .intro			{ font-size: 13pt;
-				  line-height: 17pt; }
+			 	  padding: 1em 0;
+				  line-height: 28pt; }
 }
