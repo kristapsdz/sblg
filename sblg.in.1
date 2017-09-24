@@ -416,18 +416,22 @@ the permanent link is set to the article name, so if you specify an XML
 file, it will be to an XML file!
 .Pp
 The navigation element may contain several attributes.
-The Boolean
-.Li data-sbgl-navcontent
-and
-.Li data-sbgl-navxml
-attributes make the mark-up content of the
+.Bl -tag -width Ds
+.It Li data-sbgl-navcontent
+This Boolean attribute makes the mark-up content of the
 .Li <nav>
-be processed as specified in
-.Sx Tag Symbols .
+to be reproduced within an unordered list item for each article shown,
+replacing
+.Sx Tag Symbols
+for the current article.
 If not specified,
 .Nm
-populates the list with article title text in a link and the publication
-date.
+populates an unordered list with article title text in a link and the
+publication date.
+.Li data-sbgl-navxml
+Like
+.Li data-sblg-navcontent ,
+but without the surrounding list elements.
 The
 .Li data-sbgl-navxml
 attribute does not print any additional
@@ -436,14 +440,14 @@ attribute does not print any additional
 or
 .Li <li>
 HTML tags and can be used to generate custom XML files, such as sitemaps.
+.It Li data-sblg-navsz
 If the
 .Li <nav>
-element contains a positive integer
-.Li data-sblg-navsz
-attribute, this is used to limit the number of navigation entries.
-Finally, if the
-.Li data-sblg-navtag
-is specified, only articles with matching tags are shown.
+element contains this attribute with a positive integer, it is used to
+limit the number of navigation entries.
+.It Li data-sblg-navtag
+If this attribute is specified, only articles with matching tags are
+shown.
 You can specify multiple space-separated tags, for instance,
 .Li data-sblg-navtag="foo bar"
 will search for foo or bar.
@@ -452,12 +456,18 @@ Tags to be matched against are extracted from the space-separated
 element of each article's topmost
 .Li <article>
 element.
-Lastly, the
-.Li data-sblg-navstart
-attribute specifies how many articles will skip being displayed (so if
-you have tags, it will only account for articles that would meet those
-tags) before showing the first navigation entry.
+.It Li data-sblg-navstart
+The attribute specifies how many articles will skip being displayed (so
+if you have tags, it will only account for articles that would meet
+those tags) before showing the first navigation entry.
 This starts at one (a value of zero is the same as a value of one).
+.It Li data-sblg-navsort
+Overrides the global search order given with
+.Fl s .
+Uses the same names.
+If the search name is not recognised, the attribute is silently ignored
+and the global search order used.
+.El
 .Pp
 The article element may contain only the
 .Li data-sblg-articletag
