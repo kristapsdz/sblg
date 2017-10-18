@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#ifdef HAVE_PLEDGE
+#if HAVE_PLEDGE
 # include <unistd.h> /* pledge */
 #endif
 
