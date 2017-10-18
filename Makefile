@@ -5,13 +5,7 @@ include Makefile.configure
 VERSION 	 = 0.4.6
 VDATE 		 = 2017-09-23
 CFLAGS		+= -DVERSION=\"$(VERSION)\"
-COMPAT_OBJS	 = compat_err.o \
-		   compat_progname.o \
-		   compat_reallocarray.o \
-		   compat_strlcat.o \
-		   compat_strlcpy.o \
-		   compat_strtonum.o
-OBJS		 = $(COMPAT_OBJS) \
+OBJS		 = compats.o \
 		   main.o \
 		   compile.o \
 		   linkall.o \
@@ -36,17 +30,8 @@ SRCS		 = $(COMPAT_SRCS) \
 		   atom.c \
 		   article.c \
 		   json.c \
-		   listtags.c
-TESTS 		 = test-PATH_MAX.c \
-		   test-capsicum.c \
-		   test-err.c \
-		   test-pledge.c \
-		   test-progname.c \
-		   test-reallocarray.c \
-		   test-sandbox_init.c \
-		   test-strlcat.c \
-		   test-strlcpy.c \
-		   test-strtonum.c
+		   listtags.c \
+		   tests.c
 ARTICLES 	 = article1.html \
 	 	   article2.html \
 	 	   article4.html \
@@ -72,7 +57,7 @@ XMLGENS 	 = article.xml index.xml
 HTMLS 		 = $(ARTICLES) index.html archive.html sblg.1.html
 CSSS 		 = article.css index.css mandoc.css
 MDS		 = article10.md
-SHAREDIR	 = $(PREFIX)/share/sblg
+DATADIR	 	 = $(SHAREDIR)/sblg
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 DOTAR 		 = Makefile \
 		   $(XMLS) \
@@ -83,8 +68,7 @@ DOTAR 		 = Makefile \
 		   sblg.in.1 \
 		   sblg.h \
 		   schema.json \
-		   extern.h \
-		   $(TESTS)
+		   extern.h
 
 all: sblg sblg.a sblg.1
 
@@ -97,7 +81,7 @@ sblg.a: $(OBJS)
 www: $(HTMLS) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512
 
 sblg.1: sblg.in.1
-	sed "s!@SHAREDIR@!$(SHAREDIR)!g" sblg.in.1 >$@
+	sed "s!@SHAREDIR@!$(DATADIR)!g" sblg.in.1 >$@
 
 installwww: www
 	mkdir -p $(WWWDIR)
@@ -110,11 +94,11 @@ installwww: www
 
 install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
-	mkdir -p $(DESTDIR)$(SHAREDIR)
+	mkdir -p $(DESTDIR)$(DATADIR)
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	install -m 0755 sblg $(DESTDIR)$(BINDIR)
 	install -m 0444 sblg.1 $(DESTDIR)$(MANDIR)/man1
-	install -m 0444 schema.json $(DESTDIR)$(SHAREDIR)
+	install -m 0444 schema.json $(DESTDIR)$(DATADIR)
 
 sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/
