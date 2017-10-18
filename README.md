@@ -31,8 +31,9 @@ examples.
 sblg works out-of-the-box with modern UNIX systems.
 Simply download the latest version's [source
 archive](http://kristaps.bsd.lv/sblg/snapshots/sblg.tar.gz) (or download
-the project from GitHub), compile with `make`, then `sudo make install`
-(or `doas make install`, if you're on OpenBSD).
+the project from GitHub), configure with `./configure`, compile with
+`make`, then `sudo make install` (or `doas make install`, if you're on
+OpenBSD).
 
 ## License
 
