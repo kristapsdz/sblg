@@ -2,7 +2,7 @@
 
 [sblg](http://kristaps.bsd.lv/sblg) is a utility for creating static
 blogs. 
-It knits a articles together with templates, generating static HTML
+It knits articles together with templates, generating static HTML
 files, Atom feeds, and JSON files.
 It's built for use with `make`-style build environments insofar as a
 blog depends upon articles.
