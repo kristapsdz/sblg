@@ -2,7 +2,7 @@
 
 include Makefile.configure
 
-VERSION 	 = 0.4.7
+VERSION 	 = 0.4.8
 VDATE 		 = 2017-10-18
 CFLAGS		+= -DVERSION=\"$(VERSION)\"
 OBJS		 = compats.o \
@@ -15,13 +15,7 @@ OBJS		 = compats.o \
 		   article.o \
 		   json.o \
 		   listtags.o
-COMPAT_SRCS	 = compat_err.c \
-		   compat_progname.c \
-		   compat_reallocarray.c \
-		   compat_strlcat.c \
-		   compat_strlcpy.c \
-		   compat_strtonum.c
-SRCS		 = $(COMPAT_SRCS) \
+SRCS		 = compats.c \
 		   main.c \
 		   compile.c \
 		   linkall.c \
