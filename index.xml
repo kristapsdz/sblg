@@ -77,7 +77,7 @@
 				</p>
 				<p>
 					To get started, download <a itemprop="downloadURL" href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
-						href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, and run <code class="prettyprint
+						href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, run <code class="prettyprint
 						lang-sh">./configure</code> then <code class="prettyprint lang-sh">make install</code>.
 					The current version is <span itemprop="softwareVersion">@VERSION@</span>, released on <time
 						itemprop="dateModified" datetime="@VDATE@">@VDATE@</time>.  
