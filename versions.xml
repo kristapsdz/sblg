@@ -520,4 +520,17 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.10</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2017-10-28">2017-10-28</time>
+		</header>
+		<aside>
+			<p>
+				Bump to latest <a href="https://github.com/kristapsdz/oconfigure">oconfigure</a>.
+				Fix up some documentation as noted by Johan Huldtgren&#8212;thanks!
+			</p>
+		</aside>
+	</article>
 </articles>
