@@ -306,7 +306,8 @@ This tag may only be specified on the article element and specifies one
 or more space-separated languages for the document.
 You can escape spaces with a backslash
 .Pq Dq \e
-if you have spaces in the tag name.
+if you have spaces in the tag name, e.g.,
+.Dq foo\e bar .
 These languages are removed in the
 .Dq stripping
 operations for the
@@ -338,7 +339,8 @@ This tag may be specified on any element within the article and consists
 of space-separated tag names.
 You can escape spaces with a backslash
 .Pq Dq \e
-if you have spaces in the tag name.
+if you have spaces in the tag name, e.g.,
+.Dq foo\e bar .
 These tags are extracted for navigation tag operation.
 It may not contain any tabs.
 .El
@@ -456,6 +458,10 @@ Tags to be matched against are extracted from the space-separated
 element of each article's topmost
 .Li <article>
 element.
+You can escape spaces with a backslash
+.Pq Dq \e
+if you have spaces in the tag name, e.g.,
+.Dq foo\e bar .
 .It Li data-sblg-navstart
 The attribute specifies how many articles will skip being displayed (so
 if you have tags, it will only account for articles that would meet
