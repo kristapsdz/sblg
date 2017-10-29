@@ -1,9 +1,9 @@
 html, body			{ margin: 0;
 				  padding: 0; }
 body				{ color: #333; 
-				  font-size: 13pt; 
-				  font-family: "Alegreya sans", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif; 
-				  font-weight: 300; 
+				  font-size: 14pt; 
+				  font-family: "Alegreya sans", sans-serif; 
+				  font-weight: 400; 
 				  background-color: #eee; }
 a				{ text-decoration: none; }
 aside				{ display: none; }
@@ -31,23 +31,24 @@ p.code				{ background-color: #eeeeee;
 p.code > code.tab		{ padding-left: 4ex; }
 p.code > code.dtab		{ padding-left: 8ex; }
 p.code > code			{ display: block; }
-.name				{ font-weight: bolder; }
+.name				{ font-weight: 500; }
 body > header			{ padding: 1em 20%;
 				  color: #dddddd;
 				  background-color: #336699; }
+strong, b			{ font-weight: 500; }
 body > header h1		{ margin: 0;
 				  color: #aaa;
 				  font-size: 24pt;
-				  font-weight: 300; }
+				  font-weight: inherit; }
 body > header h1 a		{ color: #fff; }
 body > header div		{ display: inline; }
 article[data-sblg-article] header h2
-				{ font-weight: 400;
+				{ font-weight: 500;
 				  font-size: 18pt; }
 article[data-sblg-article] header address,
 article[data-sblg-article] header time
 				{ color: #666666; 
-				  font-weight: 400; }
+				  font-weight: 500; }
 .noshow				{ display: none; }
 div.version			{ color: #333333;
 				  background-color: #dddddd;
