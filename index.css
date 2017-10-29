@@ -1,6 +1,6 @@
 body, html			{ height: 100%;
 				  margin: 0; }
-body				{ font-size: 13pt; 
+body				{ font-size: 14pt; 
 				  font-family: "Alegreya sans", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif; 
 				  font-weight: 400;
 				  line-height: 17pt; }
@@ -14,7 +14,7 @@ body > header h1,
 body > header h2		{ color: #555; }
 h1, h2				{ font-size: inherit; 
 				  margin: 0; 
-				  font-weight: 500;
+				  font-weight: 400;
 				  text-shadow: 0 0 1px #fff; }
 body > nav			{ background-color: #336699; 
 				  font-size: 14pt;
@@ -58,6 +58,7 @@ nav[data-sblg-nav] li > div:last-child
 nav[data-sblg-nav] i[class~="fa-clock-o"]
 				{ font-size: 11pt; }
 code				{ font-size: smaller; }
+strong, b			{ font-weight: 500; }
 div.prettyprint			{ font-size: smaller; 
 				  line-height: 14pt;
 				  padding: 0 20%; }
