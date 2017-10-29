@@ -2,7 +2,7 @@ body, html			{ height: 100%;
 				  margin: 0; }
 body				{ font-size: 13pt; 
 				  font-family: "Alegreya sans", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif; 
-				  font-weight: 300;
+				  font-weight: 400;
 				  line-height: 17pt; }
 a				{ text-decoration: none; }
 body > header			{ padding: 1.5em 0;
@@ -14,7 +14,7 @@ body > header h1,
 body > header h2		{ color: #555; }
 h1, h2				{ font-size: inherit; 
 				  margin: 0; 
-				  font-weight: normal;
+				  font-weight: 500;
 				  text-shadow: 0 0 1px #fff; }
 body > nav			{ background-color: #336699; 
 				  font-size: 14pt;
