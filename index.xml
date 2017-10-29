@@ -7,13 +7,14 @@
 		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 		<link href="atom.xml" type="application/atom+xml" rel="alternate" title="sblg Article and Version Feed" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:300,300italic,400" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
 		<link rel="stylesheet" href="index.css" />
 	</head>
 	<body itemscope="itemscope" itemtype="http://schema.org/SoftwareApplication">
 		<nav>
 			<div>
-				<a href="https://www.bsd.lv">BSD.lv</a> tools for text processing: 
+				<a href="https://www.bsd.lv">BSD.lv</a> 
+				<span itemprop="applicationCategory">tools for text processing</span>: 
 				<a href="https://kristaps.bsd.lv/lowdown">lowdown</a>,
 				<a href="https://kristaps.bsd.lv/sblg">sblg</a>,
 				<a href="https://mandoc.bsd.lv">mandoc</a>
@@ -21,7 +22,7 @@
 			<div class="logo">
 				sblg <span>&#8211; simple off-line blog utility</span>
 			</div>
-			<a id="nav-gears" href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
+			<a id="nav-gears" itemprop="downloadURL" href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
 			<a id="nav-lock" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
 			<a id="nav-file" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
 			<a id="nav-rss" href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
@@ -55,7 +56,8 @@
 					source code.
 					No <a href="https://daringfireball.net/projects/markdown/">markdown</a> (<a href="article10.html">unless&#8230;</a>), no <q>CMS</q>, no CGI,
 					no PHP.
-					Just a simple tool for pulling data from articles and populating templates.
+					Just a simple <span itemprop="operatingSystem">UNIX</span> tool for pulling data from articles and
+					populating templates.
 					<a href="sblg.1.html">sblg(1)</a> is an <a href="http://opensource.org/licenses/ISC"
 						rel="license">open source</a> ISO C utility that depends only on <a
 						href="http://expat.sourceforge.net/">libexpat</a>.
@@ -76,7 +78,7 @@
 					This page itself was created with <a href="sblg.1.html">sblg(1)</a> in <q>amalgamation mode</q>.
 				</p>
 				<p>
-					To get started, download <a itemprop="downloadURL" href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
+					To get started, download <a href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
 						href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, run <code class="prettyprint
 						lang-sh">./configure</code> then <code class="prettyprint lang-sh">make install</code>.
 					The current version is <span itemprop="softwareVersion">@VERSION@</span>, released on <time
@@ -200,7 +202,9 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 		<footer>
 			<div>
 				&#169; 2013&#8211;2017, 
-				<a rel="author" href="https://github.com/kristapsdz">Kristaps Dzonsons</a>
+				<a itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person" rel="author" href="https://github.com/kristapsdz">
+					<span itemprop="name">Kristaps Dzonsons</span>
+				</a>
 			</div>
 			<nav>
 				<a href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
