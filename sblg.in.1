@@ -430,18 +430,17 @@ If not specified,
 .Nm
 populates an unordered list with article title text in a link and the
 publication date.
-.Li data-sbgl-navxml
-Like
-.Li data-sblg-navcontent ,
-but without the surrounding list elements.
-The
-.Li data-sbgl-navxml
-attribute does not print any additional
-.Li <nav> ,
-.Li <ul> ,
-or
-.Li <li>
-HTML tags and can be used to generate custom XML files, such as sitemaps.
+.It Li data-sblg-navsort
+Overrides the global search order given with
+.Fl s .
+Uses the same names.
+If the search name is not recognised, the attribute is silently ignored
+and the global search order used.
+.It Li data-sblg-navstart
+The attribute specifies how many articles will skip being displayed (so
+if you have tags, it will only account for articles that would meet
+those tags) before showing the first navigation entry.
+This starts at one (a value of zero is the same as a value of one).
 .It Li data-sblg-navsz
 If the
 .Li <nav>
@@ -462,17 +461,18 @@ You can escape spaces with a backslash
 .Pq Dq \e
 if you have spaces in the tag name, e.g.,
 .Dq foo\e bar .
-.It Li data-sblg-navstart
-The attribute specifies how many articles will skip being displayed (so
-if you have tags, it will only account for articles that would meet
-those tags) before showing the first navigation entry.
-This starts at one (a value of zero is the same as a value of one).
-.It Li data-sblg-navsort
-Overrides the global search order given with
-.Fl s .
-Uses the same names.
-If the search name is not recognised, the attribute is silently ignored
-and the global search order used.
+.It Li data-sbgl-navxml
+Like
+.Li data-sblg-navcontent ,
+but without the surrounding list elements.
+The
+.Li data-sbgl-navxml
+attribute does not print any additional
+.Li <nav> ,
+.Li <ul> ,
+or
+.Li <li>
+HTML tags and can be used to generate custom XML files, such as sitemaps.
 .El
 .Pp
 The article element may contain only the
