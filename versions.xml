@@ -533,4 +533,18 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.11</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2017-11-10">2017-11-10</time>
+		</header>
+		<aside>
+			<p>
+				Bump to latest <a href="https://github.com/kristapsdz/oconfigure">oconfigure</a>.
+				Fix up some documentation.
+				No code change.
+			</p>
+		</aside>
+	</article>
 </articles>
