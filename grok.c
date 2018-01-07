@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 
 #include <assert.h>
+#include <ctype.h>
 #if HAVE_ERR
 # include <err.h>
 #endif
@@ -257,6 +258,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct parse	 *arg = dat;
 	const XML_Char	**attp;
+	const XML_Char	 *atcp;
 	struct tm	  tm;
 	char		 *erp;
 	size_t		  sz;
@@ -292,10 +294,13 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		for (attp = atts; NULL != *attp; attp += 2) {
 			if (strcasecmp(attp[0], "datetime"))
 				continue;
+			atcp = attp[1];
+			while (isspace((unsigned char)*atcp))
+				atcp++;
 			memset(&tm, 0, sizeof(struct tm));
-			sz = strlen(attp[1]);
+			sz = strlen(atcp);
 			if (10 == sz) {
-				erp = strptime(attp[1], "%F", &tm);
+				erp = strptime(atcp, "%F", &tm);
 				if (NULL == erp || '\0' != *erp) {
 					logerrx(arg, "malformed "
 						"ISO 3339 date");
@@ -303,7 +308,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				}
 				arg->article->isdatetime = 0;
 			} else if (20 == sz) {
-				erp = strptime(attp[1], "%FT%TZ", &tm);
+				erp = strptime(atcp, "%FT%TZ", &tm);
 				if (NULL == erp || '\0' != *erp) {
 					logerrx(arg, "malformed "
 						"ISO 3339 datetime");
