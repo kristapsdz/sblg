@@ -547,4 +547,16 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.12</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2018-01-08">2018-01-08</time>
+		</header>
+		<aside>
+			<p>
+				Allow for white-space around date processing in the input document's <code>&lt;time&gt;</code> element.
+			</p>
+		</aside>
+	</article>
 </articles>
