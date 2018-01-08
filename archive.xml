@@ -18,7 +18,9 @@
 		</header>
 		<div class="version">
 			<div>
-				<span>Version @VERSION@, @VDATE@</span>
+				<nav data-sblg-nav="1" data-sblg-navxml="1" data-sblg-navsz="1" data-sblg-navtag="version">
+					<span>Version ${sblg-titletext}, ${sblg-date}</span>
+				</nav>
 				<a title="Source package" href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
 				<a title="Source fingerprint" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
 				<a title="Source archive" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>

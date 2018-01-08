@@ -2,8 +2,7 @@
 
 include Makefile.configure
 
-VERSION 	 = 0.4.11
-VDATE 		 = 2017-11-10
+VERSION 	 = 0.4.12
 CFLAGS		+= -DVERSION=\"$(VERSION)\"
 OBJS		 = compats.o \
 		   main.o \
@@ -113,23 +112,19 @@ atom.xml: atom-template.xml
 $(ARTICLES): article.xml
 
 index.html: index.xml $(ARTICLES) versions.xml
-	./sblg -o- -t index.xml $(ARTICLES) versions.xml | \
-		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
+	./sblg -o- -t index.xml $(ARTICLES) versions.xml >$@
 
 archive.html: archive.xml $(ARTICLES) versions.xml
-	./sblg -o- -t archive.xml $(ARTICLES) versions.xml | \
-		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
+	./sblg -o- -t archive.xml $(ARTICLES) versions.xml >$@
 
 atom.xml: $(ARTICLES) versions.xml
 	./sblg -o $@ -a $(ARTICLES) versions.xml
 
 .xml.html:
-	./sblg -o- -t article.xml -c $< | \
-		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
+	./sblg -o- -t article.xml -c $< >$@
 
-article9.html: $(ARTICLEXMLS)
-	./sblg -o- -t article.xml -C article9.xml $(ARTICLEXMLS) | \
-		sed -e "s!@VERSION@!$(VERSION)!g" -e "s!@VDATE@!$(VDATE)!g" >$@
+$(ARTICLES): versions.xml
+	./sblg -o- -t article.xml -C $< $< versions.xml >$@
 
 .1.1.html:
 	mandoc -Ostyle=mandoc.css -Thtml $< >$@

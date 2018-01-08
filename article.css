@@ -54,7 +54,7 @@ div.version			{ color: #333333;
 				  background-color: #dddddd;
 				  border-bottom: thin solid #aaaaaa;
 				  padding: 1em 20%; }
-div.version > div > span	{ border-right: thin solid #aaaaaa; 
+div.version > div span		{ border-right: thin solid #aaaaaa; 
 				  margin-right: 0.75ex; 
 				  padding-right: 1ex; }
 div.version > div > a		{ color: #333;  

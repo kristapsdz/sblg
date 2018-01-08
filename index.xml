@@ -81,8 +81,10 @@
 					To get started, download <a href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
 						href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, run <code class="prettyprint
 						lang-sh">./configure</code> then <code class="prettyprint lang-sh">make install</code>.
-					The current version is <span itemprop="softwareVersion">@VERSION@</span>, released on <time
-						itemprop="dateModified" datetime="@VDATE@">@VDATE@</time>.  
+					<nav data-sblg-nav="1" data-sblg-navxml="1" data-sblg-navsz="1" data-sblg-navtag="version">
+						The current version is <span itemprop="softwareVersion">${sblg-titletext}</span>, released on <time
+							itemprop="dateModified" datetime="${sblg-datetime}">${sblg-date}</time>.  
+					</nav>
 					The repository is mirrored on <a href="https://github.com/kristapsdz/sblg">GitHub</a>, if that's
 					easier for you.
 					There's also a <a href="https://brew.sh">Homebrew</a> formula in 
