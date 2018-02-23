@@ -265,6 +265,7 @@ runtest seccomp-filter	SECCOMP_FILTER			  || true
 runtest SOCK_NONBLOCK	SOCK_NONBLOCK			  || true
 runtest strlcat		STRLCAT				  || true
 runtest strlcpy		STRLCPY				  || true
+runtest strndup		STRNDUP				  || true
 runtest strtonum	STRTONUM			  || true
 runtest systrace	SYSTRACE			  || true
 runtest zlib		ZLIB		"" "-lz"	  || true
@@ -418,6 +419,10 @@ fi
 
 if [ ${HAVE_STRLCPY} -eq 0 ]; then
 	echo "extern size_t strlcpy(char *, const char *, size_t);"
+fi
+
+if [ ${HAVE_STRNDUP} -eq 0 ]; then
+	echo "extern char *strndup(const char *, size_t);"
 fi
 
 if [ ${HAVE_STRTONUM} -eq 0 ]; then
