@@ -300,7 +300,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			memset(&tm, 0, sizeof(struct tm));
 			sz = strlen(atcp);
 			if (10 == sz) {
-				erp = strptime(atcp, "%F", &tm);
+				erp = strptime(atcp, "%Y-%m-%d", &tm);
 				if (NULL == erp || '\0' != *erp) {
 					logerrx(arg, "malformed "
 						"ISO 3339 date");
@@ -308,7 +308,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				}
 				arg->article->isdatetime = 0;
 			} else if (20 == sz) {
-				erp = strptime(atcp, "%FT%TZ", &tm);
+				erp = strptime(atcp, "%Y-%m-%dT%TZ", &tm);
 				if (NULL == erp || '\0' != *erp) {
 					logerrx(arg, "malformed "
 						"ISO 3339 datetime");
