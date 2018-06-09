@@ -204,7 +204,7 @@ nav_end(void *dat, const XML_Char *s)
 			xmltextx(arg->f, arg->nav, arg->dst,
 				arg->sargs, arg->sposz, k);
 		} else if ( ! arg->navuse || 0 == arg->navsz) {
-			(void)strftime(buf, sizeof(buf), "%F", 
+			(void)strftime(buf, sizeof(buf), "%Y-%m-%d", 
 				localtime(&arg->sargs[k].time));
 			xmlopen(arg->f, "li", NULL);
 			fputs(buf, arg->f);

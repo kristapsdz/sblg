@@ -98,11 +98,11 @@ atomprint(FILE *f, const struct atom *arg, int altlink,
 
 	tm = gmtime(&src->time);
 
-	strftime(buf, sizeof(buf), "%F", tm);
+	strftime(buf, sizeof(buf), "%Y-%m-%d", tm);
 	fprintf(f, "<id>tag:%s,%s:%s/%s</id>\n", 
 		arg->domain, buf, arg->path, src->src);
 
-	strftime(buf, sizeof(buf), "%FT%TZ", tm);
+	strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
 	fprintf(f, "<updated>%s</updated>\n", buf);
 
 	fprintf(f, "<title>%s</title>\n", src->titletext);
@@ -264,7 +264,7 @@ tmpl_begin(void *userdata,
 			time(NULL) :
 			arg->sargs[arg->spos].time;
 		tm = localtime(&t);
-		strftime(buf, sizeof(buf), "%FT%TZ", tm);
+		strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
 		fprintf(arg->f, "%s", buf);
 		arg->stack++;
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
