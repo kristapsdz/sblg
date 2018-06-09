@@ -505,11 +505,11 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		 */
 
 		if (STRCMP("sblg-date", 9)) {
-			strftime(buf, sizeof(buf), "%F", 
+			strftime(buf, sizeof(buf), "%Y-%m-%d", 
 				gmtime(&arts[artpos].time));
 			bufp = buf;
 		} else if (STRCMP("sblg-datetime", 13)) {
-			strftime(buf, sizeof(buf), "%FT%TZ", 
+			strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", 
 				gmtime(&arts[artpos].time));
 			bufp = buf;
 		} else if (STRCMP("sblg-datetime-fmt", 17)) {
