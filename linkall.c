@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013--2017 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013--2018 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -125,7 +125,7 @@ tagfind(char **tags, size_t tagsz, char **tagmap, size_t tagmapsz)
 		return(0);
 
 	for (i = 0; i < tagsz; i++) 
-		for (j = 0; j < tagmapsz; j++) 
+		for (j = 0; j < tagmapsz; j++)
 			if (0 == strcmp(tags[i], tagmap[j]))
 				return(1);
 
@@ -273,9 +273,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct linkall	 *arg = dat;
 	const XML_Char	**attp;
 	const XML_Char	 *sort = NULL;
-	char		**tags;
-	char		 *str, *tok, *tfr;
-	size_t		  i, tagsz;
+	char		**tags = NULL;
+	size_t		  i, tagsz = 0;
 
 	assert(0 == arg->stack);
 
@@ -376,6 +375,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	 * Only consider article elements if they contain the magic
 	 * data-sblg-article attribute.
 	 */
+
 	for (attp = atts; NULL != *attp; attp += 2) 
 		if (0 == strcasecmp(*attp, "data-sblg-article"))
 			break;
@@ -391,21 +391,13 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	 * "articletag" into an array of tags.
 	 * This attribute may happen multiple times.
 	 */
-	tags = NULL;
-	tagsz = 0;
-	for (attp = atts; NULL != *attp; attp += 2) {
-		if (strcasecmp(*attp, "data-sblg-articletag")) 
-			continue;
-		tfr = str = xstrdup(attp[1]);
-		while (NULL != (tok = strsep(&str, " \t"))) {
-			tags = xreallocarray(tags,
-				tagsz + 1, sizeof(char *));
-			tags[tagsz++] = xstrdup(tok);
-		}
-		free(tfr);
-	}
+
+	for (attp = atts; NULL != *attp; attp += 2)
+		if (0 == strcasecmp(*attp, "data-sblg-articletag"))
+			hashtag(&tags, &tagsz, attp[1]);
 
 	/* Look for the next article mathing the given tag. */
+
 	for ( ; arg->spos < arg->ssposz; arg->spos++)
 		if (tagfind(tags, tagsz, 
 		    arg->sargs[arg->spos].tagmap,
@@ -431,11 +423,13 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	/*
 	 * First throw away children, then push out the article itself.
 	 */
+
 	arg->stack++;
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 
 	/* Echo the formatted text of the article. */
+
 	xmltextx(arg->f, arg->sargs[arg->spos].article, 
 		arg->dst, arg->sargs, arg->sposz, arg->spos);
 	arg->spos++;
