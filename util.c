@@ -764,7 +764,7 @@ hashset(char ***map, size_t *sz, const char *key, const char *val)
  */
 void
 hashtag(char ***map, size_t *sz, const char *in,
-	const struct article *arts, size_t artsz, size_t artpos)
+	const struct article *arts, size_t artsz, ssize_t artpos)
 {
 	char	*start, *end, *cur, *tofree, *astart, *aend;
 	size_t	 i;
@@ -808,7 +808,7 @@ hashtag(char ***map, size_t *sz, const char *in,
 		 * IFF "arts" is non-NULL.
 		 */
 
-		if (NULL == arts ||
+		if (NULL == arts || artpos < 0 ||
 		    NULL == (astart = strstr(start, "${sblg-get|")) ||
 		    NULL == (aend = strchr(astart + 11, '}'))) {
 			(*map)[*sz] = xstrdup(start);
