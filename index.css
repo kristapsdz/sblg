@@ -1,9 +1,8 @@
 body, html			{ height: 100%;
 				  margin: 0; }
 body				{ font-size: 14pt; 
-				  font-family: "Alegreya sans", Calibri, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif; 
-				  font-weight: 400;
-				  line-height: 17pt; }
+				  font-family: "Alegreya sans", sans-serif; 
+				  font-weight: 400; }
 a				{ text-decoration: none; }
 body > header			{ padding: 1.5em 0;
 				  text-align: center;
@@ -56,7 +55,7 @@ nav[data-sblg-nav] li + li	{ margin-top: 1em; }
 nav[data-sblg-nav] li > div:last-child
 				{ padding: 4pt 12pt 0 12pt; }
 nav[data-sblg-nav] i[class~="fa-clock-o"]
-				{ font-size: 11pt; }
+				{ font-size: 8pt; }
 code				{ font-size: smaller; }
 strong, b			{ font-weight: 500; }
 div.prettyprint			{ font-size: smaller; 
