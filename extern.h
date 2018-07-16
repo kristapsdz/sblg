@@ -59,7 +59,7 @@ void	xmltextx(FILE *f, const XML_Char *s,
 		const char *, const struct article *, size_t, size_t);
 
 void	hashtag(char ***, size_t *, const char *,
-		const struct article *, size_t, size_t);
+		const struct article *, size_t, ssize_t);
 void	hashset(char ***, size_t *, const char *, const char *);
 
 void	*xcalloc(size_t, size_t);
