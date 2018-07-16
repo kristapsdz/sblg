@@ -16,6 +16,19 @@ main(void)
 	return (arc4random() + 1) ? 0 : 1;
 }
 #endif /* TEST_ARC4RANDOM */
+#if TEST_B64_NTOP
+#include <netinet/in.h>
+#include <resolv.h>
+
+int
+main(void)
+{
+	const char *src = "hello world";
+	char output[1024];
+
+	return b64_ntop((const unsigned char *)src, 11, output, sizeof(output)) > 0 ? 0 : 1;
+}
+#endif /* TEST_B64_NTOP */
 #if TEST_CAPSICUM
 #include <sys/capsicum.h>
 
@@ -293,6 +306,19 @@ main(void)
 	return(0 != strcmp(baz, "b"));
 }
 #endif /* TEST_STRNDUP */
+#if TEST_STRNLEN
+#include <string.h>
+
+int
+main(void)
+{
+	const char *foo = "bar";
+	size_t sz;
+
+	sz = strnlen(foo, 1);
+	return(1 != sz);
+}
+#endif /* TEST_STRNLEN */
 #if TEST_STRTONUM
 /*
  * Copyright (c) 2015 Ingo Schwarze <schwarze@openbsd.org>
