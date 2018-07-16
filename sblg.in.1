@@ -461,6 +461,14 @@ You can escape spaces with a backslash
 .Pq Dq \e
 if you have spaces in the tag name, e.g.,
 .Dq foo\e bar .
+You can also use
+.Li ${sblg-get|xxx}
+when in
+.Fl C
+or
+.Fl L
+mode to use the current article's set data as part of a string, e.g.,
+.Li location-${sblg-get|location} .
 .It Li data-sbgl-navxml
 Like
 .Li data-sblg-navcontent ,
@@ -481,7 +489,13 @@ attribute.
 This is similar in function to the
 .Li data-sblg-navtag
 attribute in limiting displayed articles to those matching the
-space-separated tags.
+space-separated tags or
+.Li ${sblg-get|xxx}
+in
+.Fl L
+or
+.Fl C
+mode.
 You may also set a Boolean
 .Li data-sblg-permlink
 attribute that stipulates whether the permanent link is specified.
