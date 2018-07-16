@@ -332,7 +332,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			} else if (0 == strcasecmp(attp[0], 
 					"data-sblg-navtag")) {
 				hashtag(&arg->navtags, 
-					&arg->navtagsz, attp[1]);
+					&arg->navtagsz, attp[1],
+					arg->sargs, arg->sposz, arg->single);
 			} else if (0 == strcasecmp(attp[0],
 					"data-sblg-navsort")) {
 				sort = attp[1];
@@ -394,7 +395,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	for (attp = atts; NULL != *attp; attp += 2)
 		if (0 == strcasecmp(*attp, "data-sblg-articletag"))
-			hashtag(&tags, &tagsz, attp[1]);
+			hashtag(&tags, &tagsz, attp[1],
+				arg->sargs, arg->sposz, arg->single);
 
 	/* Look for the next article mathing the given tag. */
 

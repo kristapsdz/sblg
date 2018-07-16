@@ -763,10 +763,12 @@ hashset(char ***map, size_t *sz, const char *key, const char *val)
  * Use this for data-sblg-navtags or data-sblg-tag.
  */
 void
-hashtag(char ***map, size_t *sz, const char *in)
+hashtag(char ***map, size_t *sz, const char *in,
+	const struct article *arts, size_t artsz, size_t artpos)
 {
-	char	*start, *end, *cur, *tofree;
+	char	*start, *end, *cur, *tofree, *astart, *aend;
 	size_t	 i;
+	int	 rc;
 
 	if ('\0' == in[0])
 		return;
@@ -800,7 +802,41 @@ hashtag(char ***map, size_t *sz, const char *in)
 			continue;
 
 		*map = xreallocarray(*map, *sz + 1, sizeof(char *));
-		(*map)[*sz] = xstrdup(start);
+
+		/*
+		 * We allow "sblg-get" invocations within these strings
+		 * IFF "arts" is non-NULL.
+		 */
+
+		if (NULL == arts ||
+		    NULL == (astart = strstr(start, "${sblg-get|")) ||
+		    NULL == (aend = strchr(astart + 11, '}'))) {
+			(*map)[*sz] = xstrdup(start);
+			(*sz)++;
+			continue;
+		} 
+
+		/* Terminate leading matter, terminate key. */
+
+		*astart = '\0';
+		astart += 11;
+		*aend++ = '\0';
+
+		/* Look up in setter map. */
+
+		for (i = 0; i < arts[artpos].setmapsz; i += 2) {
+			if (strcmp(arts[artpos].setmap[i], astart))
+				continue;
+			rc = asprintf(&(*map)[*sz], "%s%s%s", start,
+				arts[artpos].setmap[i + 1], aend);
+			if (rc < 0)
+				err(EXIT_FAILURE, NULL);
+			break;
+		}
+
+		if (i == arts[artpos].setmapsz)
+			asprintf(&(*map)[*sz], "%s%s", start, aend);
+
 		(*sz)++;
 	}
 

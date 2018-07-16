@@ -204,7 +204,8 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 			arg->flags |= PARSE_IMG;
 		} else if (0 == strcasecmp(*attp, "data-sblg-tags"))
 			hashtag(&arg->article->tagmap,
-				&arg->article->tagmapsz, attp[1]);
+				&arg->article->tagmapsz, attp[1],
+				NULL, 0, 0);
 	}
 }
 
