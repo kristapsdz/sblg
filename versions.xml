@@ -572,4 +572,20 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.14</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2018-07-16">2018-07-16</time>
+		</header>
+		<aside>
+			<p>
+				Allow for <code>data-sblg-navtag</code> and <code>data-sblg-articletag</code> to support an embedded
+				<code>${sblg-get|xxx}</code>.
+				This is useful for having a navigation list (in <b>-L</b> or <b>-C</b> mode) deriving from the page itself, such
+				as a <q>see also</q>.
+				Also bring up to date with newest <a href="https://github.com/kristapsdz/oconfigure">oconfigure</a>.
+			</p>
+		</aside>
+	</article>
 </articles>
