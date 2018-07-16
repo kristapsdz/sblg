@@ -1,7 +1,7 @@
 #! /bin/sh
 #
 # Copyright (c) 2014, 2015, 2016 Ingo Schwarze <schwarze@openbsd.org>
-# Copyright (c) 2017 Kristaps Dzonsons <kristaps@bsd.lv>
+# Copyright (c) 2017, 2018 Kristaps Dzonsons <kristaps@bsd.lv>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -14,6 +14,8 @@
 # WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+OCONFIGURE_VERSION="0.1.4"
 
 #
 # This script outputs two files: config.h and Makefile.configure.
@@ -82,7 +84,7 @@ INSTALL_DATA=
 # Allow certain variables to be overriden on the command line.
 #----------------------------------------------------------------------
 
-for keyvals in $@
+for keyvals in "$@"
 do
 	key=`echo $keyvals | cut -s -d '=' -f 1`
 	if [ -z "$key" ]
@@ -92,6 +94,8 @@ do
 	fi
 	val=`echo $keyvals | cut -d '=' -f 2-`
 	case "$key" in
+	LDADD)
+		LDADD="$val" ;;
 	LDFLAGS)
 		LDFLAGS="$val" ;;
 	CPPFLAGS)
@@ -128,6 +132,7 @@ done
 #----------------------------------------------------------------------
 
 HAVE_ARC4RANDOM=
+HAVE_B64_NTOP=
 HAVE_CAPSICUM=
 HAVE_ERR=
 HAVE_EXPLICIT_BZERO=
@@ -210,19 +215,28 @@ __HEREDOC__
 		return 1
 	fi
 
-	if ./test-${1} 1>&3 2>&3; then
-		echo "${1}: yes" 1>&2
-		echo "${1}: yes" 1>&3
-		echo 1>&3
-		eval HAVE_${2}=1
-		rm "test-${1}"
-		return 0
-	else
-		echo "${1}: execution failed with $?" 1>&3
-		echo 1>&3
-		rm "test-${1}"
-		return 1
-	fi
+	echo "${1}: yes" 1>&2
+	echo "${1}: yes" 1>&3
+	echo 1>&3
+	eval HAVE_${2}=1
+	rm "test-${1}"
+	return 0
+
+	# Don't actually run the test: none of our tests check for
+	# run-time behaviour.
+	# if ./test-${1} 1>&3 2>&3; then
+	# 	echo "${1}: yes" 1>&2
+	# 	echo "${1}: yes" 1>&3
+	# 	echo 1>&3
+	# 	eval HAVE_${2}=1
+	# 	rm "test-${1}"
+	# 	return 0
+	# else
+	# 	echo "${1}: execution failed with $?" 1>&3
+	# 	echo 1>&3
+	# 	rm "test-${1}"
+	# 	return 1
+	# fi
 }
 
 # Run a complete autoconfiguration test, including the check for
@@ -246,6 +260,7 @@ runtest() {
 #----------------------------------------------------------------------
 
 runtest arc4random	ARC4RANDOM			  || true
+runtest b64_ntop	B64_NTOP			  || true
 runtest capsicum	CAPSICUM			  || true
 runtest err		ERR				  || true
 runtest explicit_bzero	EXPLICIT_BZERO			  || true
@@ -266,6 +281,7 @@ runtest SOCK_NONBLOCK	SOCK_NONBLOCK			  || true
 runtest strlcat		STRLCAT				  || true
 runtest strlcpy		STRLCPY				  || true
 runtest strndup		STRNDUP				  || true
+runtest strnlen		STRNLEN				  || true
 runtest strtonum	STRTONUM			  || true
 runtest systrace	SYSTRACE			  || true
 runtest zlib		ZLIB		"" "-lz"	  || true
@@ -308,8 +324,12 @@ __HEREDOC__
   ${HAVE_RECALLOCARRAY} -eq 0 -o \
   ${HAVE_STRLCAT} -eq 0 -o \
   ${HAVE_STRLCPY} -eq 0 -o \
-  ${HAVE_STRNDUP} -eq 0 ] \
+  ${HAVE_STRNDUP} -eq 0 -o \
+  ${HAVE_STRNLEN} -eq 0 ] \
 	&& echo "#include <sys/types.h>"
+
+[ ${HAVE_ERR} -eq 0 ] \
+	&& echo "#include <stdarg.h>"
 
 # Now we handle our HAVE_xxxx values.
 # Most will just be defined as 0 or 1.
@@ -322,6 +342,7 @@ __HEREDOC__
 
 cat << __HEREDOC__
 #define HAVE_ARC4RANDOM ${HAVE_ARC4RANDOM}
+#define HAVE_B64_NTOP ${HAVE_B64_NTOP}
 #define HAVE_CAPSICUM ${HAVE_CAPSICUM}
 #define HAVE_ERR ${HAVE_ERR}
 #define HAVE_EXPLICIT_BZERO ${HAVE_EXPLICIT_BZERO}
@@ -342,6 +363,7 @@ cat << __HEREDOC__
 #define HAVE_STRLCAT ${HAVE_STRLCAT}
 #define HAVE_STRLCPY ${HAVE_STRLCPY}
 #define HAVE_STRNDUP ${HAVE_STRNDUP}
+#define HAVE_STRNLEN ${HAVE_STRNLEN}
 #define HAVE_STRTONUM ${HAVE_STRTONUM}
 #define HAVE_SYSTRACE ${HAVE_SYSTRACE}
 #define HAVE_ZLIB ${HAVE_ZLIB}
@@ -355,6 +377,8 @@ if [ ${HAVE_ERR} -eq 0 ]; then
 	echo "extern void errx(int, const char *, ...);"
 	echo "extern void warn(const char *, ...);"
 	echo "extern void warnx(const char *, ...);"
+	echo "extern void vwarn(const char *, va_list);"
+	echo "extern void vwarnx(const char *, va_list);"
 fi
 
 if [ ${HAVE_MD5} -eq 0 ]; then
@@ -425,6 +449,10 @@ fi
 
 if [ ${HAVE_STRNDUP} -eq 0 ]; then
 	echo "extern char *strndup(const char *, size_t);"
+fi
+
+if [ ${HAVE_STRNLEN} -eq 0 ]; then
+	echo "extern size_t strnlen(const char *, size_t);"
 fi
 
 if [ ${HAVE_STRTONUM} -eq 0 ]; then
