@@ -520,7 +520,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		} else if (STRCMP("sblg-pos", 8)) {
 			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
 			bufp = buf;
-		} else if (STRCMP("sblg-get", 8))
+		} else if (STRCMP("sblg-get", 8)) {
 			for (i = 0; i < arts[artpos].setmapsz; i += 2) {
 				asz = strlen(arts[artpos].setmap[i]);
 				/* Ugly and slow, but effective. */
@@ -531,12 +531,27 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 					break;
 				}
 			}
+		} else if (STRCMP("sblg-has", 8)) {
+			for (i = 0; i < arts[artpos].setmapsz; i += 2) {
+				asz = strlen(arts[artpos].setmap[i]);
+				/* Ugly and slow, but effective. */
+				if (asz == argsz && 0 == memcmp
+				    (arts[artpos].setmap[i], 
+				     arg, argsz)) {
+					bufp = arg;
+					break;
+				}
+			}
+		}
 
 		if (STRCMP("sblg-base", 9))
 			fputs(arts[artpos].base, f);
 		else if (STRCMP("sblg-get", 8))
 			fputs(bufp, f);
-		else if (STRCMP("sblg-tags", 9))
+		else if (STRCMP("sblg-has", 8)) {
+			if ('\0' != *bufp)
+				fprintf(f, "sblg-has-%.*s", (int)argsz, arg);
+		} else if (STRCMP("sblg-tags", 9))
 			taglist(f, &arts[artpos], arg, argsz);
 		else if (STRCMP("sblg-stripbase", 14))
 			fputs(arts[artpos].stripbase, f);
