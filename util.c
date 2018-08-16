@@ -549,7 +549,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-get", 8))
 			fputs(bufp, f);
 		else if (STRCMP("sblg-has", 8)) {
-			if ('\0' != *bufp)
+			if (NULL != bufp && '\0' != *bufp)
 				fprintf(f, "sblg-has-%.*s", (int)argsz, arg);
 		} else if (STRCMP("sblg-tags", 9))
 			taglist(f, &arts[artpos], arg, argsz);
