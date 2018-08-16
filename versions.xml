@@ -588,4 +588,23 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.15</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2018-08-16">2018-08-16</time>
+		</header>
+		<aside>
+			<p>
+				Introduce <code>${sblg-has|key}</code>, which tests whether <code>key</code> has been set (e.g.,
+				<code>data-sblg-set-key=foo</code>).
+				If it has been set, emits <code>sblg-has-key</code>, or nothing otherwise.
+				This is useful for classes whose children will be masked depending upon the existence of a key.
+			</p>
+			<p>
+				Properly show dates in UTC instead of localtime.
+				(Unless asking for localtime.)
+			</p>
+		</aside>
+	</article>
 </articles>
