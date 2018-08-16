@@ -263,7 +263,7 @@ tmpl_begin(void *userdata,
 		t = arg->sposz <= arg->spos ?
 			time(NULL) :
 			arg->sargs[arg->spos].time;
-		tm = localtime(&t);
+		tm = gmtime(&t);
 		strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
 		fprintf(arg->f, "%s", buf);
 		arg->stack++;
