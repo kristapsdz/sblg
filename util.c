@@ -461,7 +461,8 @@ taglist(FILE *f, const struct article *art, const char *arg, size_t argsz)
  */
 void
 xmltextx(FILE *f, const XML_Char *s, const char *url, 
-	const struct article *arts, size_t artsz, size_t artpos)
+	const struct article *arts, size_t artsz, size_t artpos, 
+	size_t realpos)
 {
 	const char	*cp, *start, *end, *arg, *bufp;
 	char		 buf[32];
@@ -518,6 +519,9 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 				localtime(&arts[artpos].time));
 			bufp = buf;
 		} else if (STRCMP("sblg-pos", 8)) {
+			snprintf(buf, sizeof(buf), "%zu", realpos + 1);
+			bufp = buf;
+		} else if (STRCMP("sblg-abspos", 11)) {
 			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
 			bufp = buf;
 		} else if (STRCMP("sblg-get", 8)) {
@@ -601,6 +605,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			fputs(bufp, f);
 		else if (STRCMP("sblg-pos", 8))
 			fputs(bufp, f);
+		else if (STRCMP("sblg-abspos", 11))
+			fputs(bufp, f);
 		else if (STRCMP("sblg-aside", 10))
 			fputs(arts[artpos].aside, f);
 		else if (STRCMP("sblg-asidetext", 14))
@@ -634,7 +640,7 @@ xmlopensx(FILE *f, const XML_Char *s,
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
-		xmltextx(f, atts[1], url, art, artsz, artpos);
+		xmltextx(f, atts[1], url, art, artsz, artpos, 0);
 		fputc('"', f);
 	}
 	if (xmlvoid(s))

@@ -77,7 +77,7 @@ tmpl_end(void *dat, const XML_Char *s)
 
 	if (-1 != arg->single) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
-			arg->sargs, arg->sposz, arg->single);
+			arg->sargs, arg->sposz, arg->single, 0);
 		xmlstrflush(arg->buf, &arg->bufsz);
 	}
 
@@ -136,7 +136,7 @@ static void
 nav_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
-	size_t		 i, j, k;
+	size_t		 i, k;
 	char		 buf[32]; 
 	int		 rc;
 	struct article	*sv = NULL;
@@ -187,22 +187,32 @@ nav_end(void *dat, const XML_Char *s)
 		i += 0 != rc;
 	}
 
+	/* Count total number of remaining articles. */
+
+#if notyet
+	for (i = k, count = 0; i < arg->sposz; i++) {
+		rc = tagfind(arg->navtags, arg->navtagsz, 
+			arg->sargs[i].tagmap, arg->sargs[i].tagmapsz);
+		if (rc)
+			count++;
+	}
+#endif
+
 	/*
 	 * Start showing articles from the first one, above.
 	 * If we haven't been provided a navigation template (i.e., what
 	 * was within the navigation tags), then make a simple default
 	 * consisting of a list entry.
 	 */
-	for (i = j = 0; k < arg->sposz; k++) {
+	for (i = 0; k < arg->sposz; k++) {
 		rc = tagfind(arg->navtags, arg->navtagsz, 
 			arg->sargs[k].tagmap, arg->sargs[k].tagmapsz);
 		/* Tag not found! */
 		if (0 == rc)
 			continue;
-		j++;
 		if (arg->navxml) {
 			xmltextx(arg->f, arg->nav, arg->dst,
-				arg->sargs, arg->sposz, k);
+				arg->sargs, arg->sposz, k, i);
 		} else if ( ! arg->navuse || 0 == arg->navsz) {
 			(void)strftime(buf, sizeof(buf), "%Y-%m-%d", 
 				gmtime(&arg->sargs[k].time));
@@ -218,7 +228,7 @@ nav_end(void *dat, const XML_Char *s)
 		} else {
 			xmlopen(arg->f, "li", NULL);
 			xmltextx(arg->f, arg->nav, arg->dst, 
-				arg->sargs, arg->sposz, k);
+				arg->sargs, arg->sposz, k, i);
 			xmlclose(arg->f, "li");
 		}
 		if (++i >= arg->navlen)
@@ -280,7 +290,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	if (-1 != arg->single) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
-			arg->sargs, arg->sposz, arg->single);
+			arg->sargs, arg->sposz, arg->single, 0);
 		xmlstrflush(arg->buf, &arg->bufsz);
 	}
 
@@ -433,7 +443,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	/* Echo the formatted text of the article. */
 
 	xmltextx(arg->f, arg->sargs[arg->spos].article, 
-		arg->dst, arg->sargs, arg->sposz, arg->spos);
+		arg->dst, arg->sargs, arg->sposz, arg->spos, 0);
 	arg->spos++;
 
 	for (attp = atts; NULL != *attp; attp += 2) 
