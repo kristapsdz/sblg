@@ -671,6 +671,14 @@ Here,
 .Li \&|argument
 may be omitted.
 .Bl -tag -width -Ds
+.It Li ${sblg-abspos}
+The position (from 1) of the article's position in the list of all
+articles.
+This is only valid in a
+.Li <nav data-sblg-nav="1">
+context, otherwise it always prints 1.
+See also
+.Li ${sblg-pos} .
 .It Li ${sblg-aside}
 The article's first aside with markup.
 .It Li ${sblg-asidetext}
@@ -748,12 +756,11 @@ variants.
 .Pq See Li ${sblg-base} .
 .It Li ${sblg-pos}
 The position (from 1) of the articles actually shown.
-(So if
-.Li data-sblg-navstart
-is used, this will still show 1.)
+This always starts at 1 and increments by one, regardless the tag
+filtering or starting position.
 This is only valid in a
 .Li <nav data-sblg-nav="1">
-context.
+context, otherwise it always prints 1.
 .It Li ${sblg-prev-base}
 The previous base name when chronologically ordered from newest to
 oldest, wrapping back to the beginning for the last.
