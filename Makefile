@@ -93,6 +93,12 @@ install: all
 	install -m 0444 sblg.1 $(DESTDIR)$(MANDIR)/man1
 	install -m 0444 schema.json $(DESTDIR)$(DATADIR)
 
+uninstall:
+	rm -f $(DESTDIR)$(BINDIR)/sblg
+	rm -f $(DESTDIR)$(MANDIR)/man1/sblg.1
+	rm -f $(DESTDIR)$(DATADIR)/schema.json
+	rmdir $(DESTDIR)$(DATADIR)
+
 sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/
 	install -m 0644 $(DOTAR) .dist/sblg-$(VERSION)
