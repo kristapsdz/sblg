@@ -465,6 +465,8 @@ if you have spaces in the tag name, e.g.,
 .Dq foo\e bar .
 You can also use
 .Li ${sblg-get|xxx}
+or (for multi-word values)
+.Li ${sblg-get-escaped|xxx}
 when in
 .Fl C
 or
@@ -778,6 +780,14 @@ assigned in
 If unspecified or the key was not found, this is ignored and omitted
 from output.
 The lookup is case sensitive.
+.It Li ${sblg-get-escaped[|key]}
+Like
+.Li ${sblg-get[|key]} ,
+but escapes the value of the key so that it may be used for
+.Li data-sblg-navtag
+or
+.Li data-sblg-articletag
+attribute values for multi-word tags.
 .It Li ${sblg-has[|key]}
 Like
 .Li ${sblg-get[|key]} ,
