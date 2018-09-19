@@ -451,6 +451,17 @@ taglist(FILE *f, const struct article *art, const char *arg, size_t argsz)
 		fputs("<span class=\"sblg-tags-notfound\"></span>", f);
 }
 
+static void
+xmltextescape(const char *bufp, FILE *f)
+{
+	
+	while ('\0' != *bufp) {
+		if (' ' == *bufp)
+			fputc('\\', f);
+		fputc(*bufp++, f);
+	}
+}
+
 /*
  * Given the nil-terminated string "s", emit all of its characters to
  * "f" while substituting ${sblg-xxxxx} tags in the process.
@@ -524,7 +535,9 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		} else if (STRCMP("sblg-abspos", 11)) {
 			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
 			bufp = buf;
-		} else if (STRCMP("sblg-get", 8)) {
+		} else if (STRCMP("sblg-get", 8) ||
+			   STRCMP("sblg-get-escaped", 16) ||
+			   STRCMP("sblg-has", 8)) {
 			for (i = 0; i < arts[artpos].setmapsz; i += 2) {
 				asz = strlen(arts[artpos].setmap[i]);
 				/* Ugly and slow, but effective. */
@@ -535,23 +548,14 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 					break;
 				}
 			}
-		} else if (STRCMP("sblg-has", 8)) {
-			for (i = 0; i < arts[artpos].setmapsz; i += 2) {
-				asz = strlen(arts[artpos].setmap[i]);
-				/* Ugly and slow, but effective. */
-				if (asz == argsz && 0 == memcmp
-				    (arts[artpos].setmap[i], 
-				     arg, argsz)) {
-					bufp = arg;
-					break;
-				}
-			}
 		}
 
 		if (STRCMP("sblg-base", 9))
 			fputs(arts[artpos].base, f);
 		else if (STRCMP("sblg-get", 8))
 			fputs(bufp, f);
+		else if (STRCMP("sblg-get-escaped", 16))
+			xmltextescape(bufp, f);
 		else if (STRCMP("sblg-has", 8)) {
 			if (NULL != bufp && '\0' != *bufp)
 				fprintf(f, "sblg-has-%.*s", (int)argsz, arg);
