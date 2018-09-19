@@ -375,10 +375,46 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		return;
 	} else if (strcasecmp(s, "article")) {
 		if (-1 != arg->single)
-			xmlopensx(arg->f, s, atts, arg->dst, 
+			xmlopensx(arg->f, s, atts, arg->dst,
 				arg->sargs, arg->sposz, arg->single);
 		else
 			xmlopens(arg->f, s, atts);
+#if notyet
+		for (attp = atts; NULL != *attp; attp += 2) 
+			if (0 == strcasecmp(*attp, "data-sblg-query"))
+				break;
+		if (NULL == *attp || ! xmlbool(attp[1])) {
+			if (-1 != arg->single)
+				xmlopensx(arg->f, s, atts, 
+					arg->dst, arg->sargs, 
+					arg->sposz, arg->single);
+			else
+				xmlopens(arg->f, s, atts);
+			return;
+		}
+
+		arg->navuse = 0;
+		arg->navsort = ASORT_DATE;
+		arg->usesort = 0;
+		arg->navxml = 0;
+		arg->navlen = arg->sposz;
+		arg->navstart = 0;
+
+		for (attp = atts; NULL != *attp; attp += 2)
+			if (0 == strcasecmp(attp[0], 
+					"data-sblg-querytag")) {
+				hashtag(&arg->navtags, 
+					&arg->navtagsz, attp[1],
+					arg->sargs, arg->sposz, 
+					arg->single);
+			}
+
+		for (i = 0; i < arg->navtagsz; i++)
+			free(arg->navtags[i]);
+		free(arg->navtags);
+		arg->navtags = NULL;
+		arg->navtagsz = 0;
+#endif
 		return;
 	}
 
