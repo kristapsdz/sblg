@@ -712,6 +712,12 @@ language was specified on the article,
 .Pa foo/bar.en.xml
 becomes
 .Pa bar .
+.It Li ${sblg-count}
+The total number of articles that will be shown.
+In standalone mode, this is always 1.
+In an amalgamation
+.Li <nav>
+mode, it's the total number within the navigation.
 .It Li ${sblg-date}
 The publication date as YYYY-MM-DD (UTC).
 .It Li ${sblg-datetime}
@@ -760,9 +766,19 @@ variants.
 The position (from 1) of the articles actually shown.
 This always starts at 1 and increments by one, regardless the tag
 filtering or starting position.
-This is only valid in a
-.Li <nav data-sblg-nav="1">
-context, otherwise it always prints 1.
+In standalone mode, it always prints 1.
+In amalgamation mode (outside of a
+.Li <nav>
+context), it shows the position in the input files.
+Within a
+.Li <nav>
+context, it shows the position within the navigation.
+.It Li ${sblg-pos-frac}
+The fractional (0\(en1) value of
+.Li ${sblg-pos}/$(sblg-count} .
+.It Li ${sblg-pos-pct}
+The percentage (0\(en100, not including the percent sign) form of
+.Li ${sblg-pos-frac} .
 .It Li ${sblg-prev-base}
 The previous base name when chronologically ordered from newest to
 oldest, wrapping back to the beginning for the last.
