@@ -609,6 +609,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			fprintf(f, "%zu", realpos + 1);
 		else if (STRCMP("sblg-pos-pct", 12))
 			fprintf(f, "%.0f", 100.0 * (realpos + 1) / realsz);
+		else if (STRCMP("sblg-count", 10))
+			fprintf(f, "%zu", realsz);
 		else if (STRCMP("sblg-pos-frac", 13))
 			fprintf(f, "%.3f", (realpos + 1) / (float)realsz);
 		else if (STRCMP("sblg-abspos", 11))
