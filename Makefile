@@ -1,4 +1,4 @@
-.SUFFIXES: .xml .html .1.html .1 .md
+.SUFFIXES: .xml .html .1.html .1 .md .dot .svg
 
 include Makefile.configure
 
@@ -62,6 +62,9 @@ DOTAR 		 = Makefile \
 		   sblg.h \
 		   schema.json \
 		   extern.h
+BUILT		 = index1.svg \
+		   index2.svg \
+		   index3.svg
 
 all: sblg sblg.a sblg.1
 
@@ -71,7 +74,7 @@ sblg: $(OBJS)
 sblg.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
 
-www: $(HTMLS) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512
+www: $(HTMLS) $(BUILT) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512
 
 sblg.1: sblg.in.1
 	sed "s!@SHAREDIR@!$(DATADIR)!g" sblg.in.1 >$@
@@ -135,6 +138,9 @@ $(ARTICLES): versions.xml
 .1.1.html:
 	mandoc -Ostyle=mandoc.css -Thtml $< >$@
 
+.dot.svg:
+	dot -Tsvg $< | xsltproc --novalid notugly.xsl - >$@
+
 .md.xml:
 	( echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" ; \
 	  echo "<article data-sblg-article=\"1\" data-sblg-tags=\"howto\">" ; \
@@ -142,7 +148,7 @@ $(ARTICLES): versions.xml
 	  echo "</article>" ; ) >$@
 
 clean:
-	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
+	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
 	rm -f article10.xml
 	rm -rf *.dSYM
 
