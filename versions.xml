@@ -607,4 +607,39 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.16</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2018-08-19">2018-08-19</time>
+		</header>
+		<aside>
+			<p>
+				Specify what <code>${sblg-pos}</code> actually does: shows the
+				current navigation index regardless the filters.
+				Add <code>${sblg-abspos}</code> for the actual position in the full
+				list of articles.
+				(Why anybody would want that, I don't know.)
+			</p>
+			<p>
+				Add <code>${sblg-get-escaped[|tag]}</code>, which is like
+				<code>${sblg-get}</code> except that white-space is escaped for use
+				with the <code>data-sblg-navtag</code> and
+				<code>data-sblg-articletag</code> attributes.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.17</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2018-09-25">2018-09-25</time>
+		</header>
+		<aside>
+			<p>
+				Add <code>${sblg-pos-frac}$</code>, <code>${sblg-pos-pct}</code>,
+				and <code>${sblg-count</code> to generate nice progress bars.
+			</p>
+		</aside>
+	</article>
 </articles>
