@@ -467,17 +467,21 @@ xmltextescape(const char *bufp, FILE *f)
  * "f" while substituting ${sblg-xxxxx} tags in the process.
  * This uses the current array of articles "arts" length "artsz",
  * currently at position "artpos".
+ * "Realpos" is the position in the shown articles (some may not be
+ * shown due to tags), with total amount "realsz".
  * The "url" is the current file being written (naming "f").
  * FIXME: the contents written are not escaped in any way.
  */
 void
 xmltextx(FILE *f, const XML_Char *s, const char *url, 
 	const struct article *arts, size_t artsz, size_t artpos, 
-	size_t realpos)
+	size_t realpos, size_t realsz)
 {
 	const char	*cp, *start, *end, *arg, *bufp;
 	char		 buf[32];
 	size_t		 sz, next, prev, argsz, i, asz;
+
+	assert(realsz > 0);
 
 	if (NULL == s || '\0' == *s)
 		return;
@@ -528,12 +532,6 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			fmttime(buf, sizeof(buf), arg, argsz,
 				arts[artpos].isdatetime,
 				localtime(&arts[artpos].time));
-			bufp = buf;
-		} else if (STRCMP("sblg-pos", 8)) {
-			snprintf(buf, sizeof(buf), "%zu", realpos + 1);
-			bufp = buf;
-		} else if (STRCMP("sblg-abspos", 11)) {
-			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
 			bufp = buf;
 		} else if (STRCMP("sblg-get", 8) ||
 			   STRCMP("sblg-get-escaped", 16) ||
@@ -608,9 +606,13 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-datetime-fmt", 17))
 			fputs(bufp, f);
 		else if (STRCMP("sblg-pos", 8))
-			fputs(bufp, f);
+			fprintf(f, "%zu", realpos + 1);
+		else if (STRCMP("sblg-pos-pct", 12))
+			fprintf(f, "%.0f", 100.0 * (realpos + 1) / realsz);
+		else if (STRCMP("sblg-pos-frac", 13))
+			fprintf(f, "%.3f", (realpos + 1) / (float)realsz);
 		else if (STRCMP("sblg-abspos", 11))
-			fputs(bufp, f);
+			fprintf(f, "%zu", artpos + 1);
 		else if (STRCMP("sblg-aside", 10))
 			fputs(arts[artpos].aside, f);
 		else if (STRCMP("sblg-asidetext", 14))
@@ -629,7 +631,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
  * Emits to "f" an XML element named "s" with NULL-terminated argument
  * list "atts" of key-value string pairs (libexpat style).
  * Passes all of the attribute values through xmltextx().
- * See xmltextx() for an explanation of the remaining variables.
+ * See xmltextx() for an explanation of the remaining parameters.
  */
 void
 xmlopensx(FILE *f, const XML_Char *s, 
@@ -644,7 +646,8 @@ xmlopensx(FILE *f, const XML_Char *s,
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
-		xmltextx(f, atts[1], url, art, artsz, artpos, 0);
+		xmltextx(f, atts[1], url, art, 
+			artsz, artpos, artpos, artsz);
 		fputc('"', f);
 	}
 	if (xmlvoid(s))

@@ -48,7 +48,7 @@ struct	linkall {
 	enum asort	  navsort; /* override sort order */
 	int		  usesort; /* whether to use navsort */
 	int		  navxml; /* don't print html elements */
-	ssize_t		  single; /* page index in -C mode*/
+	ssize_t		  single; /* page index in -C/-L mode */
 	char		 *nav; /* temporary: nav buffer */
 	size_t		  navsz; /* nav buffer length */
 	char		 *buf; /* buffer for text */
@@ -77,7 +77,8 @@ tmpl_end(void *dat, const XML_Char *s)
 
 	if (-1 != arg->single) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
-			arg->sargs, arg->sposz, arg->single, 0);
+			arg->sargs, arg->sposz, arg->single, 
+			arg->single, arg->sposz);
 		xmlstrflush(arg->buf, &arg->bufsz);
 	}
 
@@ -136,7 +137,7 @@ static void
 nav_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
-	size_t		 i, k;
+	size_t		 i, k, count;
 	char		 buf[32]; 
 	int		 rc;
 	struct article	*sv = NULL;
@@ -189,14 +190,14 @@ nav_end(void *dat, const XML_Char *s)
 
 	/* Count total number of remaining articles. */
 
-#if notyet
 	for (i = k, count = 0; i < arg->sposz; i++) {
 		rc = tagfind(arg->navtags, arg->navtagsz, 
 			arg->sargs[i].tagmap, arg->sargs[i].tagmapsz);
-		if (rc)
-			count++;
+		if (0 == rc)
+			continue;
+		if (++count >= arg->navlen)
+			break;
 	}
-#endif
 
 	/*
 	 * Start showing articles from the first one, above.
@@ -204,6 +205,7 @@ nav_end(void *dat, const XML_Char *s)
 	 * was within the navigation tags), then make a simple default
 	 * consisting of a list entry.
 	 */
+
 	for (i = 0; k < arg->sposz; k++) {
 		rc = tagfind(arg->navtags, arg->navtagsz, 
 			arg->sargs[k].tagmap, arg->sargs[k].tagmapsz);
@@ -212,7 +214,7 @@ nav_end(void *dat, const XML_Char *s)
 			continue;
 		if (arg->navxml) {
 			xmltextx(arg->f, arg->nav, arg->dst,
-				arg->sargs, arg->sposz, k, i);
+				arg->sargs, arg->sposz, k, i, count);
 		} else if ( ! arg->navuse || 0 == arg->navsz) {
 			(void)strftime(buf, sizeof(buf), "%Y-%m-%d", 
 				gmtime(&arg->sargs[k].time));
@@ -228,7 +230,7 @@ nav_end(void *dat, const XML_Char *s)
 		} else {
 			xmlopen(arg->f, "li", NULL);
 			xmltextx(arg->f, arg->nav, arg->dst, 
-				arg->sargs, arg->sposz, k, i);
+				arg->sargs, arg->sposz, k, i, count);
 			xmlclose(arg->f, "li");
 		}
 		if (++i >= arg->navlen)
@@ -290,7 +292,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	if (-1 != arg->single) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
-			arg->sargs, arg->sposz, arg->single, 0);
+			arg->sargs, arg->sposz, arg->single, 
+			arg->single, arg->sposz);
 		xmlstrflush(arg->buf, &arg->bufsz);
 	}
 
@@ -379,7 +382,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				arg->sargs, arg->sposz, arg->single);
 		else
 			xmlopens(arg->f, s, atts);
-#if notyet
+#if 0
 		for (attp = atts; NULL != *attp; attp += 2) 
 			if (0 == strcasecmp(*attp, "data-sblg-query"))
 				break;
@@ -468,9 +471,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		return;
 	}
 
-	/*
-	 * First throw away children, then push out the article itself.
-	 */
+	/*First throw away children, then push out the article. */
 
 	arg->stack++;
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
@@ -478,8 +479,14 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	/* Echo the formatted text of the article. */
 
-	xmltextx(arg->f, arg->sargs[arg->spos].article, 
-		arg->dst, arg->sargs, arg->sposz, arg->spos, 0);
+	if (-1 != arg->single)
+		xmltextx(arg->f, arg->sargs[arg->spos].article, 
+			arg->dst, arg->sargs, arg->sposz, arg->spos, 
+			arg->single, arg->sposz);
+	else
+		xmltextx(arg->f, arg->sargs[arg->spos].article, 
+			arg->dst, arg->sargs, arg->sposz, arg->spos, 
+			0, 1);
 	arg->spos++;
 
 	for (attp = atts; NULL != *attp; attp += 2) 
@@ -523,6 +530,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	sargsz = 0;
 
 	/* Grok all article data and sort by date. */
+
 	for (i = 0; i < sz; i++)
 		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
@@ -535,6 +543,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
 
 	/* Open a FILE to the output file or stream. */
+
 	f = stdout;
 	if (strcmp(dst, "-") && (NULL == (f = fopen(dst, "w")))) {
 		warn("%s", dst);
@@ -542,6 +551,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	} 
 	
 	/* Map the template into memory for parsing. */
+
 	if ( ! mmap_open(templ, &fd, &buf, &ssz))
 		goto out;
 
@@ -550,6 +560,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	 * input; however, if we're going to force a single entry to be
 	 * shown, then find it in our arguments.
 	 */
+
 	larg.sargs = sargs;
 	larg.sposz = larg.ssposz = sargsz;
 	larg.p = p;
@@ -574,6 +585,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	}
 
 	/* Run the XML parser on the template. */
+
 	XML_ParserReset(p, NULL);
 	XML_SetDefaultHandlerExpand(p, tmpl_text);
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
