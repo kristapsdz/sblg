@@ -1,0 +1,17 @@
+digraph {
+	a1 -> t1 -> r1;
+	a2 -> t2 -> r2;
+	a3 -> t3 -> r3;
+	a1[label="article1.xml"];
+	a2[label="article2.xml"];
+	a3[label="article3.xml"];
+	subgraph cluster0 {
+		color="#888888";
+		t1[label="template.html"];
+		t2[label="template.html"];
+		t3[label="template.html"];
+	}
+	r1[label="result1.html"];
+	r2[label="result2.html"];
+	r3[label="result3.html"];
+}

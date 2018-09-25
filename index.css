@@ -15,6 +15,15 @@ h1, h2				{ font-size: inherit;
 				  margin: 0; 
 				  font-weight: 400;
 				  text-shadow: 0 0 1px #fff; }
+figure				{ text-align: center; }
+figure img			{ width: 100%; 
+				  max-width: 450px; }
+figure img.larger		{ max-width: 800px; }
+h3				{ font-size: 18pt;
+				  font-weight: 500;
+				  font-variant: small-caps;
+				  margin-top: 3rem;
+				  text-align: center; }
 body > nav			{ background-color: #336699; 
 				  font-size: 14pt;
 				  padding: 24pt 20%; }
@@ -45,9 +54,9 @@ body > nav a ~ .explain > span	{ display: none;
 #nav-github:hover ~ .explain > #explain-github
 				{ display: inline; }
 nav[data-sblg-nav] ul		{ list-style-type: none; 
-				  border-top: thin solid #ddd;
-				  border-bottom: thin solid #ddd;
-				  background-color: #eee; 
+				  border-top: thin solid #eee;
+				  border-bottom: thin solid #eee;
+				  background-color: #f8f8f8; 
 				  padding: 8pt 20%; }
 nav[data-sblg-nav] div > p:first-child
 				{ margin-top: 0em; }
@@ -68,6 +77,7 @@ footer				{ padding: 12pt 0;
 				  color: #666;
 				  text-align: center; }
 footer nav			{ font-size: 12pt; 
+				  margin-top: 0.5em;
 				  margin-bottom: 0.2em; }
 footer a			{ color: #000; 
 				  border-bottom: thin transparent; }

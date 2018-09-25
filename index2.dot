@@ -1,0 +1,11 @@
+digraph {
+	a1 -> t1;
+	a2 -> t1;
+	a3 -> t1;
+	t1 -> r1;
+	a1[label="article1.xml"];
+	a2[label="article2.xml"];
+	a3[label="article3.xml"];
+	t1[label="template.html"];
+	r1[label="result.html"];
+}
