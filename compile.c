@@ -55,7 +55,8 @@ template_end(void *dat, const XML_Char *name)
 {
 	struct pargs	*arg = dat;
 
-	xmltextx(arg->f, arg->buf, arg->dst, arg->article, 1, 0, 0);
+	xmltextx(arg->f, arg->buf, 
+		arg->dst, arg->article, 1, 0, 0, 1);
 	xmlstrflush(arg->buf, &arg->bufsz);
 	xmlclose(arg->f, name);
 }
@@ -99,7 +100,8 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 
 	assert(0 == arg->stack);
 
-	xmltextx(arg->f, arg->buf, arg->dst, arg->article, 1, 0, 0);
+	xmltextx(arg->f, arg->buf, 
+		arg->dst, arg->article, 1, 0, 0, 1);
 	xmlstrflush(arg->buf, &arg->bufsz);
 
 	if (strcasecmp(name, "article")) {
@@ -127,7 +129,7 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	xmltextx(arg->f, arg->article->article, 
-		arg->dst, arg->article, 1, 0, 0);
+		arg->dst, arg->article, 1, 0, 0, 1);
 }
 
 int
@@ -212,7 +214,8 @@ compile(XML_Parser p, const char *templ,
 		goto out;
 	} 
 
-	xmltextx(arg.f, arg.buf, arg.dst, arg.article, 1, 0, 0);
+	xmltextx(arg.f, arg.buf, arg.dst, 
+		arg.article, 1, 0, 0, 1);
 	xmlstrflush(arg.buf, &arg.bufsz);
 	fputc('\n', f);
 	rc = 1;
