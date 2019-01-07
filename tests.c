@@ -362,6 +362,26 @@ main(void)
 	return 0;
 }
 #endif /* TEST_STRTONUM */
+#if TEST_SYS_QUEUE
+#include <sys/queue.h>
+#include <stddef.h>
+
+struct foo {
+	int bar;
+	TAILQ_ENTRY(foo) entries;
+};
+
+TAILQ_HEAD(fooq, foo);
+
+int
+main(void)
+{
+	struct fooq foo_q;
+
+	TAILQ_INIT(&foo_q);
+	return 0;
+}
+#endif /* TEST_SYS_QUEUE */
 #if TEST_SYSTRACE
 #include <sys/param.h>
 #include <dev/systrace.h>
