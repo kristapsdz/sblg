@@ -295,13 +295,13 @@ Boolean value is used in an Atom feed.
 There are a number of special attributes that are recognised in the
 input file.
 .Bl -tag -width Ds
-.It Li data-sblg-img
-A URL that overrides the first
+.It Li data-sblg-img=url
+Overrides the first
 .Li <img>
 link to be the image associated with the article.
 It doesn't matter where this appears: it will always override any images
 in the article.
-.It Li data-sblg-lang
+.It Li data-sblg-lang=string
 This tag may only be specified on the article element and specifies one
 or more space-separated languages for the document.
 You can escape spaces with a backslash
@@ -312,7 +312,7 @@ These languages are removed in the
 .Dq stripping
 operations for the
 .Sx Tag Symbols .
-.It Li data-sblg-set-xxx
+.It Li data-sblg-set-xxx=string
 This allows arbitrary values to be attached to the article.
 For example, specifying
 .Li data-sblg-set-foo="bar"
@@ -328,7 +328,7 @@ or queried with
 .Li ${sblg-has}
 of the
 .Sx Tag Symbols .
-.It Li data-sblg-sort
+.It Li data-sblg-sort=first|last
 Override the article's position relative to other articles.
 This can be either
 .Li first
@@ -336,7 +336,7 @@ or
 .Li last .
 If multiple articles have the same sort override, they are ordered in
 the natural way.
-.It Li data-sblg-tags
+.It Li data-sblg-tags=string
 This tag may be specified on any element within the article and consists
 of space-separated tag names.
 You can escape spaces with a backslash
@@ -407,50 +407,71 @@ titles, dates, and links.
 </body>
 .Ed
 .Pp
-Each
-.Li <article>
-will be followed by a
+Articles may contain several attributes.
+.Bl -tag -width Ds
+.It Li data-sblg-article=boolean
+If set to true, the contents are replaced with the input article.
+.It Li data-sblg-articletag=string
+If an
+.Li <article data-sblg-article="1">
+element contains this, limit displayed articles to those matching the
+space-separated tags or
+.Li ${sblg-get|xxx}
+when in
+.Fl L
+or
+.Fl C
+mode.
+.It Li data-sblg-permlink=boolean
+If an
+.Li <article data-sblg-article="1">
+element contains this set to false, the permanent link is omitted.
+.El
+.Pp
+Unless
+.Li data-sblg-permlink
+is set to false, each
+.Li <article data-sblg-article="1">
+is followed by a
 .Pq permanent link
 anchor within a
 .Li <div>
 with the custom class
 .Qq data-sblg-permlink .
-.Em Note :
-the permanent link is set to the article name, so if you specify an XML
-file, it will be to an XML file!
+The permanent link is set to the article input file name, which may be
+an XML file.
+.Em This confusing feature may be removed in future versions.
 .Pp
 The navigation element may contain several attributes.
 .Bl -tag -width Ds
-.It Li data-sbgl-navcontent
-This Boolean attribute makes the mark-up content of the
+.It Li data-sbgl-navcontent=boolean
+If true, reproduces the mark-up content of the
 .Li <nav>
-to be reproduced within an unordered list item for each article shown,
-replacing
+within an unordered list item for each article shown, replacing
 .Sx Tag Symbols
 for the current article.
-If not specified,
+If not true,
 .Nm
 populates an unordered list with article title text in a link and the
 publication date.
-.It Li data-sblg-navsort
+.It Li data-sblg-navsort=sort
 Overrides the global search order given with
 .Fl s .
 Uses the same names.
 If the search name is not recognised, the attribute is silently ignored
 and the global search order used.
-.It Li data-sblg-navstart
-The attribute specifies how many articles will skip being displayed (so
-if you have tags, it will only account for articles that would meet
-those tags) before showing the first navigation entry.
-This starts at one (a value of zero is the same as a value of one).
+.It Li data-sblg-navstart=number
+How many articles will skip being displayed (so if you have tags, it
+will only account for articles that would meet those tags) before
+showing the first navigation entry.
+Starts at one (a value of zero is the same as a value of one).
 .It Li data-sblg-navsz
 If the
 .Li <nav>
 element contains this attribute with a positive integer, it is used to
 limit the number of navigation entries.
-.It Li data-sblg-navtag
-If this attribute is specified, only articles with matching tags are
-shown.
+.It Li data-sblg-navtag=string
+Only articles with matching tags are shown.
 You can specify multiple space-separated tags, for instance,
 .Li data-sblg-navtag="foo bar"
 will search for foo or bar.
@@ -459,11 +480,11 @@ Tags to be matched against are extracted from the space-separated
 element of each article's topmost
 .Li <article>
 element.
-You can escape spaces with a backslash
+Escape spaces with a backslash
 .Pq Dq \e
 if you have spaces in the tag name, e.g.,
 .Dq foo\e bar .
-You can also use
+Use
 .Li ${sblg-get|xxx}
 or (for multi-word values)
 .Li ${sblg-get-escaped|xxx}
@@ -473,7 +494,7 @@ or
 .Fl L
 mode to use the current article's set data as part of a string, e.g.,
 .Li location-${sblg-get|location} .
-.It Li data-sbgl-navxml
+.It Li data-sbgl-navxml=boolean
 Like
 .Li data-sblg-navcontent ,
 but without the surrounding list elements.
@@ -486,23 +507,6 @@ or
 .Li <li>
 HTML tags and can be used to generate custom XML files, such as sitemaps.
 .El
-.Pp
-The article element may contain only the
-.Li data-sblg-articletag
-attribute.
-This is similar in function to the
-.Li data-sblg-navtag
-attribute in limiting displayed articles to those matching the
-space-separated tags or
-.Li ${sblg-get|xxx}
-in
-.Fl L
-or
-.Fl C
-mode.
-You may also set a Boolean
-.Li data-sblg-permlink
-attribute that stipulates whether the permanent link is specified.
 .Ss Standalone Amalgamation Template
 This is identical to the
 .Sx Blog Amalgamation Template
