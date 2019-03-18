@@ -1,6 +1,6 @@
 .\"	$Id$
 .\"
-.\" Copyright (c) 2013--2017 Kristaps Dzonsons <kristaps@bsd.lv>
+.\" Copyright (c) 2013--2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>
 .\"
 .\" Permission to use, copy, modify, and distribute this software for any
 .\" purpose with or without fee is hereby granted, provided that the above
@@ -545,38 +545,37 @@ If there aren't enough articles, the element is removed.
   <link href="http://example.org/" />
   <updated data-sblg-updated="1" />
   <id data-sblg-id="1" />
-  <entry data-sblg-entry="1" />
-  <entry data-sblg-entry="1" />
-  <entry data-sblg-entry="1" />
+  <entry data-sblg-entry="1" data-sblg-forall="1" />
 </feed>
 .Ed
 .Pp
+There are a number of special attributes that are recognised in the
+input file.
+.Bl -tag -width Ds
+.It Li data-sblg-updated=boolean
 The
 .Li <updated>
-element with a Boolean
-.Li data-sblg-updated
-attribute is replaced with the newest article date (or the current date,
-if no articles are listed).
+element with this set to true is replaced with the newest article date
+(or the current date, if no articles are listed).
+.It Li data-sblg-id=boolean
 The
 .Li <id>
-element with a Boolean
-.Li data-sblg-id
-attributed is replaced with an identifier in the form of
+element with this set to true is replaced with an identifier in the form
+of
 .Li tag:domain,2013:path ,
 where the domain is initialised to the current domain or extracted from
 the
 .Li <link>
-to the self.
-The path is also extracted from the self
+to the self and the path is also extracted from the self
 .Li <link> ,
 initialised to the root path
-.Sq \&/ .
-.Pp
+.Sq \&/ ,
+with the name of the output file.
+If an input file is not specified (standard input), no filename is used.
+.It Li data-sblg-entry=boolean
 Each
 .Li <entry>
-element with a Boolean
-.Li data-sblg-entry
-attribute is filled in with a
+element with this set to true is filled in with a
 .Li <title> ,
 .Li <id>
 .Pq in tag format ,
@@ -586,25 +585,36 @@ HTML
 .Pq specified in the article as an Ao aside Ac ,
 and alternate
 .Li <link> .
-If the
-.Ar entry
-element contains a false
-.Li data-sblg-altlink
-Boolean attribute, the alternate
+.It Li data-sblg-altlink=boolean
+If an
+.Li <entry data-sblg-entry="1">
+element contains this set to true, the alternate
 .Li <link>
 is not printed.
-If it contains a true
-.Li data-sblg-striplink
-Boolean attribute, the alternate link (if requested) has its directory
-part stripped and is assumed to be in the root directory.
-Furthermore, if a true
-.Li data-sblg-content
-Boolean attribute exists, the article's contents (everything within the
+.It Li data-sblg-striplink=boolean
+If an
+.Li <entry data-sblg-entry="1">
+element contains this set to true, the alternate link (if requested) has
+its directory part stripped and is assumed to be in the root directory.
+.It Li data-sblg-content=boolean
+If an
+.Li <entry data-sblg-entry="1">
+element contains this set to true, the article's contents (everything
+within the
 .Li <article data-sblg-article="1"> )
 are inlined within the
 .Li <content>
 element with type
 .Li html .
+.It Li data-sblg-forall=boolean
+If an
+.Li <entry data-sblg-entry="1">
+element contains this set to true, it is used for all remaining
+articles.
+Any
+.Li <entry data-sblg-entry="1">
+following this are discarded.
+.El
 .Pp
 No
 .Sx Tag Symbols
