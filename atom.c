@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013--2016 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013--2016, 2019 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -123,6 +123,7 @@ atomprint(FILE *f, const struct atom *arg, int altlink,
 
 /*
  * Given the Atom template "templ", fill in entries etc.
+ * Return zero on failure, non-zero on success.
  */
 int
 atom(XML_Parser p, const char *templ, int sz, 
