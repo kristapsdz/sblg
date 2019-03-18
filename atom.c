@@ -400,12 +400,23 @@ id_end(void *userdata, const XML_Char *name)
 {
 	struct atom	*arg = userdata;
 	const char	*dst;
+	char		 year[32];
+	time_t		 t = time(NULL);
+	struct tm	*tm;
+
+	if (NULL != (tm = localtime(&t))) {
+		snprintf(year, sizeof(year), "%04d", tm->tm_year + 1900);
+	} else {
+		/* Um... */
+		warn("localtime");
+		strlcpy(year, "2013", sizeof(year));
+	}
 
 	dst = (0 == strcmp(arg->dst, "-")) ? "" : arg->dst;
 
 	if (0 == strcasecmp(name, "id") && 0 == --arg->stack) {
-		fprintf(arg->f, "tag:%s,2013:%s/%s</%s>", 
-			arg->domain, arg->path, dst, name);
+		fprintf(arg->f, "tag:%s,%s:%s/%s</%s>", 
+			arg->domain, year, arg->path, dst, name);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}

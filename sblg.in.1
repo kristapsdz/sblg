@@ -566,7 +566,7 @@ The
 .Li <id>
 element with this set to true is replaced with an identifier in the form
 of
-.Li tag:domain,2013:path ,
+.Li tag:domain,year:path ,
 where the domain is initialised to the current domain or extracted from
 the
 .Li <link>
@@ -575,6 +575,7 @@ to the self and the path is also extracted from the self
 initialised to the root path
 .Sq \&/ ,
 with the name of the output file.
+The year is set to the current year.
 If an input file is not specified (standard input), no filename is used.
 .It Li data-sblg-entry=boolean
 Each
