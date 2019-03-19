@@ -46,6 +46,28 @@ struct	atom {
 	size_t		 spos; /* current article */
 	size_t		 sposz; /* article length */
 	size_t		 stack; /* position in discard stack */
+	int		 entryfl; /* flags for current entry */
+#define ENTRY_STRIP	 0x01
+#define ENTRY_ALT	 0x02
+#define ENTRY_CONTENT	 0x04
+#define ENTRY_FORALL	 0x08
+};
+
+/*
+ * Possible boolean attributes for <entry> processing, assuming that the
+ * data-sblg-entry="1" has been set.
+ */
+struct	entryattr {
+	const char	*name; /* name of <entry> attribute */
+	int		 bit; /* bit to set if evaluating to true */
+};
+
+static	const struct entryattr entryattrs[] = {
+	{ "data-sblg-altlink",	ENTRY_ALT },
+	{ "data-sblg-striplink", ENTRY_STRIP },
+	{ "data-sblg-content", ENTRY_CONTENT },
+	{ "data-sblg-forall", ENTRY_FORALL },
+	{ NULL, 0 }
 };
 
 /* Functions may be called out-of-order of definitions. */
@@ -85,8 +107,8 @@ atomputs(FILE *f, const char *cp)
 }
 
 static void
-atomprint(FILE *f, const struct atom *arg, int altlink, 
-	int striplink, int content, const struct article *src)
+atomprint(FILE *f, const struct atom *arg, int flags,
+	const struct article *src)
 {
 	char		 buf[1024];
 	struct tm	*tm;
@@ -102,14 +124,14 @@ atomprint(FILE *f, const struct atom *arg, int altlink,
 
 	fprintf(f, "<title>%s</title>\n", src->titletext);
 	fprintf(f, "<author><name>%s</name></author>\n", src->authortext);
-	if (altlink && ! striplink)
+	if ((flags & ENTRY_ALT) && ! (flags & ENTRY_STRIP))
 		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
 			 "href=\"%s/%s\" />\n", arg->path, src->src);
-	else if (altlink)
+	else if ((flags & ENTRY_ALT))
 		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
 			 "href=\"%s/%s\" />\n", arg->path, src->stripsrc);
 
-	if (content && NULL != src->article) {
+	if ((flags & ENTRY_CONTENT) && NULL != src->article) {
 		fprintf(f, "<content type=\"html\">");
 		atomputs(f, src->article);
 		fprintf(f, "</content>");
@@ -245,11 +267,11 @@ tmpl_begin(void *userdata,
 	struct atom	 *arg = userdata;
 	time_t		  t;
 	char		  buf[1024];
-	int		  altlink, content, striplink, useall = 0;
 	const char	 *start;
 	char		 *cp;
 	struct tm	 *tm;
 	const XML_Char	**attp;
+	size_t		  i;
 
 	assert(0 == arg->stack);
 
@@ -332,40 +354,33 @@ tmpl_begin(void *userdata,
 		return;
 	}
 
+	/* Drive the <entry data-sblg-entry="1"> logic. */
+
 	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-entry"))
+		if (0 == strcasecmp(attp[0], "data-sblg-entry"))
 			break;
 
-	if (NULL == *attp || ! xmlbool(attp[1])) {
+	if (NULL == attp[0] || ! xmlbool(attp[1])) {
 		xmlopens(arg->f, name, atts);
 		return;
 	}
 
-	altlink = 1;
-	striplink = content = 0;
+	/*
+	 * Put all Boolean data-sblg-entry attributes into a bitfield in
+	 * the entry field, which we'll post-process in entry_end().
+	 */
+
+	arg->entryfl = 0;
+	arg->stack++;
 
 	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-altlink"))
-			altlink = xmlbool(attp[1]);
-		else if (0 == strcasecmp(*attp, "data-sblg-striplink"))
-			striplink = xmlbool(attp[1]);
-		else if (0 == strcasecmp(*attp, "data-sblg-content"))
-			content = xmlbool(attp[1]);
-		else if (0 == strcasecmp(*attp, "data-sblg-forall"))
-			useall = xmlbool(attp[1]);
-
-	arg->stack++;
-	if (arg->sposz > arg->spos && useall) {
-		while (arg->spos < arg->sposz) {
-			fprintf(arg->f, "<%s>", name);
-			atomprint(arg->f, arg, altlink, striplink,
-				content, &arg->sargs[arg->spos++]);
-			fprintf(arg->f, "</%s>", name);
+		for (i = 0; NULL != entryattrs[i].name; i++) {
+			if (strcasecmp(attp[0], entryattrs[i].name))
+				continue;
+			if ( ! xmlbool(attp[1]))
+				continue;
+			arg->entryfl |= entryattrs[i].bit;
 		}
-	} else if (arg->sposz > arg->spos) {
-		fprintf(arg->f, "<%s>", name);
-		fprintf(arg->f, "</%s>", name);
-	}
 
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	XML_SetElementHandler(arg->p, entry_begin, entry_end);
@@ -426,6 +441,27 @@ entry_end(void *userdata, const XML_Char *name)
 	if (strcasecmp(name, "entry") || --arg->stack > 0)
 		return;
 
+	/* Terminal <entry>, so do post-processing. */
+
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
+
+	/* No more articles: discard. */
+
+	if (arg->spos >= arg->sposz)
+		return;
+
+	if (ENTRY_FORALL & arg->entryfl) {
+		while (arg->spos < arg->sposz) {
+			fprintf(arg->f, "<%s>", name);
+			atomprint(arg->f, arg, arg->entryfl,
+				&arg->sargs[arg->spos++]);
+			fprintf(arg->f, "</%s>", name);
+		}
+	} else {
+		fprintf(arg->f, "<%s>", name);
+		atomprint(arg->f, arg, arg->entryfl,
+			&arg->sargs[arg->spos++]);
+		fprintf(arg->f, "</%s>", name);
+	}
 }
