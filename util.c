@@ -409,6 +409,67 @@ fmttime(char *buf, size_t bufsz, const char *arg,
 }
 
 /*
+ * Emit the non-NUL terminated buffer with the given escape type.
+ */
+static void
+xmltextxesc(FILE *f, const char *p, size_t sz, enum xmlesc esc)
+{
+	size_t	 i;
+
+	if (0 == sz)
+		return;
+
+	/* Short-circuit: w/o escaping, just write it all. */
+
+	if (XMLESC_NONE == esc) {
+		fwrite(p, sz, 1, f);
+		return;
+	}
+
+	/* FIXME: use strcspn to avoid calling into stdio. */
+
+	if (XMLESC_ATTR == esc) {
+		for (i = 0; i < sz; i++)
+			if ((XMLESC_WS & esc) && p[i] == ' ')
+				fputs("\\ ", f);
+			else if (p[i] == '"')
+				fputs("&quot;", f);
+			else
+				fputc(p[i], f);
+	} else if (XMLESC_HTML == esc) {
+		for (i = 0; i < sz; i++)
+			if ((XMLESC_WS & esc) && p[i] == ' ')
+				fputs("\\ ", f);
+			else if (p[i] == '<')
+				fputs("&lt;", f);
+			else if (p[i] == '>')
+				fputs("&gt;", f);
+			else if (p[i] == '"')
+				fputs("&quot;", f);
+			else if (p[i] == '&')
+				fputs("&amp;", f);
+			else
+				fputc(p[i], f);
+	} else if (XMLESC_WS == esc) {
+		for (i = 0; i < sz; i++)
+			if (' ' == p[i])
+				fputs("\\ ", f);
+			else
+				fputc(p[i], f);
+	}
+}
+
+/*
+ * Like xmltextxesc, but for NUL-terminated strings.
+ */
+static void
+xmltextxescs(FILE *f, const char *p, enum xmlesc esc)
+{
+
+	return xmltextxesc(f, p, strlen(p), esc);
+}
+
+/*
  * List all tags for article "art".
  * The tag listing appears as a set of <span class"sblg-tag"> elements
  * filled with the tag name (escaped space normalised).
@@ -417,65 +478,60 @@ fmttime(char *buf, size_t bufsz, const char *arg,
  * matching case-sensitive prefix are printed.
  */
 static void
-taglist(FILE *f, const struct article *art, const char *arg, size_t argsz)
+xmltextxtag(FILE *f, const struct article *art,
+	const char *arg, size_t argsz, enum xmlesc esc)
 {
-	size_t	 	 i, sz, found;
+	size_t	 	 i, sz;
+	int		 found = 0;
 	const char	*cp;
 
-	for (found = i = 0; i < art->tagmapsz; i++) {
+	for (i = 0; i < art->tagmapsz; i++) {
 		if (argsz > 0) {
 			sz = strlen(art->tagmap[i]);
 			if (sz <= argsz || 
 			    strncmp(arg, art->tagmap[i], argsz)) 
 				continue;
 		}
-		fputs("<span class=\"sblg-tag\">", f);
+
+		/* FIXME: use strcspn for speed. */
+
+		xmltextxescs(f, "<span class=\"sblg-tag\">", esc);
 		for (cp = art->tagmap[i] + argsz; '\0' != *cp; cp++) {
 			if ('\\' == cp[0] && ' ' == cp[1])
 				continue;
 			if ('<' == *cp)
-				fputs("&lt;", f);
+				xmltextxescs(f, "&lt;", esc);
 			else if ('>' == *cp)
-				fputs("&gt;", f);
+				xmltextxescs(f, "&gt;", esc);
 			else if ('"' == *cp)
-				fputs("&quot;", f);
+				xmltextxescs(f, "&quot;", esc);
 			else if ('&' == *cp)
-				fputs("&amp;", f);
+				xmltextxescs(f, "&amp;", esc);
 			else
-				fputc(*cp, f);
+				xmltextxesc(f, cp, 1, esc);
 		}
-		fputs("</span>", f);
+		xmltextxescs(f, "</span>", esc);
 		found = 1;
 	}
-	if (0 == found)
-		fputs("<span class=\"sblg-tags-notfound\"></span>", f);
-}
-
-static void
-xmltextescape(const char *bufp, FILE *f)
-{
-	
-	while ('\0' != *bufp) {
-		if (' ' == *bufp)
-			fputc('\\', f);
-		fputc(*bufp++, f);
-	}
+	if (!found)
+		xmltextxescs(f, "<span class=\""
+			"sblg-tags-notfound\"></span>", esc);
 }
 
 /*
- * Given the nil-terminated string "s", emit all of its characters to
- * "f" while substituting ${sblg-xxxxx} tags in the process.
- * This uses the current array of articles "arts" length "artsz",
- * currently at position "artpos".
+ * Emit the NUL-terminated string "s" to "f" while substituting
+ * ${sblg-xxxxx} tags in the process.
+ * Uses the array of articles "arts" total length "artsz", currently at
+ * position "artpos".
  * "Realpos" is the position in the shown articles (some may not be
- * shown due to tags), with total amount "realsz".
+ * shown due to tags), with total shown amount "realsz".
  * The "url" is the current file being written (naming "f").
- * FIXME: the contents written are not escaped in any way.
+ * Escape all output using "esc".
  */
 void
 xmltextx(FILE *f, const XML_Char *s, const char *url, 
 	const struct article *arts, size_t artsz, size_t artpos, 
-	size_t realpos, size_t realsz)
+	size_t realpos, size_t realsz, enum xmlesc esc)
 {
 	const char	*cp, *start, *end, *arg, *bufp;
 	char		 buf[32];
@@ -501,7 +557,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 	while (NULL != (cp = strstr(start, "${"))) {
 		if (NULL == (end = strchr(cp, '}')))
 			break;
-		fprintf(f, "%.*s", (int)(cp - start), start);
+		xmltextxesc(f, start, cp - start, esc);
 		start = cp + 2;
 		sz = end - start;
 		arg = NULL;
@@ -518,6 +574,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		 * The following tags all dynamically construct a value
 		 * that we put into the "bufp" pointer, which defaults
 		 * to the empty string.
+		 * Most of these just convert numbers using the static
+		 * buffer "buf" as staging memory.
 		 */
 
 		if (STRCMP("sblg-date", 9)) {
@@ -546,87 +604,104 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 					break;
 				}
 			}
+		} else if (STRCMP("sblg-pos", 8)) {
+			snprintf(buf, sizeof(buf), "%zu", realpos + 1);
+			bufp = buf;
+		} else if (STRCMP("sblg-pos-pct", 12)) {
+			snprintf(buf, sizeof(buf), 
+				"%.0f", 100.0 * (realpos + 1) / realsz);
+			bufp = buf;
+		} else if (STRCMP("sblg-count", 10)) {
+			snprintf(buf, sizeof(buf), "%zu", realsz);
+			bufp = buf;
+		} else if (STRCMP("sblg-pos-frac", 13)) {
+			snprintf(buf, sizeof(buf), "%.3f", 
+				(realpos + 1) / (float)realsz);
+			bufp = buf;
+		} else if (STRCMP("sblg-abspos", 11)) {
+			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
+			bufp = buf;
 		}
 
 		if (STRCMP("sblg-base", 9))
-			fputs(arts[artpos].base, f);
+			xmltextxescs(f, arts[artpos].base, esc);
 		else if (STRCMP("sblg-get", 8))
-			fputs(bufp, f);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-get-escaped", 16))
-			xmltextescape(bufp, f);
+			xmltextxescs(f, bufp, XMLESC_WS | esc);
 		else if (STRCMP("sblg-has", 8)) {
 			if (NULL != bufp && '\0' != *bufp)
 				fprintf(f, "sblg-has-%.*s", (int)argsz, arg);
 		} else if (STRCMP("sblg-tags", 9))
-			taglist(f, &arts[artpos], arg, argsz);
+			xmltextxtag(f, &arts[artpos], arg, argsz, esc);
 		else if (STRCMP("sblg-stripbase", 14))
-			fputs(arts[artpos].stripbase, f);
+			xmltextxescs(f, arts[artpos].stripbase, esc);
 		else if (STRCMP("sblg-striplangbase", 18))
-			fputs(arts[artpos].striplangbase, f);
+			xmltextxescs(f, arts[artpos].striplangbase, esc);
 		else if (STRCMP("sblg-first-base", 15))
-			fputs(arts[0].base, f);
+			xmltextxescs(f, arts[0].base, esc);
 		else if (STRCMP("sblg-first-stripbase", 20))
-			fputs(arts[0].stripbase, f);
+			xmltextxescs(f, arts[0].stripbase, esc);
 		else if (STRCMP("sblg-first-striplangbase", 24))
-			fputs(arts[0].striplangbase, f);
+			xmltextxescs(f, arts[0].striplangbase, esc);
 		else if (STRCMP("sblg-last-base", 14))
-			fputs(arts[artsz - 1].base, f);
+			xmltextxescs(f, arts[artsz - 1].base, esc);
 		else if (STRCMP("sblg-last-stripbase", 19))
-			fputs(arts[artsz - 1].stripbase, f);
+			xmltextxescs(f, arts[artsz - 1].stripbase, esc);
 		else if (STRCMP("sblg-last-striplangbase", 23))
-			fputs(arts[artsz - 1].striplangbase, f);
+			xmltextxescs(f, arts[artsz - 1].striplangbase, esc);
 		else if (STRCMP("sblg-next-base", 14))
-			fputs(arts[next].base, f);
+			xmltextxescs(f, arts[next].base, esc);
 		else if (STRCMP("sblg-next-stripbase", 19))
-			fputs(arts[next].stripbase, f);
+			xmltextxescs(f, arts[next].stripbase, esc);
 		else if (STRCMP("sblg-next-striplangbase", 23))
-			fputs(arts[next].striplangbase, f);
+			xmltextxescs(f, arts[next].striplangbase, esc);
 		else if (STRCMP("sblg-prev-base", 14))
-			fputs(arts[prev].base, f);
+			xmltextxescs(f, arts[prev].base, esc);
 		else if (STRCMP("sblg-prev-stripbase", 19))
-			fputs(arts[prev].stripbase, f);
+			xmltextxescs(f, arts[prev].stripbase, esc);
 		else if (STRCMP("sblg-prev-striplangbase", 23))
-			fputs(arts[prev].striplangbase, f);
+			xmltextxescs(f, arts[prev].striplangbase, esc);
 		else if (STRCMP("sblg-title", 10))
-			fputs(arts[artpos].title, f);
+			xmltextxescs(f, arts[artpos].title, esc);
 		else if (STRCMP("sblg-url", 8))
-			fputs(NULL == url ? "" : url, f);
+			xmltextxescs(f, (NULL == url) ? "" : url, esc);
 		else if (STRCMP("sblg-titletext", 14))
-			fputs(arts[artpos].titletext, f);
+			xmltextxescs(f, arts[artpos].titletext, esc);
 		else if (STRCMP("sblg-author", 11))
-			fputs(arts[artpos].author, f);
+			xmltextxescs(f, arts[artpos].author, esc);
 		else if (STRCMP("sblg-authortext", 15))
-			fputs(arts[artpos].authortext, f);
+			xmltextxescs(f, arts[artpos].authortext, esc);
 		else if (STRCMP("sblg-source", 11))
-			fputs(arts[artpos].src, f);
+			xmltextxescs(f, arts[artpos].src, esc);
 		else if (STRCMP("sblg-date", 9))
-			fputs(bufp, f);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-datetime", 13))
-			fputs(bufp, f);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-datetime-fmt", 17))
-			fputs(bufp, f);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-pos", 8))
-			fprintf(f, "%zu", realpos + 1);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-pos-pct", 12))
-			fprintf(f, "%.0f", 100.0 * (realpos + 1) / realsz);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-count", 10))
-			fprintf(f, "%zu", realsz);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-pos-frac", 13))
-			fprintf(f, "%.3f", (realpos + 1) / (float)realsz);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-abspos", 11))
-			fprintf(f, "%zu", artpos + 1);
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-aside", 10))
-			fputs(arts[artpos].aside, f);
+			xmltextxescs(f, arts[artpos].aside, esc);
 		else if (STRCMP("sblg-asidetext", 14))
-			fputs(arts[artpos].asidetext, f);
-		else if (STRCMP("sblg-img", 8) &&
-		         NULL != arts[artpos].img)
-			fputs(arts[artpos].img, f);
+			xmltextxescs(f, arts[artpos].asidetext, esc);
+		else if (STRCMP("sblg-img", 8))
+			xmltextxescs(f, (NULL == arts[artpos].img) ?
+				"" : arts[artpos].img, esc);
 
 		start = end + 1;
 	}
 
-	fputs(start, f);
+	xmltextxescs(f, start, esc);
 }
 
 /*
@@ -648,8 +723,8 @@ xmlopensx(FILE *f, const XML_Char *s,
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
-		xmltextx(f, atts[1], url, art, 
-			artsz, artpos, artpos, artsz);
+		xmltextx(f, atts[1], url, art, artsz, 
+			artpos, artpos, artsz, XMLESC_ATTR);
 		fputc('"', f);
 	}
 	if (xmlvoid(s))
