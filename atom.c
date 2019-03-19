@@ -51,7 +51,6 @@ struct	atom {
 /* Functions may be called out-of-order of definitions. */
 
 static void entry_begin(void *, const XML_Char *, const XML_Char **);
-static void entry_empty(void *, const XML_Char *);
 static void entry_end(void *, const XML_Char *);
 static void id_begin(void *, const XML_Char *, const XML_Char **);
 static void id_end(void *, const XML_Char *);
@@ -356,7 +355,6 @@ tmpl_begin(void *userdata,
 			useall = xmlbool(attp[1]);
 
 	arg->stack++;
-	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	if (arg->sposz > arg->spos && useall) {
 		while (arg->spos < arg->sposz) {
 			fprintf(arg->f, "<%s>", name);
@@ -364,27 +362,13 @@ tmpl_begin(void *userdata,
 				content, &arg->sargs[arg->spos++]);
 			fprintf(arg->f, "</%s>", name);
 		}
-		XML_SetDefaultHandlerExpand(arg->p, NULL);
-		XML_SetElementHandler(arg->p, entry_begin, entry_end);
 	} else if (arg->sposz > arg->spos) {
 		fprintf(arg->f, "<%s>", name);
-		XML_SetDefaultHandlerExpand(arg->p, NULL);
-		XML_SetElementHandler(arg->p, entry_begin, entry_end);
 		fprintf(arg->f, "</%s>", name);
-	} else {
-		XML_SetElementHandler(arg->p, entry_begin, entry_empty);
 	}
-}
 
-static void
-entry_empty(void *userdata, const XML_Char *name)
-{
-	struct atom	*arg = userdata;
-
-	if (0 == strcasecmp(name, "entry") && 0 == --arg->stack) {
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
-	}
+	XML_SetDefaultHandlerExpand(arg->p, NULL);
+	XML_SetElementHandler(arg->p, entry_begin, entry_end);
 }
 
 static void
@@ -439,8 +423,9 @@ entry_end(void *userdata, const XML_Char *name)
 {
 	struct atom	*arg = userdata;
 
-	if (0 == strcasecmp(name, "entry") && 0 ==  --arg->stack) {
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
-	}
+	if (strcasecmp(name, "entry") || --arg->stack > 0)
+		return;
+
+	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 }
