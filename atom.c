@@ -51,6 +51,9 @@ struct	atom {
 #define ENTRY_ALT	 0x02
 #define ENTRY_CONTENT	 0x04
 #define ENTRY_FORALL	 0x08
+#define ENTRY_REPL	 0x10
+	char		*entry; /* saved entry contents */
+	size_t		 entrysz; /* length of entry */
 };
 
 /*
@@ -64,6 +67,7 @@ struct	entryattr {
 
 static	const struct entryattr entryattrs[] = {
 	{ "data-sblg-altlink",	ENTRY_ALT },
+	{ "data-sblg-atomcontent", ENTRY_REPL },
 	{ "data-sblg-striplink", ENTRY_STRIP },
 	{ "data-sblg-content", ENTRY_CONTENT },
 	{ "data-sblg-forall", ENTRY_FORALL },
@@ -74,6 +78,7 @@ static	const struct entryattr entryattrs[] = {
 
 static void entry_begin(void *, const XML_Char *, const XML_Char **);
 static void entry_end(void *, const XML_Char *);
+static void entry_text(void *, const XML_Char *, int);
 static void id_begin(void *, const XML_Char *, const XML_Char **);
 static void id_end(void *, const XML_Char *);
 static void tmpl_begin(void *, const XML_Char *, const XML_Char **);
@@ -83,35 +88,12 @@ static void up_begin(void *, const XML_Char *, const XML_Char **);
 static void up_end(void *, const XML_Char *);
 
 static void
-atomputs(FILE *f, const char *cp)
-{
-	
-	for ( ; '\0' != *cp; cp++)
-		switch (*cp) {
-		case ('<'):
-			fputs("&lt;", f);
-			break;
-		case ('>'):
-			fputs("&gt;", f);
-			break;
-		case ('"'):
-			fputs("&quot;", f);
-			break;
-		case ('&'):
-			fputs("&amp;", f);
-			break;
-		default:
-			fputc(*cp, f);
-			break;
-		}
-}
-
-static void
 atomprint(FILE *f, const struct atom *arg, int flags,
-	const struct article *src)
+	const struct article *arts, size_t artpos, size_t artsz)
 {
 	char		 buf[1024];
 	struct tm	*tm;
+	const struct article *src = &arts[artpos];
 
 	tm = gmtime(&src->time);
 
@@ -133,11 +115,13 @@ atomprint(FILE *f, const struct atom *arg, int flags,
 
 	if ((flags & ENTRY_CONTENT) && NULL != src->article) {
 		fprintf(f, "<content type=\"html\">");
-		atomputs(f, src->article);
+		xmltextx(f, src->article, "atom.xml", arts,
+			artsz, artpos, artpos, artsz, XMLESC_HTML);
 		fprintf(f, "</content>");
 	} else {
 		fprintf(f, "<content type=\"html\">");
-		atomputs(f, src->aside);
+		xmltextx(f, src->aside, "atom.xml", arts,
+			artsz, artpos, artpos, artsz, XMLESC_HTML);
 		fprintf(f, "</content>");
 	}
 }
@@ -222,6 +206,7 @@ out:
 	mmap_close(fd, buf, ssz);
 	if (NULL != f && stdout != f)
 		fclose(f);
+	free(larg.entry);
 	return(rc);
 }
 
@@ -234,12 +219,12 @@ tmpl_text(void *userdata, const XML_Char *s, int len)
 }
 
 static void
-entry_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
+entry_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
-	struct atom	*arg = userdata;
+	struct atom	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(name, "entry");
+	arg->stack += (0 == strcasecmp(s, "entry"));
+	xmlstropen(&arg->entry, &arg->entrysz, s, atts);
 }
 
 static void
@@ -382,7 +367,7 @@ tmpl_begin(void *userdata,
 			arg->entryfl |= entryattrs[i].bit;
 		}
 
-	XML_SetDefaultHandlerExpand(arg->p, NULL);
+	XML_SetDefaultHandlerExpand(arg->p, entry_text);
 	XML_SetElementHandler(arg->p, entry_begin, entry_end);
 }
 
@@ -434,17 +419,30 @@ up_end(void *userdata, const XML_Char *name)
 }
 
 static void
-entry_end(void *userdata, const XML_Char *name)
+entry_text(void *dat, const XML_Char *s, int len)
 {
-	struct atom	*arg = userdata;
+	struct atom	*arg = dat;
 
-	if (strcasecmp(name, "entry") || --arg->stack > 0)
+	xmlstrtext(&arg->entry, &arg->entrysz, s, len);
+}
+
+static void
+entry_end(void *dat, const XML_Char *s)
+{
+	struct atom	*arg = dat;
+
+	if (strcasecmp(s, "entry") || --arg->stack > 0) {
+		xmlstrclose(&arg->entry, &arg->entrysz, s);
 		return;
+	}
 
 	/* Terminal <entry>, so do post-processing. */
 
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
+	free(arg->entry);
+	arg->entry = NULL;
+	arg->entrysz = 0;
 
 	/* No more articles: discard. */
 
@@ -453,15 +451,15 @@ entry_end(void *userdata, const XML_Char *name)
 
 	if (ENTRY_FORALL & arg->entryfl) {
 		while (arg->spos < arg->sposz) {
-			fprintf(arg->f, "<%s>", name);
+			fprintf(arg->f, "<%s>", s);
 			atomprint(arg->f, arg, arg->entryfl,
-				&arg->sargs[arg->spos++]);
-			fprintf(arg->f, "</%s>", name);
+				arg->sargs, arg->spos++, arg->sposz);
+			fprintf(arg->f, "</%s>", s);
 		}
 	} else {
-		fprintf(arg->f, "<%s>", name);
+		fprintf(arg->f, "<%s>", s);
 		atomprint(arg->f, arg, arg->entryfl,
-			&arg->sargs[arg->spos++]);
-		fprintf(arg->f, "</%s>", name);
+			arg->sargs, arg->spos++, arg->sposz);
+		fprintf(arg->f, "</%s>", s);
 	}
 }

@@ -28,6 +28,13 @@ enum	asort {
 	ASORT_CMDLINE
 };
 
+enum	xmlesc {
+	XMLESC_NONE = 0,
+	XMLESC_WS = 0x01, /* internal use only */
+	XMLESC_ATTR = 0x02,
+	XMLESC_HTML = 0x04
+};
+
 int	atom(XML_Parser p, const char *templ, int sz, 
 		char *src[], const char *dst, enum asort asort);
 int	json(XML_Parser p, int sz, 
@@ -57,7 +64,7 @@ void	xmlopensx(FILE *, const XML_Char *, const XML_Char **,
 		const char *, const struct article *, size_t, size_t);
 void	xmltextx(FILE *f, const XML_Char *s, 
 		const char *, const struct article *, 
-		size_t, size_t, size_t, size_t);
+		size_t, size_t, size_t, size_t, enum xmlesc);
 
 void	hashtag(char ***, size_t *, const char *,
 		const struct article *, size_t, ssize_t);

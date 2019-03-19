@@ -78,7 +78,7 @@ tmpl_end(void *dat, const XML_Char *s)
 	if (-1 != arg->single) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
 			arg->sargs, arg->sposz, arg->single, 
-			arg->single, arg->sposz);
+			arg->single, arg->sposz, XMLESC_NONE);
 		xmlstrflush(arg->buf, &arg->bufsz);
 	}
 
@@ -214,7 +214,8 @@ nav_end(void *dat, const XML_Char *s)
 			continue;
 		if (arg->navxml) {
 			xmltextx(arg->f, arg->nav, arg->dst,
-				arg->sargs, arg->sposz, k, i, count);
+				arg->sargs, arg->sposz, k, i, 
+				count, XMLESC_NONE);
 		} else if ( ! arg->navuse || 0 == arg->navsz) {
 			(void)strftime(buf, sizeof(buf), "%Y-%m-%d", 
 				gmtime(&arg->sargs[k].time));
@@ -230,7 +231,8 @@ nav_end(void *dat, const XML_Char *s)
 		} else {
 			xmlopen(arg->f, "li", NULL);
 			xmltextx(arg->f, arg->nav, arg->dst, 
-				arg->sargs, arg->sposz, k, i, count);
+				arg->sargs, arg->sposz, k, i, 
+				count, XMLESC_NONE);
 			xmlclose(arg->f, "li");
 		}
 		if (++i >= arg->navlen)
@@ -293,7 +295,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	if (-1 != arg->single) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
 			arg->sargs, arg->sposz, arg->single, 
-			arg->single, arg->sposz);
+			arg->single, arg->sposz, XMLESC_NONE);
 		xmlstrflush(arg->buf, &arg->bufsz);
 	}
 
@@ -482,11 +484,11 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	if (-1 != arg->single)
 		xmltextx(arg->f, arg->sargs[arg->spos].article, 
 			arg->dst, arg->sargs, arg->sposz, arg->spos, 
-			arg->single, arg->sposz);
+			arg->single, arg->sposz, XMLESC_NONE);
 	else
 		xmltextx(arg->f, arg->sargs[arg->spos].article, 
 			arg->dst, arg->sargs, arg->sposz, arg->spos, 
-			0, 1);
+			0, 1, XMLESC_NONE);
 	arg->spos++;
 
 	for (attp = atts; NULL != *attp; attp += 2) 
