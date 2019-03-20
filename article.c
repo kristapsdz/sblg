@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>
+ * Copyright (c) 2014, 2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,9 +19,69 @@
 #include <expat.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "extern.h"
+
+static int
+cmdlinecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+
+	return(s1->order - s2->order);
+}
+
+static int
+filenamecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+
+	if (s1->sort != s2->sort) {
+		if (SORT_FIRST == s1->sort || 
+		    SORT_LAST == s2->sort)
+			return(-1);
+		else if (SORT_LAST == s1->sort || 
+			 SORT_FIRST == s2->sort)
+			return(1);
+	}
+
+	return(strcmp(s1->src, s2->src));
+}
+
+static int
+rdatecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+
+	if (s1->sort != s2->sort) {
+		if (SORT_FIRST == s2->sort || 
+		    SORT_LAST == s1->sort)
+			return(-1);
+		else if (SORT_LAST == s2->sort || 
+			 SORT_FIRST == s1->sort)
+			return(1);
+	}
+
+	return(difftime(s1->time, s2->time));
+}
+
+static int
+datecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+
+	if (s1->sort != s2->sort) {
+		if (SORT_FIRST == s1->sort || 
+		    SORT_LAST == s2->sort)
+			return(-1);
+		else if (SORT_LAST == s1->sort || 
+			 SORT_FIRST == s2->sort)
+			return(1);
+	}
+
+	return(difftime(s2->time, s1->time));
+}
 
 static void
 article_free(struct article *p)
