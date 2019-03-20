@@ -57,7 +57,9 @@ template_end(void *dat, const XML_Char *name)
 
 	xmltextx(arg->f, arg->buf, arg->dst, 
 		arg->article, 1, 0, 0, 1, XMLESC_NONE);
-	xmlstrflush(arg->buf, &arg->bufsz);
+	free(arg->buf);
+	arg->buf = NULL;
+	arg->bufsz = 0;
 	xmlclose(arg->f, name);
 }
 
@@ -102,7 +104,9 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 
 	xmltextx(arg->f, arg->buf, arg->dst, 
 		arg->article, 1, 0, 0, 1, XMLESC_NONE);
-	xmlstrflush(arg->buf, &arg->bufsz);
+	free(arg->buf);
+	arg->buf = NULL;
+	arg->bufsz = 0;
 
 	if (strcasecmp(name, "article")) {
 		xmlopensx(arg->f, name, atts, 
@@ -216,7 +220,6 @@ compile(XML_Parser p, const char *templ,
 
 	xmltextx(arg.f, arg.buf, arg.dst, 
 		arg.article, 1, 0, 0, 1, XMLESC_NONE);
-	xmlstrflush(arg.buf, &arg.bufsz);
 	fputc('\n', f);
 	rc = 1;
 out:
