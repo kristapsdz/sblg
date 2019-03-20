@@ -309,6 +309,7 @@ runtest strnlen		STRNLEN				  || true
 runtest strtonum	STRTONUM			  || true
 runtest sys_queue	SYS_QUEUE			  || true
 runtest systrace	SYSTRACE			  || true
+runtest unveil		UNVEIL				  || true
 runtest zlib		ZLIB		"" "-lz"	  || true
 runtest __progname	__PROGNAME			  || true
 
