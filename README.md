@@ -8,7 +8,7 @@ It's built for use with `make`-style build environments insofar as a
 blog depends upon articles.
 
 Benefits?  
-No markdown ([unless](https://kristaps.bsd.lv/sblg/article010.html)...), no "CMS", no CGI, no PHP. 
+No markdown ([unless](https://kristaps.bsd.lv/sblg/article10.html)...), no "CMS", no CGI, no PHP. 
 Just a simple [open source](https://opensource.org/licenses/ISC) tool
 for pulling data from articles and populating templates. 
 The only dependency is [libexpat](http://expat.sourceforge.net/) for
