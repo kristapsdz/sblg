@@ -465,7 +465,7 @@ How many articles will skip being displayed (so if you have tags, it
 will only account for articles that would meet those tags) before
 showing the first navigation entry.
 Starts at one (a value of zero is the same as a value of one).
-.It Li data-sblg-navsz
+.It Li data-sblg-navsz=number
 If the
 .Li <nav>
 element contains this attribute with a positive integer, it is used to
@@ -556,11 +556,62 @@ If there aren't enough articles, the element is removed.
 There are a number of special attributes that are recognised in the
 input file.
 .Bl -tag -width Ds
-.It Li data-sblg-updated=boolean
-The
-.Li <updated>
-element with this set to true is replaced with the newest article date
-(or the current date, if no articles are listed).
+.It Li data-sblg-altlink=boolean
+If an
+.Li <entry data-sblg-entry="1">
+element contains this set to true, the alternate
+.Li <link>
+is printed.
+.It Li data-sblg-altlink-fmt=string
+If both
+.Li data-sblg-entry
+and
+.Li data-sblg-altlink
+are true for an
+.Li <entry> ,
+the value is used as the link address.
+Accepts
+.Sx Tag Symbols ,
+most commonly being
+.Li ${sblg-base} .
+Deprecates
+.Li data-sblg-striplink .
+.It Li data-sblg-content=boolean
+If
+.Li <entry data-sblg-entry="1">
+contains this set to true, the article's contents (everything
+within the
+.Li <article data-sblg-article="1"> )
+are inlined within the
+.Li <content>
+element with type
+.Li html .
+.Sx Tag Symbols
+are processed.
+.It Li data-sblg-entry=boolean
+Each
+.Li <entry>
+element with this set to true is filled in with a
+.Li <title> ,
+.Li <id>
+.Pq in tag format ,
+.Li <author> ,
+HTML
+.Li <content>
+.Po
+specified in the article as an
+.Li <aside>
+.Pc ,
+and alternate
+.Li <link> .
+.It Li data-sblg-forall=boolean
+If an
+.Li <entry data-sblg-entry="1">
+element contains this set to true, it is used for all remaining
+articles.
+Any
+.Li <entry data-sblg-entry="1">
+following this are discarded.
 .It Li data-sblg-id=boolean
 The
 .Li <id>
@@ -577,48 +628,23 @@ initialised to the root path
 with the name of the output file.
 The year is set to the current year.
 If an input file is not specified (standard input), no filename is used.
-.It Li data-sblg-entry=boolean
-Each
-.Li <entry>
-element with this set to true is filled in with a
-.Li <title> ,
-.Li <id>
-.Pq in tag format ,
-.Li <author> ,
-HTML
-.Li <content>
-.Pq specified in the article as an Ao aside Ac ,
-and alternate
-.Li <link> .
-.It Li data-sblg-altlink=boolean
-If an
-.Li <entry data-sblg-entry="1">
-element contains this set to true, the alternate
-.Li <link>
-is not printed.
 .It Li data-sblg-striplink=boolean
-If an
-.Li <entry data-sblg-entry="1">
+If
+.Li data-sblg-entry="1">
+for an
+.Li <entry> ,
 element contains this set to true, the alternate link (if requested) has
 its directory part stripped and is assumed to be in the root directory.
-.It Li data-sblg-content=boolean
-If an
-.Li <entry data-sblg-entry="1">
-element contains this set to true, the article's contents (everything
-within the
-.Li <article data-sblg-article="1"> )
-are inlined within the
-.Li <content>
-element with type
-.Li html .
-.It Li data-sblg-forall=boolean
-If an
-.Li <entry data-sblg-entry="1">
-element contains this set to true, it is used for all remaining
-articles.
-Any
-.Li <entry data-sblg-entry="1">
-following this are discarded.
+.Em This is deprecated
+in favour of
+.Li data-sblg-altlink-fmt .
+.It Li data-sblg-updated=boolean
+The
+.Li <updated>
+element with this set to true is replaced with the newest article date
+(or the current date, if no articles are listed).
+.Sx Tag Symbols
+are processed.
 .El
 .Ss JSON Schema
 .Nm
