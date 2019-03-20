@@ -142,12 +142,7 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
 
-	if (ASORT_DATE == asort)
-		qsort(sargs, sargsz, sizeof(struct article), datecmp);
-	if (ASORT_RDATE == asort)
-		qsort(sargs, sargsz, sizeof(struct article), rdatecmp);
-	else if (ASORT_FILENAME == asort)
-		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
+	sblg_sort(sargs, sargsz, asort);
 
 	f = stdout;
 	if (strcmp(dst, "-") && NULL == (f = fopen(dst, "w"))) {

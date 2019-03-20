@@ -21,13 +21,6 @@
 
 __BEGIN_DECLS
 
-enum	asort {
-	ASORT_DATE = 0,
-	ASORT_RDATE,
-	ASORT_FILENAME,
-	ASORT_CMDLINE
-};
-
 enum	xmlesc {
 	XMLESC_NONE = 0,
 	XMLESC_WS = 0x01, /* internal use only */

@@ -65,3 +65,17 @@ sblg_free(struct article *p, size_t sz)
 
 	free(p);
 }
+
+void
+sblg_sort(struct article *p, size_t sz, enum asort sort)
+{
+
+	if (ASORT_DATE == sort)
+		qsort(p, sz, sizeof(struct article), datecmp);
+	else if (ASORT_RDATE == sort)
+		qsort(p, sz, sizeof(struct article), rdatecmp);
+	else if (ASORT_FILENAME == sort)
+		qsort(p, sz, sizeof(struct article), filenamecmp);
+	else if (ASORT_CMDLINE == sort)
+		qsort(p, sz, sizeof(struct article), cmdlinecmp);
+}
