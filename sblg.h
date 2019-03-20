@@ -23,6 +23,13 @@ enum	sort {
 	SORT_LAST
 };
 
+enum	asort {
+	ASORT_DATE = 0,
+	ASORT_RDATE,
+	ASORT_FILENAME,
+	ASORT_CMDLINE
+};
+
 struct	article {
 	const char	 *src; /* source filename */
 	const char	 *stripsrc; /* source filename w/o directory */
@@ -57,8 +64,8 @@ struct	article {
 __BEGIN_DECLS
 
 int	sblg_parse(XML_Parser, const char *, struct article **, size_t *);
-
 void	sblg_free(struct article *, size_t);
+void	sblg_sort(struct article *, size_t, enum asort);
 
 __END_DECLS
 

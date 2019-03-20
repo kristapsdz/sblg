@@ -163,18 +163,7 @@ nav_end(void *dat, const XML_Char *s)
 		sv = arg->sargs;
 		arg->sargs = calloc(arg->sposz, sizeof(struct article));
 		memcpy(arg->sargs, sv, arg->sposz * sizeof(struct article));
-		if (ASORT_DATE == arg->navsort)
-			qsort(arg->sargs, arg->sposz, 
-				sizeof(struct article), datecmp);
-		else if (ASORT_RDATE == arg->navsort)
-			qsort(arg->sargs, arg->sposz, 
-				sizeof(struct article), rdatecmp);
-		else if (ASORT_FILENAME == arg->navsort)
-			qsort(arg->sargs, arg->sposz, 
-				sizeof(struct article), filenamecmp);
-		else if (ASORT_CMDLINE == arg->navsort)
-			qsort(arg->sargs, arg->sposz, 
-				sizeof(struct article), cmdlinecmp);
+		sblg_sort(arg->sargs, arg->sposz, arg->navsort);
 	}
 
 	/*
@@ -542,12 +531,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
 
-	if (ASORT_DATE == asort)
-		qsort(sargs, sargsz, sizeof(struct article), datecmp);
-	else if (ASORT_RDATE == asort)
-		qsort(sargs, sargsz, sizeof(struct article), rdatecmp);
-	else if (ASORT_FILENAME == asort)
-		qsort(sargs, sargsz, sizeof(struct article), filenamecmp);
+	sblg_sort(sargs, sargsz, asort);
 
 	/* Open a FILE to the output file or stream. */
 
@@ -651,15 +635,7 @@ linkall_r(XML_Parser p, const char *templ,
 		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
 			goto out;
 
-	if (ASORT_DATE == asort)
-		qsort(sargs, sargsz, 
-			sizeof(struct article), datecmp);
-	else if (ASORT_RDATE == asort)
-		qsort(sargs, sargsz, 
-			sizeof(struct article), rdatecmp);
-	else if (ASORT_FILENAME == asort)
-		qsort(sargs, sargsz, 
-			sizeof(struct article), filenamecmp);
+	sblg_sort(sargs, sargsz, asort);
 
 	/* Map the template into memory for parsing. */
 
