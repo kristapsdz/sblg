@@ -642,4 +642,31 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.18</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-03-18">2019-03-18</time>
+		</header>
+		<aside>
+			<p>
+				Add <code>data-sblg-forall</code> to Atom generation.
+				This makes it easy to have a single <code>&lt;entry&gt;</code> for 
+				all Atom entries.  Also fix the generated <code>&lt;id&gt;</code> to 
+				use the current year and tidy the <a href="sblg.1.html">sblg(1)</a>
+				documentation.
+			</p>
+			<p>
+				Also add <code>data-sblg-altlink-fmt</code> to allow the alternative 
+				link to be formatted arbitrarily.
+			</p>
+			<p>
+				While there, make Atom output process its internal tags.
+				This means you can use the <code>${sblg-xxxxx}</code> tags within 
+				documents and have them properly render within your Atom feed 
+				content.
+				Clean up some possible memory leaks, too.
+			</p>
+		</aside>
+	</article>
 </articles>
