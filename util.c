@@ -214,17 +214,6 @@ xmlstrtext(char **p, size_t *sz, const XML_Char *s, int len)
 	}
 }
 
-void
-xmlstrflush(char *cp, size_t *sz)
-{
-
-	if (0 == *sz)
-		return;
-
-	*cp = '\0';
-	*sz = 0;
-}
-
 /*
  * Augment the string "p" of length "sz" with the closing tag.
  * The string is NUL-terminated.

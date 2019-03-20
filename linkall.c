@@ -53,7 +53,6 @@ struct	linkall {
 	size_t		  navsz; /* nav buffer length */
 	char		 *buf; /* buffer for text */
 	size_t		  bufsz; /* buffer size */
-	size_t		  bufmax; /* buffer maximum size */
 };
 
 static	void	tmpl_begin(void *dat, const XML_Char *s, 
@@ -79,7 +78,9 @@ tmpl_end(void *dat, const XML_Char *s)
 		xmltextx(arg->f, arg->buf, arg->dst, 
 			arg->sargs, arg->sposz, arg->single, 
 			arg->single, arg->sposz, XMLESC_NONE);
-		xmlstrflush(arg->buf, &arg->bufsz);
+		free(arg->buf);
+		arg->buf = NULL;
+		arg->bufsz = 0;
 	}
 
 	xmlclose(arg->f, s);
@@ -244,7 +245,9 @@ nav_end(void *dat, const XML_Char *s)
 		xmlclose(arg->f, s);
 	}
 
-	xmlstrflush(arg->nav, &arg->navsz);
+	free(arg->nav);
+	arg->nav = NULL;
+	arg->navsz = 0;
 
 	for (i = 0; i < arg->navtagsz; i++)
 		free(arg->navtags[i]);
@@ -296,7 +299,9 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		xmltextx(arg->f, arg->buf, arg->dst, 
 			arg->sargs, arg->sposz, arg->single, 
 			arg->single, arg->sposz, XMLESC_NONE);
-		xmlstrflush(arg->buf, &arg->bufsz);
+		free(arg->buf);
+		arg->buf = NULL;
+		arg->bufsz = 0;
 	}
 
 	if (0 == strcasecmp(s, "nav")) {
