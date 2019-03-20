@@ -69,11 +69,6 @@ char	*xstrndup(const char *, size_t);
 void	*xrealloc(void *, size_t);
 void	*xreallocarray(void *, size_t, size_t);
 
-int	 datecmp(const void *, const void *);
-int	 rdatecmp(const void *, const void *);
-int	 filenamecmp(const void *, const void *);
-int	 cmdlinecmp(const void *, const void *);
-
 __END_DECLS
 
 #endif 
