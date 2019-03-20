@@ -127,7 +127,7 @@ archive.html: archive.xml $(ARTICLES) versions.xml
 	./sblg -o- -t archive.xml $(ARTICLES) versions.xml >$@
 
 atom.xml: $(ARTICLES) versions.xml
-	./sblg -o $@ -a $(ARTICLES) versions.xml
+	./sblg -s date -o $@ -a $(ARTICLES) versions.xml
 
 .xml.html:
 	./sblg -o- -t article.xml -c $< >$@
