@@ -47,12 +47,13 @@ struct	atom {
 	size_t		 sposz; /* article length */
 	size_t		 stack; /* position in discard stack */
 	int		 entryfl; /* flags for current entry */
-#define ENTRY_STRIP	 0x01
-#define ENTRY_ALT	 0x02
-#define ENTRY_CONTENT	 0x04
-#define ENTRY_FORALL	 0x08
-#define ENTRY_REPL	 0x10
+#define ENTRY_STRIP	 0x01 /* FIXME: deprecate */
+#define ENTRY_ALT	 0x02 /* use rel="alternate" */
+#define ENTRY_CONTENT	 0x04 /* use full article content */
+#define ENTRY_FORALL	 0x08 /* use same entry for all */
+#define ENTRY_REPL	 0x10 /* use inline to replace <content> */
 	char		*entry; /* saved entry contents */
+	char		*entryalt; /* saved entry alt link format */
 	size_t		 entrysz; /* length of entry */
 };
 
@@ -68,9 +69,9 @@ struct	entryattr {
 static	const struct entryattr entryattrs[] = {
 	{ "data-sblg-altlink",	ENTRY_ALT },
 	{ "data-sblg-atomcontent", ENTRY_REPL },
-	{ "data-sblg-striplink", ENTRY_STRIP },
 	{ "data-sblg-content", ENTRY_CONTENT },
 	{ "data-sblg-forall", ENTRY_FORALL },
+	{ "data-sblg-striplink", ENTRY_STRIP },
 	{ NULL, 0 }
 };
 
@@ -88,42 +89,67 @@ static void up_begin(void *, const XML_Char *, const XML_Char **);
 static void up_end(void *, const XML_Char *);
 
 static void
-atomprint(FILE *f, const struct atom *arg, int flags,
-	const struct article *arts, size_t artpos, size_t artsz)
+atomprint(const struct atom *arg)
 {
-	char		 buf[1024];
-	struct tm	*tm;
-	const struct article *src = &arts[artpos];
+	char		      buf[1024];
+	struct tm	     *tm;
+	const struct article *src;
 
+	src = &arg->sargs[arg->spos];
 	tm = gmtime(&src->time);
 
 	strftime(buf, sizeof(buf), "%Y-%m-%d", tm);
-	fprintf(f, "<id>tag:%s,%s:%s/%s</id>\n", 
+	fprintf(arg->f, "<id>tag:%s,%s:%s/%s</id>\n", 
 		arg->domain, buf, arg->path, src->src);
 
 	strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
-	fprintf(f, "<updated>%s</updated>\n", buf);
+	fprintf(arg->f, "<updated>%s</updated>\n", buf);
 
-	fprintf(f, "<title>%s</title>\n", src->titletext);
-	fprintf(f, "<author><name>%s</name></author>\n", src->authortext);
-	if ((flags & ENTRY_ALT) && ! (flags & ENTRY_STRIP))
-		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
-			 "href=\"%s/%s\" />\n", arg->path, src->src);
-	else if ((flags & ENTRY_ALT))
-		fprintf(f, "<link rel=\"alternate\" type=\"text/html\" "
-			 "href=\"%s/%s\" />\n", arg->path, src->stripsrc);
+	fprintf(arg->f, "<title>%s</title>\n", src->titletext);
+	fprintf(arg->f, "<author><name>%s</name></author>\n", 
+		src->authortext);
 
-	if ((flags & ENTRY_CONTENT) && NULL != src->article) {
-		fprintf(f, "<content type=\"html\">");
-		xmltextx(f, src->article, "atom.xml", arts,
-			artsz, artpos, artpos, artsz, XMLESC_HTML);
-		fprintf(f, "</content>");
-	} else {
-		fprintf(f, "<content type=\"html\">");
-		xmltextx(f, src->aside, "atom.xml", arts,
-			artsz, artpos, artpos, artsz, XMLESC_HTML);
-		fprintf(f, "</content>");
+	if ((arg->entryfl & ENTRY_ALT)) {
+		if (arg->entryalt != NULL) {
+			fputs("<link rel=\"alternate\" type="
+				"\"text/html\" " "href=\"", arg->f);
+			xmltextx(arg->f, arg->entryalt, "atom.xml", 
+				arg->sargs, arg->sposz, arg->spos, 
+				arg->spos, arg->sposz, XMLESC_ATTR);
+			fputs("\" />\n", arg->f);
+		} else if ( ! (arg->entryfl & ENTRY_STRIP)) {
+			fprintf(arg->f, "<link rel=\"alternate\" "
+				"type=\"text/html\" href=\"%s/%s\" "
+				"/>\n", arg->path, src->src);
+		} else {
+			fprintf(arg->f, "<link rel=\"alternate\" "
+				"type=\"text/html\" href=\"%s/%s\" "
+				"/>\n", arg->path, src->stripsrc);
+		}
 	}
+	
+	/*
+	 * If we have data-sblg-atomcontent, then replace the content
+	 * within the <entry> with our own.
+	 * If data-sblg-content (stupid, by the way), then simply inline
+	 * all of our content.
+	 */
+
+	fputs( "<content type=\"html\">", arg->f);
+	if ((arg->entryfl & ENTRY_REPL)) {
+		xmltextx(arg->f, arg->entry, "atom.xml", 
+			arg->sargs, arg->sposz, arg->spos, 
+			arg->spos, arg->sposz, XMLESC_HTML);
+	} else if ((arg->entryfl & ENTRY_CONTENT)) {
+		xmltextx(arg->f, src->article, "atom.xml", 
+			arg->sargs, arg->sposz, arg->spos, 
+			arg->spos, arg->sposz, XMLESC_HTML);
+	} else {
+		xmltextx(arg->f, src->aside, "atom.xml",
+			arg->sargs, arg->sposz, arg->spos, 
+			arg->spos, arg->sposz, XMLESC_HTML);
+	}
+	fputs("</content>\n", arg->f);
 }
 
 /*
@@ -207,6 +233,7 @@ out:
 	if (NULL != f && stdout != f)
 		fclose(f);
 	free(larg.entry);
+	free(larg.entryalt);
 	return(rc);
 }
 
@@ -294,8 +321,7 @@ tmpl_begin(void *userdata,
 		return;
 	} else if (0 == strcasecmp(name, "link")) {
 		if (arg->spos > 0) {
-			warnx("%s: link appears"
-				"after entry", arg->src);
+			warnx("%s: link after entry", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
@@ -358,14 +384,22 @@ tmpl_begin(void *userdata,
 	arg->entryfl = 0;
 	arg->stack++;
 
-	for (attp = atts; NULL != *attp; attp += 2)
+	for (attp = atts; NULL != *attp; attp += 2) {
 		for (i = 0; NULL != entryattrs[i].name; i++) {
 			if (strcasecmp(attp[0], entryattrs[i].name))
 				continue;
 			if ( ! xmlbool(attp[1]))
 				continue;
 			arg->entryfl |= entryattrs[i].bit;
+			break;
 		}
+		if (NULL != entryattrs[i].name)
+			continue;
+		if (0 == strcasecmp(attp[0], "data-sblg-altlink-fmt")) {
+			free(arg->entryalt);
+			arg->entryalt = xstrdup(attp[1]);
+		}
+	}
 
 	XML_SetDefaultHandlerExpand(arg->p, entry_text);
 	XML_SetElementHandler(arg->p, entry_begin, entry_end);
@@ -388,13 +422,11 @@ id_end(void *userdata, const XML_Char *name)
 	time_t		 t = time(NULL);
 	struct tm	*tm;
 
-	if (NULL != (tm = localtime(&t))) {
-		snprintf(year, sizeof(year), "%04d", tm->tm_year + 1900);
-	} else {
-		/* Um... */
+	if (NULL == (tm = localtime(&t))) {
 		warn("localtime");
 		strlcpy(year, "2013", sizeof(year));
-	}
+	} else
+		snprintf(year, sizeof(year), "%04d", tm->tm_year + 1900);
 
 	dst = (0 == strcmp(arg->dst, "-")) ? "" : arg->dst;
 
@@ -431,7 +463,7 @@ entry_end(void *dat, const XML_Char *s)
 {
 	struct atom	*arg = dat;
 
-	if (strcasecmp(s, "entry") || --arg->stack > 0) {
+	if ( ! (0 == strcasecmp(s, "entry") && 0 == --arg->stack)) {
 		xmlstrclose(&arg->entry, &arg->entrysz, s);
 		return;
 	}
@@ -440,26 +472,27 @@ entry_end(void *dat, const XML_Char *s)
 
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
-	free(arg->entry);
-	arg->entry = NULL;
-	arg->entrysz = 0;
 
 	/* No more articles: discard. */
 
-	if (arg->spos >= arg->sposz)
-		return;
-
-	if (ENTRY_FORALL & arg->entryfl) {
-		while (arg->spos < arg->sposz) {
-			fprintf(arg->f, "<%s>", s);
-			atomprint(arg->f, arg, arg->entryfl,
-				arg->sargs, arg->spos++, arg->sposz);
-			fprintf(arg->f, "</%s>", s);
+	if (arg->spos < arg->sposz) {
+		if (ENTRY_FORALL & arg->entryfl) {
+			while (arg->spos < arg->sposz) {
+				fputs("<entry>\n", arg->f);
+				atomprint(arg);
+				fputs("</entry>\n", arg->f);
+				arg->spos++;
+			}
+		} else {
+			fputs("<entry>\n", arg->f);
+			atomprint(arg);
+			fputs("</entry>\n", arg->f);
+			arg->spos++;
 		}
-	} else {
-		fprintf(arg->f, "<%s>", s);
-		atomprint(arg->f, arg, arg->entryfl,
-			arg->sargs, arg->spos++, arg->sposz);
-		fprintf(arg->f, "</%s>", s);
 	}
+
+	free(arg->entry);
+	free(arg->entryalt);
+	arg->entry = arg->entryalt = NULL;
+	arg->entrysz = 0;
 }
