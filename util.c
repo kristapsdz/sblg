@@ -196,6 +196,10 @@ xmlbool(const XML_Char *s)
 	return(0 == strcasecmp(s, "1") || 0 == strcasecmp(s, "true"));
 }
 
+/*
+ * Augment the string "p" of length "sz" with the given data.
+ * The string is NUL-terminated.
+ */
 void
 xmlstrtext(char **p, size_t *sz, const XML_Char *s, int len)
 {
@@ -221,6 +225,11 @@ xmlstrflush(char *cp, size_t *sz)
 	*sz = 0;
 }
 
+/*
+ * Augment the string "p" of length "sz" with the closing tag.
+ * The string is NUL-terminated.
+ * This doesn't append a closing tag for void elements.
+ */
 void
 xmlstrclose(char **p, size_t *sz, const XML_Char *name)
 {
