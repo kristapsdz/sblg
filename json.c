@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "extern.h"
+#include "version.h"
 
 static void
 json_quoted(const char *cp, FILE *f)
