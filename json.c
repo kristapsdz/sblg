@@ -140,7 +140,7 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 	sargsz = 0;
 
 	for (i = 0; i < sz; i++)
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, NULL))
 			goto out;
 
 	sblg_sort(sargs, sargsz, asort);

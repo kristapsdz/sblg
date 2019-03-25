@@ -33,6 +33,87 @@
 #include "extern.h"
 
 /*
+ * White-list of element attributes accepted in Atom feed HTML content.
+ * Source:
+ * https://validator.w3.org/feed/docs/warning/SecurityRiskAttr.html
+ */
+static	const char *atom_wl[] = {
+	"abbr",
+	"accept",
+	"accept-charset",
+	"accesskey",
+	"action",
+	"align",
+	"alt",
+	"axis",
+	"border",
+	"cellpadding",
+	"cellspacing",
+	"char",
+	"charoff",
+	"charset",
+	"checked",
+	"cite",
+	"class",
+	"clear",
+	"cols",
+	"colspan",
+	"color",
+	"compact",
+	"coords",
+	"datetime",
+	"dir",
+	"disabled",
+	"enctype",
+	"for",
+	"frame",
+	"headers",
+	"height",
+	"href",
+	"hreflang",
+	"hspace",
+	"id",
+	"ismap",
+	"label",
+	"lang",
+	"longdesc",
+	"maxlength",
+	"media",
+	"method",
+	"multiple",
+	"name",
+	"nohref",
+	"noshade",
+	"nowrap",
+	"prompt",
+	"readonly",
+	"rel",
+	"rev",
+	"rows",
+	"rowspan",
+	"rules",
+	"scope",
+	"selected",
+	"shape",
+	"size",
+	"span",
+	"src",
+	"srcset",
+	"start",
+	"summary",
+	"tabindex",
+	"target",
+	"title",
+	"type",
+	"usemap",
+	"valign",
+	"value",
+	"vspace",
+	"width",
+	NULL
+};
+
+/*
  * Holds all information on a pending parse of the Atom template.
  */
 struct	atom {
@@ -186,7 +267,7 @@ atom(XML_Parser p, const char *templ, int sz,
 	strlcpy(larg.path, "/", MAXPATHLEN);
 
 	for (i = 0; i < sz; i++)
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, atom_wl))
 			goto out;
 
 	sblg_sort(sargs, sargsz, asort);
@@ -246,7 +327,7 @@ entry_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct atom	*arg = dat;
 
 	arg->stack += (0 == strcasecmp(s, "entry"));
-	xmlstropen(&arg->entry, &arg->entrysz, s, atts);
+	xmlstropen(&arg->entry, &arg->entrysz, s, atts, NULL);
 }
 
 static void

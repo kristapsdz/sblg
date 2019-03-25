@@ -108,7 +108,7 @@ nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct linkall	*arg = dat;
 
 	arg->stack += 0 == strcasecmp(s, "nav");
-	xmlstropen(&arg->nav, &arg->navsz, s, atts);
+	xmlstropen(&arg->nav, &arg->navsz, s, atts, NULL);
 }
 
 /*
@@ -528,7 +528,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	/* Grok all article data and sort by date. */
 
 	for (i = 0; i < sz; i++)
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, NULL))
 			goto out;
 
 	sblg_sort(sargs, sargsz, asort);
@@ -632,7 +632,7 @@ linkall_r(XML_Parser p, const char *templ,
 	 */
 
 	for (i = 0; i < sz; i++)
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz))
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, NULL))
 			goto out;
 
 	sblg_sort(sargs, sargsz, asort);

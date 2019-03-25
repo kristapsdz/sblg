@@ -212,7 +212,7 @@ listtags(XML_Parser p, int sz, char *src[], int json, int reverse)
 	/* First run the initial parse of all files. */
 
 	for (i = 0; i < sz; i++) 
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz)) {
+		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, NULL)) {
 			sblg_free(sargs, sargsz);
 			return(0);
 		}

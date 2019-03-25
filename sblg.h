@@ -63,7 +63,8 @@ struct	article {
 
 __BEGIN_DECLS
 
-int	sblg_parse(XML_Parser, const char *, struct article **, size_t *);
+int	sblg_parse(XML_Parser, const char *,
+		struct article **, size_t *, const char **);
 void	sblg_free(struct article *, size_t);
 void	sblg_sort(struct article *, size_t, enum asort);
 
