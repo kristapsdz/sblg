@@ -35,19 +35,21 @@
 #include "extern.h"
 
 /*
- * All possible self-closing (e.g., <area />) elements.
+ * All possible self-closing (e.g., <area />) HTML5 elements.
+ * These are defined in section 8.1.2 of the HTML 5.2 standard.
+ * It also has some deprecated/obsolete elements.
  */
 static	const char *elemvoid[] = {
 	"area",
 	"base",
 	"br",
 	"col",
-	"command",
+	"command", /* XXX: obsolete. */
 	"embed",
 	"hr",
 	"img",
 	"input",
-	"keygen",
+	"keygen", /* XXX: deprecated. */
 	"link",
 	"meta",
 	"param",
@@ -58,29 +60,34 @@ static	const char *elemvoid[] = {
 };
 
 /*
- * Look up a given element to see if it can be "void", i.e., close
- * itself out.
+ * Look up a given HTML5 element to see if it can be "void", i.e., it
+ * cannot have any content and closes itself out.
  * For example, <p> is not void; <link /> is.
+ * Returns zero on failure, non-zero on found.
  */
 static int
-xmlvoid(const XML_Char *s)
+htmlvoid(const XML_Char *s)
 {
 	const char	**cp;
 
-	for (cp = (const char **)elemvoid; NULL != *cp; cp++)
-		if (0 == strcasecmp(s, *cp))
-			return(1);
+	for (cp = (const char **)elemvoid; *cp != NULL; cp++)
+		if (strcasecmp(s, *cp) == 0)
+			return 1;
 
-	return(0);
+	return 0;
 }
 
+/*
+ * Look up the given HTML5 attribute in a whitelist.
+ * Returns zero on failure, non-zero on found.
+ */
 static int
-xmlwhitelist(const XML_Char *s, const char **wl)
+htmlwhitelist(const XML_Char *s, const char **wl)
 {
 	const char	**cp;
 
-	for (cp = wl; NULL != *cp; cp++) 
-		if (0 == strcasecmp(s, *cp))
+	for (cp = wl; *cp != NULL; cp++) 
+		if (strcasecmp(s, *cp) == 0)
 			return 1;
 
 	return 0;
@@ -89,6 +96,8 @@ xmlwhitelist(const XML_Char *s, const char **wl)
 /*
  * Map a regular file into memory for parsing.
  * Make sure it's not too large, first.
+ * Return zero on failure, non-zero on success.
+ * On success, symmetrise with mmap_close().
  */
 int
 mmap_open(const char *f, int *fd, char **buf, size_t *sz)
@@ -99,13 +108,13 @@ mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 	*buf = NULL;
 	*sz = 0;
 
-	if (-1 == (*fd = open(f, O_RDONLY, 0))) {
+	if ((*fd = open(f, O_RDONLY, 0)) == -1) {
 		warn("%s", f);
 		goto out;
-	} else if (-1 == fstat(*fd, &st)) {
+	} else if (fstat(*fd, &st) == -1) {
 		warn("%s", f);
 		goto out;
-	} else if ( ! S_ISREG(st.st_mode)) {
+	} else if (!S_ISREG(st.st_mode)) {
 		warnx("%s: not a regular file", f);
 		goto out;
 	} else if (st.st_size >= (1U << 31)) {
@@ -116,36 +125,41 @@ mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 	*sz = (size_t)st.st_size;
 	*buf = mmap(NULL, *sz, PROT_READ, MAP_FILE|MAP_SHARED, *fd, 0);
 
-	if (MAP_FAILED == *buf) {
+	if (*buf == MAP_FAILED) {
 		warn("%s", f);
 		goto out;
 	}
 
-	return(1);
+	return 1;
 out:
 	mmap_close(*fd, *buf, *sz);
-	return(0);
+	return 0;
 }
 
 /*
- * Reverse of mmap_open.
- * Do NOT call twice!
+ * Reverse of mmap_open, though can be called with NULL/invalid.
+ * Do NOT call twice.
  */
 void
 mmap_close(int fd, void *buf, size_t sz)
 {
 
-	if (NULL != buf)
+	if (buf != NULL)
 		munmap(buf, sz);
-	if (-1 != fd)
+	if (fd != -1)
 		close(fd);
 }
 
+/*
+ * Whether an XML attribute value evaluates to Boolean true.
+ * Return zero on false, non-zero on true.
+ */
 int
 xmlbool(const XML_Char *s)
 {
 
-	return(0 == strcasecmp(s, "1") || 0 == strcasecmp(s, "true"));
+	assert(s != NULL);
+	return strcasecmp(s, "1") == 0 || strcasecmp(s, "true") == 0;
 }
 
 /*
@@ -155,7 +169,7 @@ xmlbool(const XML_Char *s)
 void
 xmlstrtext(char **p, size_t *sz, const XML_Char *s, int len)
 {
-	size_t		 ssz;
+	size_t	 ssz;
 
 	if (len > 0) {
 		ssz = *sz;
@@ -174,9 +188,9 @@ xmlstrtext(char **p, size_t *sz, const XML_Char *s, int len)
 void
 xmlstrclose(char **p, size_t *sz, const XML_Char *name)
 {
-	size_t		 ssz;
+	size_t	 ssz;
 
-	if (xmlvoid(name))
+	if (htmlvoid(name))
 		return;
 
 	ssz = strlen(name) + 3;
@@ -187,16 +201,21 @@ xmlstrclose(char **p, size_t *sz, const XML_Char *name)
 	strlcat(*p, ">", *sz + 1);
 }
 
+/*
+ * Print an XML attribute string "cp", escaping the contents so that it
+ * doesn't invalidate the attribute scope (quotes).
+ * FIXME: use strcspn() instead of iterating.
+ */
 static void
 xmlescape(FILE *f, const char *cp)
 {
 
-	for ( ; '\0' != *cp; cp++) 
+	for ( ; *cp != '\0'; cp++) 
 		switch (*cp) {
-		case ('"'):
+		case  '"':
 			fputs("&quot;", f);
 			break;
-		case ('&'):
+		case  '&':
 			fputs("&amp;", f);
 			break;
 		default:
@@ -205,17 +224,23 @@ xmlescape(FILE *f, const char *cp)
 		}
 }
 
+/*
+ * Like xmlescape(), but only getting the size of the number of
+ * characters we'd otherwise write.
+ * Returns the length of the escaped string, which may be zero.
+ * FIXME: use strcspn().
+ */
 static size_t
 xmlstrescapesz(const char *cp)
 {
 	size_t	sz;
 
-	for (sz = 0; '\0' != *cp; cp++) 
+	for (sz = 0; *cp != '\0'; cp++) 
 		switch (*cp) {
-		case ('"'):
+		case '"':
 			sz += strlen("&quot;");
 			break;
-		case ('&'):
+		case '&':
 			sz += strlen("&amp;");
 			break;
 		default:
@@ -223,9 +248,14 @@ xmlstrescapesz(const char *cp)
 			break;
 		}
 
-	return(sz);
+	return sz;
 }
 
+/*
+ * Like xmlescape(), but serialising into a string.
+ * The buffer must be preallocated like with xmlstrescapesz().
+ * FIXME: use strcspn().
+ */
 static void
 xmlstrescape(char *p, size_t sz, const char *cp)
 {
@@ -233,12 +263,12 @@ xmlstrescape(char *p, size_t sz, const char *cp)
 
 	ssz = strlen(p);
 
-	for ( ; '\0' != *cp; cp++) 
+	for ( ; *cp != '\0'; cp++) 
 		switch (*cp) {
-		case ('"'):
+		case '"':
 			ssz = strlcat(p, "&quot;", sz);
 			break;
-		case ('&'):
+		case '&':
 			ssz = strlcat(p, "&amp;", sz);
 			break;
 		default:
@@ -259,27 +289,25 @@ void
 xmlstropen(char **p, size_t *sz, const XML_Char *name,
 	const XML_Char **atts, const char **whitelist)
 {
-	size_t		 ssz;
-	int		 isvoid;
+	size_t	 ssz;
+	int	 isvoid;
 
-	isvoid = xmlvoid(name);
+	isvoid = htmlvoid(name);
 
 	ssz = strlen(name) + 2 + isvoid;
 	*sz += ssz;
 
 	/* Make sure we zero the initial buffer. */
 
-	if (NULL == *p)
-		*p = xcalloc(*sz + 1, 1);
-	else 
-		*p = xrealloc(*p, *sz + 1);
+	*p = (*p == NULL) ?
+		xcalloc(*sz + 1, 1) : xrealloc(*p, *sz + 1);
 
 	strlcat(*p, "<", *sz + 1);
 	strlcat(*p, name, *sz + 1);
 
-	for ( ; NULL != *atts; atts += 2) {
-		if (NULL != whitelist &&
-		    !xmlwhitelist(atts[0], whitelist))
+	for ( ; *atts != NULL; atts += 2) {
+		if (whitelist != NULL &&
+		    !htmlwhitelist(atts[0], whitelist))
 			continue;
 		ssz = strlen(atts[0]) + 2;
 		*sz += ssz;
@@ -315,7 +343,7 @@ void
 xmlclose(FILE *f, const XML_Char *name)
 {
 
-	if ( ! xmlvoid(name))
+	if (!htmlvoid(name))
 		fprintf(f, "</%s>", name);
 }
 
@@ -335,7 +363,7 @@ xmlopen(FILE *f, const XML_Char *name, ...)
 	fputs(name, f);
 
 	va_start(ap, name);
-	while (NULL != (attr = va_arg(ap, XML_Char *))) {
+	while ((attr = va_arg(ap, XML_Char *)) != NULL) {
 		fputc(' ', f);
 		fputs(attr, f);
 		fputs("=\"", f);
@@ -344,7 +372,7 @@ xmlopen(FILE *f, const XML_Char *name, ...)
 	}
 	va_end(ap);
 
-	if (xmlvoid(name)) 
+	if (htmlvoid(name)) 
 		fputs(" /", f);
 
 	fputc('>', f);
@@ -363,8 +391,8 @@ fmttime(char *buf, size_t bufsz, const char *arg,
 {
 	char	*fmt;
 
-	if (0 == argsz || 
-	    (4 == argsz && 0 == strncmp(arg, "auto", argsz))) 
+	if (argsz == 0 || 
+	    (argsz == 4 && strncmp(arg, "auto", argsz) == 0)) 
 		fmt = xstrdup(isdatetime ? "%c" : "%x");
 	else
 		fmt = xstrndup(arg, argsz);
@@ -375,35 +403,32 @@ fmttime(char *buf, size_t bufsz, const char *arg,
 
 /*
  * Emit the non-NUL terminated buffer with the given escape type.
+ * FIXME: use strcspn to avoid calling into stdio.
  */
 static void
 xmltextxesc(FILE *f, const char *p, size_t sz, enum xmlesc esc)
 {
 	size_t	 i;
 
-	if (0 == sz)
+	if (sz == 0)
 		return;
 
-	/* Short-circuit: w/o escaping, just write it all. */
-
-	if (XMLESC_NONE == esc) {
+	switch (esc) {
+	case XMLESC_NONE:
 		fwrite(p, sz, 1, f);
-		return;
-	}
-
-	/* FIXME: use strcspn to avoid calling into stdio. */
-
-	if (XMLESC_ATTR == esc) {
+		break;
+	case XMLESC_ATTR:
 		for (i = 0; i < sz; i++)
-			if ((XMLESC_WS & esc) && p[i] == ' ')
+			if ((esc & XMLESC_WS) && p[i] == ' ')
 				fputs("\\ ", f);
 			else if (p[i] == '"')
 				fputs("&quot;", f);
 			else
 				fputc(p[i], f);
-	} else if (XMLESC_HTML == esc) {
+		break;
+	case XMLESC_HTML:
 		for (i = 0; i < sz; i++)
-			if ((XMLESC_WS & esc) && p[i] == ' ')
+			if ((esc & XMLESC_WS) && p[i] == ' ')
 				fputs("\\ ", f);
 			else if (p[i] == '<')
 				fputs("&lt;", f);
@@ -415,12 +440,14 @@ xmltextxesc(FILE *f, const char *p, size_t sz, enum xmlesc esc)
 				fputs("&amp;", f);
 			else
 				fputc(p[i], f);
-	} else if (XMLESC_WS == esc) {
+		break;
+	case XMLESC_WS:
 		for (i = 0; i < sz; i++)
-			if (' ' == p[i])
+			if (p[i] == ' ')
 				fputs("\\ ", f);
 			else
 				fputc(p[i], f);
+		break;
 	}
 }
 
@@ -441,6 +468,7 @@ xmltextxescs(FILE *f, const char *p, enum xmlesc esc)
  * If no tags are found, then prints <span class="sblg-tags-notfound">.
  * If given a prefix "arg" of non-zero size "argsz", only tags with the
  * matching case-sensitive prefix are printed.
+ * FIXME: use strcspn for speed.
  */
 static void
 xmltextxtag(FILE *f, const struct article *art,
@@ -458,19 +486,17 @@ xmltextxtag(FILE *f, const struct article *art,
 				continue;
 		}
 
-		/* FIXME: use strcspn for speed. */
-
 		xmltextxescs(f, "<span class=\"sblg-tag\">", esc);
-		for (cp = art->tagmap[i] + argsz; '\0' != *cp; cp++) {
-			if ('\\' == cp[0] && ' ' == cp[1])
+		for (cp = art->tagmap[i] + argsz; *cp != '\0'; cp++) {
+			if (cp[0] == '\\' && cp[1] == ' ')
 				continue;
-			if ('<' == *cp)
+			if (*cp == '<')
 				xmltextxescs(f, "&lt;", esc);
-			else if ('>' == *cp)
+			else if (*cp == '>')
 				xmltextxescs(f, "&gt;", esc);
-			else if ('"' == *cp)
+			else if (*cp == '"')
 				xmltextxescs(f, "&quot;", esc);
-			else if ('&' == *cp)
+			else if (*cp == '&')
 				xmltextxescs(f, "&amp;", esc);
 			else
 				xmltextxesc(f, cp, 1, esc);
@@ -504,11 +530,11 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 
 	assert(realsz > 0);
 
-	if (NULL == s || '\0' == *s)
+	if (s == NULL || *s == '\0')
 		return;
 
 	prev = (artpos + 1) % artsz;
-	next = artpos == 0 ? artsz - 1 : artpos - 1;
+	next = (artpos == 0) ? artsz - 1 : artpos - 1;
 
 	/*
 	 * Check whether "_word", string length "_sz", is the same as
@@ -516,12 +542,13 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 	 */
 
 #define	STRCMP(_word, _sz) \
-	(sz == (_sz) && 0 == memcmp(start, (_word), (_sz)))
+	(sz == (_sz) && memcmp(start, (_word), (_sz)) == 0)
 
 	start = s;
-	while (NULL != (cp = strstr(start, "${"))) {
-		if (NULL == (end = strchr(cp, '}')))
+	while ((cp = strstr(start, "${")) != NULL) {
+		if ((end = strchr(cp, '}')) == NULL)
 			break;
+
 		xmltextxesc(f, start, cp - start, esc);
 		start = cp + 2;
 		sz = end - start;
@@ -529,7 +556,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		argsz = 0;
 		bufp = "";
 
-		if (NULL != (arg = memchr(start, '|', sz))) {
+		if ((arg = memchr(start, '|', sz)) != NULL) {
 			sz = arg - start;
 			arg++;
 			argsz = end - arg;
@@ -561,10 +588,10 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			   STRCMP("sblg-has", 8)) {
 			for (i = 0; i < arts[artpos].setmapsz; i += 2) {
 				asz = strlen(arts[artpos].setmap[i]);
-				/* Ugly and slow, but effective. */
-				if (asz == argsz && 0 == memcmp
+				/* FIXME: slow but effective. */
+				if (asz == argsz && memcmp
 				    (arts[artpos].setmap[i], 
-				     arg, argsz)) {
+				     arg, argsz) == 0) {
 					bufp = arts[artpos].setmap[i + 1];
 					break;
 				}
@@ -573,8 +600,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			snprintf(buf, sizeof(buf), "%zu", realpos + 1);
 			bufp = buf;
 		} else if (STRCMP("sblg-pos-pct", 12)) {
-			snprintf(buf, sizeof(buf), 
-				"%.0f", 100.0 * (realpos + 1) / realsz);
+			snprintf(buf, sizeof(buf), "%.0f", 
+				100.0 * (realpos + 1) / realsz);
 			bufp = buf;
 		} else if (STRCMP("sblg-count", 10)) {
 			snprintf(buf, sizeof(buf), "%zu", realsz);
@@ -595,7 +622,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-get-escaped", 16))
 			xmltextxescs(f, bufp, XMLESC_WS | esc);
 		else if (STRCMP("sblg-has", 8)) {
-			if (NULL != bufp && '\0' != *bufp)
+			if (bufp != NULL && *bufp != '\0')
 				fprintf(f, "sblg-has-%.*s", (int)argsz, arg);
 		} else if (STRCMP("sblg-tags", 9))
 			xmltextxtag(f, &arts[artpos], arg, argsz, esc);
@@ -630,7 +657,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-title", 10))
 			xmltextxescs(f, arts[artpos].title, esc);
 		else if (STRCMP("sblg-url", 8))
-			xmltextxescs(f, (NULL == url) ? "" : url, esc);
+			xmltextxescs(f, (url == NULL) ? "" : url, esc);
 		else if (STRCMP("sblg-titletext", 14))
 			xmltextxescs(f, arts[artpos].titletext, esc);
 		else if (STRCMP("sblg-author", 11))
@@ -660,7 +687,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-asidetext", 14))
 			xmltextxescs(f, arts[artpos].asidetext, esc);
 		else if (STRCMP("sblg-img", 8))
-			xmltextxescs(f, (NULL == arts[artpos].img) ?
+			xmltextxescs(f, (arts[artpos].img == NULL) ?
 				"" : arts[artpos].img, esc);
 
 		start = end + 1;
@@ -684,7 +711,7 @@ xmlopensx(FILE *f, const XML_Char *s,
 	fputc('<', f);
 	fputs(s, f);
 
-	for ( ; NULL != *atts; atts += 2) {
+	for ( ; *atts != NULL; atts += 2) {
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
@@ -692,7 +719,7 @@ xmlopensx(FILE *f, const XML_Char *s,
 			artpos, artpos, artsz, XMLESC_ATTR);
 		fputc('"', f);
 	}
-	if (xmlvoid(s))
+	if (htmlvoid(s))
 		fputs(" /", f);
 	fputc('>', f);
 }
@@ -707,14 +734,14 @@ xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
 
 	fputc('<', f);
 	fputs(s, f);
-	for ( ; NULL != *atts; atts += 2) {
+	for ( ; *atts != NULL; atts += 2) {
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
 		xmlescape(f, atts[1]);
 		fputc('"', f);
 	}
-	if (xmlvoid(s))
+	if (htmlvoid(s))
 		fputs(" /", f);
 	fputc('>', f);
 }
@@ -728,9 +755,9 @@ xstrndup(const char *cp, size_t sz)
 {
 	void	*p;
 
-	if (NULL == (p = strndup(cp, sz)))
+	if ((p = strndup(cp, sz)) == NULL)
 		err(EXIT_FAILURE, NULL);
-	return(p);
+	return p;
 }
 
 /*
@@ -742,9 +769,9 @@ xstrdup(const char *cp)
 {
 	void	*p;
 
-	if (NULL == (p = strdup(cp)))
+	if ((p = strdup(cp)) == NULL)
 		err(EXIT_FAILURE, NULL);
-	return(p);
+	return p;
 }
 
 /*
@@ -756,9 +783,9 @@ xreallocarray(void *cp, size_t nm, size_t sz)
 {
 	void	*p;
 
-	if (NULL == (p = reallocarray(cp, nm, sz)))
+	if ((p = reallocarray(cp, nm, sz)) == NULL)
 		err(EXIT_FAILURE, NULL);
-	return(p);
+	return p;
 }
 
 /*
@@ -770,9 +797,9 @@ xrealloc(void *cp, size_t sz)
 {
 	void	*p;
 
-	if (NULL == (p = realloc(cp, sz)))
+	if ((p = realloc(cp, sz)) == NULL)
 		err(EXIT_FAILURE, NULL);
-	return(p);
+	return p;
 }
 
 /*
@@ -784,9 +811,9 @@ xcalloc(size_t nm, size_t sz)
 {
 	void	*p;
 
-	if (NULL == (p = calloc(nm, sz)))
+	if ((p = calloc(nm, sz)) == NULL)
 		err(EXIT_FAILURE, NULL);
-	return(p);
+	return p;
 }
 
 /*
@@ -798,32 +825,9 @@ xmalloc(size_t sz)
 {
 	void	*p;
 
-	if (NULL == (p = malloc(sz)))
+	if ((p = malloc(sz)) == NULL)
 		err(EXIT_FAILURE, NULL);
-	return(p);
-}
-
-void
-hashset(char ***map, size_t *sz, const char *key, const char *val)
-{
-	size_t	 i;
-
-	assert(NULL != key && '\0' != *key);
-
-	for (i = 0; i < *sz; i += 2)
-		if (0 == strcmp(key, (*map)[i]))
-			break;
-
-	if (i < *sz) {
-		free((*map)[i + 1]);
-		(*map)[i + 1] = xstrdup(val);
-		return;
-	}
-
-	*map = xreallocarray(*map, *sz + 2, sizeof(char *));
-	(*map)[*sz] = xstrdup(key);
-	(*map)[*sz + 1] = xstrdup(val);
-	(*sz) += 2;
+	return p;
 }
 
 /*
@@ -840,32 +844,35 @@ hashtag(char ***map, size_t *sz, const char *in,
 	size_t	 i;
 	int	 rc;
 
-	if ('\0' == in[0])
+	if (in[0] == '\0')
 		return;
 
 	tofree = cur = xstrdup(in);
 
 	for (;;) {
 		/* Skip past leading whitespace. */
-		while (' ' == cur[0])
+
+		while (cur[0] == ' ')
 			cur++;
-		if ('\0' == cur[0])
+		if (cur[0] == '\0')
 			break;
 
 		/* Parse word til next non-escaped whitespace. */
-		for (start = end = cur; '\0' != end[0]; end++)
-			if (' ' == end[0] && '\\' != end[-1])
+
+		for (start = end = cur; end[0] != '\0'; end++)
+			if (end[0] == ' ' && end[-1] != '\\')
 				break;
 
 		/* Set us at the next token. */
+
 		cur = end;
-		if ('\0' != *end)
+		if (*end != '\0')
 			cur++;
 		*end = '\0';
 
 		/* Search for duplicates. */
 		for (i = 0; i < *sz; i++)
-			if (0 == strcmp((*map)[i], start))
+			if (strcmp((*map)[i], start) == 0)
 				break;
 
 		if (i < *sz)
@@ -878,9 +885,9 @@ hashtag(char ***map, size_t *sz, const char *in,
 		 * IFF "arts" is non-NULL.
 		 */
 
-		if (NULL == arts || artpos < 0 ||
-		    NULL == (astart = strstr(start, "${sblg-get|")) ||
-		    NULL == (aend = strchr(astart + 11, '}'))) {
+		if (arts == NULL || artpos < 0 ||
+		    (astart = strstr(start, "${sblg-get|")) == NULL ||
+		    (aend = strchr(astart + 11, '}')) == NULL) {
 			(*map)[*sz] = xstrdup(start);
 			(*sz)++;
 			continue;
