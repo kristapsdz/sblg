@@ -182,6 +182,28 @@ addr_end(void *dat, const XML_Char *s)
 			&arg->article->authorsz, s);
 }
 
+static void
+thash(struct parse *arg, const char *key, const char *val)
+{
+	size_t	 i;
+
+	assert(key != NULL && *key != '\0');
+
+	for (i = 0; i < arg->article->setmapsz; i += 2)
+		if (strcmp(key, arg->article->setmap[i]) == 0) {
+			free(arg->article->setmap[i + 1]);
+			arg->article->setmap[i + 1] = xstrdup(val);
+			return;
+		}
+
+	arg->article->setmap = xreallocarray
+		(arg->article->setmap,
+		 arg->article->setmapsz + 2, sizeof(char *));
+	arg->article->setmap[arg->article->setmapsz] = xstrdup(key);
+	arg->article->setmap[arg->article->setmapsz + 1] = xstrdup(val);
+	arg->article->setmapsz += 2;
+}
+
 /*
  * Look for sblg attributes defined on any given element.
  * This should be run by each and every element within the article.
@@ -196,9 +218,7 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 			continue;
 		if (0 == strncasecmp(*attp, "data-sblg-set-", 14) &&
 		    '\0' != (*attp)[14]) {
-			hashset(&arg->article->setmap,
-			        &arg->article->setmapsz,
-				*attp + 14, attp[1]);
+			thash(arg, *attp + 14, attp[1]);
 		} else if (0 == strcasecmp(*attp, "data-sblg-img")) {
 			free(arg->article->img);
 			arg->article->img = xstrdup(attp[1]);
