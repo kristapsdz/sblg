@@ -44,8 +44,8 @@ void	mmap_close(int fd, void *buf, size_t sz);
 int	mmap_open(const char *f, int *fd, char **buf, size_t *sz);
 
 void	xmlstrclose(char **, size_t *, const XML_Char *);
-void	xmlstropen(char **, size_t *, 
-		const XML_Char *, const XML_Char **);
+void	xmlstropen(char **, size_t *, const XML_Char *,
+		const XML_Char **, const char **);
 void	xmlstrtext(char **, size_t *, const XML_Char *, int);
 
 int	xmlbool(const XML_Char *s);

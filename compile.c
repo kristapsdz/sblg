@@ -157,7 +157,7 @@ compile(XML_Parser p, const char *templ,
 	sargs = NULL;
 	sargsz = 0;
 
-	if ( ! sblg_parse(p, src, &sargs, &sargsz))
+	if ( ! sblg_parse(p, src, &sargs, &sargsz, NULL))
 		goto out;
 
 	if (0 == sargsz) {

@@ -49,6 +49,7 @@ struct	parse {
 	unsigned int	  flags;
 	int		  fd; /* underlying descriptor */
 	const char	 *src; /* underlying file */
+	const char	**wl; /* whitelist of attributes */
 };
 
 /*
@@ -216,9 +217,9 @@ title_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	arg->stack += 0 == strcasecmp(s, "title");
 	xmlstropen(&arg->article->title, 
-		&arg->article->titlesz, s, atts);
+		&arg->article->titlesz, s, atts, arg->wl);
 	xmlstropen(&arg->article->article, 
-		&arg->article->articlesz, s, atts);
+		&arg->article->articlesz, s, atts, arg->wl);
 	tsearch(arg, s, atts);
 }
 
@@ -230,9 +231,9 @@ addr_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	arg->stack += 0 == strcasecmp(s, "address");
 	xmlstropen(&arg->article->author, 
-		&arg->article->authorsz, s, atts);
+		&arg->article->authorsz, s, atts, arg->wl);
 	xmlstropen(&arg->article->article, 
-		&arg->article->articlesz, s, atts);
+		&arg->article->articlesz, s, atts, arg->wl);
 	tsearch(arg, s, atts);
 }
 
@@ -243,9 +244,9 @@ aside_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	arg->stack += 0 == strcasecmp(s, "aside");
 	xmlstropen(&arg->article->aside, 
-		&arg->article->asidesz, s, atts);
+		&arg->article->asidesz, s, atts, arg->wl);
 	xmlstropen(&arg->article->article, 
-		&arg->article->articlesz, s, atts);
+		&arg->article->articlesz, s, atts, arg->wl);
 	tsearch(arg, s, atts);
 }
 
@@ -267,7 +268,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	assert(0 == arg->stack);
 
 	xmlstropen(&arg->article->article,
-		&arg->article->articlesz, s, atts);
+		&arg->article->articlesz, s, atts, arg->wl);
 	tsearch(arg, s, atts);
 
 	if (0 == strcasecmp(s, "aside")) {
@@ -507,15 +508,15 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	arg->gstack = 1;
 	xmlstropen(&arg->article->article, 
-		&arg->article->articlesz, s, atts);
+		&arg->article->articlesz, s, atts, arg->wl);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, article_text);
 	tsearch(arg, s, atts);
 }
 
 int
-sblg_parse(XML_Parser p, const char *src, 
-	struct article **arg, size_t *argsz)
+sblg_parse(XML_Parser p, const char *src,
+	struct article **arg, size_t *argsz, const char **wl)
 {
 	char		*buf;
 	size_t		 sz;
@@ -534,6 +535,7 @@ sblg_parse(XML_Parser p, const char *src,
 	parse.src = src;
 	parse.p = p;
 	parse.fd = fd;
+	parse.wl = wl;
 
 	XML_ParserReset(p, NULL);
 	XML_SetStartElementHandler(p, input_begin);

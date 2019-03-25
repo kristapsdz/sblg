@@ -74,6 +74,18 @@ xmlvoid(const XML_Char *s)
 	return(0);
 }
 
+static int
+xmlwhitelist(const XML_Char *s, const char **wl)
+{
+	const char	**cp;
+
+	for (cp = wl; NULL != *cp; cp++) 
+		if (0 == strcasecmp(s, *cp))
+			return 1;
+
+	return 0;
+}
+
 /*
  * Map a regular file into memory for parsing.
  * Make sure it's not too large, first.
@@ -236,9 +248,16 @@ xmlstrescape(char *p, size_t sz, const char *cp)
 		}
 }
 
+/*
+ * Append the XML element "name" opening to the buffer in "p", which is
+ * always NUL terminated and of length "sz".
+ * If the element is an XML void element, it is auto-closed.
+ * If the white-list is not NULL, it is scanned and only attributes in
+ * the white-list are serialised.
+ */
 void
-xmlstropen(char **p, size_t *sz, 
-	const XML_Char *name, const XML_Char **atts)
+xmlstropen(char **p, size_t *sz, const XML_Char *name,
+	const XML_Char **atts, const char **whitelist)
 {
 	size_t		 ssz;
 	int		 isvoid;
@@ -247,26 +266,34 @@ xmlstropen(char **p, size_t *sz,
 
 	ssz = strlen(name) + 2 + isvoid;
 	*sz += ssz;
+
 	/* Make sure we zero the initial buffer. */
+
 	if (NULL == *p)
 		*p = xcalloc(*sz + 1, 1);
 	else 
 		*p = xrealloc(*p, *sz + 1);
+
 	strlcat(*p, "<", *sz + 1);
 	strlcat(*p, name, *sz + 1);
 
 	for ( ; NULL != *atts; atts += 2) {
+		if (NULL != whitelist &&
+		    !xmlwhitelist(atts[0], whitelist))
+			continue;
 		ssz = strlen(atts[0]) + 2;
 		*sz += ssz;
 		*p = xrealloc(*p, *sz + 1);
 		strlcat(*p, " ", *sz + 1);
 		strlcat(*p, atts[0], *sz + 1);
 		strlcat(*p, "=", *sz + 1);
+
 		/* 
 		 * Remember to buffer in '&quot;' space. 
 		 * Use enough as if each word were that.
 		 * FIXME: this is totally unnecessary.
 		 */
+
 		ssz = xmlstrescapesz(atts[1]) + 2;
 		*sz += ssz;
 		*p = xrealloc(*p, *sz + 1);
