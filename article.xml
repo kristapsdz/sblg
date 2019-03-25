@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta charset="utf-8" /> 
-		<title>sblg - ${sblg-title}</title>
-		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+		<title>sblg: ${sblg-title}</title>
+		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="sblg Article and Version Feed" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
 		<link rel="stylesheet" href="article.css" />
+		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 	</head>
 	<body>
 		<header>

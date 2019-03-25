@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta charset="utf-8" /> 
-		<title>simple off-line blog utility</title>
-		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-		<link href="atom.xml" type="application/atom+xml" rel="alternate" title="sblg Article and Version Feed" />
+		<title>sblg: simple off-line blog utility</title>
+		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="sblg Article and Version Feed" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
 		<link rel="stylesheet" href="index.css" />
+		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 	</head>
 	<body itemscope="itemscope" itemtype="http://schema.org/SoftwareApplication">
 		<nav>
@@ -261,19 +261,10 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 			</nav>
 		</article>
 		<footer>
-			<div>
-				&#169; 2013&#8211;2018, 
-				<a itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person" rel="author" href="https://github.com/kristapsdz">
-					<span itemprop="name">Kristaps Dzonsons</span>
-				</a>
-			</div>
-			<nav>
-				<a href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
-				<a href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
-				<a href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
-				<a href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
-				<a href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
-			</nav>
+			&#169; 2013&#8211;2018, 
+			<a itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person" rel="author" href="https://github.com/kristapsdz">
+				<span itemprop="name">Kristaps Dzonsons</span>
+			</a>
 		</footer>
 	</body>
 </html>
