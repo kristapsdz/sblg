@@ -669,4 +669,23 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.19</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-03-25">2019-03-25</time>
+		</header>
+		<aside>
+			<p>
+				When creating Atom feeds, strip away <q>dangerous</q> HTML
+				attributes.
+				Do this by using the <a
+					href="https://validator.w3.org/feed/">W3C</a>'s Atom feed
+				attribute whitelist, defined in their validator <a
+					href="https://validator.w3.org/feed/docs/warning/SecurityRiskAttr.html">security
+					considerations</a>.
+				In doing so, Atom feeds validate nicely.
+			</p>
+		</aside>
+	</article>
 </articles>
