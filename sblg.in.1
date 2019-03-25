@@ -646,6 +646,11 @@ element with this set to true is replaced with the newest article date
 .Sx Tag Symbols
 are processed.
 .El
+.Pp
+When filling in HTML content,
+.Nm
+will strip away HTML attributes that do not fit into a white-list.
+This white-list is defined by the W3C's Feed Validator.
 .Ss JSON Schema
 .Nm
 can produce a JSON amalgamation with the
