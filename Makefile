@@ -3,7 +3,6 @@
 include Makefile.configure
 
 VERSION 	 = 0.4.18
-CFLAGS		+= -DVERSION=\"$(VERSION)\"
 OBJS		 = compats.o \
 		   main.o \
 		   compile.o \
@@ -112,13 +111,16 @@ sblg.tar.gz:
 sblg.tar.gz.sha512: sblg.tar.gz
 	sha512 sblg.tar.gz >$@
 
-$(OBJS): sblg.h extern.h config.h
+$(OBJS): sblg.h extern.h config.h version.h
 
 atom.xml index.html $(ARTICLES): sblg
 
 atom.xml: atom-template.xml
 
 $(ARTICLES): article.xml
+
+version.h: Makefile
+	echo "#define VERSION \"$(VERSION)\"" >$@
 
 index.html: index.xml $(ARTICLES) versions.xml
 	./sblg -o- -t index.xml $(ARTICLES) versions.xml >$@
@@ -150,7 +152,7 @@ $(ARTICLES): versions.xml
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
 	rm -f article10.xml
-	rm -rf *.dSYM
+	rm -f version.h
 
 distclean: clean
 	rm -f Makefile.configure config.h config.log
