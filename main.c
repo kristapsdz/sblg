@@ -49,7 +49,7 @@ enum	op {
 int
 main(int argc, char *argv[])
 {
-	int		 ch, i, rc, fmtjson = 0, rev = 0;
+	int		 ch, i, rc, fmtjson = 0, rev = 0, lf = 0;
 	const char	*templ = NULL, *outfile = NULL, *force = NULL;
 	enum op		 op = OP_BLOG;
 	enum asort	 asort = ASORT_DATE;
@@ -83,7 +83,10 @@ main(int argc, char *argv[])
 			fmtjson = 1;
 			break;
 		case 'l':
-			op = OP_LISTTAGS;
+			if (op == OP_LISTTAGS)
+				lf = 1;
+			else
+				op = OP_LISTTAGS;
 			break;
 		case 'L':
 			op = OP_LINK_INPLACE;
@@ -173,7 +176,8 @@ main(int argc, char *argv[])
 		 * List all tags and the filename(s) they're found in.
 		 */
 
-		rc = listtags(p, argc, argv, fmtjson, rev);
+		rc = listtags(p, argc, argv,
+			fmtjson, rev, fmtjson ? 0 : lf);
 		break;
 	case OP_LINK_INPLACE:
 		/*
