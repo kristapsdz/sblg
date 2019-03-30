@@ -68,7 +68,7 @@ unescape(const char *cp)
  * ordering so we need to hash entries and bucket.
  */
 static void
-dorlist(const struct article *sargs, size_t sargsz, int json)
+dorlist(const struct article *sargs, size_t sargsz, int json, int lf)
 {
 	size_t	 	 i, j;
 	char		*copy;
@@ -79,6 +79,8 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 	struct tagnq	 tq;
 	struct tagn	*tn;
 
+	TAILQ_INIT(&tq);
+
 	/*
 	 * Start by creating a table of all tags and the files that
 	 * reference those tags.
@@ -87,8 +89,6 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 
 	if (!hcreate(256))
 		errx(EXIT_FAILURE, "hcreate");
-
-	TAILQ_INIT(&tq);
 
 	for (i = 0; i < sargsz; i++) {
 		for (j = 0; j < sargs[i].tagmapsz; j++) {
@@ -120,27 +120,32 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 			unescape(tn->tag);
 			printf("\", \n \"srcs\": [");
 		}
+		if (lf)
+			unescape(tn->tag);
 		TAILQ_FOREACH(fn, tn->fq, entries) {
 			if (json)
 				putchar('"');
-			else
+			if (!json && lf)
+				putchar('\t');
+			if (!json && !lf)
 				printf("%s\t", tn->tag);
 			printf("%s", fn->fn);
 			if (json)
 				putchar('"');
-			else
+			if (!json && !lf)
 				putchar('\n');
-			if (json && TAILQ_NEXT(fn, entries))
+			if (json && TAILQ_NEXT(fn, entries) != NULL)
 				putchar(',');
 		}
-		if (json && TAILQ_NEXT(tn, entries))
+		if (json && TAILQ_NEXT(tn, entries) != NULL)
 			puts("]},");
 		else if (json)
 			puts("]}");
+		if (!json && lf)
+			puts("");
 	}
 
 	/*
-	 * Clean up the hashtable entries.
 	 * XXX: on Linux, the "key" value to the ENTER-created table
 	 * entries is not destroyed, so we do that later.
 	 */
@@ -166,7 +171,7 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
  * This prints the tags belonging to each article.
  */
 static void
-dolist(const struct article *sargs, size_t sargsz, int json)
+dolist(const struct article *sargs, size_t sargsz, int json, int lf)
 {
 	size_t	 i, j;
 
@@ -174,34 +179,44 @@ dolist(const struct article *sargs, size_t sargsz, int json)
 		if (json)
 			printf("{\"src\": \"%s\", \n"
 			       " \"tags\": [", sargs[i].src);
+		else if (lf)
+			printf("%s", sargs[i].src);
+
 		for (j = 0; j < sargs[i].tagmapsz; j++) {
 			if (json && j > 0)
 				putchar(',');
 			if (json)
 				putchar('"');
-			else
+			if (!json && lf)
+				putchar('\t');
+			if (!json && !lf)
 				printf("%s\t", sargs[i].src);
 			unescape(sargs[i].tagmap[j]);
 			if (json)
 				putchar('"');
-			else
+			if (!json && !lf)
 				putchar('\n');
 		}
 		if (json && i < sargsz - 1)
 			puts("]},");
 		else if (json)
 			puts("]}");
+		else if (lf)
+			puts("");
 	}
 }
 
 /*
- * Emit all of the tags in no particulra order, file-first or tag-first
+ * Emit all of the tags in no particular order, file-first or tag-first
  * is "reverse" was specified.
  * If json is specified, format the output in JSON.
+ * If long is specified, have the matched file or tags be all on one
+ * line instead of one per line.
  * Returns zero on failure, non-zero on success.
  */
 int
-listtags(XML_Parser p, int sz, char *src[], int json, int reverse)
+listtags(XML_Parser p, int sz, char *src[],
+	int json, int reverse, int longformat)
 {
 	size_t		 sargsz = 0;
 	int		 i;
@@ -216,9 +231,9 @@ listtags(XML_Parser p, int sz, char *src[], int json, int reverse)
 	if (json)
 		puts("{[");
 	if (reverse)
-		dorlist(sargs, sargsz, json);
+		dorlist(sargs, sargsz, json, longformat);
 	else
-		dolist(sargs, sargsz, json);
+		dolist(sargs, sargsz, json, longformat);
 	if (json)
 		puts("]}");
 
