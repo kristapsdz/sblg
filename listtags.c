@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2016--2017 Kristaps Dzonsons <kristaps@bsd.lv>
+ * Copyright (c) 2016--2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -34,15 +34,15 @@
 #include "extern.h"
 
 struct	filen {
-	const char	  *fn;
+	const char	  *fn; /* name of file */
 	TAILQ_ENTRY(filen) entries;
 };
 
 TAILQ_HEAD(filenq, filen);
 
 struct	tagn {
-	struct filenq	 *fq;
-	char	 	 *tag;
+	struct filenq	 *fq; /* files referencing tag */
+	char	 	 *tag; /* name of tag */
 	TAILQ_ENTRY(tagn) entries;
 };
 
@@ -56,8 +56,8 @@ static void
 unescape(const char *cp)
 {
  
-	for ( ; '\0' != *cp; cp++)
-		if ( ! ('\\' == cp[0] && ' ' == cp[1]))
+	for ( ; *cp != '\0'; cp++)
+		if (!(cp[0] == '\\' && cp[1] == ' '))
 			putchar(*cp);
 }
 
@@ -67,7 +67,7 @@ unescape(const char *cp)
  * This is more complicated because our data comes in article-major
  * ordering so we need to hash entries and bucket.
  */
-static int
+static void
 dorlist(const struct article *sargs, size_t sargsz, int json)
 {
 	size_t	 	 i, j;
@@ -85,10 +85,8 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 	 * Use the shitty hcreate() interface.
 	 */
 
-	if ( ! hcreate(256)) {
-		warnx("hcreate");
-		return(0);
-	}
+	if (!hcreate(256))
+		errx(EXIT_FAILURE, "hcreate");
 
 	TAILQ_INIT(&tq);
 
@@ -96,16 +94,14 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 		for (j = 0; j < sargs[i].tagmapsz; j++) {
 			e.key = sargs[i].tagmap[j];
 			e.data = NULL;
-			if (NULL == (ep = hsearch(e, FIND))) {
+			if ((ep = hsearch(e, FIND)) == NULL) {
 				fq = xmalloc(sizeof(struct filenq));
 				TAILQ_INIT(fq);
 				e.data = fq;
 				copy = xstrdup(sargs[i].tagmap[j]);
 				e.key = copy;
-				if (NULL == (ep = hsearch(e, ENTER))) {
-					warnx("hsearch");
-					return(0);
-				}
+				if ((ep = hsearch(e, ENTER)) == NULL)
+					errx(EXIT_FAILURE, "hsearch");
 				tn = xmalloc(sizeof(struct tagn));
 				tn->tag = copy;
 				tn->fq = fq;
@@ -151,8 +147,8 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 
 	hdestroy();
 
-	while (NULL != (tn = TAILQ_FIRST(&tq))) {
-		while (NULL != (fn = TAILQ_FIRST(tn->fq))) {
+	while ((tn = TAILQ_FIRST(&tq)) != NULL) {
+		while ((fn = TAILQ_FIRST(tn->fq)) != NULL) {
 			TAILQ_REMOVE(tn->fq, fn, entries);
 			free(fn);
 		}
@@ -163,18 +159,16 @@ dorlist(const struct article *sargs, size_t sargsz, int json)
 		free(tn->fq);
 		free(tn);
 	}
-
-	return(1);
 }
 
 /*
  * Print article-major ordering.
  * This prints the tags belonging to each article.
  */
-static int
+static void
 dolist(const struct article *sargs, size_t sargsz, int json)
 {
-	size_t	 	 i, j;
+	size_t	 i, j;
 
 	for (i = 0; i < sargsz; i++) {
 		if (json)
@@ -198,40 +192,36 @@ dolist(const struct article *sargs, size_t sargsz, int json)
 		else if (json)
 			puts("]}");
 	}
-
-	return(1);
 }
 
+/*
+ * Emit all of the tags in no particulra order, file-first or tag-first
+ * is "reverse" was specified.
+ * If json is specified, format the output in JSON.
+ * Returns zero on failure, non-zero on success.
+ */
 int
 listtags(XML_Parser p, int sz, char *src[], int json, int reverse)
 {
 	size_t		 sargsz = 0;
-	int		 i, rc;
+	int		 i;
 	struct article	*sargs = NULL;
 
-	/* First run the initial parse of all files. */
-
 	for (i = 0; i < sz; i++) 
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, NULL)) {
+		if (!sblg_parse(p, src[i], &sargs, &sargsz, NULL)) {
 			sblg_free(sargs, sargsz);
-			return(0);
+			return 0;
 		}
-
-	/* Now actually emit the listings. */
 
 	if (json)
 		puts("{[");
-
-	rc = reverse ?
-		dorlist(sargs, sargsz, json) :
+	if (reverse)
+		dorlist(sargs, sargsz, json);
+	else
 		dolist(sargs, sargsz, json);
-
 	if (json)
 		puts("]}");
 
-	/* Cleanup and exit. */
-
 	sblg_free(sargs, sargsz);
-	return(rc);
+	return 1;
 }
-
