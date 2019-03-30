@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013--2017 Kristaps Dzonsons <kristaps@bsd.lv>
+ * Copyright (c) 2013--2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -43,55 +43,27 @@ enum	op {
 	OP_LINK_INPLACE
 };
 
-#if HAVE_SANDBOX_INIT
-static void
-sandbox_apple(void)
-{
-	char	*ep;
-	int	 rc;
-
-	rc = sandbox_init(kSBXProfileNoNetwork, SANDBOX_NAMED, &ep);
-	if (0 == rc)
-		return;
-	warn("%s", ep);
-	sandbox_free_error(ep);
-	exit(EXIT_FAILURE);
-}
-#endif
-
-#if HAVE_PLEDGE
-static void
-sandbox_openbsd(void)
-{
-
-	/* We can do much better than this! */
-
-	if (-1 == pledge("stdio cpath rpath wpath", NULL))
-		err(EXIT_FAILURE, "pledge");
-}
-#endif
-
 int
 main(int argc, char *argv[])
 {
 	int		 ch, i, rc, fmtjson = 0, rev = 0;
-	const char	*progname, *templ, *outfile, *force;
+	const char	*templ, *outfile, *force;
 	enum op		 op;
 	enum asort	 asort;
 	XML_Parser	 p;
 
-	setlocale(LC_ALL, "");
-
 #if HAVE_SANDBOX_INIT
-	sandbox_apple();
-#elif HAVE_PLEDGE
-	sandbox_openbsd();
+	if (sandbox_init
+	    (kSBXProfileNoNetwork, SANDBOX_NAMED, NULL) < 0)
+		errx(EXIT_FAILURE, "sandbox_init");
 #endif
-	progname = strrchr(argv[0], '/');
-	if (progname == NULL)
-		progname = argv[0];
-	else
-		++progname;
+
+#if HAVE_PLEDGE
+	if (pledge("stdio cpath rpath wpath", NULL) == -1)
+		err(EXIT_FAILURE, "pledge");
+#endif
+
+	setlocale(LC_ALL, "");
 
 	templ = outfile = force = NULL;
 	op = OP_BLOG;
@@ -234,7 +206,8 @@ usage:
 		"       %s [-o file] [-s sort] -j file...\n"
 		"       %s [-o file] [-t templ] [-s sort] -C file...\n"
 		"       %s [-o file] [-t templ] [-s sort] file...\n",
-		progname, progname, progname, 
-		progname, progname, progname, progname);
+		getprogname(), getprogname(), getprogname(), 
+		getprogname(), getprogname(), getprogname(), 
+		getprogname());
 	return(EXIT_FAILURE);
 }
