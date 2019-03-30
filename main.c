@@ -35,21 +35,24 @@
 
 #include "extern.h"
 
+/*
+ * Types of operations we handle.
+ */
 enum	op {
-	OP_ATOM,
-	OP_COMPILE,
-	OP_BLOG,
-	OP_LISTTAGS,
-	OP_LINK_INPLACE
+	OP_ATOM, /* generate atom feed */
+	OP_COMPILE, /* standalone article */
+	OP_BLOG, /* amalgamation */
+	OP_LISTTAGS, /* list all tags */
+	OP_LINK_INPLACE /* amalgamation (multiple in/out) */
 };
 
 int
 main(int argc, char *argv[])
 {
 	int		 ch, i, rc, fmtjson = 0, rev = 0;
-	const char	*templ, *outfile, *force;
-	enum op		 op;
-	enum asort	 asort;
+	const char	*templ = NULL, *outfile = NULL, *force = NULL;
+	enum op		 op = OP_BLOG;
+	enum asort	 asort = ASORT_DATE;
 	XML_Parser	 p;
 
 #if HAVE_SANDBOX_INIT
@@ -65,49 +68,45 @@ main(int argc, char *argv[])
 
 	setlocale(LC_ALL, "");
 
-	templ = outfile = force = NULL;
-	op = OP_BLOG;
-	asort = ASORT_DATE;
-
 	while (-1 != (ch = getopt(argc, argv, "acjlLrC:o:s:t:")))
 		switch (ch) {
-		case ('a'):
+		case 'a':
 			op = OP_ATOM;
 			break;
-		case ('c'):
+		case 'c':
 			op = OP_COMPILE;
 			break;
-		case ('C'):
+		case 'C':
 			force = optarg;
 			break;
-		case ('j'):
+		case 'j':
 			fmtjson = 1;
 			break;
-		case ('l'):
+		case 'l':
 			op = OP_LISTTAGS;
 			break;
-		case ('L'):
+		case 'L':
 			op = OP_LINK_INPLACE;
 			break;
-		case ('o'):
+		case 'o':
 			outfile = optarg;
 			break;
-		case ('r'):
+		case 'r':
 			rev = 1;
 			break;
-		case ('s'):
-			if (0 == strcasecmp(optarg, "date"))
+		case 's':
+			if (strcasecmp(optarg, "date") == 0)
 				asort = ASORT_DATE;
-			else if (0 == strcasecmp(optarg, "rdate"))
+			else if (strcasecmp(optarg, "rdate") == 0)
 				asort = ASORT_RDATE;
-			else if (0 == strcasecmp(optarg, "filename"))
+			else if (strcasecmp(optarg, "filename") == 0)
 				asort = ASORT_FILENAME;
-			else if (0 == strcasecmp(optarg, "cmdline"))
+			else if (strcasecmp(optarg, "cmdline") == 0)
 				asort = ASORT_CMDLINE;
 			else
 				goto usage;
 			break;
-		case ('t'):
+		case 't':
 			templ = optarg;
 			break;
 		default:
@@ -117,10 +116,10 @@ main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	if (0 == argc)
+	if (argc == 0)
 		goto usage;
 
-	if (OP_BLOG == op && fmtjson)
+	if (op == OP_BLOG && fmtjson)
 		op = OP_ATOM;
 
 	/*
@@ -128,56 +127,61 @@ main(int argc, char *argv[])
 	 * We'll just use the same one over and over whilst parsing our
 	 * documents.
 	 */
-	if (NULL == (p = XML_ParserCreate(NULL)))
+
+	if ((p = XML_ParserCreate(NULL)) == NULL)
 		err(EXIT_FAILURE, "XML_ParserCreate");
 
 	switch (op) {
-	case (OP_COMPILE):
+	case OP_COMPILE:
 		/*
 		 * Merge a single input XML file into a template XML
 		 * files to produce output.
 		 * (This can happen multiple times if we're spitting
 		 * into stdout.)
 		 */
-		if (NULL == templ)
+
+		if (templ == NULL)
 			templ = "article-template.xml";
-		if (1 == argc) {
+		if (argc == 1) {
 			rc = compile(p, templ, argv[0], outfile);
 			break;
 		}
 		for (i = 0, rc = 1; rc && i < argc; i++)
 			rc = compile(p, templ, argv[i], NULL);
 		break;
-	case (OP_ATOM):
+	case OP_ATOM:
 		if (fmtjson) {
-			if (NULL == outfile)
+			if (outfile == NULL)
 				outfile = "blog.json";
 			rc = json(p, argc, argv, outfile, asort);
 			break;
 		}
+
 		/*
 		 * Merge multiple input files into an Atom feed
 		 * amalgamation.
 		 */
-		if (NULL == templ)
+
+		if (templ == NULL)
 			templ = "atom-template.xml";
-		if (NULL == outfile)
+		if (outfile == NULL)
 			outfile = "atom.xml";
-		rc = atom(p, templ, argc, 
-			argv, outfile, asort);
+		rc = atom(p, templ, argc, argv, outfile, asort);
 		break;
-	case (OP_LISTTAGS):
+	case OP_LISTTAGS:
 		/*
 		 * List all tags and the filename(s) they're found in.
 		 */
+
 		rc = listtags(p, argc, argv, fmtjson, rev);
 		break;
-	case (OP_LINK_INPLACE):
+	case OP_LINK_INPLACE:
 		/*
 		 * Merge multiple input files into multiple output files
 		 * in a sort of multi-mode blog output.
 		 */
-		if (NULL == templ)
+
+		if (templ == NULL)
 			templ = "blog-template.xml";
 		rc = linkall_r(p, templ, argc, argv, asort);
 		break;
@@ -186,9 +190,10 @@ main(int argc, char *argv[])
 		 * Merge multiple input files into a regular (we'll call
 		 * it "blog") amalgamation.
 		 */
-		if (NULL == templ)
+
+		if (templ == NULL)
 			templ = "blog-template.xml";
-		if (NULL == outfile)
+		if (outfile == NULL)
 			outfile = "blog.html";
 		rc = linkall(p, templ, force, 
 			argc, argv, outfile, asort);
@@ -196,7 +201,7 @@ main(int argc, char *argv[])
 	}
 
 	XML_ParserFree(p);
-	return(rc ? EXIT_SUCCESS : EXIT_FAILURE);
+	return rc ? EXIT_SUCCESS : EXIT_FAILURE;
 usage:
 	fprintf(stderr, 
 		"usage: %s [-o file] [-t templ] -c file...\n"
@@ -209,5 +214,5 @@ usage:
 		getprogname(), getprogname(), getprogname(), 
 		getprogname(), getprogname(), getprogname(), 
 		getprogname());
-	return(EXIT_FAILURE);
+	return EXIT_FAILURE;
 }
