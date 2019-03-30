@@ -688,4 +688,20 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.20</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-03-30">2019-03-30</time>
+		</header>
+		<aside>
+			<p>
+				In list mode (<b>-l</b>), allow for <q>long-format</q> listing by
+				specifying another <b>-l</b>.
+				This puts all tags (or files, with <b>-r</b>) to be printed on the
+				same line.
+				This makes it easier to use shell scripting to process tag lists.
+			</p>
+		</aside>
+	</article>
 </articles>
