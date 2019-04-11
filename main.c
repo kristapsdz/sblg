@@ -207,6 +207,7 @@ main(int argc, char *argv[])
 		break;
 	}
 
+	sblg_destroy();
 	XML_ParserFree(p);
 	return rc ? EXIT_SUCCESS : EXIT_FAILURE;
 usage:
