@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013--2015, 2017 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) 2013--2015, 2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -72,7 +72,7 @@ article_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 {
 	struct pargs	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(name, "article");
+	arg->stack += (strcasecmp(name, "article") == 0);
 }
 
 /*
@@ -84,7 +84,7 @@ article_end(void *dat, const XML_Char *name)
 {
 	struct pargs	*arg = dat;
 
-	if (0 == strcasecmp(name, "article") && 0 == --arg->stack) {
+	if (strcasecmp(name, "article") == 0 && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, NULL, NULL);
 		XML_SetDefaultHandlerExpand(arg->p, template_text);
 	}
@@ -104,6 +104,7 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 
 	xmltextx(arg->f, arg->buf, arg->dst, 
 		arg->article, 1, 0, 0, 1, XMLESC_NONE);
+
 	free(arg->buf);
 	arg->buf = NULL;
 	arg->bufsz = 0;
@@ -114,21 +115,22 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 		return;
 	}
 
-	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-article"))
+	for (attp = atts; *attp != NULL; attp += 2)
+		if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLE)
 			break;
 
-	if (NULL == *attp || ! xmlbool(attp[1])) {
+	if (*attp == NULL || !xmlbool(attp[1])) {
 		xmlopensx(arg->f, name, atts, 
 			arg->dst, arg->article, 1, 0);
 		return;
 	}
 
 	/*
-	 * If we encounter an <article data-sblg-article="1">, then echo
+	 * If we encounter an <article data-sblg-article>, then echo
 	 * the article file and discard content until the matching close
 	 * of the article.
 	 */
+
 	arg->stack++;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
@@ -140,27 +142,19 @@ int
 compile(XML_Parser p, const char *templ, 
 	const char *src, const char *dst)
 {
-	char		*out, *cp, *buf;
-	size_t		 sz, sargsz;
-	int		 fd, rc;
-	FILE		*f;
+	char		*out = NULL, *cp, *buf = NULL;
+	size_t		 sz = 0, sargsz = 0;
+	int		 fd = -1, rc = 0;
+	FILE		*f = stdout;
 	struct pargs	 arg;
-	struct article	*sargs;
+	struct article	*sargs = NULL;
 
 	memset(&arg, 0, sizeof(struct pargs));
 
-	rc = 0;
-	buf = out = NULL;
-	fd = -1;
-	f = NULL;
-	sz = 0;
-	sargs = NULL;
-	sargsz = 0;
-
-	if ( ! sblg_parse(p, src, &sargs, &sargsz, NULL))
+	if (!sblg_parse(p, src, &sargs, &sargsz, NULL))
 		goto out;
 
-	if (0 == sargsz) {
+	if (sargsz == 0) {
 		warnx("%s: contains no article", src);
 		goto out;
 	} else if (sargsz > 1)
@@ -169,16 +163,16 @@ compile(XML_Parser p, const char *templ,
 
 	arg.article = &sargs[0];
 
-	if (NULL == dst) {
-		/*
-		 * If we have no output file name, then name it the same
-		 * as the input but with ".html" at the end.
-		 * However, if we have ".xml", then replace that with
-		 * ".html".
-		 */
+	/*
+	 * If we have no output file name, then name it the same as the
+	 * input but with ".html" at the end.
+	 * However, if we have ".xml", then replace that with ".html".
+	 */
+
+	if (dst == NULL) {
 		sz = strlen(src);
-		if (NULL == (cp = strrchr(src, '.')) ||
-				strcasecmp(cp + 1, "xml")) {
+		if ((cp = strrchr(src, '.')) == NULL ||
+		    strcasecmp(cp + 1, "xml")) {
 			/* Append .html to input name. */
 			out = xmalloc(sz + 6);
 			strlcpy(out, src, sz + 6);
@@ -192,12 +186,12 @@ compile(XML_Parser p, const char *templ,
 	} else
 		out = xstrdup(dst);
 
-	f = stdout;
-	if (strcmp(out, "-") && NULL == (f = fopen(out, "w"))) {
+	if (strcmp(out, "-") && (f = fopen(out, "w")) == NULL) {
 		warn("%s", out);
 		goto out;
 	} 
-	if ( ! mmap_open(templ, &fd, &buf, &sz))
+
+	if (!mmap_open(templ, &fd, &buf, &sz))
 		goto out;
 
 	arg.f = f;
@@ -210,7 +204,7 @@ compile(XML_Parser p, const char *templ,
 	XML_SetDefaultHandlerExpand(p, template_text);
 	XML_SetUserData(p, &arg);
 
-	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
+	if (XML_Parse(p, buf, (int)sz, 1) != XML_STATUS_OK) {
 		warnx("%s:%zu:%zu: %s", templ, 
 			XML_GetCurrentLineNumber(p),
 			XML_GetCurrentColumnNumber(p),
@@ -224,12 +218,11 @@ compile(XML_Parser p, const char *templ,
 	rc = 1;
 out:
 	mmap_close(fd, buf, sz);
-	if (NULL != f && stdin != f)
+	if (f != NULL && f != stdin)
 		fclose(f);
-
 	sblg_free(sargs, sargsz);
 	free(out);
 	free(arg.buf);
-	return(rc);
+	return rc;
 }
 

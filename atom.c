@@ -143,17 +143,17 @@ struct	atom {
  * data-sblg-entry="1" has been set.
  */
 struct	entryattr {
-	const char	*name; /* name of <entry> attribute */
+	enum sblgtag	 tag; /* <entry> attribute */
 	int		 bit; /* bit to set if evaluating to true */
 };
 
 static	const struct entryattr entryattrs[] = {
-	{ "data-sblg-altlink",	ENTRY_ALT },
-	{ "data-sblg-atomcontent", ENTRY_REPL },
-	{ "data-sblg-content", ENTRY_CONTENT },
-	{ "data-sblg-forall", ENTRY_FORALL },
-	{ "data-sblg-striplink", ENTRY_STRIP },
-	{ NULL, 0 }
+	{ SBLG_ATTR_ALTLINK,	 ENTRY_ALT },
+	{ SBLG_ATTR_ATOMCONTENT, ENTRY_REPL },
+	{ SBLG_ATTR_CONTENT, 	 ENTRY_CONTENT },
+	{ SBLG_ATTR_FORALL, 	 ENTRY_FORALL },
+	{ SBLG_ATTR_STRIPLINK, 	 ENTRY_STRIP },
+	{ SBLGTAG_NONE, 	 0 }
 };
 
 /* Functions may be called out-of-order of definitions. */
@@ -360,6 +360,7 @@ tmpl_begin(void *userdata,
 	struct tm	 *tm;
 	const XML_Char	**attp;
 	size_t		  i;
+	enum sblgtag	  tag;
 
 	assert(0 == arg->stack);
 
@@ -460,18 +461,17 @@ tmpl_begin(void *userdata,
 	arg->entryfl = 0;
 	arg->stack++;
 
-	for (attp = atts; NULL != *attp; attp += 2) {
-		for (i = 0; NULL != entryattrs[i].name; i++) {
-			if (strcasecmp(attp[0], entryattrs[i].name))
+	for (attp = atts; *attp != NULL; attp += 2) {
+		tag = sblg_lookup(*attp);
+		for (i = 0; entryattrs[i].tag != SBLGTAG_NONE; i++) {
+			if (tag == entryattrs[i].tag)
 				continue;
-			if ( ! xmlbool(attp[1]))
+			if (!xmlbool(attp[1]))
 				continue;
 			arg->entryfl |= entryattrs[i].bit;
 			break;
 		}
-		if (NULL != entryattrs[i].name)
-			continue;
-		if (0 == strcasecmp(attp[0], "data-sblg-altlink-fmt")) {
+		if (tag == SBLG_ATTR_ALTLINKFMT) {
 			free(arg->entryalt);
 			arg->entryalt = xstrdup(attp[1]);
 		}
