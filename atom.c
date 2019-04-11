@@ -464,7 +464,7 @@ tmpl_begin(void *userdata,
 	for (attp = atts; *attp != NULL; attp += 2) {
 		tag = sblg_lookup(*attp);
 		for (i = 0; entryattrs[i].tag != SBLGTAG_NONE; i++) {
-			if (tag == entryattrs[i].tag)
+			if (tag != entryattrs[i].tag)
 				continue;
 			if (!xmlbool(attp[1]))
 				continue;
