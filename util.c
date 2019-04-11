@@ -36,31 +36,34 @@
 #include "extern.h"
 
 struct	htab {
-	const char	*name;
-	enum sblgtag	 tag;
+	char		*tabent; /* used in the table entry */
+	const char	*name; /* the static name */
+	enum sblgtag	 tag; /* static tag */
 };
 
-static	const struct htab htabs[SBLGTAG_NONE] = {
-	{ "data-sblg-altlink", SBLG_ATTR_ALTLINK },
-	{ "data-sblg-altlink-fmt", SBLG_ATTR_ALTLINKFMT },
-	{ "data-sblg-article", SBLG_ATTR_ARTICLE },
-	{ "data-sblg-articletag", SBLG_ATTR_ARTICLETAG },
-	{ "data-sblg-atomcontent", SBLG_ATTR_ATOMCONTENT },
-	{ "data-sblg-content", SBLG_ATTR_CONTENT },
-	{ "data-sblg-forall", SBLG_ATTR_FORALL },
-	{ "data-sblg-img", SBLG_ATTR_IMG },
-	{ "data-sblg-lang", SBLG_ATTR_LANG },
-	{ "data-sblg-nav", SBLG_ATTR_NAV },
-	{ "data-sblg-navcontent", SBLG_ATTR_NAVCONTENT },
-	{ "data-sblg-navsort", SBLG_ATTR_NAVSORT },
-	{ "data-sblg-navstart", SBLG_ATTR_NAVSTART },
-	{ "data-sblg-navsz", SBLG_ATTR_NAVSZ },
-	{ "data-sblg-navtag", SBLG_ATTR_NAVTAG },
-	{ "data-sblg-navxml", SBLG_ATTR_NAVXML },
-	{ "data-sblg-permlink", SBLG_ATTR_PERMLINK },
-	{ "data-sblg-sort", SBLG_ATTR_SORT },
-	{ "data-sblg-striplink", SBLG_ATTR_STRIPLINK },
-	{ "data-sblg-tags", SBLG_ATTR_TAGS },
+static	int htabinit = 0;
+
+static	struct htab htabs[SBLGTAG_NONE] = {
+	{ NULL, "data-sblg-altlink", SBLG_ATTR_ALTLINK },
+	{ NULL, "data-sblg-altlink-fmt", SBLG_ATTR_ALTLINKFMT },
+	{ NULL, "data-sblg-article", SBLG_ATTR_ARTICLE },
+	{ NULL, "data-sblg-articletag", SBLG_ATTR_ARTICLETAG },
+	{ NULL, "data-sblg-atomcontent", SBLG_ATTR_ATOMCONTENT },
+	{ NULL, "data-sblg-content", SBLG_ATTR_CONTENT },
+	{ NULL, "data-sblg-forall", SBLG_ATTR_FORALL },
+	{ NULL, "data-sblg-img", SBLG_ATTR_IMG },
+	{ NULL, "data-sblg-lang", SBLG_ATTR_LANG },
+	{ NULL, "data-sblg-nav", SBLG_ATTR_NAV },
+	{ NULL, "data-sblg-navcontent", SBLG_ATTR_NAVCONTENT },
+	{ NULL, "data-sblg-navsort", SBLG_ATTR_NAVSORT },
+	{ NULL, "data-sblg-navstart", SBLG_ATTR_NAVSTART },
+	{ NULL, "data-sblg-navsz", SBLG_ATTR_NAVSZ },
+	{ NULL, "data-sblg-navtag", SBLG_ATTR_NAVTAG },
+	{ NULL, "data-sblg-navxml", SBLG_ATTR_NAVXML },
+	{ NULL, "data-sblg-permlink", SBLG_ATTR_PERMLINK },
+	{ NULL, "data-sblg-sort", SBLG_ATTR_SORT },
+	{ NULL, "data-sblg-striplink", SBLG_ATTR_STRIPLINK },
+	{ NULL, "data-sblg-tags", SBLG_ATTR_TAGS },
 };
 
 /*
@@ -962,18 +965,41 @@ sblg_init(void)
 	ENTRY	*hentp;
 	size_t	 i;
 
+	assert(!htabinit);
+
 	if (!hcreate(64))
 		return 0;
 
 	for (i = 0; i < SBLGTAG_NONE; i++) {
-		hent.key = (char *)htabs[i].name;
+		htabs[i].tabent = xstrdup(htabs[i].name);
+		hent.key = htabs[i].tabent;
 		hent.data = (void *)&htabs[i].tag;
-		if ((hentp = hsearch(hent, ENTER)) == NULL)
+		if ((hentp = hsearch(hent, ENTER)) == NULL) {
+			sblg_destroy();
 			return 0;
+		}
 		assert(hentp->key == hent.key);
 	}
 
+	htabinit = 1;
 	return 1;
+}
+
+void
+sblg_destroy(void)
+{
+#ifdef	__linux__
+	size_t	 i;
+
+	for (i = 0; i < SBLTAG_NONE; i++) {
+		free(htabs[i].tabent);
+		htabs[i].tabent = NULL;
+	}
+#endif
+	if (!htabinit)
+		return;
+	hdestroy();
+	htabinit = 0;
 }
 
 enum sblgtag

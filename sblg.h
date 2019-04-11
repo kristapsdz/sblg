@@ -91,6 +91,7 @@ struct	article {
 __BEGIN_DECLS
 
 int		sblg_init(void);
+void		sblg_destroy(void);
 enum sblgtag	sblg_lookup(const char *);
 
 int		sblg_parse(XML_Parser, const char *,

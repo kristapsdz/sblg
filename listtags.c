@@ -228,6 +228,8 @@ listtags(XML_Parser p, int sz, char *src[],
 			return 0;
 		}
 
+	sblg_destroy();
+
 	if (json)
 		puts("{[");
 	if (reverse)
