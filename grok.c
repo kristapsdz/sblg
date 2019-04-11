@@ -213,21 +213,25 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 {
 	const XML_Char	**attp;
 
-	for (attp = atts; NULL != *attp; attp += 2) {
-		if ('\0' == attp[1][0])
-			continue;
-		if (0 == strncasecmp(*attp, "data-sblg-set-", 14) &&
-		    '\0' != (*attp)[14]) {
-			thash(arg, *attp + 14, attp[1]);
-		} else if (0 == strcasecmp(*attp, "data-sblg-img")) {
+	for (attp = atts; *attp != NULL; attp += 2)
+		switch (sblg_lookup(*attp)) {
+		case SBLGTAG_IMG:
 			free(arg->article->img);
 			arg->article->img = xstrdup(attp[1]);
 			arg->flags |= PARSE_IMG;
-		} else if (0 == strcasecmp(*attp, "data-sblg-tags"))
+			break;
+		case SBLGTAG_TAGS:
 			hashtag(&arg->article->tagmap,
 				&arg->article->tagmapsz, attp[1],
 				NULL, 0, 0);
-	}
+			break;
+		default:
+			if (strncasecmp(*attp, "data-sblg-set-", 14))
+				break;
+			if ((*attp)[14] != '\0')
+				thash(arg, *attp + 14, attp[1]);
+			break;
+		}
 }
 
 static void
@@ -483,64 +487,74 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->article->stripsrc = cp + 1;
 	}
 
-	if (strrchr(arg->src, '/') == NULL)
+	if ((cp = strrchr(arg->src, '/')) == NULL)
 		arg->article->striplangbase = xstrdup(arg->src);
 	else
-		arg->article->striplangbase = xstrdup
-			(strrchr(arg->src, '/') + 1);
+		arg->article->striplangbase = xstrdup(cp + 1);
 
-	/*
-	 * If we have any languages specified, append them here.
-	 */
 	for (attp = atts; *attp != NULL; attp += 2) 
-		if (0 == strcasecmp(*attp, "data-sblg-lang")) {
+		switch (sblg_lookup(*attp)) {
+		case SBLGTAG_LANG:
 			cp = tofree = xstrdup(attp[1]);
 			while ((tok = strsep(&cp, " \t")) != NULL) {
-				if ('\0' == *tok)
+				if (*tok == '\0')
 					continue;
 				start = arg->article->striplangbase;
 				loc = strstr(start, tok);
-				if (NULL == loc || loc == start)
+				if (loc == NULL || loc == start)
 					continue;
-				if ('.' != loc[-1])
+				if (loc[-1] != '.')
 					continue;
 				c = loc[strlen(tok)];
-				if ('.' != c && '\0' != c)
+				if (c != '.' && c != '\0')
 					continue;
 				sz = strlen(loc) - strlen(tok) + 1;
 				memmove(loc - 1, loc + strlen(tok), sz);
 			}
 			free(tofree);
-		} else if (0 == strcasecmp(*attp, "data-sblg-sort")) {
-			if (0 == strcasecmp(attp[1], "first"))
+			break;
+		case SBLGTAG_SORT:
+			if (strcasecmp(attp[1], "first") == 0)
 				arg->article->sort = SORT_FIRST;
-			else if (0 == strcasecmp(attp[1], "last"))
+			else if (strcasecmp(attp[1], "last") == 0)
 				arg->article->sort = SORT_LAST;
+			break;
+		default:
+			break;
 		}
 
 	arg->gstack = 1;
+
 	xmlstropen(&arg->article->article, 
 		&arg->article->articlesz, s, atts, arg->wl);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, article_text);
+
 	tsearch(arg, s, atts);
 }
 
+/*
+ * Main driver for parsing an article at file "src" into (if found) the
+ * vector "arg" of current size "argsz".
+ * If "wl" is specified, this is used as a white-list of element
+ * attributes that we record when parsing into our buffers.
+ * Returns zero on failure, non-zero on fatal error (file not found, map
+ * failure, allocation error, parse error, etc.).
+ */
 int
 sblg_parse(XML_Parser p, const char *src,
 	struct article **arg, size_t *argsz, const char **wl)
 {
 	char		*buf;
 	size_t		 sz;
-	int		 fd, rc;
+	int		 fd;
 	struct parse	 parse;
+	enum XML_Status	 st;
 
 	memset(&parse, 0, sizeof(struct parse));
 
-	rc = 0;
-
-	if ( ! mmap_open(src, &fd, &buf, &sz))
-		goto out;
+	if (!mmap_open(src, &fd, &buf, &sz))
+		return 0;
 
 	parse.articles = arg;
 	parse.articlesz = argsz;
@@ -553,13 +567,9 @@ sblg_parse(XML_Parser p, const char *src,
 	XML_SetStartElementHandler(p, input_begin);
 	XML_SetUserData(p, &parse);
 
-	if (XML_STATUS_OK != XML_Parse(p, buf, (int)sz, 1)) {
+	if ((st = XML_Parse(p, buf, (int)sz, 1)) != XML_STATUS_OK)
 		logerr(&parse);
-		goto out;
-	} 
 
-	rc = 1;
-out:
 	mmap_close(fd, buf, sz);
-	return(rc);
+	return (st == XML_STATUS_OK);
 }
