@@ -430,9 +430,8 @@ article_end(void *dat, const XML_Char *s)
 }
 
 /*
- * Look for the first instance of <article>.
- * If we're linking files, it must consist of the "data-sblg-article",
- * otherwise this isn't necessary.
+ * Check for the first instance of <article data-sblg-article>.
+ * If found, initialise a new article for parsing.
  */
 static void
 input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
@@ -443,32 +442,27 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	size_t		  sz;
 	const XML_Char	**attp;
 
-	assert(0 == arg->gstack);
-	assert(0 == arg->stack);
+	assert(arg->gstack == 0);
+	assert(arg->stack == 0);
 
 	if (strcasecmp(s, "article"))
 		return;
 
-	/* Look for the data-sblg-article mention.  */
-	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-article"))
+	/* Look for the true-valued data-sblg-article.  */
+
+	for (attp = atts; *attp != NULL; attp += 2)
+		if (sblg_lookup(attp[0]) == SBLGTAG_ARTICLE)
 			break;
 
-	/*
-	 * If we don't have the data-sblg-article (or it's set to
-	 * false), then continue on.
-	 */
-	if (NULL == *attp || ! xmlbool(attp[1]))
+	if (*attp == NULL || !xmlbool(attp[1]))
 		return;
+
+	/* We have an article: allocates its bits. */
 
 	arg->flags = 0;
 	arg->stack = 0;
 	arg->gstack = 0;
 
-	/* 
-	 * We have an article.
-	 * Allocates its bits.
-	 */
 	*arg->articles = xreallocarray
 		(*arg->articles, 
 		 *arg->articlesz + 1,
@@ -481,17 +475,15 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	arg->article->src = arg->src;
 	arg->article->base = xstrdup(arg->src);
 
-	if (NULL == strrchr(arg->src, '/')) {
+	if ((cp = strrchr(arg->src, '/')) == NULL) {
 		arg->article->stripbase = xstrdup(arg->src);
 		arg->article->stripsrc = arg->src;
 	} else {
-		arg->article->stripbase = xstrdup
-			(strrchr(arg->src, '/') + 1);
-		arg->article->stripsrc = 
-			strrchr(arg->src, '/') + 1;
+		arg->article->stripbase = xstrdup(cp + 1);
+		arg->article->stripsrc = cp + 1;
 	}
 
-	if (NULL == strrchr(arg->src, '/'))
+	if (strrchr(arg->src, '/') == NULL)
 		arg->article->striplangbase = xstrdup(arg->src);
 	else
 		arg->article->striplangbase = xstrdup
@@ -500,7 +492,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	/*
 	 * If we have any languages specified, append them here.
 	 */
-	for (attp = atts; NULL != *attp; attp += 2) 
+	for (attp = atts; *attp != NULL; attp += 2) 
 		if (0 == strcasecmp(*attp, "data-sblg-lang")) {
 			cp = tofree = xstrdup(attp[1]);
 			while ((tok = strsep(&cp, " \t")) != NULL) {

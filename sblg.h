@@ -30,27 +30,35 @@ enum	asort {
 	ASORT_CMDLINE
 };
 
+enum	sblgtag {
+	SBLGTAG_ARTICLE,
+	SBLGTAG_NONE
+};
+
+/*
+ * All strings are NUL-terminated.
+ */
 struct	article {
 	const char	 *src; /* source filename */
 	const char	 *stripsrc; /* source filename w/o directory */
-	char		 *base; /* nil-terminated src w/o suffix */
-	char		 *stripbase; /* nil-terminated fname w/o suffix */
+	char		 *base; /* src w/o suffix */
+	char		 *stripbase; /* fname w/o suffix */
 	char		 *striplangbase; /* stripbase w/o langs */
-	char		 *title; /* nil-terminated title */
+	char		 *title; /* title */
 	size_t		  titlesz; /* length of title */
-	char		 *titletext; /* nil-terminated title text */
+	char		 *titletext; /* title text */
 	size_t		  titletextsz; /* length of titletext */
-	char		 *aside; /* nil-terminated aside content */
+	char		 *aside; /* aside content */
 	size_t		  asidesz; /* length of aside */
-	char		 *asidetext; /* nil-terminated aside text */
+	char		 *asidetext; /* aside text */
 	size_t		  asidetextsz; /* length of asidetext */
-	char		 *author; /* nil-terminated author name */
+	char		 *author; /* author name */
 	size_t		  authorsz; /* length of author */
-	char		 *authortext; /* nil-terminated author name text */
+	char		 *authortext; /* author name text */
 	size_t		  authortextsz; /* length of authortext */
 	time_t	 	  time; /* date of publication */
 	int		  isdatetime; /* whether the date has a time */
-	char		 *article; /* nil-terminated entire article */
+	char		 *article; /* entire article */
 	size_t		  articlesz; /* length of article */
 	char		**tagmap; /* array of tags */
 	size_t		  tagmapsz; /* length of tag array */
@@ -63,10 +71,13 @@ struct	article {
 
 __BEGIN_DECLS
 
-int	sblg_parse(XML_Parser, const char *,
-		struct article **, size_t *, const char **);
-void	sblg_free(struct article *, size_t);
-void	sblg_sort(struct article *, size_t, enum asort);
+int		sblg_init(void);
+enum sblgtag	sblg_lookup(const char *);
+
+int		sblg_parse(XML_Parser, const char *,
+			struct article **, size_t *, const char **);
+void		sblg_free(struct article *, size_t);
+void		sblg_sort(struct article *, size_t, enum asort);
 
 __END_DECLS
 

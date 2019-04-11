@@ -125,6 +125,9 @@ main(int argc, char *argv[])
 	if (op == OP_BLOG && fmtjson)
 		op = OP_ATOM;
 
+	if (!sblg_init())
+		err(EXIT_FAILURE, NULL);
+
 	/*
 	 * Avoid constantly re-using a parser by specifying one here.
 	 * We'll just use the same one over and over whilst parsing our

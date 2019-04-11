@@ -25,6 +25,7 @@
 #endif
 #include <expat.h>
 #include <fcntl.h>
+#include <search.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,6 +34,15 @@
 #include <unistd.h>
 
 #include "extern.h"
+
+struct	htab {
+	const char	*name;
+	enum sblgtag	 tag;
+};
+
+static	const struct htab htabs[SBLGTAG_NONE] = {
+	{ "data-sblg-article", SBLGTAG_ARTICLE }
+};
 
 /*
  * All possible self-closing (e.g., <area />) HTML5 elements.
@@ -918,4 +928,43 @@ hashtag(char ***map, size_t *sz, const char *in,
 	}
 
 	free(tofree);
+}
+
+/*
+ * Initialise the hashtable used by sblg to look up attributes.
+ * This speeds up the system because we need to look at each attribute
+ * to see whether it's one of those we recognise.
+ */
+int
+sblg_init(void)
+{
+	ENTRY	 hent;
+	ENTRY	*hentp;
+	size_t	 i;
+
+	if (!hcreate(64))
+		return 0;
+
+	for (i = 0; i < SBLGTAG_NONE; i++) {
+		hent.key = (char *)htabs[i].name;
+		hent.data = (void *)&htabs[i].tag;
+		if ((hentp = hsearch(hent, ENTER)) == NULL)
+			return 0;
+		assert(hentp->key == hent.key);
+	}
+
+	return 1;
+}
+
+enum sblgtag
+sblg_lookup(const char *attr)
+{
+	ENTRY	 hent;
+	ENTRY	*hentp;
+
+	hent.key = (char *)attr;
+	if ((hentp = hsearch(hent, FIND)) == NULL)
+		return SBLGTAG_NONE;
+
+	return *(enum sblgtag *)hentp->data;
 }
