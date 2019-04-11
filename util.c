@@ -41,11 +41,20 @@ struct	htab {
 };
 
 static	const struct htab htabs[SBLGTAG_NONE] = {
-	{ "data-sblg-article", SBLGTAG_ARTICLE },
-	{ "data-sblg-img", SBLGTAG_IMG },
-	{ "data-sblg-lang", SBLGTAG_LANG },
-	{ "data-sblg-sort", SBLGTAG_SORT },
-	{ "data-sblg-tags", SBLGTAG_TAGS },
+	{ "data-sblg-article", SBLG_ATTR_ARTICLE },
+	{ "data-sblg-articletag", SBLG_ATTR_ARTICLETAG },
+	{ "data-sblg-img", SBLG_ATTR_IMG },
+	{ "data-sblg-lang", SBLG_ATTR_LANG },
+	{ "data-sblg-nav", SBLG_ATTR_NAV },
+	{ "data-sblg-navcontent", SBLG_ATTR_NAVCONTENT },
+	{ "data-sblg-navsort", SBLG_ATTR_NAVSORT },
+	{ "data-sblg-navstart", SBLG_ATTR_NAVSTART },
+	{ "data-sblg-navsz", SBLG_ATTR_NAVSZ },
+	{ "data-sblg-navtag", SBLG_ATTR_NAVTAG },
+	{ "data-sblg-navxml", SBLG_ATTR_NAVXML },
+	{ "data-sblg-permlink", SBLG_ATTR_PERMLINK },
+	{ "data-sblg-sort", SBLG_ATTR_SORT },
+	{ "data-sblg-tags", SBLG_ATTR_TAGS },
 };
 
 /*

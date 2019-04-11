@@ -212,12 +212,12 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 
 	for (attp = atts; *attp != NULL; attp += 2)
 		switch (sblg_lookup(*attp)) {
-		case SBLGTAG_IMG:
+		case SBLG_ATTR_IMG:
 			free(arg->article->img);
 			arg->article->img = xstrdup(attp[1]);
 			arg->flags |= PARSE_IMG;
 			break;
-		case SBLGTAG_TAGS:
+		case SBLG_ATTR_TAGS:
 			hashtag(&arg->article->tagmap,
 				&arg->article->tagmapsz, attp[1],
 				NULL, 0, 0);
@@ -452,7 +452,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	/* Look for the true-valued data-sblg-article.  */
 
 	for (attp = atts; *attp != NULL; attp += 2)
-		if (sblg_lookup(attp[0]) == SBLGTAG_ARTICLE)
+		if (sblg_lookup(attp[0]) == SBLG_ATTR_ARTICLE)
 			break;
 
 	if (*attp == NULL || !xmlbool(attp[1]))
@@ -491,7 +491,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	for (attp = atts; *attp != NULL; attp += 2) 
 		switch (sblg_lookup(*attp)) {
-		case SBLGTAG_LANG:
+		case SBLG_ATTR_LANG:
 			cp = tofree = xstrdup(attp[1]);
 			while ((tok = strsep(&cp, " \t")) != NULL) {
 				if (*tok == '\0')
@@ -510,7 +510,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			}
 			free(tofree);
 			break;
-		case SBLGTAG_SORT:
+		case SBLG_ATTR_SORT:
 			if (strcasecmp(attp[1], "first") == 0)
 				arg->article->sort = SORT_FIRST;
 			else if (strcasecmp(attp[1], "last") == 0)
