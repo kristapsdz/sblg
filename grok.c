@@ -1,6 +1,6 @@
 /*	$Id$ */
 /*
- * Copyright (c) 2013, 2014, 2017 Kristaps Dzonsons <kristaps@bsd.lv>
+ * Copyright (c) 2013, 2014, 2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -37,8 +37,8 @@
 struct	parse {
 	XML_Parser	  p;
 	struct article	 *article; /* article being parsed */
-	struct article	**articles;
-	size_t		 *articlesz;
+	struct article	**articles; /* vector of articles */
+	size_t		 *articlesz; /* number of articles */
 	size_t		  stack; /* stack (many uses) */
 	size_t		  gstack; /* global "article" stack */
 #define	PARSE_ASIDE	  1 /* we've seen an aside */
@@ -52,14 +52,11 @@ struct	parse {
 	const char	**wl; /* whitelist of attributes */
 };
 
-/*
- * Forward declarations for circular references.
- */
-static void	article_begin(void *dat, const XML_Char *s, 
-			const XML_Char **atts);
-static void	article_end(void *dat, const XML_Char *s);
-static void	input_begin(void *, const XML_Char *, 
-			const XML_Char **);
+static void article_begin(void *, const XML_Char *, const XML_Char **);
+static void article_end(void *, const XML_Char *);
+static void input_begin(void *, const XML_Char *, const XML_Char **);
+static void logerrx(const struct parse *, const char *, ...)
+		__attribute__((format(printf, 2, 3)));
 
 static void
 logerrx(const struct parse *p, const char *fmt, ...)
@@ -136,10 +133,10 @@ title_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (0 == strcasecmp(s, "h1") ||
-			0 == strcasecmp(s, "h2") ||
-			0 == strcasecmp(s, "h3") ||
-			0 == strcasecmp(s, "h4")) {
+	if (strcasecmp(s, "h1") == 0 ||
+	    strcasecmp(s, "h2") == 0 ||
+	    strcasecmp(s, "h3") == 0 ||
+	    strcasecmp(s, "h4") == 0) {
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
@@ -156,7 +153,7 @@ aside_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (0 == strcasecmp(s, "aside") && 0 == --arg->stack) {
+	if (strcasecmp(s, "aside") == 0 && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
@@ -173,7 +170,7 @@ addr_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (0 == strcasecmp(s, "address") && 0 == --arg->stack) {
+	if (strcasecmp(s, "address") == 0 && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
@@ -289,20 +286,20 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	char		 *erp;
 	size_t		  sz;
 
-	assert(0 == arg->stack);
+	assert(arg->stack == 0);
 
 	xmlstropen(&arg->article->article,
 		&arg->article->articlesz, s, atts, arg->wl);
 	tsearch(arg, s, atts);
 
-	if (0 == strcasecmp(s, "aside")) {
+	if (strcasecmp(s, "aside") == 0) {
 		if (PARSE_ASIDE & arg->flags)
 			return;
 		arg->stack++;
 		arg->flags |= PARSE_ASIDE;
 		XML_SetDefaultHandlerExpand(arg->p, aside_text);
 		XML_SetElementHandler(arg->p, aside_begin, aside_end);
-	} else if (0 == strcasecmp(s, "img")) {
+	} else if (strcasecmp(s, "img") == 0) {
 		if (PARSE_IMG & arg->flags) 
 			return;
 		for (attp = atts; NULL != *attp; attp += 2)
@@ -313,7 +310,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			arg->article->img = xstrdup(attp[1]);
 			arg->flags |= PARSE_IMG;
 		}
-	} else if (0 == strcasecmp(s, "time")) {
+	} else if (strcasecmp(s, "time") == 0) {
 		if (PARSE_TIME & arg->flags)
 			return;
 		arg->flags |= PARSE_TIME;
@@ -348,7 +345,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			}
 			arg->article->time = timegm(&tm);
 		}
-	} else if (0 == strcasecmp(s, "address")) {
+	} else if (strcasecmp(s, "address") == 0) {
 		if (PARSE_ADDR & arg->flags) 
 			return;
 		arg->flags |= PARSE_ADDR;
@@ -356,16 +353,16 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->stack++;
 		XML_SetElementHandler(arg->p, addr_begin, addr_end);
 		XML_SetDefaultHandlerExpand(arg->p, addr_text);
-	} else if (0 == strcasecmp(s, "h1") ||
-			0 == strcasecmp(s, "h2") ||
-			0 == strcasecmp(s, "h3") ||
-			0 == strcasecmp(s, "h4")) {
+	} else if (strcasecmp(s, "h1") == 0 ||
+		   strcasecmp(s, "h2") == 0 ||
+		   strcasecmp(s, "h3") == 0 ||
+		   strcasecmp(s, "h4") == 0) {
 		if (PARSE_TITLE & arg->flags) 
 			return;
 		arg->flags |= PARSE_TITLE;
 		XML_SetElementHandler(arg->p, title_begin, title_end);
 		XML_SetDefaultHandlerExpand(arg->p, title_text);
-	} else if (0 == strcasecmp(s, "article"))
+	} else if (strcasecmp(s, "article") == 0)
 		arg->gstack++;
 }
 
