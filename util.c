@@ -72,6 +72,7 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "h3", SBLG_ELEM_H3 },
 	{ NULL, "h4", SBLG_ELEM_H4 },
 	{ NULL, "img", SBLG_ELEM_IMG },
+	{ NULL, "nav", SBLG_ELEM_NAV },
 	{ NULL, "time", SBLG_ELEM_TIME },
 	{ NULL, "title", SBLG_ELEM_TITLE },
 };

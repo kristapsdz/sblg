@@ -55,15 +55,14 @@ struct	linkall {
 	size_t		  bufsz; /* buffer size */
 };
 
-static	void	tmpl_begin(void *dat, const XML_Char *s, 
-			const XML_Char **atts);
+static void tmpl_begin(void *, const XML_Char *, const XML_Char **);
 
 static void
 tmpl_text(void *dat, const XML_Char *s, int len)
 {
 	struct linkall	*arg = dat;
 
-	if (-1 != arg->single)
+	if (arg->single != -1)
 		xmlstrtext(&arg->buf, &arg->bufsz, s, len);
 	else
 		fprintf(arg->f, "%.*s", len, s);
@@ -74,7 +73,7 @@ tmpl_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
 
-	if (-1 != arg->single) {
+	if (arg->single != -1) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
 			arg->sargs, arg->sposz, arg->single, 
 			arg->single, arg->sposz, XMLESC_NONE);
@@ -91,7 +90,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct linkall	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(s, "article");
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ARTICLE);
 }
 
 static void
@@ -107,7 +106,7 @@ nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct linkall	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(s, "nav");
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_NAV);
 	xmlstropen(&arg->nav, &arg->navsz, s, atts, NULL);
 }
 
@@ -121,17 +120,17 @@ tagfind(char **tags, size_t tagsz, char **tagmap, size_t tagmapsz)
 {
 	size_t	 	 i, j;
 
-	if (0 == tagsz)
-		return(1);
-	if (0 == tagmapsz) 
-		return(0);
+	if (tagsz == 0)
+		return 1;
+	if (tagmapsz == 0) 
+		return 0;
 
 	for (i = 0; i < tagsz; i++) 
 		for (j = 0; j < tagmapsz; j++)
 			if (0 == strcmp(tags[i], tagmap[j]))
-				return(1);
+				return 1;
 
-	return(0);
+	return 0;
 }
 
 static void
@@ -143,7 +142,7 @@ nav_end(void *dat, const XML_Char *s)
 	int		 rc;
 	struct article	*sv = NULL;
 
-	if (strcasecmp(s, "nav") || 0 != --arg->stack) {
+	if (sblg_lookup(s) != SBLG_ELEM_NAV || --arg->stack != 0) {
 		xmlstrclose(&arg->nav, &arg->navsz, s);
 		return;
 	}
@@ -153,7 +152,7 @@ nav_end(void *dat, const XML_Char *s)
 
 	/* Only open the <ul> if we're printing HTML content. */
 
-	if ( ! arg->navxml) {
+	if (!arg->navxml) {
 		fputc('\n', arg->f);
 		xmlopen(arg->f, "ul", NULL);
 		fputc('\n', arg->f);
@@ -172,10 +171,11 @@ nav_end(void *dat, const XML_Char *s)
 	 * This accounts for the starting article to show; which, due to
 	 * tagging, might not be a true offset.
 	 */
+
 	for (i = k = 0; i < arg->navstart && k < arg->sposz; k++) {
 		rc = tagfind(arg->navtags, arg->navtagsz, 
 			arg->sargs[k].tagmap, arg->sargs[k].tagmapsz);
-		i += 0 != rc;
+		i += (rc != 0);
 	}
 
 	/* Count total number of remaining articles. */
@@ -183,7 +183,7 @@ nav_end(void *dat, const XML_Char *s)
 	for (i = k, count = 0; i < arg->sposz; i++) {
 		rc = tagfind(arg->navtags, arg->navtagsz, 
 			arg->sargs[i].tagmap, arg->sargs[i].tagmapsz);
-		if (0 == rc)
+		if (rc == 0)
 			continue;
 		if (++count >= arg->navlen)
 			break;
@@ -199,14 +199,14 @@ nav_end(void *dat, const XML_Char *s)
 	for (i = 0; k < arg->sposz; k++) {
 		rc = tagfind(arg->navtags, arg->navtagsz, 
 			arg->sargs[k].tagmap, arg->sargs[k].tagmapsz);
-		/* Tag not found! */
-		if (0 == rc)
+		if (rc == 0)
 			continue;
+
 		if (arg->navxml) {
 			xmltextx(arg->f, arg->nav, arg->dst,
 				arg->sargs, arg->sposz, k, i, 
 				count, XMLESC_NONE);
-		} else if ( ! arg->navuse || 0 == arg->navsz) {
+		} else if (!arg->navuse || arg->navsz == 0) {
 			(void)strftime(buf, sizeof(buf), "%Y-%m-%d", 
 				gmtime(&arg->sargs[k].time));
 			xmlopen(arg->f, "li", NULL);
@@ -225,11 +225,12 @@ nav_end(void *dat, const XML_Char *s)
 				count, XMLESC_NONE);
 			xmlclose(arg->f, "li");
 		}
+
 		if (++i >= arg->navlen)
 			break;
 	}
 
-	if ( ! arg->navxml) {
+	if (!arg->navxml) {
 		xmlclose(arg->f, "ul");
 		xmlclose(arg->f, s);
 	}
@@ -245,20 +246,9 @@ nav_end(void *dat, const XML_Char *s)
 	arg->navtags = NULL;
 	arg->navtagsz = 0;
 
-	if (NULL != sv) {
+	if (sv != NULL) {
 		free(arg->sargs);
 		arg->sargs = sv;
-	}
-}
-
-static void
-empty_end(void *dat, const XML_Char *s)
-{
-	struct linkall	*arg = dat;
-
-	if (0 == strcasecmp(s, "article") && 0 == --arg->stack) {
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
 }
 
@@ -267,7 +257,7 @@ article_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
 
-	if (0 == strcasecmp(s, "article") && 0 == --arg->stack) {
+	if (sblg_lookup(s) == SBLG_ELEM_ARTICLE && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
@@ -293,7 +283,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->bufsz = 0;
 	}
 
-	if (strcasecmp(s, "nav") == 0) {
+	switch (sblg_lookup(s)) {
+	case SBLG_ELEM_NAV:
 		for (attp = atts; *attp != NULL; attp += 2) 
 			if (sblg_lookup(*attp) == SBLG_ATTR_NAV)
 				break;
@@ -365,7 +356,9 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		XML_SetElementHandler(arg->p, nav_begin, nav_end);
 		XML_SetDefaultHandlerExpand(arg->p, nav_text);
 		return;
-	} else if (strcasecmp(s, "article")) {
+	case SBLG_ELEM_ARTICLE:
+		break;
+	default:
 		if (arg->single != -1)
 			xmlopensx(arg->f, s, atts, arg->dst,
 				arg->sargs, arg->sposz, arg->single);
@@ -453,7 +446,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		 */
 		arg->stack++;
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
-		XML_SetElementHandler(arg->p, article_begin, empty_end);
+		XML_SetElementHandler(arg->p, article_begin, article_end);
 		return;
 	}
 
