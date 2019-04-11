@@ -32,6 +32,10 @@ enum	asort {
 
 enum	sblgtag {
 	SBLGTAG_ARTICLE,
+	SBLGTAG_IMG,
+	SBLGTAG_LANG,
+	SBLGTAG_SORT,
+	SBLGTAG_TAGS,
 	SBLGTAG_NONE
 };
 

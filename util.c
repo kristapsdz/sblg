@@ -41,7 +41,11 @@ struct	htab {
 };
 
 static	const struct htab htabs[SBLGTAG_NONE] = {
-	{ "data-sblg-article", SBLGTAG_ARTICLE }
+	{ "data-sblg-article", SBLGTAG_ARTICLE },
+	{ "data-sblg-img", SBLGTAG_IMG },
+	{ "data-sblg-lang", SBLGTAG_LANG },
+	{ "data-sblg-sort", SBLGTAG_SORT },
+	{ "data-sblg-tags", SBLGTAG_TAGS },
 };
 
 /*
@@ -108,6 +112,7 @@ htmlwhitelist(const XML_Char *s, const char **wl)
  * Make sure it's not too large, first.
  * Return zero on failure, non-zero on success.
  * On success, symmetrise with mmap_close().
+ * Failure need not call mmap_close().
  */
 int
 mmap_open(const char *f, int *fd, char **buf, size_t *sz)
