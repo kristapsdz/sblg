@@ -282,9 +282,9 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	char		**tags = NULL;
 	size_t		  i, tagsz = 0;
 
-	assert(0 == arg->stack);
+	assert(arg->stack == 0);
 
-	if (-1 != arg->single) {
+	if (arg->single != -1) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
 			arg->sargs, arg->sposz, arg->single, 
 			arg->single, arg->sposz, XMLESC_NONE);
@@ -293,24 +293,15 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->bufsz = 0;
 	}
 
-	if (0 == strcasecmp(s, "nav")) {
-		/*
-		 * Only handle if containing the "data-sblg-nav"
-		 * attribute, otherwise continue.
-		 */
-		for (attp = atts; NULL != *attp; attp += 2) 
-			if (0 == strcasecmp(*attp, "data-sblg-nav"))
+	if (strcasecmp(s, "nav") == 0) {
+		for (attp = atts; *attp != NULL; attp += 2) 
+			if (sblg_lookup(*attp) == SBLG_ATTR_NAV)
 				break;
 
-		if (NULL == *attp || ! xmlbool(attp[1])) {
+		if (*attp == NULL || !xmlbool(attp[1])) {
 			xmlopens(arg->f, s, atts);
 			return;
 		}
-
-		/*
-		 * Take the number of elements to show to be the min of
-		 * the full count or as user-specified.
-		 */
 
 		arg->navuse = 0;
 		arg->navsort = ASORT_DATE;
@@ -319,53 +310,55 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->navlen = arg->sposz;
 		arg->navstart = 0;
 
-		for (attp = atts; NULL != *attp; attp += 2) {
-			if (0 == strcasecmp(attp[0], 
-					"data-sblg-navsz")) {
+		for (attp = atts; *attp != NULL; attp += 2)
+			switch (sblg_lookup(*attp)) {
+			case SBLG_ATTR_NAVSZ:
 				arg->navlen = atoi(attp[1]);
 				if (arg->navlen > (size_t)arg->sposz)
 					arg->navlen = arg->sposz;
-			} else if (0 == strcasecmp(attp[0],
-					"data-sblg-navstart")) {
+				break;
+			case SBLG_ATTR_NAVSTART:
 				arg->navstart = atoi(attp[1]);
 				if (arg->navstart > (size_t)arg->sposz)
 					arg->navstart = arg->sposz;
 				if (arg->navstart)
 					arg->navstart--;
-			} else if (0 == strcasecmp(attp[0], 
-					"data-sblg-navcontent")) {
+				break;
+			case SBLG_ATTR_NAVCONTENT:
 				arg->navuse = xmlbool(attp[1]);
-			} else if (0 == strcasecmp(attp[0],
-					"data-sblg-navxml")) {
+				break;
+			case SBLG_ATTR_NAVXML:
 				arg->navxml = xmlbool(attp[1]);
-			} else if (0 == strcasecmp(attp[0], 
-					"data-sblg-navtag")) {
+				break;
+			case SBLG_ATTR_NAVTAG:
 				hashtag(&arg->navtags, 
 					&arg->navtagsz, attp[1],
 					arg->sargs, arg->sposz, arg->single);
-			} else if (0 == strcasecmp(attp[0],
-					"data-sblg-navsort")) {
+				break;
+			case SBLG_ATTR_NAVSORT:
 				sort = attp[1];
+				break;
+			default:
+				break;
 			}
-		}
 
 		/* Are we overriding the sort order? */
 
-		if (NULL != sort) {
+		if (sort != NULL) {
 			arg->usesort = 1;
-			if (0 == strcasecmp(sort, "date"))
+			if (strcasecmp(sort, "date") == 0)
 				arg->navsort = ASORT_DATE;
-			else if (0 == strcasecmp(sort, "rdate"))
+			else if (strcasecmp(sort, "rdate") == 0)
 				arg->navsort = ASORT_RDATE;
-			else if (0 == strcasecmp(sort, "filename"))
+			else if (strcasecmp(sort, "filename") == 0)
 				arg->navsort = ASORT_FILENAME;
-			else if (0 == strcasecmp(sort, "cmdline"))
+			else if (strcasecmp(sort, "cmdline") == 0)
 				arg->navsort = ASORT_CMDLINE;
 			else
 				arg->usesort = 0;
 		}
 
-		if ( ! arg->navxml)
+		if (!arg->navxml)
 			xmlopens(arg->f, s, atts);
 
 		arg->stack++;
@@ -373,7 +366,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		XML_SetDefaultHandlerExpand(arg->p, nav_text);
 		return;
 	} else if (strcasecmp(s, "article")) {
-		if (-1 != arg->single)
+		if (arg->single != -1)
 			xmlopensx(arg->f, s, atts, arg->dst,
 				arg->sargs, arg->sposz, arg->single);
 		else
@@ -417,16 +410,13 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		return;
 	}
 
-	/*
-	 * Only consider article elements if they contain the magic
-	 * data-sblg-article attribute.
-	 */
+	/* Check for <article data-sblg-article>. */
 
-	for (attp = atts; NULL != *attp; attp += 2) 
-		if (0 == strcasecmp(*attp, "data-sblg-article"))
+	for (attp = atts; *attp != NULL; attp += 2) 
+		if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLE)
 			break;
 
-	if (NULL == *attp || ! xmlbool(attp[1])) {
+	if (*attp == NULL || !xmlbool(attp[1])) {
 		xmlopens(arg->f, s, atts);
 		return;
 	}
@@ -438,8 +428,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	 * This attribute may happen multiple times.
 	 */
 
-	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(*attp, "data-sblg-articletag"))
+	for (attp = atts; *attp != NULL; attp += 2)
+		if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLETAG)
 			hashtag(&tags, &tagsz, attp[1],
 				arg->sargs, arg->sposz, arg->single);
 
@@ -467,7 +457,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		return;
 	}
 
-	/*First throw away children, then push out the article. */
+	/* First throw away children, then push out the article. */
 
 	arg->stack++;
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
@@ -475,7 +465,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	/* Echo the formatted text of the article. */
 
-	if (-1 != arg->single)
+	if (arg->single != -1)
 		xmltextx(arg->f, arg->sargs[arg->spos].article, 
 			arg->dst, arg->sargs, arg->sposz, arg->spos, 
 			arg->single, arg->sposz, XMLESC_NONE);
@@ -485,10 +475,11 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			0, 1, XMLESC_NONE);
 	arg->spos++;
 
-	for (attp = atts; NULL != *attp; attp += 2) 
-		if (0 == strcasecmp(*attp, "data-sblg-permlink"))
+	for (attp = atts; *attp != NULL; attp += 2) 
+		if (sblg_lookup(*attp) == SBLG_ATTR_PERMLINK)
 			break;
-	if (NULL != *attp && ! xmlbool(attp[1]))
+
+	if (*attp != NULL && !xmlbool(attp[1]))
 		return;
 
 	xmlopen(arg->f, "div", "data-sblg-permlink", "1", NULL);
@@ -502,48 +493,42 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 /*
  * Given a set of articles "src", grok articles from the files, then
  * fill in a template that's usually the blog "front page".
+ * If "force" is specified, use only that page instead of using all of
+ * them (as in -C mode).
+ * Return zero on fatal error, non-zero on success.
  */
 int
 linkall(XML_Parser p, const char *templ, const char *force, 
 	int sz, char *src[], const char *dst, enum asort asort)
 {
-	char		*buf;
-	size_t		 j, ssz;
-	int		 i, fd, rc;
-	FILE		*f;
+	char		*buf = NULL;
+	size_t		 j, ssz = 0;
+	int		 i, fd = -1, rc = 0;
+	FILE		*f = stdout;
 	struct linkall	 larg;
-	struct article	*sargs;
-	size_t		 sargsz;
-
-	ssz = 0;
-	rc = 0;
-	buf = NULL;
-	fd = -1;
-	f = NULL;
+	struct article	*sargs = NULL;
+	size_t		 sargsz = 0;
 
 	memset(&larg, 0, sizeof(struct linkall));
-	sargs = NULL;
-	sargsz = 0;
 
 	/* Grok all article data and sort by date. */
 
 	for (i = 0; i < sz; i++)
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, NULL))
+		if (!sblg_parse(p, src[i], &sargs, &sargsz, NULL))
 			goto out;
 
 	sblg_sort(sargs, sargsz, asort);
 
 	/* Open a FILE to the output file or stream. */
 
-	f = stdout;
-	if (strcmp(dst, "-") && (NULL == (f = fopen(dst, "w")))) {
+	if (strcmp(dst, "-") && ((f = fopen(dst, "w"))) == NULL) {
 		warn("%s", dst);
 		goto out;
 	} 
 	
 	/* Map the template into memory for parsing. */
 
-	if ( ! mmap_open(templ, &fd, &buf, &ssz))
+	if (!mmap_open(templ, &fd, &buf, &ssz))
 		goto out;
 
 	/*
@@ -560,17 +545,16 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	larg.f = f;
 	larg.single = -1;
 
-	if (NULL != force) {
+	if (force != NULL) {
 		for (j = 0; j < sargsz; j++)
-			if (0 == strcmp(force, sargs[j].src))
+			if (strcmp(force, sargs[j].src) == 0)
 				break;
 		if (j < sargsz) {
 			larg.single = j;
 			larg.spos = j;
 			larg.ssposz = j + 1;
 		} else {
-			warnx("%s: does not "
-				"appear in input list", force);
+			warnx("%s: not in input list", force);
 			goto out;
 		}
 	}
@@ -582,7 +566,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 	XML_SetUserData(p, &larg);
 
-	if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
+	if (XML_Parse(p, buf, (int)ssz, 1) != XML_STATUS_OK) {
 		warnx("%s:%zu:%zu: %s", templ, 
 			XML_GetCurrentLineNumber(p),
 			XML_GetCurrentColumnNumber(p),
@@ -595,21 +579,21 @@ linkall(XML_Parser p, const char *templ, const char *force,
 out:
 	sblg_free(sargs, sargsz);
 	mmap_close(fd, buf, ssz);
-	if (NULL != f && stdout != f)
+	if (f != NULL && f != stdout)
 		fclose(f);
-
 	for (j = 0; j < larg.navtagsz; j++)
 		free(larg.navtags[j]);
 	free(larg.navtags);
 	free(larg.nav);
 	free(larg.buf);
-	return(rc);
+	return rc;
 }
 
 /*
  * Like linkall() but does the output in place: groks all input files,
  * then converts them to output.
  * This prevents needing to run -C with each input file.
+ * Return zero on fatal error, non-zero on success.
  */
 int
 linkall_r(XML_Parser p, const char *templ, 
@@ -632,14 +616,14 @@ linkall_r(XML_Parser p, const char *templ,
 	 */
 
 	for (i = 0; i < sz; i++)
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, NULL))
+		if (!sblg_parse(p, src[i], &sargs, &sargsz, NULL))
 			goto out;
 
 	sblg_sort(sargs, sargsz, asort);
 
 	/* Map the template into memory for parsing. */
 
-	if ( ! mmap_open(templ, &fd, &buf, &ssz))
+	if (!mmap_open(templ, &fd, &buf, &ssz))
 		goto out;
 
 	/*
@@ -649,8 +633,8 @@ linkall_r(XML_Parser p, const char *templ,
 
 	for (j = 0; j < sargsz; j++) {
 		wsz = strlen(sargs[j].src);
-		if (NULL == (cp = strrchr(sargs[j].src, '.')) ||
-				strcasecmp(cp + 1, "xml")) {
+		if ((cp = strrchr(sargs[j].src, '.')) == NULL || 
+		    strcasecmp(cp + 1, "xml")) {
 			/* Append .html to input name. */
 			dst = xmalloc(wsz + 6);
 			strlcpy(dst, sargs[j].src, wsz + 6);
@@ -664,7 +648,7 @@ linkall_r(XML_Parser p, const char *templ,
 
 		/* Open the output filename. */
 		
-		if (NULL == (f = fopen(dst, "w"))) {
+		if ((f = fopen(dst, "w")) == NULL) {
 			warn("%s", dst);
 			goto out;
 		} 
@@ -686,7 +670,7 @@ linkall_r(XML_Parser p, const char *templ,
 		XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 		XML_SetUserData(p, &larg);
 
-		if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
+		if (XML_Parse(p, buf, (int)ssz, 1) != XML_STATUS_OK) {
 			warnx("%s:%zu:%zu: %s", templ, 
 				XML_GetCurrentLineNumber(p),
 				XML_GetCurrentColumnNumber(p),
@@ -705,7 +689,7 @@ linkall_r(XML_Parser p, const char *templ,
 out:
 	sblg_free(sargs, sargsz);
 	mmap_close(fd, buf, ssz);
-	if (NULL != f)
+	if (f != NULL)
 		fclose(f);
 	for (j = 0; j < larg.navtagsz; j++)
 		free(larg.navtags[j]);
@@ -713,5 +697,5 @@ out:
 	free(larg.nav);
 	free(larg.buf);
 	free(dst);
-	return(rc);
+	return rc;
 }
