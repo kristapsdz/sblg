@@ -133,16 +133,19 @@ title_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (strcasecmp(s, "h1") == 0 ||
-	    strcasecmp(s, "h2") == 0 ||
-	    strcasecmp(s, "h3") == 0 ||
-	    strcasecmp(s, "h4") == 0) {
+	switch (sblg_lookup(s)) {
+	case SBLG_ELEM_H1:
+	case SBLG_ELEM_H2:
+	case SBLG_ELEM_H3:
+	case SBLG_ELEM_H4:
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
-	} else
+		break;
+	default:
 		xmlstrclose(&arg->article->title, 
 			&arg->article->titlesz, s);
+	}
 }
 
 static void
@@ -153,7 +156,7 @@ aside_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (strcasecmp(s, "aside") == 0 && --arg->stack == 0) {
+	if (sblg_lookup(s) == SBLG_ELEM_ASIDE && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
@@ -170,7 +173,7 @@ addr_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (strcasecmp(s, "address") == 0 && --arg->stack == 0) {
+	if (sblg_lookup(s) == SBLG_ELEM_ADDRESS && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
 		XML_SetDefaultHandlerExpand(arg->p, article_text);
@@ -236,7 +239,7 @@ title_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct parse	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(s, "title");
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_TITLE);
 	xmlstropen(&arg->article->title, 
 		&arg->article->titlesz, s, atts, arg->wl);
 	xmlstropen(&arg->article->article, 
@@ -250,7 +253,7 @@ addr_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct parse	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(s, "address");
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ADDRESS);
 	xmlstropen(&arg->article->author, 
 		&arg->article->authorsz, s, atts, arg->wl);
 	xmlstropen(&arg->article->article, 
@@ -263,7 +266,7 @@ aside_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct parse	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(s, "aside");
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ASIDE);
 	xmlstropen(&arg->article->aside, 
 		&arg->article->asidesz, s, atts, arg->wl);
 	xmlstropen(&arg->article->article, 
@@ -292,14 +295,16 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		&arg->article->articlesz, s, atts, arg->wl);
 	tsearch(arg, s, atts);
 
-	if (strcasecmp(s, "aside") == 0) {
+	switch (sblg_lookup(s)) {
+	case SBLG_ELEM_ASIDE:
 		if (PARSE_ASIDE & arg->flags)
 			return;
 		arg->stack++;
 		arg->flags |= PARSE_ASIDE;
 		XML_SetDefaultHandlerExpand(arg->p, aside_text);
 		XML_SetElementHandler(arg->p, aside_begin, aside_end);
-	} else if (strcasecmp(s, "img") == 0) {
+		break;
+	case SBLG_ELEM_IMG:
 		if (PARSE_IMG & arg->flags) 
 			return;
 		for (attp = atts; NULL != *attp; attp += 2)
@@ -310,7 +315,8 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			arg->article->img = xstrdup(attp[1]);
 			arg->flags |= PARSE_IMG;
 		}
-	} else if (strcasecmp(s, "time") == 0) {
+		break;
+	case SBLG_ELEM_TIME:
 		if (PARSE_TIME & arg->flags)
 			return;
 		arg->flags |= PARSE_TIME;
@@ -345,7 +351,8 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			}
 			arg->article->time = timegm(&tm);
 		}
-	} else if (strcasecmp(s, "address") == 0) {
+		break;
+	case SBLG_ELEM_ADDRESS:
 		if (PARSE_ADDR & arg->flags) 
 			return;
 		arg->flags |= PARSE_ADDR;
@@ -353,17 +360,23 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->stack++;
 		XML_SetElementHandler(arg->p, addr_begin, addr_end);
 		XML_SetDefaultHandlerExpand(arg->p, addr_text);
-	} else if (strcasecmp(s, "h1") == 0 ||
-		   strcasecmp(s, "h2") == 0 ||
-		   strcasecmp(s, "h3") == 0 ||
-		   strcasecmp(s, "h4") == 0) {
+		break;
+	case SBLG_ELEM_H1:
+	case SBLG_ELEM_H2:
+	case SBLG_ELEM_H3:
+	case SBLG_ELEM_H4:
 		if (PARSE_TITLE & arg->flags) 
 			return;
 		arg->flags |= PARSE_TITLE;
 		XML_SetElementHandler(arg->p, title_begin, title_end);
 		XML_SetDefaultHandlerExpand(arg->p, title_text);
-	} else if (strcasecmp(s, "article") == 0)
+		break;
+	case SBLG_ELEM_ARTICLE:
 		arg->gstack++;
+		break;
+	default:
+		break;
+	}
 }
 
 static void
@@ -376,7 +389,7 @@ article_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (strcasecmp(s, "article") || --arg->gstack > 0) 
+	if (sblg_lookup(s) != SBLG_ELEM_ARTICLE || --arg->gstack > 0) 
 		return;
 
 	XML_SetElementHandler(arg->p, input_begin, NULL);
@@ -446,7 +459,7 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	assert(arg->gstack == 0);
 	assert(arg->stack == 0);
 
-	if (strcasecmp(s, "article"))
+	if (sblg_lookup(s) != SBLG_ELEM_ARTICLE)
 		return;
 
 	/* Look for the true-valued data-sblg-article.  */

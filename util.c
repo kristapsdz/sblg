@@ -64,6 +64,16 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "data-sblg-sort", SBLG_ATTR_SORT },
 	{ NULL, "data-sblg-striplink", SBLG_ATTR_STRIPLINK },
 	{ NULL, "data-sblg-tags", SBLG_ATTR_TAGS },
+	{ NULL, "address", SBLG_ELEM_ADDRESS },
+	{ NULL, "article", SBLG_ELEM_ARTICLE },
+	{ NULL, "aside", SBLG_ELEM_ASIDE },
+	{ NULL, "h1", SBLG_ELEM_H1 },
+	{ NULL, "h2", SBLG_ELEM_H2 },
+	{ NULL, "h3", SBLG_ELEM_H3 },
+	{ NULL, "h4", SBLG_ELEM_H4 },
+	{ NULL, "img", SBLG_ELEM_IMG },
+	{ NULL, "time", SBLG_ELEM_TIME },
+	{ NULL, "title", SBLG_ELEM_TITLE },
 };
 
 /*

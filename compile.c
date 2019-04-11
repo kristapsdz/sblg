@@ -72,7 +72,7 @@ article_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 {
 	struct pargs	*arg = dat;
 
-	arg->stack += (strcasecmp(name, "article") == 0);
+	arg->stack += (sblg_lookup(name) == SBLG_ELEM_ARTICLE);
 }
 
 /*
@@ -84,7 +84,8 @@ article_end(void *dat, const XML_Char *name)
 {
 	struct pargs	*arg = dat;
 
-	if (strcasecmp(name, "article") == 0 && --arg->stack == 0) {
+	if (sblg_lookup(name) == SBLG_ELEM_ARTICLE && 
+	    --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, NULL, NULL);
 		XML_SetDefaultHandlerExpand(arg->p, template_text);
 	}
@@ -109,7 +110,7 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	arg->buf = NULL;
 	arg->bufsz = 0;
 
-	if (strcasecmp(name, "article")) {
+	if (sblg_lookup(name) != SBLG_ELEM_ARTICLE) {
 		xmlopensx(arg->f, name, atts, 
 			arg->dst, arg->article, 1, 0);
 		return;
