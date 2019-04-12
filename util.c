@@ -68,20 +68,34 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "data-sblg-tags", SBLG_ATTR_TAGS },
 	{ NULL, "data-sblg-updated", SBLG_ATTR_UPDATED },
 	{ NULL, "address", SBLG_ELEM_ADDRESS },
+	{ NULL, "area", SBLG_ELEM_AREA },
 	{ NULL, "article", SBLG_ELEM_ARTICLE },
 	{ NULL, "aside", SBLG_ELEM_ASIDE },
+	{ NULL, "base", SBLG_ELEM_BASE },
+	{ NULL, "br", SBLG_ELEM_BR },
+	{ NULL, "col", SBLG_ELEM_COL },
+	{ NULL, "command", SBLG_ELEM_COMMAND },
+	{ NULL, "embed", SBLG_ELEM_EMBED },
 	{ NULL, "entry", SBLG_ELEM_ENTRY },
 	{ NULL, "h1", SBLG_ELEM_H1 },
 	{ NULL, "h2", SBLG_ELEM_H2 },
 	{ NULL, "h3", SBLG_ELEM_H3 },
 	{ NULL, "h4", SBLG_ELEM_H4 },
+	{ NULL, "hr", SBLG_ELEM_HR },
 	{ NULL, "id", SBLG_ELEM_ID },
 	{ NULL, "img", SBLG_ELEM_IMG },
+	{ NULL, "input", SBLG_ELEM_INPUT },
+	{ NULL, "keygen", SBLG_ELEM_KEYGEN },
 	{ NULL, "link", SBLG_ELEM_LINK },
+	{ NULL, "meta", SBLG_ELEM_META },
 	{ NULL, "nav", SBLG_ELEM_NAV },
+	{ NULL, "param", SBLG_ELEM_PARAM },
+	{ NULL, "source", SBLG_ELEM_SOURCE },
 	{ NULL, "time", SBLG_ELEM_TIME },
 	{ NULL, "title", SBLG_ELEM_TITLE },
+	{ NULL, "track", SBLG_ELEM_TRACK },
 	{ NULL, "updated", SBLG_ELEM_UPDATED },
+	{ NULL, "wbr", SBLG_ELEM_WBR },
 };
 
 /*
@@ -89,24 +103,24 @@ static	struct htab htabs[SBLGTAG_NONE] = {
  * These are defined in section 8.1.2 of the HTML 5.2 standard.
  * It also has some deprecated/obsolete elements.
  */
-static	const char *elemvoid[] = {
-	"area",
-	"base",
-	"br",
-	"col",
-	"command", /* XXX: obsolete. */
-	"embed",
-	"hr",
-	"img",
-	"input",
-	"keygen", /* XXX: deprecated. */
-	"link",
-	"meta",
-	"param",
-	"source",
-	"track",
-	"wbr",
-	NULL
+static	const enum sblgtag elemvoid[] = {
+	SBLG_ELEM_AREA,
+	SBLG_ELEM_BASE,
+	SBLG_ELEM_BR,
+	SBLG_ELEM_COL,
+	SBLG_ELEM_COMMAND, /* XXX: obsolete. */
+	SBLG_ELEM_EMBED,
+	SBLG_ELEM_HR,
+	SBLG_ELEM_IMG,
+	SBLG_ELEM_INPUT,
+	SBLG_ELEM_KEYGEN, /* XXX: deprecated. */
+	SBLG_ELEM_LINK,
+	SBLG_ELEM_META,
+	SBLG_ELEM_PARAM,
+	SBLG_ELEM_SOURCE,
+	SBLG_ELEM_TRACK,
+	SBLG_ELEM_WBR,
+	SBLGTAG_NONE
 };
 
 /*
@@ -118,10 +132,13 @@ static	const char *elemvoid[] = {
 static int
 htmlvoid(const XML_Char *s)
 {
-	const char	**cp;
+	enum sblgtag	 tag;
+	size_t		 i;
 
-	for (cp = (const char **)elemvoid; *cp != NULL; cp++)
-		if (strcasecmp(s, *cp) == 0)
+	if ((tag = sblg_lookup(s)) == SBLGTAG_NONE)
+		return 0;
+	for (i = 0; elemvoid[i] != SBLGTAG_NONE; i++)
+		if (elemvoid[i] == tag)
 			return 1;
 
 	return 0;
@@ -985,7 +1002,7 @@ sblg_init(void)
 
 	assert(!htabinit);
 
-	if (!hcreate(64))
+	if (!hcreate(256))
 		return 0;
 
 	for (i = 0; i < SBLGTAG_NONE; i++) {
@@ -1027,6 +1044,7 @@ sblg_lookup(const char *attr)
 	ENTRY	*hentp;
 
 	hent.key = (char *)attr;
+	hent.data = NULL;
 	if ((hentp = hsearch(hent, FIND)) == NULL)
 		return SBLGTAG_NONE;
 
