@@ -241,44 +241,35 @@ int
 atom(XML_Parser p, const char *templ, int sz, 
 	char *src[], const char *dst, enum asort asort)
 {
-	char		*buf;
-	size_t		 ssz, sargsz;
-	int		 i, fd, rc;
-	FILE		*f;
+	char		*buf = NULL;
+	size_t		 ssz = 0, sargsz = 0;
+	int		 i, fd = -1, rc = 0;
+	FILE		*f = stdout;
 	struct atom	 larg;
-	struct article	*sargs;
-
-	ssz = 0;
-	rc = 0;
-	buf = NULL;
-	fd = -1;
-	f = NULL;
+	struct article	*sargs = NULL;
 
 	memset(&larg, 0, sizeof(struct atom));
-	sargs = NULL;
-	sargsz = 0;
 
 	if (getdomainname(larg.domain, MAXHOSTNAMELEN) < 0) {
 		warn("getdomainname");
 		goto out;
-	} else if ('\0' == larg.domain[0])
+	} else if (larg.domain[0] == '\0')
 		strlcpy(larg.domain, "localhost", MAXHOSTNAMELEN);
 
 	strlcpy(larg.path, "/", MAXPATHLEN);
 
 	for (i = 0; i < sz; i++)
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, atom_wl))
+		if (!sblg_parse(p, src[i], &sargs, &sargsz, atom_wl))
 			goto out;
 
 	sblg_sort(sargs, sargsz, asort);
 
-	f = stdout;
-	if (strcmp(dst, "-") && NULL == (f = fopen(dst, "w"))) {
+	if (strcmp(dst, "-") && (f = fopen(dst, "w")) == NULL) {
 		warn("%s", dst);
 		goto out;
 	}
 
-	if ( ! mmap_open(templ, &fd, &buf, &ssz))
+	if (!mmap_open(templ, &fd, &buf, &ssz))
 		goto out;
 
 	larg.sargs = sargs;
@@ -293,7 +284,7 @@ atom(XML_Parser p, const char *templ, int sz,
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 	XML_SetUserData(p, &larg);
 
-	if (XML_STATUS_OK != XML_Parse(p, buf, (int)ssz, 1)) {
+	if (XML_Parse(p, buf, (int)ssz, 1) != XML_STATUS_OK) {
 		warnx("%s:%zu:%zu: %s", templ, 
 			XML_GetCurrentLineNumber(p),
 			XML_GetCurrentColumnNumber(p),
@@ -306,17 +297,17 @@ atom(XML_Parser p, const char *templ, int sz,
 out:
 	sblg_free(sargs, sargsz);
 	mmap_close(fd, buf, ssz);
-	if (NULL != f && stdout != f)
+	if (f != NULL && f != stdout)
 		fclose(f);
 	free(larg.entry);
 	free(larg.entryalt);
-	return(rc);
+	return rc;
 }
 
 static void
-tmpl_text(void *userdata, const XML_Char *s, int len)
+tmpl_text(void *dat, const XML_Char *s, int len)
 {
-	struct atom	*arg = userdata;
+	struct atom	*arg = dat;
 
 	fprintf(arg->f, "%.*s", len, s);
 }
@@ -326,33 +317,30 @@ entry_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct atom	*arg = dat;
 
-	arg->stack += (0 == strcasecmp(s, "entry"));
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ENTRY);
 	xmlstropen(&arg->entry, &arg->entrysz, s, atts, NULL);
 }
 
 static void
-up_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
+up_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
-	struct atom	*arg = userdata;
+	struct atom	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(name, "updated");
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_UPDATED);
 }
 
 static void
-id_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
+id_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
-	struct atom	*arg = userdata;
+	struct atom	*arg = dat;
 
-	arg->stack += 0 == strcasecmp(name, "id");
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ID);
 }
 
 static void
-tmpl_begin(void *userdata, 
-	const XML_Char *name, const XML_Char **atts)
+tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
-	struct atom	 *arg = userdata;
+	struct atom	 *arg = dat;
 	time_t		  t;
 	char		  buf[1024];
 	const char	 *start;
@@ -364,15 +352,16 @@ tmpl_begin(void *userdata,
 
 	assert(0 == arg->stack);
 
-	if (0 == strcasecmp(name, "updated")) {
+	switch (sblg_lookup(s)) {
+	case SBLG_ELEM_UPDATED:
 		for (attp = atts; NULL != *attp; attp += 2)
 			if (0 == strcasecmp(*attp, "data-sblg-updated"))
 				break;
 		if (NULL == *attp || ! xmlbool(attp[1])) {
-			xmlopens(arg->f, name, atts);
+			xmlopens(arg->f, s, atts);
 			return;
 		}
-		fprintf(arg->f, "<%s>", name);
+		fprintf(arg->f, "<%s>", s);
 		t = arg->sposz <= arg->spos ?
 			time(NULL) :
 			arg->sargs[arg->spos].time;
@@ -383,26 +372,26 @@ tmpl_begin(void *userdata,
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		XML_SetElementHandler(arg->p, up_begin, up_end);
 		return;
-	} else if (0 == strcasecmp(name, "id")) {
+	case SBLG_ELEM_ID:
 		for (attp = atts; NULL != *attp; attp += 2)
 			if (0 == strcasecmp(*attp, "data-sblg-id"))
 				break;
 		if (NULL == *attp || ! xmlbool(attp[1])) {
-			xmlopens(arg->f, name, atts);
+			xmlopens(arg->f, s, atts);
 			return;
 		}
-		fprintf(arg->f, "<%s>", name);
+		fprintf(arg->f, "<%s>", s);
 		arg->stack++;
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		XML_SetElementHandler(arg->p, id_begin, id_end);
 		return;
-	} else if (0 == strcasecmp(name, "link")) {
+	case SBLG_ELEM_LINK:
 		if (arg->spos > 0) {
 			warnx("%s: link after entry", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
-		xmlopens(arg->f, name, atts);
+		xmlopens(arg->f, s, atts);
 		for (attp = atts; NULL != *attp; attp += 2) 
 			if (0 == strcasecmp(attp[0], "rel"))
 				if (0 == strcasecmp(attp[1], "self"))
@@ -437,8 +426,10 @@ tmpl_begin(void *userdata,
 		}
 		*cp = '\0';
 		return;
-	} else if (strcasecmp(name, "entry")) {
-		xmlopens(arg->f, name, atts);
+	case SBLG_ELEM_ENTRY:
+		break;
+	default:
+		xmlopens(arg->f, s, atts);
 		return;
 	}
 
@@ -449,7 +440,7 @@ tmpl_begin(void *userdata,
 			break;
 
 	if (NULL == attp[0] || ! xmlbool(attp[1])) {
-		xmlopens(arg->f, name, atts);
+		xmlopens(arg->f, s, atts);
 		return;
 	}
 
@@ -482,15 +473,15 @@ tmpl_begin(void *userdata,
 }
 
 static void
-tmpl_end(void *userdata, const XML_Char *name)
+tmpl_end(void *userdata, const XML_Char *s)
 {
 	struct atom	*arg = userdata;
 
-	xmlclose(arg->f, name);
+	xmlclose(arg->f, s);
 }
 
 static void
-id_end(void *userdata, const XML_Char *name)
+id_end(void *userdata, const XML_Char *s)
 {
 	struct atom	*arg = userdata;
 	const char	*dst;
@@ -506,21 +497,21 @@ id_end(void *userdata, const XML_Char *name)
 
 	dst = (0 == strcmp(arg->dst, "-")) ? "" : arg->dst;
 
-	if (0 == strcasecmp(name, "id") && 0 == --arg->stack) {
+	if (0 == strcasecmp(s, "id") && 0 == --arg->stack) {
 		fprintf(arg->f, "tag:%s,%s:%s/%s</%s>", 
-			arg->domain, year, arg->path, dst, name);
+			arg->domain, year, arg->path, dst, s);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
 }
 
 static void
-up_end(void *userdata, const XML_Char *name)
+up_end(void *dat, const XML_Char *s)
 {
-	struct atom	*arg = userdata;
+	struct atom	*arg = dat;
 
-	if (0 == strcasecmp(name, "updated") && 0 == --arg->stack) {
-		fprintf(arg->f, "</%s>", name);
+	if (sblg_lookup(s) == SBLG_ELEM_UPDATED && --arg->stack == 0) {
+		fprintf(arg->f, "</%s>", s);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 	}
@@ -539,7 +530,7 @@ entry_end(void *dat, const XML_Char *s)
 {
 	struct atom	*arg = dat;
 
-	if ( ! (0 == strcasecmp(s, "entry") && 0 == --arg->stack)) {
+	if (!(sblg_lookup(s) == SBLG_ELEM_ENTRY && --arg->stack == 0)) {
 		xmlstrclose(&arg->entry, &arg->entrysz, s);
 		return;
 	}
@@ -552,7 +543,7 @@ entry_end(void *dat, const XML_Char *s)
 	/* No more articles: discard. */
 
 	if (arg->spos < arg->sposz) {
-		if (ENTRY_FORALL & arg->entryfl) {
+		if ((arg->entryfl & ENTRY_FORALL)) {
 			while (arg->spos < arg->sposz) {
 				fputs("<entry>\n", arg->f);
 				atomprint(arg);

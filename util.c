@@ -67,14 +67,18 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "address", SBLG_ELEM_ADDRESS },
 	{ NULL, "article", SBLG_ELEM_ARTICLE },
 	{ NULL, "aside", SBLG_ELEM_ASIDE },
+	{ NULL, "entry", SBLG_ELEM_ENTRY },
 	{ NULL, "h1", SBLG_ELEM_H1 },
 	{ NULL, "h2", SBLG_ELEM_H2 },
 	{ NULL, "h3", SBLG_ELEM_H3 },
 	{ NULL, "h4", SBLG_ELEM_H4 },
+	{ NULL, "id", SBLG_ELEM_ID },
 	{ NULL, "img", SBLG_ELEM_IMG },
+	{ NULL, "link", SBLG_ELEM_LINK },
 	{ NULL, "nav", SBLG_ELEM_NAV },
 	{ NULL, "time", SBLG_ELEM_TIME },
 	{ NULL, "title", SBLG_ELEM_TITLE },
+	{ NULL, "updated", SBLG_ELEM_UPDATED },
 };
 
 /*
