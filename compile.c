@@ -51,7 +51,7 @@ template_text(void *dat, const XML_Char *s, int len)
 }
 
 static void
-template_end(void *dat, const XML_Char *name)
+template_end(void *dat, const XML_Char *s)
 {
 	struct pargs	*arg = dat;
 
@@ -60,7 +60,7 @@ template_end(void *dat, const XML_Char *name)
 	free(arg->buf);
 	arg->buf = NULL;
 	arg->bufsz = 0;
-	xmlclose(arg->f, name);
+	xmlclose(arg->f, s);
 }
 
 /*
@@ -68,11 +68,11 @@ template_end(void *dat, const XML_Char *name)
  * close the article context.
  */
 static void
-article_begin(void *dat, const XML_Char *name, const XML_Char **atts)
+article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct pargs	*arg = dat;
 
-	arg->stack += (sblg_lookup(name) == SBLG_ELEM_ARTICLE);
+	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ARTICLE);
 }
 
 /*
@@ -80,12 +80,11 @@ article_begin(void *dat, const XML_Char *name, const XML_Char **atts)
  * finished with this article; print the rest verbatim.
  */
 static void
-article_end(void *dat, const XML_Char *name)
+article_end(void *dat, const XML_Char *s)
 {
 	struct pargs	*arg = dat;
 
-	if (sblg_lookup(name) == SBLG_ELEM_ARTICLE && 
-	    --arg->stack == 0) {
+	if (sblg_lookup(s) == SBLG_ELEM_ARTICLE && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, NULL, NULL);
 		XML_SetDefaultHandlerExpand(arg->p, template_text);
 	}
