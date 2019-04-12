@@ -337,15 +337,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 		if (sort != NULL) {
 			arg->usesort = 1;
-			if (strcasecmp(sort, "date") == 0)
-				arg->navsort = ASORT_DATE;
-			else if (strcasecmp(sort, "rdate") == 0)
-				arg->navsort = ASORT_RDATE;
-			else if (strcasecmp(sort, "filename") == 0)
-				arg->navsort = ASORT_FILENAME;
-			else if (strcasecmp(sort, "cmdline") == 0)
-				arg->navsort = ASORT_CMDLINE;
-			else
+			if (!sblg_sort_lookup(optarg, &arg->navsort))
 				arg->usesort = 0;
 		}
 

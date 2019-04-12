@@ -98,15 +98,7 @@ main(int argc, char *argv[])
 			rev = 1;
 			break;
 		case 's':
-			if (strcasecmp(optarg, "date") == 0)
-				asort = ASORT_DATE;
-			else if (strcasecmp(optarg, "rdate") == 0)
-				asort = ASORT_RDATE;
-			else if (strcasecmp(optarg, "filename") == 0)
-				asort = ASORT_FILENAME;
-			else if (strcasecmp(optarg, "cmdline") == 0)
-				asort = ASORT_CMDLINE;
-			else
+			if (!sblg_sort_lookup(optarg, &asort))
 				goto usage;
 			break;
 		case 't':
