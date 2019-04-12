@@ -354,17 +354,16 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	switch (sblg_lookup(s)) {
 	case SBLG_ELEM_UPDATED:
-		for (attp = atts; NULL != *attp; attp += 2)
-			if (0 == strcasecmp(*attp, "data-sblg-updated"))
+		for (attp = atts; *attp != NULL; attp += 2)
+			if (sblg_lookup(*attp) == SBLG_ATTR_UPDATED)
 				break;
-		if (NULL == *attp || ! xmlbool(attp[1])) {
+		if (*attp == NULL || !xmlbool(attp[1])) {
 			xmlopens(arg->f, s, atts);
 			return;
 		}
 		fprintf(arg->f, "<%s>", s);
 		t = arg->sposz <= arg->spos ?
-			time(NULL) :
-			arg->sargs[arg->spos].time;
+			time(NULL) : arg->sargs[arg->spos].time;
 		tm = gmtime(&t);
 		strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
 		fprintf(arg->f, "%s", buf);
@@ -373,10 +372,10 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		XML_SetElementHandler(arg->p, up_begin, up_end);
 		return;
 	case SBLG_ELEM_ID:
-		for (attp = atts; NULL != *attp; attp += 2)
-			if (0 == strcasecmp(*attp, "data-sblg-id"))
+		for (attp = atts; *attp != NULL; attp += 2)
+			if (sblg_lookup(*attp) == SBLG_ATTR_ID)
 				break;
-		if (NULL == *attp || ! xmlbool(attp[1])) {
+		if (*attp == NULL || !xmlbool(attp[1])) {
 			xmlopens(arg->f, s, atts);
 			return;
 		}
@@ -392,34 +391,34 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			return;
 		}
 		xmlopens(arg->f, s, atts);
-		for (attp = atts; NULL != *attp; attp += 2) 
-			if (0 == strcasecmp(attp[0], "rel"))
-				if (0 == strcasecmp(attp[1], "self"))
+		for (attp = atts; *attp != NULL; attp += 2) 
+			if (strcmp(attp[0], "rel") == 0 &&
+			    strcmp(attp[1], "self") == 0)
 					break;
-		if (NULL == *attp)
+		if (*attp == NULL)
 			return;
-		for (attp = atts; NULL != *attp; attp += 2) 
-			if (0 == strcasecmp(attp[0], "href"))
+		for (attp = atts; *attp != NULL; attp += 2) 
+			if (strcmp(attp[0], "href") == 0)
 				break;
-		if (NULL == *attp) {
+		if (*attp == NULL) {
 			warnx("%s: no href", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
-		if (NULL == (start = strcasestr(attp[1], "://"))) {
+		if ((start = strcasestr(attp[1], "://")) == NULL) {
 			warnx("%s: bad uri", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
 		strlcpy(arg->domain, start + 3, MAXHOSTNAMELEN);
-		if (NULL == (cp = strchr(arg->domain, '/'))) {
+		if ((cp = strchr(arg->domain, '/')) == NULL) {
 			warnx("%s: bad uri", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
 		}
 		strlcpy(arg->path, cp, MAXPATHLEN);
 		*cp = '\0';
-		if (NULL == (cp = strrchr(arg->path, '/'))) {
+		if ((cp = strrchr(arg->path, '/')) == NULL) {
 			warnx("%s: bad uri", arg->src);
 			XML_StopParser(arg->p, 0);
 			return;
@@ -435,11 +434,11 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	/* Drive the <entry data-sblg-entry="1"> logic. */
 
-	for (attp = atts; NULL != *attp; attp += 2)
-		if (0 == strcasecmp(attp[0], "data-sblg-entry"))
+	for (attp = atts; *attp != NULL; attp += 2)
+		if (sblg_lookup(*attp) == SBLG_ATTR_ENTRY)
 			break;
 
-	if (NULL == attp[0] || ! xmlbool(attp[1])) {
+	if (*attp == NULL || !xmlbool(attp[1])) {
 		xmlopens(arg->f, s, atts);
 		return;
 	}
@@ -489,15 +488,15 @@ id_end(void *userdata, const XML_Char *s)
 	time_t		 t = time(NULL);
 	struct tm	*tm;
 
-	if (NULL == (tm = localtime(&t))) {
+	if ((tm = localtime(&t)) == NULL) {
 		warn("localtime");
 		strlcpy(year, "2013", sizeof(year));
 	} else
 		snprintf(year, sizeof(year), "%04d", tm->tm_year + 1900);
 
-	dst = (0 == strcmp(arg->dst, "-")) ? "" : arg->dst;
+	dst = (strcmp(arg->dst, "-") == 0) ? "" : arg->dst;
 
-	if (0 == strcasecmp(s, "id") && 0 == --arg->stack) {
+	if (sblg_lookup(s) == SBLG_ELEM_ID && --arg->stack == 0) {
 		fprintf(arg->f, "tag:%s,%s:%s/%s</%s>", 
 			arg->domain, year, arg->path, dst, s);
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
