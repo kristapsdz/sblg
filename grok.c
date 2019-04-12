@@ -297,7 +297,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	switch (sblg_lookup(s)) {
 	case SBLG_ELEM_ASIDE:
-		if (PARSE_ASIDE & arg->flags)
+		if ((arg->flags & PARSE_ASIDE))
 			return;
 		arg->stack++;
 		arg->flags |= PARSE_ASIDE;
@@ -305,23 +305,22 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		XML_SetElementHandler(arg->p, aside_begin, aside_end);
 		break;
 	case SBLG_ELEM_IMG:
-		if (PARSE_IMG & arg->flags) 
+		if ((arg->flags & PARSE_IMG))
 			return;
-		for (attp = atts; NULL != *attp; attp += 2)
-			if (0 == strcmp(*attp, "src"))
+		for (attp = atts; *attp != NULL; attp += 2)
+			if (strcmp(*attp, "src") == 0)
 				break;
-		if (NULL != attp[0] && 
-		    NULL != attp[1] && '\0' != *attp[1]) {
+		if (attp[0] != NULL && attp[1] != NULL) {
 			arg->article->img = xstrdup(attp[1]);
 			arg->flags |= PARSE_IMG;
 		}
 		break;
 	case SBLG_ELEM_TIME:
-		if (PARSE_TIME & arg->flags)
+		if ((arg->flags & PARSE_TIME))
 			return;
 		arg->flags |= PARSE_TIME;
-		for (attp = atts; NULL != *attp; attp += 2) {
-			if (strcasecmp(attp[0], "datetime"))
+		for (attp = atts; *attp != NULL; attp += 2) {
+			if (strcmp(*attp, "datetime"))
 				continue;
 			atcp = attp[1];
 			while (isspace((unsigned char)*atcp))
@@ -353,10 +352,10 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		}
 		break;
 	case SBLG_ELEM_ADDRESS:
-		if (PARSE_ADDR & arg->flags) 
+		if ((arg->flags & PARSE_ADDR) )
 			return;
 		arg->flags |= PARSE_ADDR;
-		assert(0 == arg->stack);
+		assert(arg->stack == 0);
 		arg->stack++;
 		XML_SetElementHandler(arg->p, addr_begin, addr_end);
 		XML_SetDefaultHandlerExpand(arg->p, addr_text);
@@ -365,7 +364,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	case SBLG_ELEM_H2:
 	case SBLG_ELEM_H3:
 	case SBLG_ELEM_H4:
-		if (PARSE_TITLE & arg->flags) 
+		if ((arg->flags & PARSE_TITLE))
 			return;
 		arg->flags |= PARSE_TITLE;
 		XML_SetElementHandler(arg->p, title_begin, title_end);
@@ -395,51 +394,44 @@ article_end(void *dat, const XML_Char *s)
 	XML_SetElementHandler(arg->p, input_begin, NULL);
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 
-	if (NULL != (cp = strrchr(arg->article->base, '.')))
-		if (NULL == strchr(cp, '/'))
+	if ((cp = strrchr(arg->article->base, '.')) != NULL)
+		if (strchr(cp, '/') == NULL)
 			*cp = '\0';
-	if (NULL != (cp = strrchr(arg->article->stripbase, '.')))
-		if (NULL == strchr(cp, '/'))
+	if ((cp = strrchr(arg->article->stripbase, '.')) != NULL)
+		if (strchr(cp, '/') == NULL)
 			*cp = '\0';
-	if (NULL != (cp = strrchr(arg->article->striplangbase, '.')))
-		if (NULL == strchr(cp, '/'))
+	if ((cp = strrchr(arg->article->striplangbase, '.')) != NULL)
+		if (strchr(cp, '/') == NULL)
 			*cp = '\0';
 
-	if (NULL == arg->article->title) {
-		assert(NULL == arg->article->titletext);
-		arg->article->title = 
-			xstrdup("Untitled article");
-		arg->article->titlesz = 
-			strlen(arg->article->title);
-		arg->article->titletext = 
-			xstrdup("Untitled article");
+	if (arg->article->title == NULL) {
+		assert(arg->article->titletext == NULL);
+		arg->article->title = xstrdup("Untitled article");
+		arg->article->titlesz = strlen(arg->article->title);
+		arg->article->titletext = xstrdup("Untitled article");
 		arg->article->titletextsz = 
 			strlen(arg->article->titletext);
 	}
-	if (NULL == arg->article->author) {
-		assert(NULL == arg->article->authortext);
-		arg->article->author = 
-			xstrdup("Untitled author");
-		arg->article->authorsz = 
-			strlen(arg->article->author);
-		arg->article->authortext = 
-			xstrdup("Untitled author");
+	if (arg->article->author == NULL) {
+		assert(arg->article->authortext == NULL);
+		arg->article->author = xstrdup("Untitled author");
+		arg->article->authorsz = strlen(arg->article->author);
+		arg->article->authortext = xstrdup("Untitled author");
 		arg->article->authortextsz = 
 			strlen(arg->article->authortext);
 	}
-	if (0 == arg->article->time) {
+	if (arg->article->time == 0) {
 		arg->article->isdatetime = 1;
-		if (-1 == fstat(arg->fd, &st))
+		if (fstat(arg->fd, &st) == -1)
 			warn("%s", arg->article->src);
 		else
 			arg->article->time = st.st_ctime;
 	}
-	if (NULL == arg->article->aside) {
-		assert(NULL == arg->article->asidetext);
+	if (arg->article->aside == NULL) {
+		assert(arg->article->asidetext == NULL);
 		arg->article->aside = xstrdup("");
 		arg->article->asidetext = xstrdup("");
-		arg->article->asidesz =
-			arg->article->asidetextsz = 0;
+		arg->article->asidesz = arg->article->asidetextsz = 0;
 	}
 }
 
@@ -524,9 +516,9 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			free(tofree);
 			break;
 		case SBLG_ATTR_SORT:
-			if (strcasecmp(attp[1], "first") == 0)
+			if (strcmp(attp[1], "first") == 0)
 				arg->article->sort = SORT_FIRST;
-			else if (strcasecmp(attp[1], "last") == 0)
+			else if (strcmp(attp[1], "last") == 0)
 				arg->article->sort = SORT_LAST;
 			break;
 		default:
