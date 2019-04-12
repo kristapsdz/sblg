@@ -131,13 +131,6 @@ main(int argc, char *argv[])
 
 	switch (op) {
 	case OP_COMPILE:
-		/*
-		 * Merge a single input XML file into a template XML
-		 * files to produce output.
-		 * (This can happen multiple times if we're spitting
-		 * into stdout.)
-		 */
-
 		if (templ == NULL)
 			templ = "article-template.xml";
 		if (argc == 1) {
@@ -154,12 +147,6 @@ main(int argc, char *argv[])
 			rc = json(p, argc, argv, outfile, asort);
 			break;
 		}
-
-		/*
-		 * Merge multiple input files into an Atom feed
-		 * amalgamation.
-		 */
-
 		if (templ == NULL)
 			templ = "atom-template.xml";
 		if (outfile == NULL)
@@ -167,29 +154,15 @@ main(int argc, char *argv[])
 		rc = atom(p, templ, argc, argv, outfile, asort);
 		break;
 	case OP_LISTTAGS:
-		/*
-		 * List all tags and the filename(s) they're found in.
-		 */
-
 		rc = listtags(p, argc, argv,
 			fmtjson, rev, fmtjson ? 0 : lf);
 		break;
 	case OP_LINK_INPLACE:
-		/*
-		 * Merge multiple input files into multiple output files
-		 * in a sort of multi-mode blog output.
-		 */
-
 		if (templ == NULL)
 			templ = "blog-template.xml";
 		rc = linkall_r(p, templ, argc, argv, asort);
 		break;
 	default:
-		/*
-		 * Merge multiple input files into a regular (we'll call
-		 * it "blog") amalgamation.
-		 */
-
 		if (templ == NULL)
 			templ = "blog-template.xml";
 		if (outfile == NULL)
