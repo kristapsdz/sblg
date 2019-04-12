@@ -50,8 +50,8 @@ and
 .Pa bar.xml
 article contents, respectively.
 .It
-Blog amalgamation (default) mode links multiple articles with a template
-consisting of articles and navigation stubs.
+Blog mode (default) links multiple articles with a template consisting
+of articles and navigation stubs.
 For example,
 .Qq sblg -o foo.html bar.html baz.html
 links
@@ -62,15 +62,15 @@ into
 .Pa foo.html
 from a template.
 .It
-Atom amalgamation mode
+Atom mode
 .Pq Fl a
 links multiple articles with an Atom feed template.
 .It
-JSON amalgamation mode
+JSON mode
 .Pq Fl j
 formats all articles as a JSON feed.
 .It
-Standalone amalgamation mode
+Multi-standalone mode
 .Pq Fl C
 links multiple articles in standalone style, i.e., multiple navigation
 stubs, a single article stub.
@@ -95,16 +95,15 @@ Tag-listing mode with
 .Pp
 By default,
 .Nm
-operates in blog amalgamation mode as if
+operates in blog mode as if
 .Qq sblg -o blog.html -t blog-template.xml ...
 were specified.
 Its arguments are as follows:
 .Bl -tag -width Ds
 .It Fl a
-Creates an Atom feed amalgamation from its input files.
+Creates an Atom feed from its input files.
 .It Fl c
-Create standalone articles instead of merging together articles into an
-amalgamation.
+Create standalone articles instead of merging articles together.
 .It Fl l
 Instead of emitting any output files, simply process the input and
 report a table of tags.
@@ -132,8 +131,7 @@ If the
 flag is specified, this is JSON formatted.
 .It Fl j
 JSON output mode.
-This behaves as in blog amalgamation mode, but outputs JSON instead of
-XML.
+This behaves as in blog mode, but outputs JSON instead of XML.
 If
 .Fl l
 is specified, the tag listing will be displayed in JSON instead.
@@ -143,8 +141,7 @@ for details.
 .It Fl C Ar file
 Like
 .Fl c ,
-but creating a blog amalgamation.
-In effect, an amalgamation with a single
+but creating a blog with a single
 .Li <article data-sblg-article="1">
 for the
 .Ar file
@@ -181,10 +178,10 @@ is replaced by
 If multiple input files are specified,
 .Fl o
 is ignored.
-If unspecified for the blog amalgamation,
+If unspecified for the blog,
 .Ar blog.html
 is used by default.
-If unspecified for the Atom feed or JSON amalgamation,
+If unspecified for the Atom feed or JSON,
 .Ar atom.xml
 or
 .Ar blog.json ,
@@ -207,7 +204,7 @@ which uses the command-line order; or
 .Ar rdate ,
 a reverse-date sort (newest-oldest).
 .It Fl t Ar template
-Template for standalone or amalgamation files.
+Template for all modes.
 If unspecified, defaults to
 .Ar article-template.xml
 for
@@ -223,10 +220,11 @@ Input files.
 In standalone mode with
 .Fl c ,
 input XML files are merged with a template into an output file.
-Otherwise, multiple input files are merged into a single amalgamation.
+Otherwise, multiple input files are merged into a single blog.
 .El
 .Pp
 All input must be well-formed XML.
+(Element names and attributes are case-sensitive.)
 HTML is assumed only with the default suffix re-write rule for
 .Fl c
 without
@@ -383,9 +381,8 @@ See
 .Sx Tag Symbols
 for a list of symbols that will be replaced if found in attribute value
 or textual contexts.
-.Ss Blog Amalgamation Template
-The amalgamation template file must also be a well-formed XML file where
-each
+.Ss Blog Template
+The blog template file must also be a well-formed XML file where each
 .Li <article data-sblg-article="1">
 element is replaced by ordered (by default, newest to oldest) article
 contents.
@@ -511,9 +508,9 @@ or
 .Li <li>
 HTML tags and can be used to generate custom XML files, such as sitemaps.
 .El
-.Ss Standalone Amalgamation Template
+.Ss Multi-Standalone Template
 This is identical to the
-.Sx Blog Amalgamation Template
+.Sx Blog Template
 except that a single article is noted with
 .Fl C ,
 and this is the only article displayed in the article stub.
@@ -538,7 +535,7 @@ this follows the usual rules of
 so if the article you specify with
 .Fl C
 doesn't have the correct tag, it won't inline the article.
-.Ss Atom Amalgamation Template
+.Ss Atom Template
 The Atom template file must be a well-formed XML file where each
 .Li <entry>
 element with a Boolean
@@ -657,7 +654,7 @@ will strip away HTML attributes that do not fit into a white-list.
 This white-list is defined by the W3C's Feed Validator.
 .Ss JSON Schema
 .Nm
-can produce a JSON amalgamation with the
+can produce JSON with the
 .Fl j
 flag.
 The schema is documented in
@@ -761,7 +758,7 @@ becomes
 .It Li ${sblg-count}
 The total number of articles that will be shown.
 In standalone mode, this is always 1.
-In an amalgamation
+In a blog
 .Li <nav>
 mode, it's the total number within the navigation.
 .It Li ${sblg-date}
@@ -813,7 +810,7 @@ The position (from 1) of the articles actually shown.
 This always starts at 1 and increments by one, regardless the tag
 filtering or starting position.
 In standalone mode, it always prints 1.
-In amalgamation mode (outside of a
+In blog mode (outside of a
 .Li <nav>
 context), it shows the position in the input files.
 Within a

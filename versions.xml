@@ -704,4 +704,18 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.21</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-04-12">2019-04-12</time>
+		</header>
+		<aside>
+			<p>
+				No functionality changes.
+				Speed up internal code by using hashtable lookups for element and attribute names.
+				Conform to OpenBSD's <a href="https://man.openbsd.org/style.9">style(9)</a> more.
+			</p>
+		</aside>
+	</article>
 </articles>
