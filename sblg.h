@@ -109,6 +109,7 @@ int		sblg_parse(XML_Parser, const char *,
 			struct article **, size_t *, const char **);
 void		sblg_free(struct article *, size_t);
 void		sblg_sort(struct article *, size_t, enum asort);
+int		sblg_sort_lookup(const char *, enum asort *);
 
 __END_DECLS
 

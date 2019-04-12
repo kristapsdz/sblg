@@ -24,63 +24,66 @@
 
 #include "extern.h"
 
+/*
+ * All sort types can have the order overriden on an article-specific
+ * basis by the SORT_FIRST or SORT_LAST override being applied.
+ * Return non-zero if we do this; zero to fall through to our sort.
+ */
+static int
+cmpoverride(const struct article *s1, const struct article *s2)
+{
+
+	if (s1->sort != s2->sort) {
+		if (s2->sort == SORT_FIRST || s1->sort == SORT_LAST)
+			return -1;
+		if (s2->sort == SORT_LAST || s1->sort == SORT_FIRST)
+			return 1;
+	}
+	return 0;
+}
+
 static int
 cmdlinecmp(const void *p1, const void *p2)
 {
 	const struct article *s1 = p1, *s2 = p2;
+	int	     rc;
 
-	return(s1->order - s2->order);
+	if ((rc = cmpoverride(s1, s2)) != 0)
+		return rc;
+	return s1->order - s2->order;
 }
 
 static int
 filenamecmp(const void *p1, const void *p2)
 {
 	const struct article *s1 = p1, *s2 = p2;
+	int	     rc;
 
-	if (s1->sort != s2->sort) {
-		if (SORT_FIRST == s1->sort || 
-		    SORT_LAST == s2->sort)
-			return(-1);
-		else if (SORT_LAST == s1->sort || 
-			 SORT_FIRST == s2->sort)
-			return(1);
-	}
-
-	return(strcmp(s1->src, s2->src));
+	if ((rc = cmpoverride(s1, s2)) != 0)
+		return rc;
+	return strcmp(s1->src, s2->src);
 }
 
 static int
 rdatecmp(const void *p1, const void *p2)
 {
 	const struct article *s1 = p1, *s2 = p2;
+	int	     rc;
 
-	if (s1->sort != s2->sort) {
-		if (SORT_FIRST == s2->sort || 
-		    SORT_LAST == s1->sort)
-			return(-1);
-		else if (SORT_LAST == s2->sort || 
-			 SORT_FIRST == s1->sort)
-			return(1);
-	}
-
-	return(difftime(s1->time, s2->time));
+	if ((rc = cmpoverride(s1, s2)) != 0)
+		return rc;
+	return difftime(s1->time, s2->time);
 }
 
 static int
 datecmp(const void *p1, const void *p2)
 {
 	const struct article *s1 = p1, *s2 = p2;
+	int	     rc;
 
-	if (s1->sort != s2->sort) {
-		if (SORT_FIRST == s1->sort || 
-		    SORT_LAST == s2->sort)
-			return(-1);
-		else if (SORT_LAST == s1->sort || 
-			 SORT_FIRST == s2->sort)
-			return(1);
-	}
-
-	return(difftime(s2->time, s1->time));
+	if ((rc = cmpoverride(s1, s2)) != 0)
+		return rc;
+	return difftime(s2->time, s1->time);
 }
 
 static void
@@ -88,7 +91,7 @@ article_free(struct article *p)
 {
 	size_t	 i;
 
-	if (NULL == p) 
+	if (p == NULL)
 		return;
 
 	free(p->img);
@@ -117,7 +120,7 @@ sblg_free(struct article *p, size_t sz)
 {
 	size_t	 i;
 
-	if (NULL == p)
+	if (p == NULL)
 		return;
 
 	for (i = 0; i < sz; i++)
@@ -126,16 +129,49 @@ sblg_free(struct article *p, size_t sz)
 	free(p);
 }
 
+/*
+ * Look up the sort type.
+ * Return zero if not found, non-zero if found.
+ * Sets "sort" if found.
+ */
+int
+sblg_sort_lookup(const char *s, enum asort *sort)
+{
+
+	if (strcasecmp(s, "date") == 0)
+		*sort = ASORT_DATE;
+	else if (strcasecmp(s, "rdate") == 0)
+		*sort = ASORT_RDATE;
+	else if (strcasecmp(s, "filename") == 0)
+		*sort = ASORT_FILENAME;
+	else if (strcasecmp(s, "cmdline") == 0)
+		*sort = ASORT_CMDLINE;
+	else
+		return 0;
+
+	return 1;
+}
+
+/*
+ * Sort the list of articles in the manner given by "sort".
+ * This will take into account per-article sort ordering.
+ */
 void
 sblg_sort(struct article *p, size_t sz, enum asort sort)
 {
 
-	if (ASORT_DATE == sort)
+	switch (sort) {
+	case ASORT_DATE:
 		qsort(p, sz, sizeof(struct article), datecmp);
-	else if (ASORT_RDATE == sort)
+		break;
+	case ASORT_RDATE:
 		qsort(p, sz, sizeof(struct article), rdatecmp);
-	else if (ASORT_FILENAME == sort)
+		break;
+	case ASORT_FILENAME:
 		qsort(p, sz, sizeof(struct article), filenamecmp);
-	else if (ASORT_CMDLINE == sort)
+		break;
+	case ASORT_CMDLINE:
 		qsort(p, sz, sizeof(struct article), cmdlinecmp);
+		break;
+	}
 }
