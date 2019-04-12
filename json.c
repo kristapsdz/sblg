@@ -33,13 +33,16 @@
 #include "extern.h"
 #include "version.h"
 
+/*
+ * FIXME: use strcspn().
+ */
 static void
 json_quoted(const char *cp, FILE *f)
 {
 	char	 c;
 
 	fputc('"', f);
-	while ('\0' != (c = *cp++))
+	while ((c = *cp++) != '\0')
 		switch (c) {
 		case ('"'):
 		case ('\\'):
@@ -95,7 +98,7 @@ json_textxml(const char *key,
 	json_quoted(key, f);
 	fputc(':', f);
 	fputc('{', f);
-	if (NULL != text) {
+	if (text != NULL) {
 		json_quoted("text", f);
 		fputc(':', f);
 		json_quoted(text, f);
@@ -125,28 +128,27 @@ json_textlist(const char *key, char **tags, size_t tagsz, FILE *f)
 	fputc(']', f);
 }
 
+/*
+ * Format entire articles into JSON output.
+ * I still don't have the schema really documented except in the
+ * manpage, so this should probably receive more attention to make it
+ * more in-line with JSON expectations.
+ */
 int
 json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 {
-	size_t		 j, sargsz;
-	int		 i, rc;
-	FILE		*f;
-	struct article	*sargs;
-
-	rc = 0;
-	f = NULL;
-
-	sargs = NULL;
-	sargsz = 0;
+	size_t		 j, sargsz = 0;
+	int		 i, rc = 0;
+	FILE		*f = stdout;
+	struct article	*sargs = NULL;
 
 	for (i = 0; i < sz; i++)
-		if ( ! sblg_parse(p, src[i], &sargs, &sargsz, NULL))
+		if (!sblg_parse(p, src[i], &sargs, &sargsz, NULL))
 			goto out;
 
 	sblg_sort(sargs, sargsz, asort);
 
-	f = stdout;
-	if (strcmp(dst, "-") && NULL == (f = fopen(dst, "w"))) {
+	if (strcmp(dst, "-") && (f = fopen(dst, "w")) == NULL) {
 		warn("%s", dst);
 		goto out;
 	}
@@ -197,8 +199,8 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 	rc = 1;
 out:
 	sblg_free(sargs, sargsz);
-	if (NULL != f && stdout != f)
+	if (f != NULL && f != stdout)
 		fclose(f);
-	return(rc);
+	return rc;
 }
 

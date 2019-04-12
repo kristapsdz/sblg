@@ -138,6 +138,12 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 		arg->article, 1, 0, 0, 1, XMLESC_NONE);
 }
 
+/*
+ * Merge a single input XML file into a template XML files to produce
+ * output.
+ * (This can happen multiple times if we're spitting into stdout.)
+ * Return zero on fatal error, non-zero on success.
+ */
 int
 compile(XML_Parser p, const char *templ, 
 	const char *src, const char *dst)
