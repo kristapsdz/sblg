@@ -70,9 +70,9 @@
 			</p>
 			<p>
 				There are two basic ways of populating templates: a <i>standalone</i> mode, which pastes a single
-				article into a template; and an <i>amalgation</i> mode, which posts multiple
+				article into a template; and a <i>blog</i> mode, which posts multiple
 				articles&#8212;like a blog front page.  
-				Amalgamation mode can merge entire articles as well as just article snippets and metadata for navigation
+				Blog mode can merge entire articles as well as just article snippets and metadata for navigation
 				and summary purposes.
 				That's what this page does.
 				You can also do specialty modes of Atom and JSON feeds&#8212;also part of this page.
@@ -164,16 +164,16 @@
 				This works well for putting simple documents into a template.
 				But what if we want to have these documents relate to each other, or have a single document relate to multiple
 				articles?
-				That's where amalgamation mode comes into play.
+				That's where blog mode comes into play.
 			</p>
 			<h3>
-				amalgamation mode
+				blog mode
 			</h3>
 			<figure>
-				<img src="index2.svg" alt="amalgamation mode graph" />
+				<img src="index2.svg" alt="blog mode graph" />
 			</figure>
 			<p>
-				For amalgamation (<q>blog</q>) mode it's the same; however, you can also specify <code
+				For blog mode it's the same; however, you can also specify <code
 					class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> to fill in meta-data
 				from all articles passed into the command.
 				The <code class="prettyprint lang-html">&lt;article&gt;</code> elements will be filled in with articles.
@@ -221,15 +221,15 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 					href="sblg.1.html">sblg(1)</a>'s <q>standalone mode</q>.
 			</p>
 			<h3>
-				standalone amalgation mode
+				multi-standalone mode
 			</h3>
 			<figure>
-				<img class="larger" src="index3.svg" alt="standalone amalgamation mode graph" />
+				<img class="larger" src="index3.svg" alt="multi-standalone mode graph" />
 			</figure>
 			<p>
-				A common usage is to mix up standalone and amalgation mode, where each article has its own page, and each page
+				A common usage is to mix up standalone and blog mode, where each article has its own page, and each page
 				refers to all other pages.
-				This can be effected using <i>standalone amalgation</i> mode (<code><b>-C</b></code>), which specifies a single
+				This can be effected using <i>multi-standalone</i> mode (<code><b>-C</b></code>), which specifies a single
 				article for display (like with standalone mode) but may reference multiple other articles in navigation.
 			</p>
 			<div class="prettyprint">
@@ -243,7 +243,7 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 &lt;/html&gt;</pre>
 			</div>
 			<p>
-				For larger numbers of pages in standalone amalgamation mode, the cost of recompiling for each output can be quite high.
+				For larger numbers of pages in multi-standalone mode, the cost of recompiling for each output can be quite high.
 				So there's also a mode (<code><b>-L</b></code>) for producing one output for each input, given all inputs.
 			</p>
 			<h3>
