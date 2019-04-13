@@ -2,7 +2,7 @@
 
 include Makefile.configure
 
-VERSION 	 = 0.4.20
+VERSION 	 = 0.4.21
 OBJS		 = compats.o \
 		   main.o \
 		   compile.o \
