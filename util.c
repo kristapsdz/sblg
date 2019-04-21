@@ -681,6 +681,9 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		} else if (STRCMP("sblg-abspos", 11)) {
 			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
 			bufp = buf;
+		} else if (STRCMP("sblg-abscount", 13)) {
+			snprintf(buf, sizeof(buf), "%zu", artsz + 1);
+			bufp = buf;
 		}
 
 		if (STRCMP("sblg-base", 9))
@@ -749,6 +752,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-pos-frac", 13))
 			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-abspos", 11))
+			xmltextxescs(f, bufp, esc);
+		else if (STRCMP("sblg-abscount", 13))
 			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-aside", 10))
 			xmltextxescs(f, arts[artpos].aside, esc);
