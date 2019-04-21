@@ -718,4 +718,16 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.22</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-04-21">2019-04-21</time>
+		</header>
+		<aside>
+			<p>
+				Add <code>${sblg-abscount}</code> variable.
+			</p>
+		</aside>
+	</article>
 </articles>
