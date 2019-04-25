@@ -337,7 +337,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 		if (sort != NULL) {
 			arg->usesort = 1;
-			if (!sblg_sort_lookup(optarg, &arg->navsort))
+			if (!sblg_sort_lookup(sort, &arg->navsort))
 				arg->usesort = 0;
 		}
 
