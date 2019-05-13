@@ -1031,7 +1031,7 @@ sblg_destroy(void)
 #ifdef	__linux__
 	size_t	 i;
 
-	for (i = 0; i < SBLTAG_NONE; i++) {
+	for (i = 0; i < SBLGTAG_NONE; i++) {
 		free(htabs[i].tabent);
 		htabs[i].tabent = NULL;
 	}
