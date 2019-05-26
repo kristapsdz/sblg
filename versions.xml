@@ -755,4 +755,36 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.25</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-06-26">2019-06-26</time>
+		</header>
+		<aside>
+			<p>
+				Add <code>data-sblg-ign-once</code> attribute, which is recognised
+				in the template file to indicate that a
+				<code>data-sblg-article</code> should be ignored.
+				The <code>once</code> part specifies that the attribute be removed
+				when it is processed.
+				This makes it easier to chain output to input, so a template may,
+				for example, wrap a navigation set as an article.
+				I use this for tag cloud collections.
+			</p>
+			<p>
+				Fix value reported by <code>${sblg-abscount}</code>, which was off
+				by one.
+			</p>
+			<p>
+				Provide <code>data-sblg-title</code> and
+				<code>data-sblg-datetime</code> overrides just like already found in
+				<code>data-sblg-img</code>.
+			</p>
+			<p>
+				All sort types now have a <q>reverse</q> mode.
+				Add in the <code>title</code> sort, while here.
+			</p>
+		</aside>
+	</article>
 </articles>
