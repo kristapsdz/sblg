@@ -50,6 +50,7 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "data-sblg-articletag", SBLG_ATTR_ARTICLETAG },
 	{ NULL, "data-sblg-atomcontent", SBLG_ATTR_ATOMCONTENT },
 	{ NULL, "data-sblg-content", SBLG_ATTR_CONTENT },
+	{ NULL, "data-sblg-datetime", SBLG_ATTR_DATETIME },
 	{ NULL, "data-sblg-entry", SBLG_ATTR_ENTRY },
 	{ NULL, "data-sblg-forall", SBLG_ATTR_FORALL },
 	{ NULL, "data-sblg-id", SBLG_ATTR_ID },
