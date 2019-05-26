@@ -53,6 +53,7 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "data-sblg-entry", SBLG_ATTR_ENTRY },
 	{ NULL, "data-sblg-forall", SBLG_ATTR_FORALL },
 	{ NULL, "data-sblg-id", SBLG_ATTR_ID },
+	{ NULL, "data-sblg-ign-once", SBLG_ATTR_IGN_ONCE },
 	{ NULL, "data-sblg-img", SBLG_ATTR_IMG },
 	{ NULL, "data-sblg-lang", SBLG_ATTR_LANG },
 	{ NULL, "data-sblg-nav", SBLG_ATTR_NAV },
@@ -808,6 +809,9 @@ xmlopens(FILE *f, const XML_Char *s, const XML_Char **atts)
 	fputc('<', f);
 	fputs(s, f);
 	for ( ; *atts != NULL; atts += 2) {
+		if (strcmp(atts[0], "data-sblg-ign-once") == 0 &&
+		    xmlbool(atts[1]))
+			continue;
 		fputc(' ', f);
 		fputs(atts[0], f);
 		fputs("=\"", f);
