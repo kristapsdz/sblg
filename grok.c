@@ -80,6 +80,37 @@ logerr(const struct parse *p)
 	logerrx(p, "%s", XML_ErrorString(XML_GetErrorCode(p->p)));
 }
 
+/*
+ * Parse the string into an RFC 3339 date/time.
+ * Accepts YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ.
+ * Returns the pointer on success or NULL on failure.
+ */
+static struct tm *
+string2tm(const char *cp, struct tm *tm, int *datetime)
+{
+	size_t	 sz;
+	char	*erp;
+
+	while (isspace((unsigned char)*cp))
+		cp++;
+	sz = strlen(cp);
+	memset(tm, 0, sizeof(struct tm));
+	if (10 == sz) {
+		erp = strptime(cp, "%Y-%m-%d", tm);
+		if (NULL == erp || '\0' != *erp)
+			return NULL;
+		*datetime = 0;
+	} else if (20 == sz) {
+		erp = strptime(cp, "%Y-%m-%dT%TZ", tm);
+		if (NULL == erp || '\0' != *erp)
+			return NULL;
+		*datetime = 1;
+	} else
+		return NULL;
+
+	return tm;
+}
+
 static void
 article_text(void *dat, const XML_Char *s, int len)
 {
@@ -212,6 +243,7 @@ static void
 tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 {
 	const XML_Char	**attp;
+	struct tm	  tm;
 
 	for (attp = atts; *attp != NULL; attp += 2)
 		switch (sblg_lookup(*attp)) {
@@ -231,6 +263,16 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 			arg->article->title = xstrdup(attp[1]);
 			arg->article->titletext = xstrdup(attp[1]);
 			arg->flags |= PARSE_TITLE;
+			break;
+		case SBLG_ATTR_DATETIME:
+			if (string2tm(attp[1], &tm, 
+			    &arg->article->isdatetime) == NULL) {
+				logerrx(arg, "malformed "
+					"RFC 3339 date/time");
+				break;
+			}
+			arg->flags |= PARSE_TIME;
+			arg->article->time = timegm(&tm);
 			break;
 		default:
 			if (strncasecmp(*attp, "data-sblg-set-", 14))
@@ -291,10 +333,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct parse	 *arg = dat;
 	const XML_Char	**attp;
-	const XML_Char	 *atcp;
 	struct tm	  tm;
-	char		 *erp;
-	size_t		  sz;
 
 	assert(arg->stack == 0);
 
@@ -329,30 +368,10 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		for (attp = atts; *attp != NULL; attp += 2) {
 			if (strcmp(*attp, "datetime"))
 				continue;
-			atcp = attp[1];
-			while (isspace((unsigned char)*atcp))
-				atcp++;
-			memset(&tm, 0, sizeof(struct tm));
-			sz = strlen(atcp);
-			if (10 == sz) {
-				erp = strptime(atcp, "%Y-%m-%d", &tm);
-				if (NULL == erp || '\0' != *erp) {
-					logerrx(arg, "malformed "
-						"ISO 3339 date");
-					continue;
-				}
-				arg->article->isdatetime = 0;
-			} else if (20 == sz) {
-				erp = strptime(atcp, "%Y-%m-%dT%TZ", &tm);
-				if (NULL == erp || '\0' != *erp) {
-					logerrx(arg, "malformed "
-						"ISO 3339 datetime");
-					continue;
-				}
-				arg->article->isdatetime = 1;
-			} else {
+			if (string2tm(attp[1], &tm, 
+			    &arg->article->isdatetime) == NULL) {
 				logerrx(arg, "malformed "
-					"ISO 3339 datetime");
+					"RFC 3339 date/time");
 				continue;
 			}
 			arg->article->time = timegm(&tm);
