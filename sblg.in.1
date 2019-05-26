@@ -201,8 +201,13 @@ You can also specify
 which sorts in increasing A-Z alphabetical order of the source filename;
 .Ar cmdline ,
 which uses the command-line order; or
-.Ar rdate ,
-a reverse-date sort (newest-oldest).
+.Ar title ,
+which uses the document title.
+Each sort may be prefixed with
+.Qq r
+(e.g.,
+.Ar rcmdline )
+to reverse the sort.
 .It Fl t Ar template
 Template for all modes.
 If unspecified, defaults to
@@ -297,6 +302,12 @@ Boolean value is used in an Atom feed.
 There are a number of special attributes that are recognised in the
 input file.
 .Bl -tag -width Ds
+.It Li data-sblg-datetime=datetime
+Overrides the first
+.Li <time>
+element.
+This must be YYYY-MM-DD or YYYY-MM-DDTH:MM:SSZ.
+It doesn't matter where this appears: it will always override the date.
 .It Li data-sblg-img=url
 Overrides the first
 .Li <img>
