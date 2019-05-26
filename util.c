@@ -682,7 +682,7 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			snprintf(buf, sizeof(buf), "%zu", artpos + 1);
 			bufp = buf;
 		} else if (STRCMP("sblg-abscount", 13)) {
-			snprintf(buf, sizeof(buf), "%zu", artsz + 1);
+			snprintf(buf, sizeof(buf), "%zu", artsz);
 			bufp = buf;
 		}
 
