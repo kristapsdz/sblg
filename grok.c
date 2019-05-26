@@ -225,6 +225,13 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 				&arg->article->tagmapsz, attp[1],
 				NULL, 0, 0);
 			break;
+		case SBLG_ATTR_TITLE:
+			free(arg->article->title);
+			free(arg->article->titletext);
+			arg->article->title = xstrdup(attp[1]);
+			arg->article->titletext = xstrdup(attp[1]);
+			arg->flags |= PARSE_TITLE;
+			break;
 		default:
 			if (strncasecmp(*attp, "data-sblg-set-", 14))
 				break;
