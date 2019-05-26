@@ -35,15 +35,6 @@
 				<span id="explain-github">GitHub repository</span>
 			</span>
 		</nav>
-		<header>
-			<h2>articles</h2>
-			<div>+</div>
-			<h2>makefile</h2>
-			<div>+</div>
-			<h2>template</h2>
-			<div>=</div>
-			<h2>blog</h2>
-		</header>
 		<article>
 			<p class="intro">
 				<span itemprop="name" class="nm">sblg</span> is <span itemprop="description">a utility for creating static
@@ -95,7 +86,7 @@
 			<h3>
 				latest versions
 			</h3>
-			<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="3">
+			<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="2">
 				<div>
 					<i class="fa fa-clock-o"></i> 
 					<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>: 
