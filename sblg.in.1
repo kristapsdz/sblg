@@ -377,6 +377,19 @@ All of this element's children are removed.
 </body>
 .Ed
 .Pp
+Article templates may contain the following attributes:
+.Bl -tag -width Ds
+.It Li data-sblg-article=boolean
+If set to true, the contents are replaced with the input article.
+.It Li data-sblg-ign-once=boolean
+If an
+.Li <article data-sblg-article="1">
+element contains this set to true, the element is not processed as an
+article and the
+.Li data-sblg-ign-once
+attribute is removed.
+.El
+.Pp
 See
 .Sx Tag Symbols
 for a list of symbols that will be replaced if found in attribute value
@@ -408,7 +421,7 @@ titles, dates, and links.
 </body>
 .Ed
 .Pp
-Articles may contain several attributes.
+Article templates may contain several attributes.
 .Bl -tag -width Ds
 .It Li data-sblg-article=boolean
 If set to true, the contents are replaced with the input article.
@@ -423,6 +436,13 @@ when in
 or
 .Fl C
 mode.
+.It Li data-sblg-ign-once=boolean
+If an
+.Li <article data-sblg-article="1">
+element contains this set to true, the element is not processed as an
+article and the
+.Li data-sblg-ign-once
+attribute is removed.
 .It Li data-sblg-permlink=boolean
 If an
 .Li <article data-sblg-article="1">
