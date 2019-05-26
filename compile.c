@@ -95,12 +95,12 @@ article_end(void *dat, const XML_Char *s)
  * This is the main handler for this file.
  */
 static void
-template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
+template_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct pargs	 *arg = dat;
 	const XML_Char	**attp;
 
-	assert(0 == arg->stack);
+	assert(arg->stack == 0);
 
 	xmltextx(arg->f, arg->buf, arg->dst, 
 		arg->article, 1, 0, 0, 1, XMLESC_NONE);
@@ -109,21 +109,35 @@ template_begin(void *dat, const XML_Char *name, const XML_Char **atts)
 	arg->buf = NULL;
 	arg->bufsz = 0;
 
-	if (sblg_lookup(name) != SBLG_ELEM_ARTICLE) {
-		xmlopensx(arg->f, name, atts, 
+	if (sblg_lookup(s) != SBLG_ELEM_ARTICLE) {
+		xmlopensx(arg->f, s, atts, 
 			arg->dst, arg->article, 1, 0);
 		return;
 	}
+
+	/* Check for <article data-sblg-article>. */
 
 	for (attp = atts; *attp != NULL; attp += 2)
 		if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLE)
 			break;
 
 	if (*attp == NULL || !xmlbool(attp[1])) {
-		xmlopensx(arg->f, name, atts, 
+		xmlopensx(arg->f, s, atts, 
 			arg->dst, arg->article, 1, 0);
 		return;
 	}
+
+	/*
+	 * If we have data-sblg-ign-once, then ignore the current
+	 * invocation and remove the data-sblg-ign-once.
+	 */
+
+	for (attp = atts; *attp != NULL; attp += 2)
+		if (sblg_lookup(*attp) == SBLG_ATTR_IGN_ONCE &&
+		    xmlbool(attp[1])) {
+			xmlopens(arg->f, s, atts);
+			return;
+		}
 
 	/*
 	 * If we encounter an <article data-sblg-article>, then echo
