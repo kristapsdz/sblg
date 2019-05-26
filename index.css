@@ -4,13 +4,6 @@ body				{ font-size: 14pt;
 				  font-family: "Alegreya sans", sans-serif; 
 				  font-weight: 400; }
 a				{ text-decoration: none; }
-body > header			{ padding: 1.5em 0;
-				  text-align: center;
-				  font-size: 36pt;
-				  line-height: 36pt;
-				  background-color: #ccc; }
-body > header h1,
-body > header h2		{ color: #555; }
 h1, h2				{ font-size: inherit; 
 				  margin: 0; 
 				  font-weight: 400;
@@ -93,7 +86,4 @@ body > nav			{ padding: 12pt 2%; }
 body > nav div			{ margin: 1em 0; }
 body > nav div.logo		{ font-size: 16pt; 
 				  margin-bottom: 0.5em; }
-body > header			{ font-size: 24pt; 
-			 	  padding: 1em 0;
-				  line-height: 28pt; }
 }
