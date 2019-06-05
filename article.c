@@ -87,6 +87,36 @@ filenamecmp(const void *p1, const void *p2)
 }
 
 static int
+rititlecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+	const char	*t1, *t2;
+	int		 rc;
+
+	t1 = (s1->titletext == NULL) ? "" : s1->titletext;
+	t2 = (s2->titletext == NULL) ? "" : s2->titletext;
+
+	if ((rc = cmpoverride(s1, s2)) != 0)
+		return rc;
+	return strcasecmp(t2, t1);
+}
+
+static int
+ititlecmp(const void *p1, const void *p2)
+{
+	const struct article *s1 = p1, *s2 = p2;
+	const char	*t1, *t2;
+	int		 rc;
+
+	t1 = (s1->titletext == NULL) ? "" : s1->titletext;
+	t2 = (s2->titletext == NULL) ? "" : s2->titletext;
+
+	if ((rc = cmpoverride(s1, s2)) != 0)
+		return rc;
+	return strcasecmp(t1, t2);
+}
+
+static int
 rtitlecmp(const void *p1, const void *p2)
 {
 	const struct article *s1 = p1, *s2 = p2;
@@ -206,6 +236,10 @@ sblg_sort_lookup(const char *s, enum asort *sort)
 		*sort = ASORT_TITLE;
 	else if (strcasecmp(s, "rtitle") == 0)
 		*sort = ASORT_RTITLE;
+	else if (strcasecmp(s, "ititle") == 0)
+		*sort = ASORT_ITITLE;
+	else if (strcasecmp(s, "rititle") == 0)
+		*sort = ASORT_RITITLE;
 	else
 		return 0;
 
@@ -244,6 +278,12 @@ sblg_sort(struct article *p, size_t sz, enum asort sort)
 		break;
 	case ASORT_RTITLE:
 		qsort(p, sz, sizeof(struct article), rtitlecmp);
+		break;
+	case ASORT_ITITLE:
+		qsort(p, sz, sizeof(struct article), ititlecmp);
+		break;
+	case ASORT_RITITLE:
+		qsort(p, sz, sizeof(struct article), rititlecmp);
 		break;
 	}
 }
