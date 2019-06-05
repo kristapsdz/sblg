@@ -759,7 +759,7 @@
 		<header>
 			<h1>0.4.25</h1>
 			<address>Kristaps Dzonsons</address>
-			<time datetime="2019-06-26">2019-06-26</time>
+			<time datetime="2019-05-26">2019-05-26</time>
 		</header>
 		<aside>
 			<p>
@@ -784,6 +784,19 @@
 			<p>
 				All sort types now have a <q>reverse</q> mode.
 				Add in the <code>title</code> sort, while here.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.26</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-06-05">2019-06-05</time>
+		</header>
+		<aside>
+			<p>
+				Add <code>ititle</code> and <code>rititle</code> for
+				case-insensitive title sort.
 			</p>
 		</aside>
 	</article>
