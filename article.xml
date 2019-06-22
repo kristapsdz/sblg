@@ -14,7 +14,7 @@
 		<header>
 			<h1>
 				<a href="index.html">sblg</a>
-				<span>&#8211; simple off-line blog utility</span>
+				<span>&#8211; static blog utility</span>
 			</h1>
 		</header>
 		<div class="version">
@@ -30,7 +30,7 @@
 			</div>
 		</div>
 		<section>
-			<p>
+			<p class="intro">
 				This is an example of an individual article.
 				It consists of a template (<a href="article.xml">article.xml</a>) merged with article contents.
 			</p>
@@ -41,7 +41,7 @@
 			</article>
 		</section>
 		<footer>
-			&#169; 2013&#8211;2017 <a rel="author" href="https://github.com/kristapsdz">Kristaps Dzonsons</a>
+			&#169; 2013&#8211;2019 <a rel="author" href="https://github.com/kristapsdz">Kristaps Dzonsons</a>
 		</footer>
 	</body>
 </html>
