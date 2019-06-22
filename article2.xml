@@ -3,7 +3,7 @@
 		<h2>How does it work?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-07-01">01 July, 2013</time></div>
 	</header>
-	<aside>How sblg merges blog articles into amalgamations.</aside>
+	<aside>How sblg merges articles into a blog.</aside>
 	<p>
 		It works like generating executables: with a <a href="Makefile">Makefile</a> like the one building this page (and the code) or
 		by manual, cc(1)-like compilation.

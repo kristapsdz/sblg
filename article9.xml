@@ -12,7 +12,7 @@
 			Tricks: Fancy Navigation</a>.
 	</p>
 	<p>
-		Tags are even more useful in standalone amalgamation mode described in <a href="sblg.1.html">sblg(1)</a>, which is how this file
+		Tags are even more useful in combined mode described in <a href="sblg.1.html">sblg(1)</a>, which is how this file
 		was created:
 	</p>
 	<p class="code">

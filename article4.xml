@@ -3,7 +3,7 @@
 		<h2>What about feeds?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-06-29">29 June, 2013</time></div>
 	</header>
-	<aside>How to use the Atom feed amalgamation feature.</aside>
+	<aside>How to use the Atom feed feature.</aside>
 	<p>
 		<span class="name">sblg</span> will generate <a href="https://en.wikipedia.org/wiki/Atom_%28standard%29">Atom</a> feeds when
 		given the <code>-<b>a</b></code> flag.
