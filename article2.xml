@@ -36,6 +36,20 @@
 			href="sblg.1.html">sblg(1)</a> manual for details.
 	</p>
 	<p>
+		I actually prefer to use the XML files as input to both the standalone and blog mode.
+		This allows the rules to be run in parallel.
+	</p>
+	<p class="code">
+		<code class="prettyprint"><a href="index.html">index.html</a>: 
+			<a href="article1.xml">article1.xml</a>
+			<a href="article2.xml">article2.xml</a></code>
+		<code class="prettyprint tab">sblg -o $@
+			<a href="article1.xml">article1.xml</a>
+			<a href="article2.xml">article2.xml</a></code>
+		<code class="prettyprint">.xml.html:</code>
+		<code class="prettyprint tab">sblg -c -o $@ $&lt;</code>
+	</p>
+	<p>
 		Why do I do it like this?
 		I prefer building articles individually, versioning the source with <a
 			href="https://en.wikipedia.org/wiki/Concurrent_Versions_System">CVS</a>, alongside templates for individual and linked
