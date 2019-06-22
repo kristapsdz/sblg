@@ -7,7 +7,7 @@
 	<p>
 		<span class="name">sblg</span> will generate <a href="https://en.wikipedia.org/wiki/Atom_%28standard%29">Atom</a> feeds when
 		given the <code>-<b>a</b></code> flag.
-		Its behaviour follows <a href="sblg.1.html">sblg(1)</a>'s description of blog amalgamation mode.
+		Its behaviour follows <a href="sblg.1.html">sblg(1)</a>'s description of blog mode.
 		All you need to do is provide an Atom <a href="atom-template.xml">template</a>; the <code class="prettyprint
 			lang-html">&lt;entry&gt;</code>, <code class="prettyprint lang-html">&lt;updated&gt;</code>, and <code
 			class="prettyprint lang-html">&lt;id&gt;</code> (the <code class="prettyprint lang-html">&lt;id&gt;</code> field must
@@ -35,6 +35,18 @@
 		<code class="prettyprint lang-html">&lt;author&gt;</code>, and alternate <code class="prettyprint lang-html">&lt;link&gt;</code> elements.
 		If specified in the original article, a <code class="prettyprint lang-html">&lt;content&gt;</code> element will consist of an
 		HTML article summary, or the full article if so specified.  See the <a href="sblg.1.html">sblg(1)</a> manual for details.
+		Or making it shorter&#8230;
+	</p>
+	<p class="code">
+		<code class="prettyprint">&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>
+		<code class="prettyprint">&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;</code>
+		<code class="prettyprint tab">&lt;title&gt;sblg Example Feed&lt;/title&gt;</code>
+		<code class="prettyprint tab">&lt;link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" /&gt;</code>
+		<code class="prettyprint tab">&lt;link href="http://kristaps.bsd.lv/sblg" /&gt;</code>
+		<code class="prettyprint tab">&lt;id data-sblg-id="1" /&gt;</code>
+		<code class="prettyprint tab">&lt;updated data-sblg-updated="1" /&gt;</code>
+		<code class="prettyprint tab">&lt;entry data-sblg-forall="1" data-sblg-entry="1" /&gt;</code>
+		<code class="prettyprint">&lt;/feed&gt;</code>
 	</p>
 	<p>
 		Remember to link to the feed in your <a href="index.xml">blog template</a> or <a href="article.xml">article template</a> file!
