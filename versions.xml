@@ -811,7 +811,7 @@
 				Documentation updates only: clarify <q>multi-standalone</q> mode as
 				combined, remove references to amalgamation, clarify where tag
 				symbols may be used, add more meaningful examples, etc.
-				No meaningful code change.
+				No code change.
 			</p>
 		</aside>
 	</article>
