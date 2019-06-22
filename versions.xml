@@ -800,4 +800,19 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.27</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-06-23">2019-06-23</time>
+		</header>
+		<aside>
+			<p>
+				Documentation updates only: clarify <q>multi-standalone</q> mode as
+				combined, remove references to amalgamation, clarify where tag
+				symbols may be used, add more meaningful examples, etc.
+				No meaningful code change.
+			</p>
+		</aside>
+	</article>
 </articles>
