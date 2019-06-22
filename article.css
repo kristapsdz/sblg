@@ -2,7 +2,7 @@ html, body			{ margin: 0;
 				  padding: 0; }
 body				{ color: #333; 
 				  line-height: 1.3em;
-				  font-size: 140%; 
+				  font-size: 14pt; 
 				  font-family: "Alegreya sans", sans-serif; 
 				  font-weight: 400; }
 a				{ text-decoration: none; }
