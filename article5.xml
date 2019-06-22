@@ -23,8 +23,7 @@
 		<code class="prettyprint lang-html tab">&lt;link href="http://example.org/" /&gt;</code>
 		<code class="prettyprint lang-html tab">&lt;id data-sblg-id="1" /&gt;</code>
 		<code class="prettyprint lang-html tab">&lt;updated data-sblg-updated="1" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;entry data-sblg-entry="1" data-sblg-content="1" data-sblg-altlink="0" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;entry data-sblg-entry="1" data-sblg-content="1" data-sblg-altlink="0" /&gt;</code>
+		<code class="prettyprint lang-html tab">&lt;entry data-sblg-forall="1" data-sblg-entry="1" data-sblg-content="1" data-sblg-altlink="0" /&gt;</code>
 		<code class="prettyprint lang-html">&lt;/feed&gt;</code>
 	</p>
 	<p>
