@@ -7,24 +7,21 @@ files, Atom feeds, and JSON files.
 It's built for use with `make`-style build environments insofar as a
 blog depends upon articles.
 
-Benefits?  
-No markdown ([unless](https://kristaps.bsd.lv/sblg/article10.html)...), no "CMS", no CGI, no PHP. 
+Benefits?  No "CMS", no CGI, no PHP, no funny-markup, no databases.
 Just a simple [open source](https://opensource.org/licenses/ISC) tool
-for pulling data from articles and populating templates. 
-The only dependency is [libexpat](http://expat.sourceforge.net/) for
-parsing article content.
+for pulling data from articles and populating templates.  The only
+dependency is [libexpat](http://expat.sourceforge.net/) for parsing
+article content.
 
 This GitHub repository is a read-only mirror of the main repository,
-which is held on [BSD.lv](https://www.bsd.lv).
-I keep it up to date between versions; so if you have issues to report,
-please do so here.
+which is held on [BSD.lv](https://www.bsd.lv).  I keep it up to date
+between versions; so if you have issues to report, please do so here.
 
 ## Examples
 
 Read [sblg(1)](https://kristaps.bsd.lv/sblg/sblg.1.html) for a detailed
 runthrough of operation, or visit the
-[sblg blog](https://kristaps.bsd.lv/sblg/index.html#blog) for some
-examples.
+[website](https://kristaps.bsd.lv/sblg) for some examples.
 
 ## Installation
 
