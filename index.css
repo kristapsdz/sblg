@@ -82,8 +82,6 @@ footer a:hover			{ border-bottom: thin solid rgba(0, 0, 0, 0.5); }
 
 @media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
 div.prettyprint			{ overflow: hidden; }
-body > nav			{ padding: 12pt 2%; }
-body > nav div			{ margin: 1em 0; }
-body > nav div.logo		{ font-size: 16pt; 
-				  margin-bottom: 0.5em; }
+body > nav			{ padding: 1rem 0 1rem 0; }
+h1				{ font-size: 150%; }
 }
