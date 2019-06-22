@@ -145,7 +145,8 @@ $(ARTICLES): versions.xml
 
 .md.xml:
 	( echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" ; \
-	  echo "<article data-sblg-article=\"1\" data-sblg-tags=\"howto\">" ; \
+	  echo "<article data-sblg-article=\"1\" data-sblg-tags=\"howto\" " ; \
+	  echo " data-sblg-datetime=\"`lowdown -X date $<`\">"; \
 	  lowdown $< ; \
 	  echo "</article>" ; ) >$@
 

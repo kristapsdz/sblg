@@ -1,3 +1,6 @@
+date: 2016-12-07
+title: Using Markdown
+
 # Using Markdown
 
 You can also use
