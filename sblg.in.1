@@ -19,7 +19,7 @@
 .Os
 .Sh NAME
 .Nm sblg
-.Nd simple off-line blog utility
+.Nd static blog utility
 .Sh SYNOPSIS
 .Nm sblg
 .Op Fl acjlLr
@@ -70,7 +70,7 @@ JSON mode
 .Pq Fl j
 formats all articles as a JSON feed.
 .It
-Multi-standalone mode
+Combined mode
 .Pq Fl C
 links multiple articles in standalone style, i.e., multiple navigation
 stubs, a single article stub.
@@ -367,20 +367,6 @@ Sets the title as otherwise would be set in a
 element.
 It doesn't matter where this appears: it will always override the title.
 .El
-.Pp
-There may be be multiple articles within a single document, for example,
-.Bd -literal
-<articles>
-  <article data-sblg-article="1"></article>
-  <article data-sblg-article="1"></article>
-  <article data-sblg-article="1"></article>
-</articles>
-.Ed
-.Pp
-The element(s) containing the articles is ignored.
-If you have multiple articles and are using
-.Fl c ,
-only the first article is compiled.
 .Ss Standalone Template
 The standalone template file must be a well-formed XML file where the
 first
@@ -413,6 +399,7 @@ See
 .Sx Tag Symbols
 for a list of symbols that will be replaced if found in attribute value
 or textual contexts.
+These may occur anywhere in the template document.
 .Ss Blog Template
 The blog template file must also be a well-formed XML file where each
 .Li <article data-sblg-article="1">
@@ -547,12 +534,17 @@ or
 .Li <li>
 HTML tags and can be used to generate custom XML files, such as sitemaps.
 .El
-.Ss Multi-Standalone Template
+.Ss Combined Template
 This is identical to the
 .Sx Blog Template
 except that a single article is noted with
 .Fl C ,
 and this is the only article displayed in the article stub.
+Furthermore, like in standalone mode,
+.Sx Tag Symbols
+may be used anywhere in the document template and refer to the current
+article unless within a navigation element, in which case the symbol
+resolves to the currently-printed article.
 In the given example,
 .Bd -literal
 <body>
@@ -568,8 +560,7 @@ the navigation would be populated by all articles, but only the first
 article stub would be filled in with the specified article.
 The second would be removed.
 .Pp
-.Em Note :
-this follows the usual rules of
+This follows the usual rules of
 .Li data-sblg-articletag ,
 so if the article you specify with
 .Fl C
