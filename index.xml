@@ -3,7 +3,7 @@
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta charset="utf-8" /> 
-		<title>sblg: simple off-line blog utility</title>
+		<title>sblg: static blog utility</title>
 		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="sblg Article and Version Feed" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
@@ -12,28 +12,32 @@
 	</head>
 	<body itemscope="itemscope" itemtype="http://schema.org/SoftwareApplication">
 		<nav>
-			<div>
+			<div class="top">
 				<a href="https://www.bsd.lv">BSD.lv</a> 
 				<span itemprop="applicationCategory">tools for text processing</span>: 
 				<a href="https://kristaps.bsd.lv/lowdown">lowdown</a>,
 				<a href="https://kristaps.bsd.lv/sblg">sblg</a>,
 				<a href="https://mandoc.bsd.lv">mandoc</a>
 			</div>
-			<div class="logo">
-				sblg <span>&#8211; simple off-line blog utility</span>
+			<div>
+				<h1>
+					sblg <span>&#8211; static blog utility</span>
+				</h1>
 			</div>
-			<a id="nav-gears" itemprop="downloadURL" href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
-			<a id="nav-lock" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
-			<a id="nav-file" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
-			<a id="nav-rss" href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
-			<a id="nav-github" href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
-			<span class="explain">
-				<span id="explain-gears">Download source</span>
-				<span id="explain-lock">Download checksum</span>
-				<span id="explain-file">Source archive</span>
-				<span id="explain-rss">Atom feed</span>
-				<span id="explain-github">GitHub repository</span>
-			</span>
+			<div class="nav">
+				<a id="nav-gears" itemprop="downloadURL" href="snapshots/sblg.tar.gz"><i class="fa fa-fw fa-gears"></i></a>
+				<a id="nav-lock" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-fw fa-lock"></i></a>
+				<a id="nav-file" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
+				<a id="nav-rss" href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
+				<a id="nav-github" href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
+				<span class="explain">
+					<span id="explain-gears">Download source</span>
+					<span id="explain-lock">Download checksum</span>
+					<span id="explain-file">Source archive</span>
+					<span id="explain-rss">Atom feed</span>
+					<span id="explain-github">GitHub repository</span>
+				</span>
+			</div>
 		</nav>
 		<article>
 			<p class="intro">
@@ -42,13 +46,9 @@
 				It knits together articles with templates to generate static HTML files,
 				Atom feeds, and JSON files.
 				It's built for use with <a href="https://man.openbsd.org/make.1">make(1)</a>.
-				No <a href="https://daringfireball.net/projects/markdown/">markdown</a> (<a href="article10.html">unless&#8230;</a>), no <q>CMS</q>, no CGI,
-				no PHP.
-				Just a simple <span itemprop="operatingSystem">UNIX</span> tool for pulling data from articles and
+				No PHP, no database:
+				just a simple <span itemprop="operatingSystem">UNIX</span> tool for pulling data from articles and
 				populating templates.
-				<span class="nm">sblg</span> is an <a href="http://opensource.org/licenses/ISC"
-					rel="license">open source</a> ISO C utility that depends only on <a
-					href="http://expat.sourceforge.net/">libexpat</a>.
 			</p>
 			<h3>
 				how it works
@@ -61,7 +61,7 @@
 			</p>
 			<p>
 				There are two basic ways of populating templates: a <i>standalone</i> mode, which pastes a single
-				article into a template; and a <i>blog</i> mode, which posts multiple
+				article into a template; and a <i>blog</i> mode, which pastes multiple
 				articles&#8212;like a blog front page.  
 				Blog mode can merge entire articles as well as just article snippets and metadata for navigation
 				and summary purposes.
@@ -73,22 +73,25 @@
 					href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, run <code class="prettyprint
 					lang-sh">./configure</code> then <code class="prettyprint lang-sh">make install</code>.
 				<nav data-sblg-nav="1" data-sblg-navxml="1" data-sblg-navsz="1" data-sblg-navtag="version">
-					The current version is <span itemprop="softwareVersion">${sblg-titletext}</span>, released on <time
-						itemprop="dateModified" datetime="${sblg-datetime}">${sblg-date}</time>.  
+					The current version is <strong><span itemprop="softwareVersion">${sblg-titletext}</span></strong>,
+					released on
+					<strong><time itemprop="dateModified" datetime="${sblg-datetime}">${sblg-date}</time></strong>.
 				</nav>
-				The repository is mirrored on <a href="https://github.com/kristapsdz/sblg">GitHub</a>, if that's
-				easier for you.
-				There's also a <a href="https://brew.sh">Homebrew</a> formula in 
-				<a href="https://github.com/kristapsdz/homebrew-repo">BSD.lv's tap</a>.
-				The last few versions featured the following (this was created by showing only select bits of newest
-				three <q>version</q> articles):
+				Alternatively, use the <a href="https://github.com/kristapsdz/sblg">GitHub</a> repository or your operating
+				system's package manager (<a href="https://cvsweb.openbsd.org/cgi-bin/cvsweb/ports/www/sblg/">OpenBSD</a>, 
+				<a href="https://github.com/kristapsdz/homebrew-repo">Homebrew</a>, etc.).
+			</p>
+			<p>
+				<span class="nm">sblg</span> is an <a href="http://opensource.org/licenses/ISC"
+					rel="license">open source</a> ISO C utility that depends only on <a
+					href="http://expat.sourceforge.net/">libexpat</a>.
+				It is a <a href="https://www.bsd.lv">BSD.lv</a> project.
 			</p>
 			<h3>
-				latest versions
+				latest version
 			</h3>
-			<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="2">
+			<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="1">
 				<div>
-					<i class="fa fa-clock-o"></i> 
 					<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>: 
 					version ${sblg-titletext}
 				</div>
@@ -96,9 +99,9 @@
 					${sblg-aside}
 				</div>
 			</nav>
-			<p>
+			<div class="seeall">
 				(<a href="archive.html">See all versions</a>.)
-			</p>
+			</div>
 			<h3>
 				standalone mode
 			</h3>
@@ -110,9 +113,8 @@
 					data-sblg-article="1"&gt;</code> tag of an HTML (or really XML) document.
 				<a href="sblg.1.html">sblg(1)</a> pulls articles and article metadata for populating navigation
 				elements and article elements in the templates.
-				Some of the bits extracted are noted within the example.
-				You can also set <i>variables</i>, such as <q>foo</q> in the following, that can be used in the template.
-				The following is an example article:
+				Some important values, such as the document title, are extracted and may be filled in to the template.
+				You can also set custom variables, such as <q>foo</q> in the following example article.
 			</p>
 			<div class="prettyprint">
 				<pre class="prettyprint lang-html">&lt;?xml version="1.0" encoding="utf-8"?&gt;
@@ -149,7 +151,8 @@
 			<p>
 				There are all sorts of things documented in <a href="sblg.1.html">sblg(1)</a> that templates can fill in as
 				extracted from article text.
-				These are typically used in HTML <code class="prettyprint lang-html">&lt;meta&gt;</code> elements and so on.
+				In the above example, a variable is used in the <code class="prettyprint lang-html">&lt;title&gt;</code> element
+				and expands to the title in the source <code class="prettyprint lang-html">&lt;h1&gt;</code> element.
 			</p>
 			<p>
 				This works well for putting simple documents into a template.
@@ -164,10 +167,14 @@
 				<img src="index2.svg" alt="blog mode graph" />
 			</figure>
 			<p>
-				For blog mode it's the same; however, you can also specify <code
+				Blog mode is similar to standalone; however, you can also specify <code
 					class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> to fill in meta-data
 				from all articles passed into the command.
-				The <code class="prettyprint lang-html">&lt;article&gt;</code> elements will be filled in with articles.
+				And unlike in standalone mode, you can't willy-nilly use <code class="prettyprint lang-sh">${sblg-title}</code>
+				variables in the global template scope, as it's not clear to which article they'd refer.
+				The <code class="prettyprint lang-html">&lt;article&gt;</code> elements will be filled in with articles&#8212;as
+				many as you stipulate&#8212;there, as in the navigation, you can use the <code class="prettyprint
+					lang-sh">${sblg-title}</code> for the currently-printed article.
 			</p>
 			<div class="prettyprint">
 				<pre class="prettyprint lang-html">&lt;!DOCTYPE html&gt;
@@ -203,24 +210,25 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 	sblg -o $@ -t <a href="article.xml">article.xml</a> $&lt;</pre>
 			</div>
 			<p>
-				To read about the system, read the <a href="sblg.1.html">sblg(1)</a> manual.
-				I take great care in making sure that the manpage is up to date; less so the non-canonical
-				<q>howto</q> and <q>FAQ</q> documents.
-				That said, this is about blogs, so you might as well have some bloggy stuff.
-				This index is also created dynamically from all <q>howto</q> articles.
-				Unlike the version index above, each links to the full articles, all of which were created with <a
-					href="sblg.1.html">sblg(1)</a>'s <q>standalone mode</q>.
+				Though it's more common (and efficient for the <code class="prettyprint lang-sh">make</code> for both standalone
+				and blog mode sources to be the XML files.
 			</p>
+			<div class="prettyprint">
+				<pre class="prettyprint lang-sh"><a href="index.html">index.html</a>: <a href="index.xml">index.xml</a> $(XMLS)
+	sblg -o $@ -t <a href="index.xml">index.xml</a> $(XMLS)
+.xml.html:
+	sblg -o $@ -t <a href="article.xml">article.xml</a> $&lt;</pre>
+			</div>
 			<h3>
-				multi-standalone mode
+				combined mode
 			</h3>
 			<figure>
-				<img class="larger" src="index3.svg" alt="multi-standalone mode graph" />
+				<img class="larger" src="index3.svg" alt="combined mode graph" />
 			</figure>
 			<p>
 				A common usage is to mix up standalone and blog mode, where each article has its own page, and each page
 				refers to all other pages.
-				This can be effected using <i>multi-standalone</i> mode (<code><b>-C</b></code>), which specifies a single
+				This can be effected using <i>combined</i> mode (<code><b>-C</b></code>), which specifies a single
 				article for display (like with standalone mode) but may reference multiple other articles in navigation.
 			</p>
 			<div class="prettyprint">
@@ -234,15 +242,15 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 &lt;/html&gt;</pre>
 			</div>
 			<p>
-				For larger numbers of pages in multi-standalone mode, the cost of recompiling for each output can be quite high.
+				For larger numbers of pages in combined mode, the cost of recompiling for each output can be quite high.
 				So there's also a mode (<code><b>-L</b></code>) for producing one output for each input, given all inputs.
+				These uses the default suffix mapping of replacing <code>.xml</code> with <code>.html</code> in the output.
 			</p>
 			<h3>
 				some random articles
 			</h3>
 			<nav data-sblg-nav="1" data-sblg-navtag="howto" data-sblg-navcontent="1">
 				<div>
-					<i class="fa fa-fw fa-clock-o"></i> 
 					<time datetime="${sblg-datetime}">${sblg-date}</time>:
 					<a href="${sblg-base}.html">${sblg-titletext}</a>
 				</div>
@@ -252,7 +260,7 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 			</nav>
 		</article>
 		<footer>
-			&#169; 2013&#8211;2018, 
+			&#169; 2013&#8211;2019, 
 			<a itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person" rel="author" href="https://github.com/kristapsdz">
 				<span itemprop="name">Kristaps Dzonsons</span>
 			</a>

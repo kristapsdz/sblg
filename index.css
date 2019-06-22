@@ -1,15 +1,12 @@
 body, html			{ height: 100%;
 				  margin: 0; }
-body				{ font-size: 14pt; 
-				  font-family: "Alegreya sans", sans-serif; 
+body				{ font-family: "Alegreya sans", sans-serif; 
+				  font-size: 140%;
 				  font-weight: 400; }
 a				{ text-decoration: none; }
-h1, h2				{ font-size: inherit; 
-				  margin: 0; 
-				  font-weight: 400;
-				  text-shadow: 0 0 1px #fff; }
-figure				{ text-align: center; }
-figure img			{ width: 100%; 
+figure				{ text-align: center;
+				  margin: 0; }
+figure img			{ width: 98%; 
 				  max-width: 450px; }
 figure img.larger		{ max-width: 800px; }
 h3				{ font-size: 18pt;
@@ -17,26 +14,34 @@ h3				{ font-size: 18pt;
 				  font-variant: small-caps;
 				  margin-top: 3rem;
 				  text-align: center; }
-body > nav			{ background-color: #336699; 
-				  font-size: 14pt;
-				  padding: 24pt 20%; }
-body > nav div			{ margin: 2em 0; 
+body > nav			{ background-color: #336699;
+				  padding: 4rem 0 1rem 0; }
+body > nav div			{ width: 66rem;
+				  max-width: 98%;
+				  margin-left: auto;
+				  margin-right: auto;
 				  color: #aaa; }
-body > nav div.logo		{ color: #fff; 
-				  margin-bottom: 12pt; 
-				  font-size: 24pt; }
-body > nav div.logo span	{ color: #aaa; }
+h1				{ color: #fff; 
+				  font-weight: inherit;
+				  font-size: 200%; }
+h1 span				{ color: #aaa; }
 body > nav div a		{ color: #eee; }
 body > nav a			{ color: #ccc; 
 				  border-bottom: 2px transparent; }
 body > nav a:hover		{ color: #eee; 
 				  border-bottom: 2px solid rgba(255, 255, 255, 0.8); }
+body > nav .nav			{ font-size: 85%; }
 article				{ color: #333; }
-article > p			{ padding: 0 20%; }
-article .intro			{ font-size: 16pt; 
+article > div,
+article > p			{ width: 66rem;
+				  max-width: 98%; 
+				  margin-left: auto;
+				  margin-right: auto; }
+p				{ line-height: 1.3em; }
+article .intro			{ font-size: 125%; 
 				  color: #000;
 				  margin-bottom: 2em;
-				  line-height: 22pt; }
+				  line-height: 1.4em; }
 body > nav .explain		{ margin-left: 12pt; }
 body > nav a ~ .explain > span	{ display: none; 
 			   	  color: #aaa; }
@@ -46,41 +51,36 @@ body > nav a ~ .explain > span	{ display: none;
 #nav-rss:hover ~ .explain > #explain-rss,
 #nav-github:hover ~ .explain > #explain-github
 				{ display: inline; }
-nav[data-sblg-nav] ul		{ list-style-type: none; 
+nav[data-sblg-nav] 		{ background-color: #f8f8f8; 
 				  border-top: thin solid #eee;
-				  border-bottom: thin solid #eee;
-				  background-color: #f8f8f8; 
-				  padding: 8pt 20%; }
-nav[data-sblg-nav] div > p:first-child
-				{ margin-top: 0em; }
-nav[data-sblg-nav] li + li	{ margin-top: 1em; }
-nav[data-sblg-nav] li > div:last-child
-				{ padding: 4pt 12pt 0 12pt; }
-nav[data-sblg-nav] i[class~="fa-clock-o"]
-				{ font-size: 8pt; }
-code				{ font-size: smaller; }
+				  border-bottom: thin solid #eee; }
+nav[data-sblg-nav] time		{ font-weight: 500;
+				  color: #000; }
+nav[data-sblg-nav] ul		{ list-style-type: none; 
+				  padding-left: 0;
+				  padding-right: 0;
+				  width: 66rem;
+				  margin-left: auto;
+				  margin-right: auto;
+				  max-width: 98%; }
+nav[data-sblg-nav] p		{ margin: 0.5rem 0; }
+nav[data-sblg-nav] li + li	{ padding-top: 1rem; }
 strong, b			{ font-weight: 500; }
-div.prettyprint			{ font-size: smaller; 
-				  line-height: 14pt;
-				  padding: 0 20%; }
+code, .prettyprint		{ font-size: 75%; }
 pre.prettyprint			{ border: none !important; }
 .prettyprint a > *		{ color: blue !important; }
-footer				{ padding: 12pt 0;
-				  font-size: 11pt;
+.seeall				{ text-align: center; 
+				  padding-top: 1rem; }
+footer				{ padding: 3rem 0;
+				  font-size: 90%;
 				  color: #666;
 				  text-align: center; }
-footer nav			{ font-size: 12pt; 
-				  margin-top: 0.5em;
-				  margin-bottom: 0.2em; }
 footer a			{ color: #000; 
 				  border-bottom: thin transparent; }
 footer a:hover			{ border-bottom: thin solid rgba(0, 0, 0, 0.5); }
 
 
 @media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
-article > p,
-nav[data-sblg-nav] ul,
-div.prettyprint			{ padding: 0 2%; }
 div.prettyprint			{ overflow: hidden; }
 body > nav			{ padding: 12pt 2%; }
 body > nav div			{ margin: 1em 0; }
