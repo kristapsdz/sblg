@@ -24,6 +24,7 @@ pre				{ overflow: hidden; }
 pre, code			{ font-size: 75%; }
 p.code				{ background-color: #eeeeee;
 				  border-radius: 0.5rem;
+				  overflow: hidden;
 				  padding: 0.5rem;
 				  border: thin dashed #cccccc; }
 p.code > code.tab		{ padding-left: 4ex; }
@@ -80,4 +81,7 @@ nav[data-sblg-nav] ul		{ list-style-type: none;
  body > header h1		{ font-size: 150%;
 	 			  text-align: center; }
  div.version			{ text-align: center; }
+ article[data-sblg-article] h1,
+ article[data-sblg-article] header h2
+				{ font-size: 110%; }
 }

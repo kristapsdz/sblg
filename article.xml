@@ -20,7 +20,7 @@
 		<div class="version">
 			<div>
 				<nav data-sblg-nav="1" data-sblg-navxml="1" data-sblg-navsz="1" data-sblg-navtag="version">
-					<span>Version ${sblg-titletext}, ${sblg-date}</span>
+					<span>v${sblg-titletext}, ${sblg-date}</span>
 				</nav>
 				<a title="Source package" href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
 				<a title="Source fingerprint" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
