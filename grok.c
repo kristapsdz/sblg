@@ -247,6 +247,16 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 
 	for (attp = atts; *attp != NULL; attp += 2)
 		switch (sblg_lookup(*attp)) {
+		case SBLG_ATTR_ASIDE:
+			free(arg->article->aside);
+			free(arg->article->asidetext);
+			arg->article->aside = xstrdup(attp[1]);
+			arg->article->asidetext = xstrdup(attp[1]);
+			arg->article->asidetextsz = 
+				arg->article->asidesz =
+				strlen(arg->article->asidetext);
+			arg->flags |= PARSE_ASIDE;
+			break;
 		case SBLG_ATTR_IMG:
 			free(arg->article->img);
 			arg->article->img = xstrdup(attp[1]);
@@ -262,6 +272,9 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 			free(arg->article->titletext);
 			arg->article->title = xstrdup(attp[1]);
 			arg->article->titletext = xstrdup(attp[1]);
+			arg->article->titletextsz = 
+				arg->article->titlesz =
+				strlen(arg->article->titletext);
 			arg->flags |= PARSE_TITLE;
 			break;
 		case SBLG_ATTR_DATETIME:

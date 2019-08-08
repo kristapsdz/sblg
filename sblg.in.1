@@ -305,6 +305,11 @@ Boolean value is used in an Atom feed.
 There are a number of special attributes that are recognised in the
 input file.
 .Bl -tag -width Ds
+.It Li data-sblg-aside=string
+Sets the aside material as otherwise would be set from the first
+.Li <aside>
+element.
+It doesn't matter where this appears: it will always override the aside.
 .It Li data-sblg-datetime=datetime
 Overrides the first
 .Li <time>

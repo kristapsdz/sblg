@@ -48,6 +48,7 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "data-sblg-altlink-fmt", SBLG_ATTR_ALTLINKFMT },
 	{ NULL, "data-sblg-article", SBLG_ATTR_ARTICLE },
 	{ NULL, "data-sblg-articletag", SBLG_ATTR_ARTICLETAG },
+	{ NULL, "data-sblg-aside", SBLG_ATTR_ASIDE },
 	{ NULL, "data-sblg-atomcontent", SBLG_ATTR_ATOMCONTENT },
 	{ NULL, "data-sblg-content", SBLG_ATTR_CONTENT },
 	{ NULL, "data-sblg-datetime", SBLG_ATTR_DATETIME },
