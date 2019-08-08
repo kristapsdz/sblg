@@ -825,6 +825,8 @@
 			<p>
 				Provide the <code>data-sblg-aside</code> attribute like the others
 				(<code>data-sblg-title</code>, etc.).
+				Also bring up to date with latest
+				<a href="https://github.com/kristapsdz/oconfigure">oconfigure</a>.
 			</p>
 		</aside>
 	</article>
