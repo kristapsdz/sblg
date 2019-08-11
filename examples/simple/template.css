@@ -1,0 +1,78 @@
+html, body			{ margin: 0; }
+body				{ font-family: sans-serif;
+				  font-size: 11pt;
+				  color: #555;
+				  line-height: 1.4em; }
+body > header > div,
+body > footer,
+body > nav,
+body > section			{ width: 50rem;
+				  max-width: 96%;
+				  margin: 0 auto; }
+body > header > div		{ display: flex;
+				  align-items: flex-end; }
+body > header			{ background-color: teal;
+				  padding: 2rem 0 1rem 0;
+				  color: #eee; }
+body > header a			{ color: #fff;
+				  font-size: smaller;
+				  transition: opacity 0.2s linear;
+				  opacity: 0.8; }
+body > header a:hover		{ opacity: 1; }
+.tags				{ padding-top: 1rem;
+				  color: #888;
+				  font-size: smaller; }
+.tags .sblg-tag			{ color: #000; } 
+.tags .sblg-tag + .sblg-tag:before
+				{ content: ', '; }
+body > nav			{ display: flex; }
+body > nav > :first-child	{ flex: 1; }
+footer				{ text-align: center;
+				  padding: 2rem 0;
+				  font-size: smaller; }
+a				{ text-decoration: none;
+				  color: teal; }
+h1				{ margin: 0;
+				  flex: 1;
+				  font-size: 150%;
+				  line-height: 1.25em;
+				  font-weight: inherit; }
+h1 a				{ color: inherit; }
+body > section			{ padding: 3rem 0; }
+article > aside			{ margin-bottom: 2rem;
+				  padding-left: 1rem;
+				  font-size: larger;
+				  color: #000;
+				  padding-bottom: 1rem;
+				  line-height: 1.4em;
+				  border-left: 4px solid #f6f6f6; }
+article > aside:before		{ content: 'tl;dr'; 
+				  margin-bottom: 1rem;
+				  font-size: 50%;
+				  font-variant: small-caps;
+				  color: #888;
+				  display: block; }
+article > header		{ display: none; }
+.file				{ font-variant: italic; }
+code, pre			{ font-family: monospace;
+				  font-size: smaller; }
+.profile img			{ display: none; }
+.profile.sblg-has-profile img	{ width: 75px;
+				  margin-right: 1rem;
+				  box-shadow: 0 0 2px #ddd;
+				  display: inline-block;
+				  border-radius: 50%; }
+.profile			{ color: #888;
+				  font-size: smaller; 
+				  display: flex;
+				  align-items: center; }
+.profile .name,
+.profile time			{ color: #000; }
+footer				{ color: #aaa; }
+footer * + *			{ border-left: thin solid #eee;
+				  padding-left: 1ex; }
+
+@media (min-width: 40rem) {
+  body > header			{ padding: 6rem 0 2rem 0; }
+  h1				{ font-size: 200%; }
+}
