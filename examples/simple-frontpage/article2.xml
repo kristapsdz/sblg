@@ -1,0 +1,28 @@
+<article data-sblg-article="1" data-sblg-tags="xyzzy moop">
+	<header>
+		<h2>Article 2</h2>
+		<address>Joe Random</address>
+		<time datetime="2013-06-25">25 June, 2013</time>
+		<img src="article2.jpg" data-sblg-set-imgtype="portrait" />
+	</header>
+	<aside>
+		In addition, each page has a choice of a landscape, portrait, or no main image.
+		These use setters and getters to format properly.
+	</aside>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+		incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+		exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+		irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+		pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+		deserunt mollit anim id est laborum.
+	</p>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+		incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+		exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+		irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+		pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+		deserunt mollit anim id est laborum.
+	</p>
+</article>

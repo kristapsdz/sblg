@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta charset="utf-8" /> 
+		<title>Hello World Blog</title>
+		<link rel="stylesheet" href="index.css" />
+	</head>
+	<body>
+		<header>
+			<div>
+				<h1>Hello World Blog</h1>
+				<p>
+					A simple template for a <q>blog-roll</q> style front page
+					linking to individual articles.
+				</p>
+			</div>
+		</header>
+		<nav data-sblg-nav="1" data-sblg-navcontent="1">
+			<div class="${sblg-get|imgtype}">
+				<figure>
+					<img src="${sblg-img}" />
+				</figure>
+				<div>
+					<h2><a href="${sblg-base}.html">${sblg-title}</a></h2>
+					<div>
+						<address>${sblg-author}</address>,
+						<time datetime="${sblg-date}">${sblg-date}</time>
+					</div>
+					<p>${sblg-aside}</p>
+					<p class="tags">
+						Tags: ${sblg-tags}.
+					</p>
+					<nav>
+						<a href="${sblg-base}.html">Read more &#x203a;</a>
+					</nav>
+				</div>
+			</div>
+		</nav>
+		<footer>
+			<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+				CC BY-SA 4.0
+			</a>
+			<span>
+				powered by <a href="https://kristaps.bsd.lv/sblg">sblg</a>
+			</span>
+		</footer>
+	</body>
+</html>
