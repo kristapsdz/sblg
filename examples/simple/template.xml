@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta charset="utf-8" /> 
+		<title>${sblg-titletext}</title>
+		<link rel="stylesheet" href="template.css" />
+	</head>
+	<body>
+		<header>
+			<div>
+				<h1><a href="index.html">Hello World Blog</a></h1>
+				<nav class="sblg-nav">
+					<span><a href="${sblg-prev-base}.html">&#x2039; newer</a></span>
+					<span><a href="${sblg-next-base}.html">older &#x203a;</a></span>
+				</nav>
+			</div>
+		</header>
+		<section>
+			<p class="profile ${sblg-has|profile}">
+				<img src="${sblg-get|profile}" />
+				<span>
+					Authored by <span class="name">${sblg-author}</span>,
+					<time datetime="${sblg-date}">${sblg-date}</time>
+				</span>
+			</p>
+			<article data-sblg-article="1" data-sblg-permlink="0"></article>
+			<p class="tags">
+				Tags: ${sblg-tags}.
+			</p>
+		</section>
+		<nav>
+			<span><a href="${sblg-prev-base}.html">&#x2039; newer</a></span>
+			<span><a href="${sblg-next-base}.html">older &#x203a;</a></span>
+		</nav>
+		<footer>
+			<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+				CC BY-SA 4.0
+			</a>
+			<span>
+				powered by <a href="https://kristaps.bsd.lv/sblg">sblg</a>
+			</span>
+		</footer>
+	</body>
+</html>

@@ -90,10 +90,13 @@ installwww: www
 install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)$(DATADIR)
+	mkdir -p $(DESTDIR)$(DATADIR)/examples
+	mkdir -p $(DESTDIR)$(DATADIR)/examples/simple
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
-	install -m 0755 sblg $(DESTDIR)$(BINDIR)
-	install -m 0444 sblg.1 $(DESTDIR)$(MANDIR)/man1
-	install -m 0444 schema.json $(DESTDIR)$(DATADIR)
+	$(INSTALL_PROGRAM) sblg $(DESTDIR)$(BINDIR)
+	$(INSTALL_MAN) sblg.1 $(DESTDIR)$(MANDIR)/man1
+	$(INSTALL_DATA) schema.json $(DESTDIR)$(DATADIR)
+	$(INSTALL_DATA) examples/simple/Makefile examples/simple/*.{xml,css,jpg} $(DESTDIR)$(DATADIR)/examples/simple
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/sblg
