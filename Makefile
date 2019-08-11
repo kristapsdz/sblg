@@ -92,11 +92,13 @@ install: all
 	mkdir -p $(DESTDIR)$(DATADIR)
 	mkdir -p $(DESTDIR)$(DATADIR)/examples
 	mkdir -p $(DESTDIR)$(DATADIR)/examples/simple
+	mkdir -p $(DESTDIR)$(DATADIR)/examples/simple-frontpage
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_PROGRAM) sblg $(DESTDIR)$(BINDIR)
 	$(INSTALL_MAN) sblg.1 $(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_DATA) schema.json $(DESTDIR)$(DATADIR)
 	$(INSTALL_DATA) examples/simple/Makefile examples/simple/*.{xml,css,jpg} $(DESTDIR)$(DATADIR)/examples/simple
+	$(INSTALL_DATA) examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg} $(DESTDIR)$(DATADIR)/examples/simple-frontpage
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/sblg
