@@ -1,0 +1,30 @@
+<article data-sblg-article="1" data-sblg-tags="bucket carwash">
+	<header>
+		<h2>Article 3</h2>
+		<address>Josephina Random</address>
+		<time datetime="2013-06-29">29 June, 2013</time>
+		<img src="article3.jpg" data-sblg-set-imgtype="landscape" />
+	</header>
+	<aside>
+		This is a simple blog template where each article has its own page and is linked
+		from a main page.
+		Append pages to the <code>ARTICLES</code> variable in the <span
+			class="file">Makefile</span>.
+	</aside>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+		incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+		exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+		irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+		pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+		deserunt mollit anim id est laborum.
+	</p>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+		incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+		exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+		irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+		pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+		deserunt mollit anim id est laborum.
+	</p>
+</article>
