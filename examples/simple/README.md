@@ -14,6 +14,7 @@ It has the following features:
   elements in template)
 - [Microdata](https://schema.org) hooks (need to be customised, see
   `itemprop` attributes in template)
+- Atom feed (needs to be customised, see *atom-template.xml* URLs)
 
 Articles must be appended to the `ARTICLES` variable in the *Makefile*
 in the order that they'll appear, last being the newest.
