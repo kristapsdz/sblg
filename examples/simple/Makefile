@@ -11,7 +11,7 @@ ARTICLES = article1.xml \
 	   article2.xml \
 	   article3.xml
 
-all: index.html
+all: index.html atom.xml
 
 install: all
 	mkdir -p $(PREFIX)
@@ -21,5 +21,8 @@ index.html: $(ARTICLES) template.xml
 	sblg -s cmdline -t template.xml -L $(ARTICLES)
 	ln -f $$(basename $$(ls $(ARTICLES) | tail -n1) .xml).html $@
 
+atom.xml: $(ARTICLES) atom-template.xml
+	sblg -s rcmdline -o $@ -a $(ARTICLES)
+
 clean:
-	rm -f *.html
+	rm -f *.html atom.xml
