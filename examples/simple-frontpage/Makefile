@@ -21,7 +21,7 @@ index.html: $(ARTICLES) template.xml index.xml
 	sblg -s cmdline -t template.xml -L $(ARTICLES)
 	sblg -s rcmdline -t index.xml -o $@ $(ARTICLES)
 
-atom.xml: $(ARTICLES)
+atom.xml: $(ARTICLES) atom-template.xml
 	sblg -s rcmdline -o $@ -a $(ARTICLES)
 
 clean:
