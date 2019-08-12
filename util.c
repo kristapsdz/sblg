@@ -719,12 +719,17 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			xmltextxescs(f, arts[artsz - 1].striplangbase, esc);
 		else if (STRCMP("sblg-next-base", 14))
 			xmltextxescs(f, arts[next].base, esc);
+		else if (STRCMP("sblg-next-has", 13))
+			fprintf(f, "%s", artpos ? "sblg-next-has" : "");
 		else if (STRCMP("sblg-next-stripbase", 19))
 			xmltextxescs(f, arts[next].stripbase, esc);
 		else if (STRCMP("sblg-next-striplangbase", 23))
 			xmltextxescs(f, arts[next].striplangbase, esc);
 		else if (STRCMP("sblg-prev-base", 14))
 			xmltextxescs(f, arts[prev].base, esc);
+		else if (STRCMP("sblg-prev-has", 13))
+			fprintf(f, "%s", artpos < artsz - 1 ? 
+				"sblg-prev-has" : "");
 		else if (STRCMP("sblg-prev-stripbase", 19))
 			xmltextxescs(f, arts[prev].stripbase, esc);
 		else if (STRCMP("sblg-prev-striplangbase", 23))
