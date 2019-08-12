@@ -50,6 +50,7 @@ HTMLS 		 = $(ARTICLES) index.html archive.html sblg.1.html
 CSSS 		 = article.css index.css mandoc.css
 MDS		 = article10.md
 DATADIR	 	 = $(SHAREDIR)/sblg
+EXAMPLEDIR	 = $(DATADIR)/examples
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 DOTAR 		 = Makefile \
 		   $(XMLS) \
@@ -90,15 +91,14 @@ installwww: www
 install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)$(DATADIR)
-	mkdir -p $(DESTDIR)$(DATADIR)/examples
-	mkdir -p $(DESTDIR)$(DATADIR)/examples/simple
-	mkdir -p $(DESTDIR)$(DATADIR)/examples/simple-frontpage
+	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/simple
+	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/simple-frontpage
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_PROGRAM) sblg $(DESTDIR)$(BINDIR)
 	$(INSTALL_MAN) sblg.1 $(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_DATA) schema.json $(DESTDIR)$(DATADIR)
-	$(INSTALL_DATA) examples/simple/Makefile examples/simple/*.{xml,css,jpg} $(DESTDIR)$(DATADIR)/examples/simple
-	$(INSTALL_DATA) examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg} $(DESTDIR)$(DATADIR)/examples/simple-frontpage
+	$(INSTALL_DATA) examples/simple/Makefile examples/simple/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple
+	$(INSTALL_DATA) examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple-frontpage
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/sblg
