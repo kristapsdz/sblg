@@ -848,6 +848,11 @@ and
 .Li ${sblg-next-striplangbase}
 variants.
 .Pq See Li ${sblg-base} .
+.It Li ${sblg-next-has}
+Prints
+.Li sblg-next-has
+if there exists a next article in the ordered set, otherwise prints
+nothing.
 .It Li ${sblg-pos}
 The position (from 1) of the articles actually shown.
 This always starts at 1 and increments by one, regardless the tag
@@ -874,6 +879,11 @@ and
 .Li ${sblg-prev-striplangbase}
 variants.
 .Pq See Li ${sblg-base} .
+.It Li ${sblg-prev-has}
+Prints
+.Li sblg-prev-has
+if there exists a previous article in the ordered set, otherwise prints
+nothing.
 .It Li ${sblg-get[|key]}
 Print the value of
 .Li key
