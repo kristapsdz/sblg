@@ -1,27 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta charset="utf-8" /> 
 		<title>${sblg-titletext}</title>
 		<link rel="stylesheet" href="template.css" />
+		<!-- OpenGraph for sharing on Facebook, Twitter, Whatsapp, etc. -->
+		<meta property="og:title" content="${sblg-titletext}" />
+		<meta property="og:description" content="A Simple Template Blog article." />
+		<meta property="og:url" content="https://your.domain/${sblg-base}.html" />
+		<meta property="og:type" content="website" />
+		<!-- Note the image needs to be <768 px longest side. -->
+		<!-- meta property="og:image" content="${sblg-img}" / -->
+		<meta name="description" content="A Simple Template Blog article." />
 	</head>
-	<body>
+	<!-- Use schema.org microdata for indexing by Google. -->
+	<body itemscope="itemscope" itemtype="http://schema.org/Blog">
+		<meta itemprop="name" content="Simple Template Blog" />
+		<meta itemprop="description" content="Description of your blog." />
 		<header>
 			<div>
-				<h1><a href="index.html">Hello World Blog</a></h1>
+				<h1><a href="index.html">Simple Template Blog</a></h1>
 				<nav class="sblg-nav">
-					<span><a href="${sblg-prev-base}.html">&#x2039; newer</a></span>
-					<span><a href="${sblg-next-base}.html">older &#x203a;</a></span>
+					<span class="prevnext ${sblg-prev-has}">
+						<a href="${sblg-prev-base}.html">&#x2039; newer</a>
+					</span>
+					<span class="prevnext ${sblg-next-has}">
+						<a href="${sblg-next-base}.html">older &#x203a;</a>
+					</span>
 				</nav>
 			</div>
 		</header>
-		<section>
+		<section itemprop="blogPost" itemscope="itemscope" itemtype="http://schema.org/BlogPosting">
+			<meta itemprop="headline" content="${sblg-titletext}" />
+			<meta itemprop="url" content="https://your.domain/${sblg-base}.html" />
 			<p class="profile ${sblg-has|profile}">
 				<img src="${sblg-get|profile}" />
 				<span>
-					Authored by <span class="name">${sblg-author}</span>,
-					<time datetime="${sblg-date}">${sblg-date}</time>
+					Published by 
+					<span itemprop="author" 
+					 itemscope="itemscope" itemtype="http://schema.org/Person">
+						 <span class="name">${sblg-author}</span>
+					</span>
+					on
+					<time itemprop="datePublished dateModified" 
+					 datetime="${sblg-date}">${sblg-date}</time>
 				</span>
 			</p>
 			<article data-sblg-article="1" data-sblg-permlink="0"></article>
@@ -30,11 +53,15 @@
 			</p>
 		</section>
 		<nav>
-			<span><a href="${sblg-prev-base}.html">&#x2039; newer</a></span>
-			<span><a href="${sblg-next-base}.html">older &#x203a;</a></span>
+			<span class="prevnext ${sblg-prev-has}">
+				<a href="${sblg-prev-base}.html">&#x2039; newer</a>
+			</span>
+			<span class="prevnext ${sblg-next-has}">
+				<a href="${sblg-next-base}.html">older &#x203a;</a>
+			</span>
 		</nav>
 		<footer>
-			<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+			<a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
 				CC BY-SA 4.0
 			</a>
 			<span>
