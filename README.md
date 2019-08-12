@@ -20,8 +20,8 @@ between versions; so if you have issues to report, please do so here.
 ## Examples
 
 Read [sblg(1)](https://kristaps.bsd.lv/sblg/sblg.1.html) for a detailed
-runthrough of operation, or visit the
-[website](https://kristaps.bsd.lv/sblg) for some examples.
+runthrough of operation.  The [examples](examples/) directory contains
+templates for usage.  These are installed along with the system.
 
 ## Installation
 

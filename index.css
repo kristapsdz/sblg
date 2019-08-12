@@ -14,6 +14,10 @@ h3				{ font-size: 18pt;
 				  font-variant: small-caps;
 				  margin-top: 3rem;
 				  text-align: center; }
+h4				{ font-size: 15pt;
+				  font-weight: 500;
+				  text-align: center;
+				  font-variant: small-caps; }
 body > nav			{ background-color: #336699;
 				  padding: 4rem 0 1rem 0; }
 body > nav div			{ width: 66rem;
@@ -31,6 +35,18 @@ body > nav a			{ color: #ccc;
 body > nav a:hover		{ color: #eee; 
 				  border-bottom: 2px solid rgba(255, 255, 255, 0.8); }
 body > nav .nav			{ font-size: 85%; }
+.templates			{ display: -webkit-box;
+				  display: -ms-flexbox;
+				  display: flex; }
+.templates > figure		{ -webkit-box-flex: 1;
+				          -ms-flex: 1;
+				              flex: 1;
+				  padding: 1rem; }
+.templates figcaption		{ text-align: center;
+				  font-size: smaller;
+				  opacity: 0.8; }
+.templates img			{ width: 100%;
+				  box-shadow: 0 0 2px #ccc; }
 article				{ color: #333; }
 article > div,
 article > p			{ width: 66rem;

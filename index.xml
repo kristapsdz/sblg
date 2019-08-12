@@ -103,8 +103,31 @@
 				(<a href="archive.html">See all versions</a>.)
 			</div>
 			<h3>
-				standalone mode
+				output modes
 			</h3>
+			<p>
+				<a href="sblg.1.html">sblg(1)</a> formats its output in a variety of ways.
+				The most commonly used are <i>blog</i> and <i>combined</i> modes.
+				These are also used in the templates installed with the system, all
+				of which are device-independent, have feeds, microdata, etc.
+			</p>
+			<div class="templates">
+				<figure>
+					<a href="examples/simple/index.html"><img src="template1.jpg" alt="" /></a>
+					<figcaption>
+						Simple <a href="examples/simple/index.html">page-per-article</a> template.
+					</figcaption>
+				</figure>
+				<figure>
+					<a href="examples/simple-frontpage/index.html"><img src="template2.jpg" alt="" /></a>
+					<figcaption>
+						Simple <a href="examples/simple-frontpage/index.html">front-page</a> template.
+					</figcaption>
+				</figure>
+			</div>
+			<h4>
+				standalone mode
+			</h4>
 			<figure>
 				<img src="index1.svg" alt="standalone mode graph" />
 			</figure>
@@ -160,9 +183,9 @@
 				articles?
 				That's where blog mode comes into play.
 			</p>
-			<h3>
+			<h4>
 				blog mode
-			</h3>
+			</h4>
 			<figure>
 				<img src="index2.svg" alt="blog mode graph" />
 			</figure>
@@ -219,9 +242,9 @@ all: <a href="index.html">index.html</a> $(ARTICLES)
 .xml.html:
 	sblg -o $@ -t <a href="article.xml">article.xml</a> $&lt;</pre>
 			</div>
-			<h3>
+			<h4>
 				combined mode
-			</h3>
+			</h4>
 			<figure>
 				<img class="larger" src="index3.svg" alt="combined mode graph" />
 			</figure>
