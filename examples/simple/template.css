@@ -27,6 +27,9 @@ body > header a:hover		{ opacity: 1; }
 				{ content: ', '; }
 body > nav			{ display: flex; }
 body > nav > :first-child	{ flex: 1; }
+.prevnext > a			{ display: none; }
+.sblg-next-has > a,
+.sblg-prev-has > a		{ display: inline-block; }
 footer				{ text-align: center;
 				  padding: 2rem 0;
 				  font-size: smaller; }

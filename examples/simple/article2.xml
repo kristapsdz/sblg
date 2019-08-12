@@ -1,7 +1,7 @@
-<article data-sblg-article="1" data-sblg-tags="xyzzy moop" data-sblg-set-profile="profile1.jpg">
+<article data-sblg-article="1" data-sblg-tags="xyzzy moop">
 	<header>
 		<h2>Article 2</h2>
-		<address>Joe Random</address>
+		<address data-sblg-set-profile="profile1.jpg">Joe Random</address>
 		<time datetime="2013-06-25">25 June, 2013</time>
 	</header>
 	<aside>

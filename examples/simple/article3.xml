@@ -1,7 +1,7 @@
-<article data-sblg-article="1" data-sblg-tags="bucket carwash" data-sblg-set-profile="profile2.jpg">
+<article data-sblg-article="1" data-sblg-tags="bucket carwash">
 	<header>
 		<h2>Article 3</h2>
-		<address>Josephina Random</address>
+		<address data-sblg-set-profile="profile2.jpg">Josephina Random</address>
 		<time datetime="2013-06-29">29 June, 2013</time>
 	</header>
 	<aside>
