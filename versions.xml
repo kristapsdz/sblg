@@ -830,4 +830,22 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.4.30</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-08-12">2019-08-12</time>
+		</header>
+		<aside>
+			<p>
+				Provide the <code>${sblg-next-has}</code> and
+				<code>${sblg-prev-has}</code> to allow masking or showing of
+				<code>${sblg-next}</code> and friends.
+				Also add two templates for simple blogs: one that's <a
+					href="examples/simple/index.html">one article per page</a>
+				and one with a <a
+					href="examples/simple-frontpage/index.html">blogroll</a>.
+			</p>
+		</aside>
+	</article>
 </articles>
