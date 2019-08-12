@@ -1,7 +1,9 @@
 This is a simple one-page-per-article blog style, with the default page
 being the newest.  It uses [make](https://man.openbsd.org/make.1) to
-generate HTML5 articles from XML sources.  It has the following
-features:
+generate HTML5 articles from XML sources.  The rendered output is visible at
+https://kristaps.bsd.lv/sblg/examples/simple.
+
+It has the following features:
 
 - super simple layout (mobile friendly)
 - lightweight (only a CSS file)
@@ -23,4 +25,6 @@ from there.
 The [OpenGraph](https://ogp.me/) and [Microdata](https://schema.org)
 components should be properly filled in for sharing on social media and
 indexing by search engines.
+
+It requires the newest version of [sblg](https://kristaps.bsd.lv/sblg).
 
