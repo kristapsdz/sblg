@@ -1,16 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta charset="utf-8" /> 
 		<title>Hello World Blog</title>
 		<link rel="stylesheet" href="index.css" />
+		<!-- OpenGraph for sharing on Facebook, Twitter, Whatsapp, etc. -->
+		<meta property="og:title" content="Frontpage Template Blog" />
+		<meta property="og:description" content="Description of your blog." />
+		<meta property="og:url" content="https://your.domain/index.html" />
+		<meta property="og:type" content="website" />
+		<!-- Note the image needs to be <768 px longest side. -->
+		<!-- meta property="og:image" content="${sblg-img}" / -->
+		<meta name="description" content="Description of your blog." />
 	</head>
-	<body>
+	<!-- Use schema.org microdata for indexing by Google. -->
+	<body itemscope="itemscope" itemtype="http://schema.org/Blog">
 		<header>
 			<div>
-				<h1>Hello World Blog</h1>
-				<p>
+				<h1 itemprop="name">Frontpage Template Blog</h1>
+				<p itemprop="description">
 					A simple template for a <q>blog-roll</q> style front page
 					linking to individual articles.
 				</p>
