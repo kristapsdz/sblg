@@ -16,6 +16,7 @@ It has the following features:
   elements in template)
 - [Microdata](https://schema.org) hooks (need to be customised, see
   `itemprop` attributes in template)
+- Atom feed (needs to be customised, see *atom-template.xml* URLs)
 
 Articles must be appended to the `ARTICLES` variable in the *Makefile*
 in the order that they'll appear, last being the newest.
@@ -25,7 +26,7 @@ and run `make install`.  Or install into a staging directory and copy
 from there.
 
 The [OpenGraph](https://ogp.me/) and [Microdata](https://schema.org)
-components should be properly filled in for sharing on social media and
-indexing by search engines.
+components must be properly filled in for sharing on social media and
+indexing by search engines.  The Atom feed template URL must be changed.
 
 It requires the newest version of [sblg](https://kristaps.bsd.lv/sblg).
