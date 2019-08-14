@@ -35,6 +35,7 @@ clean:
 	echo " <header>" >>$@
 	echo "  <h2>`lowdown -X title $<`</h2>" >>$@
 	echo "  <aside>`lowdown -X aside $<`</aside>" >>$@
+	echo "  <address>`lowdown -X author $<`</address>" >>$@
 	echo "  <time datetime=\"`lowdown -X date $<`\">`lowdown -X date $<`</time>" >>$@
 	echo " </header>" >>$@
 	lowdown $< >>$@
