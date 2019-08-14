@@ -81,7 +81,7 @@ sblg.1: sblg.in.1
 installwww: www
 	mkdir -p $(WWWDIR)
 	mkdir -p $(WWWDIR)/snapshots
-	install -m 0444 Makefile $(BUILT) $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(MDS) $(CSSS) $(WWWDIR)
+	install -m 0444 Makefile $(BUILT) $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(MDS) $(CSSS) template*.jpg $(WWWDIR)
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz.sha512
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots
