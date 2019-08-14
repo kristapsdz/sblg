@@ -16,7 +16,7 @@ all: index.html atom.xml
 
 install: all
 	mkdir -p $(PREFIX)
-	install -m 0444 *.html *.css *.jpg $(PREFIX)
+	install -m 0444 atom.xml *.html *.css *.jpg $(PREFIX)
 
 index.html: $(ARTICLES) template.xml
 	$(SBLG) -s cmdline -t template.xml -L $(ARTICLES)

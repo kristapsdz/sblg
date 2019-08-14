@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-	<title>Frontpage Template Version Feed</title>
-	<link href="https://kristaps.bsd.lv/sblg/examples/simple-frontpage/atom.xml" rel="self" />
+	<title>Feed</title>
 	<link href="https://kristaps.bsd.lv/sblg/examples/simple-frontpage" />
-	<id data-sblg-id="1" />
-	<updated data-sblg-updated="1" />
-	<entry data-sblg-forall="1" data-sblg-entry="1" data-sblg-altlink="0" />
+	<link href="https://kristaps.bsd.lv/sblg/examples/simple-frontpage/atom.xml" rel="self" />
+	<id />
+	<updated />
+	<entry data-sblg-forall="1" data-sblg-entry="1" data-sblg-altlink="1"
+	 data-sblg-altlink-fmt="https://kristaps.bsd.lv/sblg/examples/simple-frontpage/${sblg-base}.html" />
 </feed>
