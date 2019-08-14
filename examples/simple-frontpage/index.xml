@@ -1,26 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" prefix="og: http://ogp.me/ns#">
+<html lang="en">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta charset="utf-8" /> 
 		<title>Frontpage Template Blog</title>
 		<link rel="stylesheet" href="index.css" />
-		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="Frontpage Template Feed" />
-		<!-- OpenGraph for sharing on Facebook, Twitter, Whatsapp, etc. -->
-		<meta property="og:title" content="Frontpage Template Blog" />
-		<meta property="og:description" content="Description of your blog." />
-		<meta property="og:url" content="https://kristaps.bsd.lv/sblg/examples/simple-frontpage/index.html" />
-		<meta property="og:type" content="website" />
-		<!-- Note the image needs to be <768 px longest side. -->
-		<!-- meta property="og:image" content="${sblg-img}" / -->
-		<meta name="description" content="Description of your blog." />
+		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="Atom Feed" />
 	</head>
-	<!-- Use schema.org microdata for indexing by Google. -->
-	<body itemscope="itemscope" itemtype="http://schema.org/Blog">
+	<body>
 		<header>
 			<div>
-				<h1 itemprop="name">Frontpage Template Blog</h1>
-				<p itemprop="description">
+				<h1>Frontpage Template Blog</h1>
+				<p>
 					A simple template for a <q>blog-roll</q> style front page
 					linking to individual articles.
 				</p>

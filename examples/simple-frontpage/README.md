@@ -12,21 +12,20 @@ It has the following features:
 - ability for articles to have a picture in either landscape or portrait
   mode
 - rudimentary article tags (don't really do anything)
-- [OpenGraph](https://ogp.me/) hooks (need to be customised, see `meta`
-  elements in template)
-- [Microdata](https://schema.org) hooks (need to be customised, see
-  `itemprop` attributes in template)
-- Atom feed (needs to be customised, see *atom-template.xml* URLs)
-
-Articles must be appended to the `ARTICLES` variable in the *Makefile*
-in the order that they'll appear, last being the newest.
-
-To directly publish, modify the `PREFIX` variable to a web server root
-and run `make install`.  Or install into a staging directory and copy
-from there.
-
-The [OpenGraph](https://ogp.me/) and [Microdata](https://schema.org)
-components must be properly filled in for sharing on social media and
-indexing by search engines.  The Atom feed template URL must be changed.
+- Atom feed
 
 It requires the newest version of [sblg](https://kristaps.bsd.lv/sblg).
+To use:
+
+1. Append articles to the `ARTICLES` variable in the
+	[Makefile](Makefile) in the order that they'll appear, last
+	being the newest.
+2. Edit [template.xml](template.xml) with the proper name of your blog
+	(the example is "Frontpage Template Blog") and proper license.
+3. Edit [index.xml](index.xml) with the proper name and description of
+	your blog (the example is "Frontpage Template Blog") and proper
+	license.
+4. Edit the URLs in [atom-template.xml](atom-template.xml).
+5. To directly publish, modify the [Makefile](Makefile)'s `PREFIX`
+	variable to a web server root and run `make install`.  Or
+	install into a staging directory and copy from there.

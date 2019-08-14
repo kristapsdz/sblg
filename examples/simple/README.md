@@ -24,4 +24,3 @@ To use:
 4. To directly publish, modify the [Makefile](Makefile)'s `PREFIX`
 	variable to a web server root and run `make install`.  Or
 	install into a staging directory and copy from there.
-

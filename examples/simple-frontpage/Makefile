@@ -3,6 +3,7 @@
 # together, review, then `doas make install` to publish.
 
 PREFIX	 = /var/www/htdocs
+SBLG	 = sblg
 
 # Add articles here.  For simplicity with linking `index.html` to the
 # newest one, the order is publication order.
@@ -15,14 +16,14 @@ all: index.html atom.xml
 
 install: all
 	mkdir -p $(PREFIX)
-	install -m 0444 *.html *.css *.jpg $(PREFIX)
+	install -m 0444 atom.xml *.html *.css *.jpg $(PREFIX)
 
 index.html: $(ARTICLES) template.xml index.xml
-	sblg -s cmdline -t template.xml -L $(ARTICLES)
-	sblg -s rcmdline -t index.xml -o $@ $(ARTICLES)
+	$(SBLG) -s cmdline -t template.xml -L $(ARTICLES)
+	$(SBLG) -s rcmdline -t index.xml -o $@ $(ARTICLES)
 
 atom.xml: $(ARTICLES) atom-template.xml
-	sblg -s rcmdline -o $@ -a $(ARTICLES)
+	$(SBLG) -s rcmdline -o $@ -a $(ARTICLES)
 
 clean:
 	rm -f *.html atom.xml
