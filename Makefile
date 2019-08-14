@@ -2,7 +2,7 @@
 
 include Makefile.configure
 
-VERSION 	 = 0.4.29
+VERSION 	 = 0.5.0
 OBJS		 = compats.o \
 		   main.o \
 		   compile.o \
@@ -74,7 +74,10 @@ sblg: $(OBJS)
 sblg.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
 
-www: $(HTMLS) $(BUILT) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512
+www: $(HTMLS) $(BUILT) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512 sblg
+	( cd examples/simple && make SBLG=../../sblg )
+	( cd examples/simple-frontpage && make SBLG=../../sblg )
+	( cd examples/retro && make SBLG=../../sblg )
 
 sblg.1: sblg.in.1
 	sed "s!@SHAREDIR@!$(DATADIR)!g" sblg.in.1 >$@
@@ -87,23 +90,35 @@ installwww: www
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz.sha512
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots
+	( cd examples/simple && make install SBLG=../../sblg PREFIX=$(WWWDIR)/examples/simple )
+	( cd examples/simple-frontpage && make install SBLG=../../sblg PREFIX=$(WWWDIR)/examples/simple-frontpage )
+	( cd examples/retro && make install SBLG=../../sblg PREFIX=$(WWWDIR)/examples/retro )
 
 install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)$(DATADIR)
 	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/simple
 	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/simple-frontpage
+	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/retro
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_PROGRAM) sblg $(DESTDIR)$(BINDIR)
 	$(INSTALL_MAN) sblg.1 $(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_DATA) schema.json $(DESTDIR)$(DATADIR)
 	$(INSTALL_DATA) examples/simple/Makefile examples/simple/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple
 	$(INSTALL_DATA) examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple-frontpage
+	$(INSTALL_DATA) examples/retro/Makefile examples/retro/*.{xml,css,md} $(DESTDIR)$(EXAMPLEDIR)/retro
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/sblg
 	rm -f $(DESTDIR)$(MANDIR)/man1/sblg.1
 	rm -f $(DESTDIR)$(DATADIR)/schema.json
+	rm -f $(DESTDIR)$(DATADIR)/examples/simple/*.{xml,css,jpg,md}
+	rm -f $(DESTDIR)$(DATADIR)/examples/simple-frontpage/*.{xml,css,jpg,md}
+	rm -f $(DESTDIR)$(DATADIR)/examples/retro/*.{xml,css,md}
+	rmdir $(DESTDIR)$(DATADIR)/examples/simple
+	rmdir $(DESTDIR)$(DATADIR)/examples/simple-frontpage
+	rmdir $(DESTDIR)$(DATADIR)/examples/retro
+	rmdir $(DESTDIR)$(DATADIR)/examples
 	rmdir $(DESTDIR)$(DATADIR)
 
 sblg.tar.gz:
@@ -159,6 +174,8 @@ clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
 	rm -f article10.xml
 	rm -f version.h
+	rm -f examples/*/*.html examples/*/atom.xml
+	rm -f examples/retro/article*.xml
 
 distclean: clean
 	rm -f Makefile.configure config.h config.log

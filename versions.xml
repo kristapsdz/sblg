@@ -832,19 +832,40 @@
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="version">
 		<header>
-			<h1>0.4.30</h1>
+			<h1>0.5.0</h1>
 			<address>Kristaps Dzonsons</address>
-			<time datetime="2019-08-12">2019-08-12</time>
+			<time datetime="2019-08-14">2019-08-14</time>
 		</header>
 		<aside>
 			<p>
 				Provide the <code>${sblg-next-has}</code> and
 				<code>${sblg-prev-has}</code> to allow masking or showing of
 				<code>${sblg-next}</code> and friends.
-				Also add two templates for simple blogs: one that's <a
+			</p>
+			<p>
+				Add some style templates for simple blogs: one that's <a
 					href="examples/simple/index.html">one article per page</a>
 				and one with a <a
-					href="examples/simple-frontpage/index.html">blogroll</a>.
+					href="examples/simple-frontpage/index.html">blogroll</a>, and
+				a <a
+					href="examples/retro/index.html">retro</a>
+				blogroll.
+				These are installed with the system and may be used a simple start
+				to a blog.
+			</p>
+			<p>
+				Significant updates to the Atom functionality.  This necessitates a
+				minor version bump because Atom identifiers created by the system no
+				longer use the <q>tag</q> scheme, but instead the URL itself.  This
+				makes the system much simpler.  Also, several attributes
+				(<code>data-sblg-update</code>, <code>data-sblg-id</code>) are no
+				longer necessary to stipulate: since there can only be one element
+				for each invocation, these are superfluous.  All of these makes it
+				much easier to combine existing Atom entries with an automated feed.
+			</p>
+			<p>
+				While here, update the documentation to be much more specific about
+				how the template is handled.
 			</p>
 		</aside>
 	</article>
