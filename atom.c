@@ -119,10 +119,10 @@ static	const char *atom_wl[] = {
 struct	atom {
 	FILE		*f; /* atom template input */
 	const char	*src; /* template file */
-	const char	*dst; /* output or "-" for stdout */
 	XML_Parser	 p; /* parser instance */
-	char		 domain[MAXHOSTNAMELEN]; /* ...or localhost */
-	char		 path[MAXPATHLEN]; /* path in link */
+	char		*id; /* the main identifier (or NULL) */
+	size_t		 idsz; /* length of id or zero */
+	char		*link; /* first <link> (or NULL) */
 	struct article	*sargs; /* articles */
 	size_t		 spos; /* current article */
 	size_t		 sposz; /* article length */
@@ -174,38 +174,38 @@ atomprint(const struct atom *arg)
 {
 	char		      buf[1024];
 	struct tm	     *tm;
+	int		      idsz;
 	const struct article *src;
 
 	src = &arg->sargs[arg->spos];
 	tm = gmtime(&src->time);
-
-	strftime(buf, sizeof(buf), "%Y-%m-%d", tm);
-	fprintf(arg->f, "<id>tag:%s,%s:%s/%s</id>\n", 
-		arg->domain, buf, arg->path, src->src);
-
 	strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
-	fprintf(arg->f, "<updated>%s</updated>\n", buf);
+	idsz = (arg->idsz && '/' == arg->id[arg->idsz] - 1) ?
+		arg->idsz - 1 : arg->idsz;
 
-	fprintf(arg->f, "<title>%s</title>\n", src->titletext);
-	fprintf(arg->f, "<author><name>%s</name></author>\n", 
+	fprintf(arg->f, "\t\t<id>%.*s/%s#%s</id>\n", 
+		idsz, arg->id, src->src, buf);
+	fprintf(arg->f, "\t\t<updated>%s</updated>\n", buf);
+	fprintf(arg->f, "\t\t<title>%s</title>\n", src->titletext);
+	fprintf(arg->f, "\t\t<author><name>%s</name></author>\n", 
 		src->authortext);
 
 	if ((arg->entryfl & ENTRY_ALT)) {
 		if (arg->entryalt != NULL) {
-			fputs("<link rel=\"alternate\" type="
+			fputs("\t\t<link rel=\"alternate\" type="
 				"\"text/html\" " "href=\"", arg->f);
 			xmltextx(arg->f, arg->entryalt, "atom.xml", 
 				arg->sargs, arg->sposz, arg->spos, 
 				arg->spos, arg->sposz, XMLESC_ATTR);
 			fputs("\" />\n", arg->f);
 		} else if ( ! (arg->entryfl & ENTRY_STRIP)) {
-			fprintf(arg->f, "<link rel=\"alternate\" "
-				"type=\"text/html\" href=\"%s/%s\" "
-				"/>\n", arg->path, src->src);
+			fprintf(arg->f, "\t\t<link rel=\"alternate\" "
+				"type=\"text/html\" href=\"%s\" "
+				"/>\n", src->src);
 		} else {
-			fprintf(arg->f, "<link rel=\"alternate\" "
-				"type=\"text/html\" href=\"%s/%s\" "
-				"/>\n", arg->path, src->stripsrc);
+			fprintf(arg->f, "\t\t<link rel=\"alternate\" "
+				"type=\"text/html\" href=\"%s\" "
+				"/>\n", src->stripsrc);
 		}
 	}
 	
@@ -216,7 +216,7 @@ atomprint(const struct atom *arg)
 	 * all of our content.
 	 */
 
-	fputs( "<content type=\"html\">", arg->f);
+	fputs( "\t\t<content type=\"html\">", arg->f);
 	if ((arg->entryfl & ENTRY_REPL)) {
 		xmltextx(arg->f, arg->entry, "atom.xml", 
 			arg->sargs, arg->sposz, arg->spos, 
@@ -250,14 +250,6 @@ atom(XML_Parser p, const char *templ, int sz,
 
 	memset(&larg, 0, sizeof(struct atom));
 
-	if (getdomainname(larg.domain, MAXHOSTNAMELEN) < 0) {
-		warn("getdomainname");
-		goto out;
-	} else if (larg.domain[0] == '\0')
-		strlcpy(larg.domain, "localhost", MAXHOSTNAMELEN);
-
-	strlcpy(larg.path, "/", MAXPATHLEN);
-
 	for (i = 0; i < sz; i++)
 		if (!sblg_parse(p, src[i], &sargs, &sargsz, atom_wl))
 			goto out;
@@ -276,7 +268,6 @@ atom(XML_Parser p, const char *templ, int sz,
 	larg.sposz = sargsz;
 	larg.p = p;
 	larg.src = templ;
-	larg.dst = dst;
 	larg.f = f;
 
 	XML_ParserReset(p, NULL);
@@ -326,7 +317,8 @@ up_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct atom	*arg = dat;
 
-	arg->stack += (sblg_lookup(s) == SBLG_ELEM_UPDATED);
+	warnx("%s: no elements allowed in <updated>", arg->src);
+	XML_StopParser(arg->p, 0);
 }
 
 static void
@@ -334,19 +326,28 @@ id_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct atom	*arg = dat;
 
-	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ID);
+	warnx("%s: no elements allowed in <id>", arg->src);
+	XML_StopParser(arg->p, 0);
 }
+
+static void
+id_text(void *dat, const XML_Char *s, int len)
+{
+	struct atom	*arg = dat;
+
+	xmlstrtext(&arg->id, &arg->idsz, s, len);
+	fprintf(arg->f, "%.*s", len, s);
+}
+
 
 static void
 tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct atom	 *arg = dat;
 	time_t		  t;
-	char		  buf[1024];
-	const char	 *start;
-	char		 *cp;
+	char		  buf[64];
 	struct tm	 *tm;
-	const XML_Char	**attp;
+	const XML_Char	**attp, *attsv;
 	size_t		  i;
 	enum sblgtag	  tag;
 
@@ -354,49 +355,41 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	switch (sblg_lookup(s)) {
 	case SBLG_ELEM_UPDATED:
-		for (attp = atts; *attp != NULL; attp += 2)
-			if (sblg_lookup(*attp) == SBLG_ATTR_UPDATED)
-				break;
-		if (*attp == NULL || !xmlbool(attp[1])) {
-			xmlopens(arg->f, s, atts);
-			return;
-		}
-		fprintf(arg->f, "<%s>", s);
+		fputs("<updated>", arg->f);
+
+		/*
+		 * For <updated>, use the newest article's time.
+		 * Use the current time if there is none.
+		 * Discard anything already in the element.
+		 * FIXME: will sorting (-s) affect this?
+		 * FIXME: keep contents in case there are custom <entry>
+		 * fields.
+		 */
+
 		t = arg->sposz <= arg->spos ?
 			time(NULL) : arg->sargs[arg->spos].time;
 		tm = gmtime(&t);
 		strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
-		fprintf(arg->f, "%s", buf);
-		arg->stack++;
+		fputs(buf, arg->f);
 		XML_SetDefaultHandlerExpand(arg->p, NULL);
 		XML_SetElementHandler(arg->p, up_begin, up_end);
 		return;
 	case SBLG_ELEM_ID:
-		for (attp = atts; *attp != NULL; attp += 2)
-			if (sblg_lookup(*attp) == SBLG_ATTR_ID)
-				break;
-		if (*attp == NULL || !xmlbool(attp[1])) {
-			xmlopens(arg->f, s, atts);
-			return;
-		}
-		fprintf(arg->f, "<%s>", s);
-		arg->stack++;
-		XML_SetDefaultHandlerExpand(arg->p, NULL);
+		fputs("<id>", arg->f);
+
+		/*
+		 * For <id>, either fill in with our <link> href if none
+		 * is provided, otherwise use what's already in the
+		 * identifier.
+		 */
+
+		free(arg->id);
+		arg->id = NULL;
+		arg->idsz = 0;
+		XML_SetDefaultHandlerExpand(arg->p, id_text);
 		XML_SetElementHandler(arg->p, id_begin, id_end);
 		return;
 	case SBLG_ELEM_LINK:
-		if (arg->spos > 0) {
-			warnx("%s: link after entry", arg->src);
-			XML_StopParser(arg->p, 0);
-			return;
-		}
-		xmlopens(arg->f, s, atts);
-		for (attp = atts; *attp != NULL; attp += 2) 
-			if (strcmp(attp[0], "rel") == 0 &&
-			    strcmp(attp[1], "self") == 0)
-					break;
-		if (*attp == NULL)
-			return;
 		for (attp = atts; *attp != NULL; attp += 2) 
 			if (strcmp(attp[0], "href") == 0)
 				break;
@@ -405,25 +398,24 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			XML_StopParser(arg->p, 0);
 			return;
 		}
-		if ((start = strcasestr(attp[1], "://")) == NULL) {
-			warnx("%s: bad uri", arg->src);
-			XML_StopParser(arg->p, 0);
-			return;
+		attsv = attp[1];
+
+		/*
+		 * We use the <link> element to grab the URI of the
+		 * alternate content.  We'll (optionally) use this as
+		 * the <id> value for feed elements, so don't validate
+		 * it until we actually need to.
+		 */
+
+		xmlopens(arg->f, s, atts);
+		for (attp = atts; *attp != NULL; attp += 2) 
+			if (strcmp(attp[0], "rel") == 0 &&
+		   	    strcmp(attp[1], "alternate") != 0)
+				break;
+		if (*attp == NULL) {
+			free(arg->link);
+			arg->link = xstrdup(attsv);
 		}
-		strlcpy(arg->domain, start + 3, MAXHOSTNAMELEN);
-		if ((cp = strchr(arg->domain, '/')) == NULL) {
-			warnx("%s: bad uri", arg->src);
-			XML_StopParser(arg->p, 0);
-			return;
-		}
-		strlcpy(arg->path, cp, MAXPATHLEN);
-		*cp = '\0';
-		if ((cp = strrchr(arg->path, '/')) == NULL) {
-			warnx("%s: bad uri", arg->src);
-			XML_StopParser(arg->p, 0);
-			return;
-		}
-		*cp = '\0';
 		return;
 	case SBLG_ELEM_ENTRY:
 		break;
@@ -437,7 +429,6 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	for (attp = atts; *attp != NULL; attp += 2)
 		if (sblg_lookup(*attp) == SBLG_ATTR_ENTRY)
 			break;
-
 	if (*attp == NULL || !xmlbool(attp[1])) {
 		xmlopens(arg->f, s, atts);
 		return;
@@ -479,29 +470,50 @@ tmpl_end(void *userdata, const XML_Char *s)
 	xmlclose(arg->f, s);
 }
 
+/*
+ * Emit an identifier iff one is not provided.
+ * If one is not provided, use the <link> element, requiring that it be
+ * a full URL and provide a trailing slash if one doesn't appear.
+ */
 static void
-id_end(void *userdata, const XML_Char *s)
+id_end(void *dat, const XML_Char *s)
 {
-	struct atom	*arg = userdata;
-	const char	*dst;
-	char		 year[32];
-	time_t		 t = time(NULL);
-	struct tm	*tm;
+	struct atom	*arg = dat;
+	const char	*cp = NULL;
 
-	if ((tm = localtime(&t)) == NULL) {
-		warn("localtime");
-		strlcpy(year, "2013", sizeof(year));
-	} else
-		snprintf(year, sizeof(year), "%04d", tm->tm_year + 1900);
+	if (arg->id == NULL) {
+		assert(arg->idsz == 0);
+		if (arg->link == NULL) {
+			warnx("%s: need at least <link> "
+				"to create <id>", arg->src);
+			XML_StopParser(arg->p, 0);
+			return;
+		}
 
-	dst = (strcmp(arg->dst, "-") == 0) ? "" : arg->dst;
+		if (strncmp(arg->link, "http://", 7) == 0)
+			cp = arg->link + 7;
+		else if (strncmp(arg->link, "https://", 8) == 0)
+			cp = arg->link + 8;
 
-	if (sblg_lookup(s) == SBLG_ELEM_ID && --arg->stack == 0) {
-		fprintf(arg->f, "tag:%s,%s:%s/%s</%s>", 
-			arg->domain, year, arg->path, dst, s);
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
+		if (cp == NULL) {
+			warnx("%s: need absolute <link> URL "
+				"to create <id>", arg->src);
+			XML_StopParser(arg->p, 0);
+			return;
+		}
+
+		if (strchr(cp, '/') != NULL)
+			arg->id = xstrdup(arg->link);
+		else if (asprintf(&arg->id, "%s/", arg->link) == -1)
+			err(EXIT_FAILURE, "asprintf");
+
+		arg->idsz = strlen(arg->id);
+		fputs(arg->id, arg->f);
 	}
+
+	fputs("</id>", arg->f);
+	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 }
 
 static void
@@ -509,11 +521,9 @@ up_end(void *dat, const XML_Char *s)
 {
 	struct atom	*arg = dat;
 
-	if (sblg_lookup(s) == SBLG_ELEM_UPDATED && --arg->stack == 0) {
-		fprintf(arg->f, "</%s>", s);
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
-	}
+	fputs("</updated>", arg->f);
+	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 }
 
 static void
@@ -528,6 +538,7 @@ static void
 entry_end(void *dat, const XML_Char *s)
 {
 	struct atom	*arg = dat;
+	int		 first = 1;
 
 	if (!(sblg_lookup(s) == SBLG_ELEM_ENTRY && --arg->stack == 0)) {
 		xmlstrclose(&arg->entry, &arg->entrysz, s);
@@ -544,15 +555,18 @@ entry_end(void *dat, const XML_Char *s)
 	if (arg->spos < arg->sposz) {
 		if ((arg->entryfl & ENTRY_FORALL)) {
 			while (arg->spos < arg->sposz) {
+				if (!first)
+					fputs("\t", arg->f);
 				fputs("<entry>\n", arg->f);
 				atomprint(arg);
-				fputs("</entry>\n", arg->f);
+				fputs("\t</entry>\n", arg->f);
 				arg->spos++;
+				first = 0;
 			}
 		} else {
 			fputs("<entry>\n", arg->f);
 			atomprint(arg);
-			fputs("</entry>\n", arg->f);
+			fputs("\t</entry>\n", arg->f);
 			arg->spos++;
 		}
 	}
