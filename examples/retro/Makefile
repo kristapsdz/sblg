@@ -5,7 +5,7 @@
 # together, review, then `doas make install` to publish.
 
 PREFIX	 = /var/www/htdocs
-SBLG	 = ../../sblg
+SBLG	 = sblg
 
 # Add articles here.  For simplicity with linking `index.html` to the
 # newest one, the order is publication order.
