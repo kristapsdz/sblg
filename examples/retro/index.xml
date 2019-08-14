@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta charset="utf-8" /> 
+		<title>Retro Template Blog</title>
+		<link rel="stylesheet" href="index.css" />
+		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="Atom Feed" />
+	</head>
+	<body>
+		<header>
+			<h1>Retro Template Blog</h1>
+			<p>
+				A retro-styled template for a <q>blog-roll</q> style front
+				page linking to individual (Markdown) articles.
+			</p>
+		</header>
+		<nav data-sblg-nav="1" data-sblg-navcontent="1">
+			<h2><a href="${sblg-base}.html">${sblg-title}</a></h2>
+			<div>
+				<address>${sblg-author}</address>,
+				<time datetime="${sblg-date}">${sblg-date}</time>
+			</div>
+			<p>${sblg-aside}</p>
+			<p class="tags">
+				Tags: ${sblg-tags}.
+			</p>
+			<nav>
+				<a href="${sblg-base}.html">Read more-&gt;</a>
+			</nav>
+		</nav>
+		<footer>
+			<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+				CC BY-SA 4.0
+			</a> | powered by <a href="https://kristaps.bsd.lv/sblg">sblg</a>
+		</footer>
+	</body>
+</html>
