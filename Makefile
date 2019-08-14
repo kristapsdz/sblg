@@ -2,7 +2,7 @@
 
 include Makefile.configure
 
-VERSION 	 = 0.5.0
+VERSION 	 = 0.5.1
 OBJS		 = compats.o \
 		   main.o \
 		   compile.o \
@@ -53,11 +53,7 @@ DATADIR	 	 = $(SHAREDIR)/sblg
 EXAMPLEDIR	 = $(DATADIR)/examples
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 DOTAR 		 = Makefile \
-		   $(XMLS) \
-		   $(CSSS) \
 		   $(SRCS) \
-		   $(XMLGENS) \
-		   atom-template.xml \
 		   sblg.in.1 \
 		   sblg.h \
 		   schema.json \
@@ -106,15 +102,14 @@ install: all
 	$(INSTALL_DATA) schema.json $(DESTDIR)$(DATADIR)
 	$(INSTALL_DATA) examples/simple/Makefile examples/simple/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple
 	$(INSTALL_DATA) examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple-frontpage
-	$(INSTALL_DATA) examples/retro/Makefile examples/retro/*.{xml,css,md} $(DESTDIR)$(EXAMPLEDIR)/retro
+	$(INSTALL_DATA) examples/retro/Makefile examples/retro/atom-template.xml examples/retro/*.{css,md} $(DESTDIR)$(EXAMPLEDIR)/retro
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/sblg
 	rm -f $(DESTDIR)$(MANDIR)/man1/sblg.1
 	rm -f $(DESTDIR)$(DATADIR)/schema.json
-	rm -f $(DESTDIR)$(DATADIR)/examples/simple/*.{xml,css,jpg,md}
-	rm -f $(DESTDIR)$(DATADIR)/examples/simple-frontpage/*.{xml,css,jpg,md}
-	rm -f $(DESTDIR)$(DATADIR)/examples/retro/*.{xml,css,md}
+	rm -f $(DESTDIR)$(DATADIR)/examples/*/Makefile
+	rm -f $(DESTDIR)$(DATADIR)/examples/*/*.{xml,css,jpg,md}
 	rmdir $(DESTDIR)$(DATADIR)/examples/simple
 	rmdir $(DESTDIR)$(DATADIR)/examples/simple-frontpage
 	rmdir $(DESTDIR)$(DATADIR)/examples/retro
@@ -125,6 +120,12 @@ sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/
 	install -m 0644 $(DOTAR) .dist/sblg-$(VERSION)
 	install -m 0755 configure .dist/sblg-$(VERSION)
+	mkdir -p .dist/sblg-$(VERSION)/examples/retro
+	mkdir -p .dist/sblg-$(VERSION)/examples/simple
+	mkdir -p .dist/sblg-$(VERSION)/examples/simple-frontpage
+	install -m 0644 examples/simple/Makefile examples/simple/*.{xml,css,jpg,md} .dist/sblg-$(VERSION)/examples/simple
+	install -m 0644 examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg,md} .dist/sblg-$(VERSION)/examples/simple-frontpage
+	install -m 0644 examples/retro/Makefile examples/retro/atom-template.xml examples/retro/*.{css,md} .dist/sblg-$(VERSION)/examples/retro
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
