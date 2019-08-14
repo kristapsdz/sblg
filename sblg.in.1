@@ -578,20 +578,50 @@ element with a Boolean
 .Li data-sblg-entry
 attribute is replaced by ordered (newest to oldest) article information.
 If there aren't enough articles, the element is removed.
+The template may contain pre-existing entries.
+.Pp
+The following is a minimal template: anything less will not conform to
+the Atom specification:
 .Bd -literal
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Example Feed</title>
-  <link href="http://example.org/feed/" rel="self" />
-  <link href="http://example.org/" />
-  <updated data-sblg-updated="1" />
-  <id data-sblg-id="1" />
+  <link href="http://example.org" />
+  <title>A Title Here</title>
+  <updated />
+  <id />
   <entry data-sblg-entry="1" data-sblg-forall="1" />
 </feed>
 .Ed
 .Pp
-There are a number of special attributes that are recognised in the
-input file.
+The recognised elements are as follows.
+Un-recognised elements are printed verbatim.
+.Bl -tag -width Ds
+.It Li <entry data-sblg-entry="1">
+Filled-in article entry.
+If the attribute is not specified, the entry is retained verbatim.
+Otherwise it is filled in with an article's information.
+.It Li <id>
+If this is empty, it is filled in with the URL in
+.Li <link [rel="alternate"]> ,
+which must exist.
+Otherwise, the value is copied and used for subsequent feed entries.
+.It Li <link [rel="alternate"]>
+Unless an
+.Li <id>
+is provided, the
+.Li href
+attribute must be a full URL, e.g.,
+.Li <link href="https://kristaps.bsd.lv/"> .
+Otherwise, it may be a relative path.
+This element
+.Em must be first .
+.It Li <updated>
+This is filled in with the most recent article.
+Its contents are discarded.
+.El
+.Pp
+There are a number of special attributes that may be given to the above
+elements.
 .Bl -tag -width Ds
 .It Li data-sblg-altlink=boolean
 If an
@@ -628,10 +658,22 @@ are processed.
 .It Li data-sblg-entry=boolean
 Each
 .Li <entry>
-element with this set to true is filled in with a
+element with this is filled in with article content.
+.It Li data-sblg-forall=boolean
+If an
+.Li <entry data-sblg-entry="1">
+element contains this set to true, it is used for all remaining
+articles.
+Any
+.Li <entry data-sblg-entry="1">
+following this are discarded.
+.It Li data-sblg-striplink=boolean
+Deprecated.
+.El
+.Pp
+Entries are filled in with a
 .Li <title> ,
-.Li <id>
-.Pq in tag format ,
+.Li <id> ,
 .Li <author> ,
 HTML
 .Li <content>
@@ -641,48 +683,14 @@ specified in the article as an
 .Pc ,
 and alternate
 .Li <link> .
-.It Li data-sblg-forall=boolean
-If an
-.Li <entry data-sblg-entry="1">
-element contains this set to true, it is used for all remaining
-articles.
-Any
-.Li <entry data-sblg-entry="1">
-following this are discarded.
-.It Li data-sblg-id=boolean
 The
 .Li <id>
-element with this set to true is replaced with an identifier in the form
-of
-.Li tag:domain,year:path ,
-where the domain is initialised to the current domain or extracted from
-the
+is constructed by appending the source filename, hash print, and date
+following the feed's
+.Li <id>
+or
 .Li <link>
-to the self and the path is also extracted from the self
-.Li <link> ,
-initialised to the root path
-.Sq \&/ ,
-with the name of the output file.
-The year is set to the current year.
-If an input file is not specified (standard input), no filename is used.
-.It Li data-sblg-striplink=boolean
-If
-.Li data-sblg-entry="1">
-for an
-.Li <entry> ,
-element contains this set to true, the alternate link (if requested) has
-its directory part stripped and is assumed to be in the root directory.
-.Em This is deprecated
-in favour of
-.Li data-sblg-altlink-fmt .
-.It Li data-sblg-updated=boolean
-The
-.Li <updated>
-element with this set to true is replaced with the newest article date
-(or the current date, if no articles are listed).
-.Sx Tag Symbols
-are processed.
-.El
+element.
 .Pp
 When filling in HTML content,
 .Nm
