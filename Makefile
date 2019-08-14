@@ -2,7 +2,7 @@
 
 include Makefile.configure
 
-VERSION 	 = 0.5.1
+VERSION 	 = 0.5.2
 OBJS		 = compats.o \
 		   main.o \
 		   compile.o \
@@ -102,7 +102,7 @@ install: all
 	$(INSTALL_DATA) schema.json $(DESTDIR)$(DATADIR)
 	$(INSTALL_DATA) examples/simple/Makefile examples/simple/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple
 	$(INSTALL_DATA) examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple-frontpage
-	$(INSTALL_DATA) examples/retro/Makefile examples/retro/atom-template.xml examples/retro/*.{css,md} $(DESTDIR)$(EXAMPLEDIR)/retro
+	$(INSTALL_DATA) examples/retro/Makefile examples/retro/atom-template.xml examples/retro/{template,index}.xml examples/retro/*.{css,md} $(DESTDIR)$(EXAMPLEDIR)/retro
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/sblg
@@ -125,7 +125,7 @@ sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/examples/simple-frontpage
 	install -m 0644 examples/simple/Makefile examples/simple/*.{xml,css,jpg,md} .dist/sblg-$(VERSION)/examples/simple
 	install -m 0644 examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg,md} .dist/sblg-$(VERSION)/examples/simple-frontpage
-	install -m 0644 examples/retro/Makefile examples/retro/atom-template.xml examples/retro/*.{css,md} .dist/sblg-$(VERSION)/examples/retro
+	install -m 0644 examples/retro/Makefile examples/retro/atom-template.xml examples/retro/{template,index}.xml examples/retro/*.{css,md} .dist/sblg-$(VERSION)/examples/retro
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
