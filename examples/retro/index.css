@@ -21,8 +21,7 @@ nav[data-sblg-nav]				{ padding: 2rem 0; }
 nav[data-sblg-nav] li + li			{ padding-top: 2rem; }
 nav[data-sblg-nav] ul				{ list-style-type: none;
 					  	  padding: 0; }
-a						{ text-decoration: none;
-				  		  color: green; }
+a						{ color: green; }
 footer						{ padding: 1rem 0;
 						  color: #aaa; }
 h2						{ font-weight: 700;
