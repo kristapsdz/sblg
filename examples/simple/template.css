@@ -79,3 +79,8 @@ footer * + *			{ border-left: thin solid #eee;
   body > header			{ padding: 6rem 0 2rem 0; }
   h1				{ font-size: 200%; }
 }
+
+@media (min-width: 60rem) {
+  .profile.sblg-has-profile 	{ margin-left: -37px;
+				  margin-bottom: 0; }
+}
