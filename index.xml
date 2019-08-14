@@ -106,10 +106,10 @@
 				output modes
 			</h3>
 			<p>
-				<a href="sblg.1.html">sblg(1)</a> formats its output in a variety of ways.
-				The most commonly used are <i>blog</i> and <i>combined</i> modes.
+				<a href="sblg.1.html">sblg(1)</a> formats its output in several
+				modes, the most commonly used being <i>blog</i> and <i>combined</i>.
 				These are also used in the templates installed with the system, all
-				of which are device-independent, have feeds, microdata, etc.
+				of which are device-independent, have feeds, etc.
 			</p>
 			<div class="templates">
 				<figure>
@@ -122,6 +122,12 @@
 					<a href="examples/simple-frontpage/index.html"><img src="template2.jpg" alt="" /></a>
 					<figcaption>
 						Simple <a href="examples/simple-frontpage/index.html">front-page</a> template.
+					</figcaption>
+				</figure>
+				<figure>
+					<a href="examples/retro/index.html"><img src="template3.jpg" alt="" /></a>
+					<figcaption>
+						Retro <a href="examples/retro/index.html">front-page</a> style and Markdown.
 					</figcaption>
 				</figure>
 			</div>
