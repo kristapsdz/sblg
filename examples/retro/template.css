@@ -20,8 +20,7 @@ body > header				{ padding: 1rem 0;
 .sblg-next-has > a,
 .sblg-prev-has > a			{ display: inline-block; }
 footer					{ padding: 1rem 0; }
-a					{ text-decoration: none;
-					  color: green; }
+a					{ color: green; }
 h1					{ font-size: inherit;
 					  font-weight: 700; }
 h1 a					{ color: inherit; }
