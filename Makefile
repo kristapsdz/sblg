@@ -61,6 +61,10 @@ DOTAR 		 = Makefile \
 BUILT		 = index1.svg \
 		   index2.svg \
 		   index3.svg
+IMAGES		 = template1.jpg \
+		   template2.jpg \
+		   template3.jpg \
+		   template4.jpg
 
 all: sblg sblg.a sblg.1
 
@@ -82,7 +86,7 @@ sblg.1: sblg.in.1
 installwww: www
 	mkdir -p $(WWWDIR)
 	mkdir -p $(WWWDIR)/snapshots
-	install -m 0444 Makefile $(BUILT) $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(MDS) $(CSSS) template*.jpg $(WWWDIR)
+	install -m 0444 Makefile $(BUILT) $(IMAGES) $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(MDS) $(CSSS) $(WWWDIR)
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz.sha512
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots

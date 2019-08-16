@@ -124,10 +124,19 @@
 						Simple <a href="examples/simple-frontpage/index.html">front-page</a> template.
 					</figcaption>
 				</figure>
+			</div>
+			<div class="templates">
 				<figure>
 					<a href="examples/retro/index.html"><img src="template3.jpg" alt="" /></a>
 					<figcaption>
 						Retro <a href="examples/retro/index.html">front-page</a> style and Markdown.
+					</figcaption>
+				</figure>
+				<figure>
+					<a href="examples/brutalist/index.html"><img src="template4.jpg" alt="" /></a>
+					<figcaption>
+						<q>Brutalist</q> 
+						<a href="examples/brutalist/index.html">front-page</a> style and Markdown.
 					</figcaption>
 				</figure>
 			</div>
