@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta charset="utf-8" /> 
+		<title>Brutalist Template Blog</title>
+		<link rel="stylesheet" href="index.css" />
+		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="Atom Feed" />
+	</head>
+	<body>
+		<input type="checkbox" name="show-aside" id="show-aside" />
+		<header>
+			<div>
+				<h1>Brutalist Template</h1>
+			</div>
+			<div class="meta description">
+				Tagline.
+			</div>
+			<div>
+				<label for="show-aside">
+					About
+				</label>
+			</div>
+		</header>
+		<aside>
+			<div>
+				<label for="show-aside">Close</label>.
+				<p>
+					Brutalism is post-art.
+				</p>
+				<nav>
+					<ul>
+						<li><a href="https://www.bsd.lv">The BSD.lv Project</a></li>
+					</ul>
+				</nav>
+			</div>
+		</aside>
+		<nav data-sblg-nav="1" data-sblg-navcontent="1">
+			<div>
+				<h2><a href="${sblg-base}.html">${sblg-title}</a></h2>
+				<div class="meta">
+					<address>${sblg-author}</address>,
+					<time datetime="${sblg-date}">${sblg-date}</time>
+				</div>
+				<p>${sblg-aside}</p>
+			</div>
+		</nav>
+		<footer class="meta">
+			<div>
+				<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+					CC BY-SA 4.0
+				</a>
+			</div>
+			<div>
+				<div>
+					powered by <a href="https://kristaps.bsd.lv/sblg">sblg</a>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
