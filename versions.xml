@@ -869,4 +869,21 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.5.3</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-08-16">2019-08-16</time>
+		</header>
+		<aside>
+			<p>
+				Add a
+				<a href="examples/brutalist/index.html">brutalist</a>
+				template to the mix.
+				This is has a front page and per-article styles.
+				The way templates are installed has changed, but that's not likely
+				to change any behaviour.
+			</p>
+		</aside>
+	</article>
 </articles>
