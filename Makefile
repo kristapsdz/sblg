@@ -74,6 +74,7 @@ www: $(HTMLS) $(BUILT) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512 sblg
 	( cd examples/simple && make SBLG=../../sblg )
 	( cd examples/simple-frontpage && make SBLG=../../sblg )
 	( cd examples/retro && make SBLG=../../sblg )
+	( cd examples/brutalist && make SBLG=../../sblg )
 
 sblg.1: sblg.in.1
 	sed "s!@SHAREDIR@!$(DATADIR)!g" sblg.in.1 >$@
@@ -89,6 +90,7 @@ installwww: www
 	( cd examples/simple && make install SBLG=../../sblg PREFIX=$(WWWDIR)/examples/simple )
 	( cd examples/simple-frontpage && make install SBLG=../../sblg PREFIX=$(WWWDIR)/examples/simple-frontpage )
 	( cd examples/retro && make install SBLG=../../sblg PREFIX=$(WWWDIR)/examples/retro )
+	( cd examples/brutalist && make install SBLG=../../sblg PREFIX=$(WWWDIR)/examples/brutalist )
 
 install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
@@ -96,6 +98,7 @@ install: all
 	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/simple
 	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/simple-frontpage
 	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/retro
+	mkdir -p $(DESTDIR)$(EXAMPLEDIR)/brutalist
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_PROGRAM) sblg $(DESTDIR)$(BINDIR)
 	$(INSTALL_MAN) sblg.1 $(DESTDIR)$(MANDIR)/man1
@@ -103,6 +106,7 @@ install: all
 	$(INSTALL_DATA) examples/simple/Makefile examples/simple/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple
 	$(INSTALL_DATA) examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg,md} $(DESTDIR)$(EXAMPLEDIR)/simple-frontpage
 	$(INSTALL_DATA) examples/retro/Makefile examples/retro/atom-template.xml examples/retro/{template,index}.xml examples/retro/*.{css,md} $(DESTDIR)$(EXAMPLEDIR)/retro
+	$(INSTALL_DATA) examples/brutalist/Makefile examples/brutalist/atom-template.xml examples/brutalist/{template,index}.xml examples/brutalist/*.{css,md} $(DESTDIR)$(EXAMPLEDIR)/brutalist
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/sblg
@@ -113,6 +117,7 @@ uninstall:
 	rmdir $(DESTDIR)$(DATADIR)/examples/simple
 	rmdir $(DESTDIR)$(DATADIR)/examples/simple-frontpage
 	rmdir $(DESTDIR)$(DATADIR)/examples/retro
+	rmdir $(DESTDIR)$(DATADIR)/examples/brutalist
 	rmdir $(DESTDIR)$(DATADIR)/examples
 	rmdir $(DESTDIR)$(DATADIR)
 
@@ -121,11 +126,13 @@ sblg.tar.gz:
 	install -m 0644 $(DOTAR) .dist/sblg-$(VERSION)
 	install -m 0755 configure .dist/sblg-$(VERSION)
 	mkdir -p .dist/sblg-$(VERSION)/examples/retro
+	mkdir -p .dist/sblg-$(VERSION)/examples/brutalist
 	mkdir -p .dist/sblg-$(VERSION)/examples/simple
 	mkdir -p .dist/sblg-$(VERSION)/examples/simple-frontpage
 	install -m 0644 examples/simple/Makefile examples/simple/*.{xml,css,jpg,md} .dist/sblg-$(VERSION)/examples/simple
 	install -m 0644 examples/simple-frontpage/Makefile examples/simple-frontpage/*.{xml,css,jpg,md} .dist/sblg-$(VERSION)/examples/simple-frontpage
 	install -m 0644 examples/retro/Makefile examples/retro/atom-template.xml examples/retro/{template,index}.xml examples/retro/*.{css,md} .dist/sblg-$(VERSION)/examples/retro
+	install -m 0644 examples/brutalist/Makefile examples/brutalist/atom-template.xml examples/brutalist/{template,index}.xml examples/brutalist/*.{css,md} .dist/sblg-$(VERSION)/examples/brutalist
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
@@ -177,6 +184,7 @@ clean:
 	rm -f version.h
 	rm -f examples/*/*.html examples/*/atom.xml
 	rm -f examples/retro/article*.xml
+	rm -f examples/brutalist/article*.xml
 
 distclean: clean
 	rm -f Makefile.configure config.h config.log
