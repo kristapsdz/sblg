@@ -1,11 +1,10 @@
 .SUFFIXES: .md .xml
 
-# If you want to use `make install` to publish your blog, put the
+# If you want to use `make installwww` to publish your blog, put the
 # publication point here.  I'll usually use `make` to put it all
-# together, review, then `doas make install` to publish.
+# together, review, then `doas make installwww` to publish.
 
-PREFIX	 = /var/www/htdocs
-SBLG	 = sblg
+WWWDIR	 = /var/www/htdocs
 
 # Add articles here.  For simplicity with linking `index.html` to the
 # newest one, the order is publication order.
@@ -20,15 +19,21 @@ ARTICLES = article1.xml \
 	   article8.xml \
 	   article9.xml \
 	   article10.xml
+PREFIX	 = /usr/local/share/sblg/examples/brutalist
+SBLG	 = sblg
 
 all: index.html atom.xml
 
-install: all
+installwww: all
+	mkdir -p $(WWWDIR)
+	install -m 0444 atom.xml *.{html,css} $(WWWDIR)
+
+install:
 	mkdir -p $(PREFIX)
-	install -m 0444 atom.xml *.html *.css $(PREFIX)
+	install -m 0644 Makefile atom-template.xml index.xml template.xml *.{md,css} $(PREFIX)
 
 index.html: $(ARTICLES) template.xml index.xml
-	$(SBLG) -s cmdline -t template.xml -L $(ARTICLES)
+	$(SBLG) -s rcmdline -t template.xml -L $(ARTICLES)
 	$(SBLG) -s cmdline -t index.xml -o $@ $(ARTICLES)
 
 atom.xml: $(ARTICLES) atom-template.xml

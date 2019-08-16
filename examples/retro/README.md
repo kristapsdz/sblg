@@ -25,6 +25,6 @@ To use:
 	your blog (the example is "Retro Template Blog") and proper
 	license.
 4. Edit the URLs in [atom-template.xml](atom-template.xml).
-5. To directly publish, modify the [Makefile](Makefile)'s `PREFIX`
-	variable to a web server root and run `make install`.  Or
+5. To directly publish, modify the [Makefile](Makefile)'s `WWWDIR`
+	variable to a web server root and run `make installwww`.  Or
 	install into a staging directory and copy from there.
