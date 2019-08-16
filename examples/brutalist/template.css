@@ -7,7 +7,7 @@ body					{ font-family: monospace;
 					  background-color: #111;
 					  line-height: 1.4em; }
 body > footer,
-body > header				{ position: absolute;
+body > header				{ position: fixed;
 					  display: flex;
 					  left: 0;
 					  background-color: pink;
@@ -26,6 +26,7 @@ body > footer > *			{ border-top: thin solid #333; }
 body > footer				{ bottom: 0; }
 body > section				{ padding-left: 1rem;
 					  padding-right: 1rem;
+					  padding-bottom: 4rem;
 					  padding-top: 4rem; }
 .tags					{ padding-top: 1rem;
 					  color: #888; }
