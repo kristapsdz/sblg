@@ -437,18 +437,17 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	arg->spos++;
 
 	for (attp = atts; *attp != NULL; attp += 2) 
-		if (sblg_lookup(*attp) == SBLG_ATTR_PERMLINK)
-			break;
-
-	if (*attp != NULL && !xmlbool(attp[1]))
-		return;
-
-	xmlopen(arg->f, "div", "data-sblg-permlink", "1", NULL);
-	xmlopen(arg->f, "a", "href", arg->sargs[arg->spos - 1].src, NULL);
-	fputs("permanent link", arg->f);
-	xmlclose(arg->f, "a");
-	xmlclose(arg->f, "div");
-	fputc('\n', arg->f);
+		if (sblg_lookup(*attp) == SBLG_ATTR_PERMLINK &&
+		    xmlbool(attp[1])) {
+			xmlopen(arg->f, "div", 
+				"data-sblg-permlink", "1", NULL);
+			xmlopen(arg->f, "a", "href", 
+				arg->sargs[arg->spos - 1].src, NULL);
+			fputs("permanent link", arg->f);
+			xmlclose(arg->f, "a");
+			xmlclose(arg->f, "div");
+			fputc('\n', arg->f);
+		}
 }
 
 /*
