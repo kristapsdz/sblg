@@ -34,6 +34,7 @@
 #endif
 
 #include "extern.h"
+#include "version.h"
 
 /*
  * Types of operations we handle.
@@ -68,7 +69,7 @@ main(int argc, char *argv[])
 
 	setlocale(LC_ALL, "");
 
-	while (-1 != (ch = getopt(argc, argv, "acjlLrC:o:s:t:")))
+	while (-1 != (ch = getopt(argc, argv, "acjlLrC:o:s:t:V")))
 		switch (ch) {
 		case 'a':
 			op = OP_ATOM;
@@ -104,6 +105,9 @@ main(int argc, char *argv[])
 		case 't':
 			templ = optarg;
 			break;
+		case 'V':
+			fputs("sblg-" VERSION "\n", stderr);
+			return EXIT_SUCCESS;
 		default:
 			goto usage;
 		}

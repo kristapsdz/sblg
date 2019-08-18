@@ -22,7 +22,7 @@
 .Nd static blog utility
 .Sh SYNOPSIS
 .Nm sblg
-.Op Fl acjlLr
+.Op Fl acjlLrV
 .Op Fl C Ar file
 .Op Fl o Ar file
 .Op Fl s Ar sort
@@ -223,6 +223,10 @@ for
 and
 .Ar blog-template.xml
 otherwise.
+.It V
+Emits the verion as
+.Li sblg-xx.yy.zz
+and exits.
 .It Ar
 Input files.
 In standalone mode with
@@ -929,6 +933,11 @@ The article title with markup.
 The article title, textual parts only.
 .It Li ${sblg-url}
 The output filename, which is empty for standard output.
+.It Li ${sblg-version}
+The current
+.Nm
+version as
+.Li xx.yy.zz .
 .El
 .Pp
 Be careful in using these: the contents are copied directly, so if
