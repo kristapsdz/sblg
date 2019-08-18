@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head><title>My Blarg</title></head>
+	<body>
+		<nav data-sblg-nav="1"></nav>
+		<article data-sblg-article="1"></article>
+		<article data-sblg-article="1"></article>
+	</body>
+</html>

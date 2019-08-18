@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<article data-sblg-article="1">
+	<header data-sblg-set-foo="bar">
+		<h1>Document Title</h1>
+		<address>Author Name</address>
+		<time datetime="2014-04-12">2014-04-12</time>
+	</header>
+	<aside>
+		This is pulled out for the page synopsis.
+	</aside>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+	</p>
+</article>
