@@ -2,6 +2,8 @@ This is a different form of template.  It's built for a photo gallery,
 directly from the photos themselves.  It uses
 [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/) to create
 article files, extracting pertinent information from the photos.
+You'll also need [ImageMagick](https://imagemagick.org/index.php) for
+creating thumbnails.
 
 To preserve bandwidth, photos on the main blog are shown as an "infinite
 scroll", where only photos in-frame are rendered.
@@ -32,6 +34,10 @@ To use:
 	variable to a web server root and run `make installwww`.  Or
 	install into a staging directory and copy from there.
 6. Make sure that your photos have their EXIF tags intact, and if
-	desired, fill in the title ("Title"), comments ("Description"),
-	and author ("Creator") EXIF tags in your favourite editor.  I
-	use [geeqie](http://www.geeqie.org/).
+	desired, fill in the title, comments ("description") and artist
+	EXIF tags in your favourite editor.  I use
+	[geeqie](http://www.geeqie.org/).
+
+I've included several of my own photos as examples.  These are CC-BY-SA
+4.0.  I don't recommend using them, as they're low quality to keep the
+repository small.

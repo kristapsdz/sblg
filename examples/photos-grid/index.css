@@ -70,6 +70,8 @@ button:hover			{ color: #333;
 button:active			{ color: #000;
 				  border-color: #888;
 				  outline: 0; }
+a				{ color: #003399;
+				  text-decoration: none; }
 
 @media (min-width: 50rem) {
 	nav ul li		{ max-width: 50%; }

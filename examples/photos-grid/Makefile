@@ -17,7 +17,7 @@ ARTICLES = photo1.xml \
 	   photo7.xml \
 	   photo8.xml
 SBLG	 = sblg
-PREFIX	 = /usr/local/share/sblg/examples/retro
+PREFIX	 = /usr/local/share/sblg/examples/photos-grid
 
 all: index.html atom.xml
 
@@ -50,7 +50,7 @@ atom.xml: $(ARTICLES) atom-template.xml
 		done ; \
 	  echo ">" ; \
 	  echo " <h1>`exiftool -ex -Title -s3 $<`</h1>" ; \
-	  echo " <address>`exiftool -ex -Creator -s3 $<`</address>" ; \
+	  echo " <address>`exiftool -ex -Artist -s3 $<`</address>" ; \
 	  echo " <aside>`exiftool -ex -Description -s3 $<`</aside>" ; \
 	  echo " <time datetime=\"`exiftool -ex -DateTimeOriginal -d '%Y-%m-%dT%H:%M:%SZ' -s3 $<`\">" ; \
 	  echo "  `exiftool -ex -d '%Y-%m-%d %H:%M:%S' -DateTimeOriginal -s3 $< `" ; \
