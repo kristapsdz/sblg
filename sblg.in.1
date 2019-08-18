@@ -458,22 +458,13 @@ attribute is removed.
 .It Li data-sblg-permlink=boolean
 If an
 .Li <article data-sblg-article="1">
-element contains this set to false, the permanent link is omitted.
-.El
-.Pp
-Unless
-.Li data-sblg-permlink
-is set to false, each
+element contains this set to true, a permanent link to the article's
+input filename is emitted after the
 .Li <article data-sblg-article="1">
-is followed by a
-.Pq permanent link
-anchor within a
-.Li <div>
-with the custom class
-.Qq data-sblg-permlink .
-The permanent link is set to the article input file name, which may be
-an XML file.
-.Em This confusing feature may be removed in future versions.
+within a 
+.Li <div data-sblg-permlink="1">
+element.
+.El
 .Pp
 The navigation element may contain several attributes.
 .Bl -tag -width Ds
