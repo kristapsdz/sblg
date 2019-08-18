@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta charset="utf-8" /> 
+		<title>Photo Template Blog: ${sblg-titletext}</title>
+		<link rel="stylesheet" href="photo.css" />
+		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="Atom Feed" />
+		<style>
+			#img { background-image: url(${sblg-base}.jpg);
+			       background-size: contain;
+			       background-repeat: no-repeat;
+			       background-position: 50% 50%; }
+		</style>
+	</head>
+	<body>
+		<input type="checkbox" name="aside" id="aside" value="0" />
+		<header>
+			<span>
+				<a href="index.html">Photo Template Blog</a>
+			</span>
+			<span>
+				<a href="${sblg-next-base}.html">&#x2039; Newer</a>
+			</span>
+			<span>
+				<a href="${sblg-prev-base}.html">Older &#x203a;</a>
+			</span>
+			<span>
+				<label for="aside">Details</label>
+			</span>
+		</header>
+		<aside>
+			<div>
+				<span>title</span>
+				<h1>${sblg-title}</h1>
+			</div>
+			<div>
+				<span>date photographed</span>
+				<time datetime="${sblg-datetime}">${sblg-date}</time>
+			</div>
+			<dl>
+				<dt>aperture</dt>
+				<dd><i>f</i>/${sblg-get|FNumber}</dd>
+				<dt>focal length</dt>
+				<dd>${sblg-get|FocalLength}</dd>
+				<dt>focal length (35mm format)</dt>
+				<dd>${sblg-get|FocalLengthIn35mmFormat}</dd>
+				<dt>exposure time</dt>
+				<dd>${sblg-get|ExposureTime}</dd>
+				<dt>exposure programme</dt>
+				<dd>${sblg-get|ExposureProgram}</dd>
+				<dt>iso value</dt>
+				<dd>${sblg-get|ISO}</dd>
+			</dl>
+			<div>
+				<span>download</span>
+				<div><a href="${sblg-base}.jpg">1280 px</a>, <a href="${sblg-base}-thumb.jpg">500 px</a></div>
+			</div>
+		</aside>
+		<article>
+			<div id="img"></div>
+		</article>
+		<footer>
+			<span>
+				<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+			</span>
+			<span>
+				powered by <a href="https://kristaps.bsd.lv/sblg">sblg</a>
+			</span>
+		</footer>
+	</body>
+</html>

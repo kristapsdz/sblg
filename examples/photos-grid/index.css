@@ -1,0 +1,80 @@
+html, body			{ margin: 0; }
+body				{ font-family: sans-serif;
+				  font-weight: 400;
+				  color: #444;
+				  font-size: 11pt; }
+article				{ max-width: 100rem;
+				  width: calc(100% - 2rem);
+				  margin: 5rem auto; }
+nav ul				{ list-style-type: none;
+				  display: flex;
+				  flex-wrap: wrap;
+				  margin: 0;
+				  padding: 0;
+				  align-items: flex-start; }
+nav				{ margin-bottom: 2rem; }
+nav ul li			{ flex-grow: 1;
+				  display: none;
+				  width: 100%; }
+nav ul li.shown			{ display: list-item; }
+img				{ width: 100%;
+				  box-shadow: 0 0 2px #888; }
+time				{ opacity: 0.8; }
+body				{ position: relative; }
+header, footer 			{ position: fixed;
+				  left: 0;
+				  display: flex;
+				  z-index: 3;
+				  align-items: center;
+				  background-color: #fff;
+				  height: 3rem;
+				  max-width: 100%;
+				  width: 100%; }
+header				{ top: 0;
+				  border-bottom: 4px solid powderblue; }
+footer				{ bottom: 0;
+				  border-top: 4px solid powderblue; }
+header > *, footer > *		{ max-width: 100rem;
+				  width: calc(100% - 2rem);
+				  margin: 0 auto; }
+figure				{ margin: 4pt; }
+figure > *			{ display: block; }
+#showmore			{ text-align: center; }
+footer div > *,
+header div > *			{ display: inline-block;
+				  margin: 0;
+				  padding-right: 2rem;
+				  line-height: 3rem; }
+footer div > * + *,
+header div > * + *		{ border-left: 4px solid powderblue;
+				  padding-left: 2rem; }
+h1				{ font-size: inherit;
+				  font-weight: inherit; }
+figcaption			{ color: #000; }
+button:disabled			{ opacity: 0.3; }
+button				{ display: inline-block;
+				  color: #555;
+				  text-align: center;
+				  font-size: inherit;
+				  padding: 0 1.8em;
+				  line-height: 2.4em;
+				  text-decoration: none;
+				  white-space: nowrap;
+				  background-color: transparent;
+				  border-radius: 0.2em;
+				  border: 3px solid powderblue;
+				  cursor: pointer;
+				  box-sizing: border-box; }
+button:hover			{ color: #333;
+				  outline: 0; }
+button:active			{ color: #000;
+				  border-color: #888;
+				  outline: 0; }
+
+@media (min-width: 50rem) {
+	nav ul li		{ max-width: 50%; }
+}
+
+@media (min-width: 100rem) {
+	nav ul li		{ max-width: calc(100% / 3); }
+}
