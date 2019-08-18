@@ -79,6 +79,8 @@ www: $(HTMLS) $(BUILT) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512 sblg
 	( cd examples/simple-frontpage && make SBLG=../../sblg )
 	( cd examples/retro && make SBLG=../../sblg )
 	( cd examples/brutalist && make SBLG=../../sblg )
+	( cd examples/photos-column && make SBLG=../../sblg )
+	( cd examples/photos-grid && make SBLG=../../sblg )
 
 sblg.1: sblg.in.1
 	sed "s!@SHAREDIR@!$(DATADIR)!g" sblg.in.1 >$@
@@ -95,6 +97,8 @@ installwww: www
 	( cd examples/simple-frontpage && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/simple-frontpage )
 	( cd examples/retro && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/retro )
 	( cd examples/brutalist && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/brutalist )
+	( cd examples/photos-column && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/photos-column )
+	( cd examples/photos-grid && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/photos-grid )
 
 install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
@@ -110,6 +114,8 @@ install: all
 	( cd examples/simple-frontpage && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/simple-frontpage )
 	( cd examples/retro && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/retro )
 	( cd examples/brutalist && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/brutalist )
+	( cd examples/photos-column && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/photos-column )
+	( cd examples/photos-grid && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/photos-grid )
 
 sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/
@@ -117,11 +123,15 @@ sblg.tar.gz:
 	install -m 0755 configure .dist/sblg-$(VERSION)
 	mkdir -p .dist/sblg-$(VERSION)/examples/retro
 	mkdir -p .dist/sblg-$(VERSION)/examples/brutalist
+	mkdir -p .dist/sblg-$(VERSION)/examples/photos-column
+	mkdir -p .dist/sblg-$(VERSION)/examples/photos-grid
 	mkdir -p .dist/sblg-$(VERSION)/examples/simple-frontpage
 	( cd examples/simple && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/simple )
 	( cd examples/simple-frontpage && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/simple-frontpage )
 	( cd examples/retro && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/retro )
 	( cd examples/brutalist && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/brutalist )
+	( cd examples/photos-column && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/photos-column )
+	( cd examples/photos-grid && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/photos-grid )
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
@@ -175,6 +185,8 @@ clean:
 	( cd examples/simple-frontpage && make clean )
 	( cd examples/retro && make clean )
 	( cd examples/brutalist && make clean )
+	( cd examples/photos-column && make clean )
+	( cd examples/photos-grid && make clean )
 
 distclean: clean
 	rm -f Makefile.configure config.h config.log
