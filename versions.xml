@@ -886,4 +886,30 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.5.4</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-08-18">2019-08-18</time>
+		</header>
+		<aside>
+			<p>
+				Add two templates for photography blogs, one with a
+				<a href="examples/photos-grid/index.html">grid</a> front page and one that's
+				<a href="examples/photos-column/index.html">columnar</a>.
+				These create the blogs directly from EXIF data in your photos!
+			</p>
+			<p>
+				Finally remove that articles are followed by a permanent link by
+				default that must be disabled with <code>data-sblg-permlink="0"</code>.
+				This has now been inverted such that
+				<code>data-sblg-permlink="1"</code> is required to emit the
+				permanent link.
+			</p>
+			<p>
+				Add <code>${sblg-version}</code> and the <code>-V</code> flag to the
+				binary to emit the version.
+			</p>
+		</aside>
+	</article>
 </articles>
