@@ -4,9 +4,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta charset="utf-8" /> 
 		<title>sblg: version archive</title>
-		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="sblg Article and Version Feed" />
+		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="sblg version Feed" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
+		<link rel="stylesheet" href="https://bsd.lv/css/style.css" />
 		<link rel="stylesheet" href="article.css" />
 		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 	</head>
