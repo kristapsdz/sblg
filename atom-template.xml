@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-	<title>sblg Article and Version Feed</title>
+	<title>sblg version feed</title>
 	<link href="https://kristaps.bsd.lv/sblg" />
 	<link href="https://kristaps.bsd.lv/sblg/atom.xml" rel="self" />
 	<id />
