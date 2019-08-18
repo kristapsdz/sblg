@@ -24,31 +24,15 @@ SRCS		 = compats.c \
 		   json.c \
 		   listtags.c \
 		   tests.c
-ARTICLES 	 = article1.html \
-	 	   article2.html \
-	 	   article4.html \
-	 	   article5.html \
-	 	   article6.html \
-	 	   article7.html \
-	 	   article8.html \
-	 	   article9.html \
-	 	   article10.html 
-ARTICLEXMLS 	 = article1.xml \
-	 	   article2.xml \
-	 	   article4.xml \
-	 	   article5.xml \
-	 	   article6.xml \
-	 	   article7.xml \
-	 	   article8.xml \
-	 	   article9.xml \
-		   article10.xml
-XMLS		 = $(ARTICLEXMLS) \
-		   versions.xml
+XMLS		 = versions.xml
 ATOM 		 = atom.xml
-XMLGENS 	 = article.xml index.xml
-HTMLS 		 = $(ARTICLES) index.html archive.html sblg.1.html
-CSSS 		 = article.css index.css mandoc.css
-MDS		 = article10.md
+HTMLS 		 = archive.html \
+		   example1.html \
+		   example2.html \
+		   example3.html \
+		   index.html \
+		   sblg.1.html
+CSSS 		 = index.css
 DATADIR	 	 = $(SHAREDIR)/sblg
 EXAMPLEDIR	 = $(DATADIR)/examples
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
@@ -64,7 +48,9 @@ BUILT		 = index1.svg \
 IMAGES		 = template1.jpg \
 		   template2.jpg \
 		   template3.jpg \
-		   template4.jpg
+		   template4.jpg \
+		   template5.jpg \
+		   template6.jpg
 
 all: sblg sblg.a sblg.1
 
@@ -88,7 +74,7 @@ sblg.1: sblg.in.1
 installwww: www
 	mkdir -p $(WWWDIR)
 	mkdir -p $(WWWDIR)/snapshots
-	install -m 0444 Makefile $(BUILT) $(IMAGES) $(ATOM) $(HTMLS) $(XMLS) $(XMLGENS) $(MDS) $(CSSS) $(WWWDIR)
+	install -m 0444 Makefile $(BUILT) $(IMAGES) $(ATOM) $(HTMLS) $(CSSS) $(WWWDIR)
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz.sha512
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots
@@ -140,46 +126,39 @@ sblg.tar.gz.sha512: sblg.tar.gz
 
 $(OBJS): sblg.h extern.h config.h version.h
 
-atom.xml index.html $(ARTICLES): sblg
+atom.xml $(HTMLS): sblg
 
 atom.xml: atom-template.xml
-
-$(ARTICLES): article.xml
 
 version.h: Makefile
 	echo "#define VERSION \"$(VERSION)\"" >$@
 
-index.html: index.xml $(ARTICLES) versions.xml
-	./sblg -o- -t index.xml $(ARTICLES) versions.xml >$@
+index.html: index.xml versions.xml
+	./sblg -o- -t index.xml versions.xml >$@
 
-archive.html: archive.xml $(ARTICLES) versions.xml
-	./sblg -o- -t archive.xml $(ARTICLES) versions.xml >$@
+archive.html: archive.xml versions.xml
+	./sblg -o- -t archive.xml versions.xml >$@
 
-atom.xml: $(ARTICLES) versions.xml
-	./sblg -s date -o $@ -a $(ARTICLES) versions.xml
+example1.html: example1-template.xml example1-article.xml
+	./sblg -t example1-template.xml -o $@ -c example1-article.xml
 
-.xml.html:
-	./sblg -o- -t article.xml -c $< >$@
+example2.html: example2-template.xml example2-article1.xml example2-article2.xml
+	./sblg -t example2-template.xml -o $@ example2-article1.xml example2-article2.xml
 
-$(ARTICLES): versions.xml
-	./sblg -o- -t article.xml -C $< $< versions.xml >$@
+example3.html: example3-template.xml example2-article1.xml example2-article2.xml
+	./sblg -t example3-template.xml -o $@ -C example2-article1.xml example2-article1.xml example2-article2.xml
+
+atom.xml: versions.xml
+	./sblg -s date -o $@ -a versions.xml
 
 .1.1.html:
-	mandoc -Ostyle=mandoc.css -Thtml $< >$@
+	mandoc -Ostyle=https://bsd.lv/css/mandoc.css -Thtml $< >$@
 
 .dot.svg:
 	dot -Tsvg $< | xsltproc --novalid notugly.xsl - >$@
 
-.md.xml:
-	( echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" ; \
-	  echo "<article data-sblg-article=\"1\" data-sblg-tags=\"howto\" " ; \
-	  echo " data-sblg-datetime=\"`lowdown -X date $<`\">"; \
-	  lowdown $< ; \
-	  echo "</article>" ; ) >$@
-
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
-	rm -f article10.xml
 	rm -f version.h
 	( cd examples/simple && make clean )
 	( cd examples/simple-frontpage && make clean )
