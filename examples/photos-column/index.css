@@ -1,0 +1,92 @@
+html, body			{ margin: 0; }
+body				{ font-family: sans-serif;
+				  font-weight: 400;
+				  line-height: 1.4em;
+				  color: #444;
+				  font-size: 11pt; }
+header,
+footer,
+article				{ width: calc(100% - 2rem);
+				  max-width: 60rem;
+				  margin: 0 auto; }
+header				{ padding: 1rem 0 2rem 0;
+			 	  text-align: center; }
+nav ul				{ list-style-type: none;
+				  margin: 0;
+				  padding: 0; }
+nav ul li			{ display: none; }
+nav ul li.shown			{ display: list-item;
+				  margin-bottom: 3rem; }
+img				{ width: 100%;
+				  border: 2px solid rgba(255, 165, 0, 0.3); }
+time				{ opacity: 0.8; }
+#showmore			{ text-align: center; }
+button:disabled			{ opacity: 0.3; }
+button				{ display: inline-block;
+				  color: #555;
+				  text-align: center;
+				  font-size: inherit;
+				  padding: 0 1.8em;
+				  line-height: 2.4em;
+				  text-decoration: none;
+				  white-space: nowrap;
+				  background-color: transparent;
+				  border-radius: 0.2em;
+				  border: 3px solid rgba(255, 0, 0, 0.3);
+				  cursor: pointer;
+				  box-sizing: border-box; }
+button:hover			{ color: #333;
+				  outline: 0; }
+button:active			{ color: #000;
+				  border-color: rgba(255, 0, 0, 0.5);
+				  outline: 0; }
+figure				{ margin: 0; }
+figure > *			{ display: block; }
+figure > a			{ line-height: 0; }
+figcaption .stats		{ border-left: 2px solid rgba(255, 165, 0, 0.3);
+				  border-bottom: 2px solid rgba(255, 165, 0, 0.3);
+				  opacity: 0.6;
+				  border-right: 2px solid rgba(255, 165, 0, 0.3); }
+figcaption .stats > *		{ padding: 0.2rem 0.5rem;
+				  display: inline-block; }
+figcaption .stats > * + *	{ border-left: 2px solid rgba(255, 165, 0, 0.3); }
+figcaption .text		{ padding: 0 0.5rem; }
+h1				{ margin-bottom: 0;
+				  color: #111;
+				  font-size: 150%;
+			 	  font-weight: inherit; }
+h1 + p				{ margin-top: 0.5rem;
+				  color: #888; }
+h2				{ font-size: inherit;
+				  font-weight: inherit;
+				  color: #000;
+				  margin-bottom: 0; }
+figcaption time			{ opacity: 0.6; }
+footer				{ text-align: center;
+				  opacity: 0.7;
+				  padding: 2rem 0; }
+footer span			{ border-left: 2px solid #ccc;
+				  display: inline-block;
+				  margin-left: 0.5rem;
+				  padding-left: 0.5rem; }
+figcaption aside		{ margin-top: 0.5rem; }
+a				{ text-decoration: none;
+				  color: red; }
+
+@media (min-width: 45rem) {
+  figure			{ display: flex; }
+  figure > *			{ flex: 1; }
+  header			{ padding: 2rem 0 3rem 0;
+	  			  text-align: left; }
+  footer			{ padding: 3rem 0; }
+  figcaption .stats		{ border-top: 2px solid rgba(255, 165, 0, 0.3);
+				  border-bottom: 2px solid rgba(255, 165, 0, 0.3);
+				  border-left: 0;
+				  border-right: 2px solid rgba(255, 165, 0, 0.3); }
+  figcaption .text		{ padding: 1rem; }
+  figcaption aside		{ margin-top: 1rem; }
+  nav ul li.shown		{ margin-bottom: 2rem; }
+  figcaption .stats > :first-child
+				{ padding-left: 1rem; }
+  h1				{ font-size: 180%;
+}
