@@ -60,7 +60,7 @@
 				<figure>
 					<time datetime="${sblg-datetime}">${sblg-date}</time>
 					<a href="${sblg-base}.html"><img data-src="${sblg-base}-thumb.jpg" /></a>
-					<figcaption>${sblg-title}</figcaption>
+					<figcaption><a href="${sblg-base}.html">${sblg-title}</a></figcaption>
 				</figure>
 			</nav>
 			<div id="showmore">

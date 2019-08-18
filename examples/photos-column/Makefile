@@ -17,7 +17,7 @@ ARTICLES = photo1.xml \
 	   photo7.xml \
 	   photo8.xml
 SBLG	 = sblg
-PREFIX	 = /usr/local/share/sblg/examples/retro
+PREFIX	 = /usr/local/share/sblg/examples/photos-column
 
 all: index.html atom.xml
 

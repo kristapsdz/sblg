@@ -2,6 +2,8 @@ This is a different form of template.  It's built for a photo gallery,
 directly from the photos themselves.  It uses
 [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/) to create
 article files, extracting pertinent information from the photos.
+You'll also need [ImageMagick](https://imagemagick.org/index.php) for
+creating thumbnails.
 
 To preserve bandwidth, photos on the main blog are shown as an "infinite
 scroll", where only photos in-frame are rendered.

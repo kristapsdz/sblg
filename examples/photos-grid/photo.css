@@ -72,6 +72,8 @@ label:hover			{ color: #222; }
 label:active			{ color: #000; }
 input:checked ~ header label	{ background-color: powderblue;
 				  border: 2px solid #aaa; }
+a				{ color: #003399;
+				  text-decoration: none; }
 
 @media (min-width: 50rem) {
   header > :first-child		{ display: inline-block; }
