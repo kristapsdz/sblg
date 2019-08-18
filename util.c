@@ -34,6 +34,7 @@
 #include <unistd.h>
 
 #include "extern.h"
+#include "version.h"
 
 struct	htab {
 	char		*tabent; /* used in the table entry */
@@ -769,6 +770,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		else if (STRCMP("sblg-img", 8))
 			xmltextxescs(f, (arts[artpos].img == NULL) ?
 				"" : arts[artpos].img, esc);
+		else if (STRCMP("sblg-version", 12))
+			fputs(VERSION, f);
 
 		start = end + 1;
 	}
