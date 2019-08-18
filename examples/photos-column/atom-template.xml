@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>Feed</title>
+	<link href="https://kristaps.bsd.lv/sblg/examples/photos-column" />
+	<link href="https://kristaps.bsd.lv/sblg/examples/photos-column/atom.xml" rel="self" />
+	<id />
+	<updated />
+	<entry data-sblg-forall="1" data-sblg-entry="1" data-sblg-altlink="1"
+	 data-sblg-altlink-fmt="https://kristaps.bsd.lv/sblg/examples/photos-column/${sblg-base}.html" />
+</feed>
