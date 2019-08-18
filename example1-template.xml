@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>${sblg-titletext}</title>
+		<style>
+      		body {width:100%; max-width: 50rem; margin: 0 auto;}
+		</style>
+	</head>
+	<body class="${sblg-get|foo}">
+		<article data-sblg-article="1"></article>
+	</body>
+</html>
