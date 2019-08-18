@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta charset="utf-8" /> 
+		<title>Photo Template Blog</title>
+		<link rel="stylesheet" href="index.css" />
+		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="Atom Feed" />
+		<script>
+		//<![CDATA[
+			"use strict";
+			var index;
+			(function (index) {
+				var i = 0;
+				var augment = 6;
+				function showmore() {
+					var k, j;
+					var root = document.getElementById('recent');
+					var list = root.getElementsByTagName('li');
+					var imgs;
+					for (j = 0; j < augment; j++, i++) {
+						if (i >= list.length) {
+							var e = document.getElementById('btn-showmore');
+							e.disabled = true;
+							return;
+						}
+						imgs = list[i].getElementsByTagName('img');
+						for (k = 0; k < imgs.length; k++) {
+							imgs[k].src = imgs[k].getAttribute('data-src');
+						}
+						list[i].classList.add('shown');
+					}
+				}
+				function init() {
+					var e = document.getElementById('btn-showmore');
+					e.onclick = showmore;
+					e.disabled = false;
+					showmore();
+					augment = 6;
+				}
+				index.init = init;
+			})(index || (index = {}));
+			document.addEventListener('DOMContentLoaded', index.init);
+		//]]>
+		</script>
+	</head>
+	<body>
+		<header>
+			<div>
+				<h1>
+					Photo Template
+				</h1>
+				<p>
+					<q>We have nothing to lose but our chains.</q>
+				</p>
+			</div>
+		</header>
+		<article>
+			<nav data-sblg-nav="1" data-sblg-navcontent="1" id="recent">
+				<figure>
+					<time datetime="${sblg-datetime}">${sblg-date}</time>
+					<a href="${sblg-base}.html"><img data-src="${sblg-base}-thumb.jpg" /></a>
+					<figcaption>${sblg-title}</figcaption>
+				</figure>
+			</nav>
+			<div id="showmore">
+				<button id="btn-showmore">
+					Show More
+				</button>
+			</div>
+		</article>
+		<footer>
+			<div>
+				<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+					CC BY-SA 4.0
+				</a>
+				<span>
+					powered by <a href="https://kristaps.bsd.lv/sblg">sblg</a>
+				</span>
+			</div>
+		</footer>
+	</body>
+</html>
