@@ -1,8 +1,6 @@
 body, html			{ height: 100%;
 				  margin: 0; }
-body				{ font-family: "Alegreya sans", sans-serif; 
-				  font-size: 14pt;
-				  font-weight: 400; }
+body				{ font-family: 'Alegreya Sans', sans-serif; }
 a				{ text-decoration: none; }
 figure				{ text-align: center;
 				  margin: 0; }
@@ -20,11 +18,7 @@ h4				{ font-size: 15pt;
 				  font-variant: small-caps; }
 body > nav			{ background-color: #336699;
 				  padding: 4rem 0 1rem 0; }
-body > nav div			{ width: 66rem;
-				  max-width: 98%;
-				  margin-left: auto;
-				  margin-right: auto;
-				  color: #aaa; }
+body > nav div			{ color: #aaa; }
 h1				{ color: #fff; 
 				  font-weight: inherit;
 				  font-size: 200%; }
@@ -47,14 +41,8 @@ body > nav .nav			{ font-size: 85%; }
 				  opacity: 0.8; }
 .templates img			{ width: 100%;
 				  box-shadow: 0 0 2px #ccc; }
-article				{ color: #333; }
-article > div,
-article > p			{ width: 66rem;
-				  max-width: 98%; 
-				  margin-left: auto;
-				  margin-right: auto; }
-p				{ line-height: 1.3em; }
-article .intro			{ font-size: 125%; 
+section				{ color: #333; }
+section .intro			{ font-size: 125%; 
 				  color: #000;
 				  margin-bottom: 2em;
 				  line-height: 1.4em; }
@@ -67,24 +55,21 @@ body > nav a ~ .explain > span	{ display: none;
 #nav-rss:hover ~ .explain > #explain-rss,
 #nav-github:hover ~ .explain > #explain-github
 				{ display: inline; }
-nav[data-sblg-nav] 		{ background-color: #f8f8f8; 
+#versions	 		{ background-color: #f8f8f8; 
 				  border-top: thin solid #eee;
 				  border-bottom: thin solid #eee; }
-nav[data-sblg-nav] time		{ font-weight: 500;
+#versions time			{ font-weight: 500;
 				  color: #000; }
-nav[data-sblg-nav] ul		{ list-style-type: none; 
-				  padding-left: 0;
-				  padding-right: 0;
-				  width: 66rem;
-				  margin-left: auto;
-				  margin-right: auto;
-				  max-width: 98%; }
-nav[data-sblg-nav] p		{ margin: 0.5rem 0; }
-nav[data-sblg-nav] li + li	{ padding-top: 1rem; }
+#versions ul			{ list-style-type: none; 
+				  padding: 0; }
+#versions p			{ margin: 0.5rem 0; }
+#versions li + li		{ padding-top: 1rem; }
 strong, b			{ font-weight: 500; }
 code, .prettyprint		{ font-size: 75%; }
-pre.prettyprint			{ border: none !important; }
+pre.prettyprint			{ border: none !important;
+				  line-height: 1.4em; }
 .prettyprint a > *		{ color: blue !important; }
+.prettyprint + .button		{ margin-top: -0.5rem; }
 .seeall				{ text-align: center; 
 				  padding-top: 1rem; }
 footer				{ padding: 3rem 0;
@@ -94,11 +79,23 @@ footer				{ padding: 3rem 0;
 footer a			{ color: #000; 
 				  border-bottom: thin transparent; }
 footer a:hover			{ border-bottom: thin solid rgba(0, 0, 0, 0.5); }
+.res				{ font-size: 80%;
+				  display: inline-block;
+				  padding: 0.5rem 1rem; 
+				  margin-top: 0.5rem;
+				  border-radius: 1rem;
+				  font-weight: 500;
+				  color: #fff;
+				  background-color: #336699; }
+.res i.fa			{ font-size: 60%; 
+				  font-weight: 400;
+				  padding-left: 0.5rem;
+				  color: #ddd; }
 
 
 @media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
-div.prettyprint			{ overflow: hidden; }
-body > nav			{ padding: 1rem 0 0.5rem 0; }
-h1				{ font-size: 125%; }
-article .intro			{ font-size: 110%; }
+  div.prettyprint		{ overflow: hidden; }
+  body > nav			{ padding: 1rem 0 0.5rem 0; }
+  h1				{ font-size: 125%; }
+  article .intro		{ font-size: 110%; }
 }
