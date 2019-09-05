@@ -55,7 +55,7 @@ IMAGES		 = template1.jpg \
 all: sblg sblg.a sblg.1
 
 sblg: $(OBJS)
-	$(CC) -o $@ $(OBJS) -lexpat
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) -lexpat
 
 sblg.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
