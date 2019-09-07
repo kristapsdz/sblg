@@ -177,6 +177,22 @@ atomprint(const struct atom *arg)
 	int		      idsz;
 	const struct article *src;
 
+	/*
+	 * If we have data-sblg-atomcontent, we do the same as in
+	 * navcontent and replace the contents while looking up tags.
+	 * Don't escape this in any way: we can use (for example) XML
+	 * namespaces to control for having HTML5 content.
+	 */
+
+	if ((arg->entryfl & ENTRY_REPL)) {
+		xmltextx(arg->f, arg->entry, "atom.xml",
+			arg->sargs, arg->sposz, arg->spos,
+			arg->spos, arg->sposz, XMLESC_NONE);
+		return;
+	}
+
+	/* Create an atom <entry> from the data we have. */
+
 	src = &arg->sargs[arg->spos];
 	tm = gmtime(&src->time);
 	strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
@@ -217,11 +233,7 @@ atomprint(const struct atom *arg)
 	 */
 
 	fputs( "\t\t<content type=\"html\">", arg->f);
-	if ((arg->entryfl & ENTRY_REPL)) {
-		xmltextx(arg->f, arg->entry, "atom.xml", 
-			arg->sargs, arg->sposz, arg->spos, 
-			arg->spos, arg->sposz, XMLESC_HTML);
-	} else if ((arg->entryfl & ENTRY_CONTENT)) {
+	if ((arg->entryfl & ENTRY_CONTENT)) {
 		xmltextx(arg->f, src->article, "atom.xml", 
 			arg->sargs, arg->sposz, arg->spos, 
 			arg->spos, arg->sposz, XMLESC_HTML);
