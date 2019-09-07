@@ -924,4 +924,27 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.5.6</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-09-07">2019-09-07</time>
+		</header>
+		<aside>
+			<p>
+				Add <code>data-sblg-author</code> attribute that can override the
+				set author.  This is like the <code>data-sblg-img</code> and so
+				forth.
+			</p>
+			<p>
+				Add <code>data-sblg-atomcontent</code> to mirror
+				<code>data-sblg-navcontent</code> in that Atom entry contents are
+				retained with symbols replaced.
+			</p>
+			<p>
+				Atom contents are now typed as XHTML and wrapped in an
+				<code>xmlns</code> attribute accordingly.
+			</p>
+		</aside>
+	</article>
 </articles>
