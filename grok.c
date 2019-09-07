@@ -43,7 +43,7 @@ struct	parse {
 	size_t		  gstack; /* global "article" stack */
 #define	PARSE_ASIDE	  1 /* we've seen an aside */
 #define	PARSE_TIME	  2 /* we've seen a time */
-#define	PARSE_ADDR	  4 /* we've seen an address */
+#define	PARSE_ADDR	  4 /* we've seen an address (author) */
 #define	PARSE_TITLE	  8 /* we've seen a title */
 #define	PARSE_IMG	  16 /* we've seen an image */
 	unsigned int	  flags;
@@ -256,6 +256,16 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 				arg->article->asidesz =
 				strlen(arg->article->asidetext);
 			arg->flags |= PARSE_ASIDE;
+			break;
+		case SBLG_ATTR_AUTHOR:
+			free(arg->article->author);
+			free(arg->article->authortext);
+			arg->article->author = xstrdup(attp[1]);
+			arg->article->authortext = xstrdup(attp[1]);
+			arg->article->authortextsz = 
+				arg->article->authorsz =
+				strlen(arg->article->author);
+			arg->flags |= PARSE_ADDR;
 			break;
 		case SBLG_ATTR_IMG:
 			free(arg->article->img);
