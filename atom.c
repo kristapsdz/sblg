@@ -196,7 +196,7 @@ atomprint(const struct atom *arg)
 	src = &arg->sargs[arg->spos];
 	tm = gmtime(&src->time);
 	strftime(buf, sizeof(buf), "%Y-%m-%dT%TZ", tm);
-	idsz = (arg->idsz && '/' == arg->id[arg->idsz] - 1) ?
+	idsz = (arg->idsz && '/' == arg->id[arg->idsz - 1]) ?
 		arg->idsz - 1 : arg->idsz;
 
 	fprintf(arg->f, "\t\t<id>%.*s/%s#%s</id>\n", 
