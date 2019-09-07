@@ -95,14 +95,14 @@ string2tm(const char *cp, struct tm *tm, int *datetime)
 		cp++;
 	sz = strlen(cp);
 	memset(tm, 0, sizeof(struct tm));
-	if (10 == sz) {
+	if (sz == 10) {
 		erp = strptime(cp, "%Y-%m-%d", tm);
-		if (NULL == erp || '\0' != *erp)
+		if (erp == NULL|| *erp != '\0')
 			return NULL;
 		*datetime = 0;
-	} else if (20 == sz) {
+	} else if (sz == 20) {
 		erp = strptime(cp, "%Y-%m-%dT%TZ", tm);
-		if (NULL == erp || '\0' != *erp)
+		if (erp == NULL || *erp != '\0')
 			return NULL;
 		*datetime = 1;
 	} else
