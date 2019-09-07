@@ -643,8 +643,16 @@ Accepts
 .Sx Tag Symbols ,
 most commonly being
 .Li ${sblg-base} .
-Deprecates
-.Li data-sblg-striplink .
+.It Li data-sblg-atomcontent=boolean
+If
+.Li <entry data-sblg-entry="1">
+contains this set to true, the contents are printed directly and the
+.Sx Tag Symbols
+are processed.
+This overrides
+.Li data-sblg-altlink
+and
+.Li data-sblg-content .
 .It Li data-sblg-content=boolean
 If
 .Li <entry data-sblg-entry="1">
@@ -669,11 +677,11 @@ articles.
 Any
 .Li <entry data-sblg-entry="1">
 following this are discarded.
-.It Li data-sblg-striplink=boolean
-Deprecated.
 .El
 .Pp
-Entries are filled in with a
+If not using
+.Li data-sblg-atomcontent ,
+entries are filled in with a
 .Li <title> ,
 .Li <id> ,
 .Li <author> ,

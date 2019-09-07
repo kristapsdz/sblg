@@ -128,7 +128,7 @@ struct	atom {
 	size_t		 sposz; /* article length */
 	size_t		 stack; /* position in discard stack */
 	int		 entryfl; /* flags for current entry */
-#define ENTRY_STRIP	 0x01 /* FIXME: deprecate */
+#define ENTRY_STRIP	 0x01 /* TODO: deprecate */
 #define ENTRY_ALT	 0x02 /* use rel="alternate" */
 #define ENTRY_CONTENT	 0x04 /* use full article content */
 #define ENTRY_FORALL	 0x08 /* use same entry for all */
