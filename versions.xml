@@ -947,4 +947,17 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.5.7</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-09-29">2019-09-29</time>
+		</header>
+		<aside>
+			<p>
+				Add <code>${sblg-setcount}</code> for printing the number of
+				remaining articles in a tagged navigation series.
+			</p>
+		</aside>
+	</article>
 </articles>
