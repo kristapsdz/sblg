@@ -51,6 +51,7 @@ IMAGES		 = template1.jpg \
 		   template4.jpg \
 		   template5.jpg \
 		   template6.jpg
+CFLAGS		+= -O0
 
 all: sblg sblg.a sblg.1
 

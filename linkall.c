@@ -75,8 +75,9 @@ tmpl_end(void *dat, const XML_Char *s)
 
 	if (arg->single != -1) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
-			arg->sargs, arg->sposz, arg->single, 
-			arg->single, arg->sposz, XMLESC_NONE);
+			arg->sargs, arg->sposz, arg->sposz, 
+			arg->single, arg->single, arg->sposz, 
+			XMLESC_NONE);
 		free(arg->buf);
 		arg->buf = NULL;
 		arg->bufsz = 0;
@@ -137,7 +138,7 @@ static void
 nav_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
-	size_t		 i, k, count;
+	size_t		 i, k, count, setsz;
 	char		 buf[32]; 
 	int		 rc;
 	struct article	*sv = NULL;
@@ -180,13 +181,14 @@ nav_end(void *dat, const XML_Char *s)
 
 	/* Count total number of remaining articles. */
 
-	for (i = k, count = 0; i < arg->sposz; i++) {
+	for (i = k, setsz = count = 0; i < arg->sposz; i++) {
 		rc = tagfind(arg->navtags, arg->navtagsz, 
 			arg->sargs[i].tagmap, arg->sargs[i].tagmapsz);
 		if (rc == 0)
 			continue;
-		if (++count >= arg->navlen)
-			break;
+		if (count < arg->navlen)
+			count++;
+		setsz++;
 	}
 
 	/*
@@ -204,7 +206,7 @@ nav_end(void *dat, const XML_Char *s)
 
 		if (arg->navxml) {
 			xmltextx(arg->f, arg->nav, arg->dst,
-				arg->sargs, arg->sposz, k, i, 
+				arg->sargs, setsz, arg->sposz, k, i, 
 				count, XMLESC_NONE);
 		} else if (!arg->navuse || arg->navsz == 0) {
 			(void)strftime(buf, sizeof(buf), "%Y-%m-%d", 
@@ -221,7 +223,7 @@ nav_end(void *dat, const XML_Char *s)
 		} else {
 			xmlopen(arg->f, "li", NULL);
 			xmltextx(arg->f, arg->nav, arg->dst, 
-				arg->sargs, arg->sposz, k, i, 
+				arg->sargs, setsz, arg->sposz, k, i, 
 				count, XMLESC_NONE);
 			xmlclose(arg->f, "li");
 		}
@@ -276,8 +278,9 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	if (arg->single != -1) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
-			arg->sargs, arg->sposz, arg->single, 
-			arg->single, arg->sposz, XMLESC_NONE);
+			arg->sargs, arg->sposz, arg->sposz, 
+			arg->single, arg->single, arg->sposz, 
+			XMLESC_NONE);
 		free(arg->buf);
 		arg->buf = NULL;
 		arg->bufsz = 0;
@@ -428,12 +431,13 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 
 	if (arg->single != -1)
 		xmltextx(arg->f, arg->sargs[arg->spos].article, 
-			arg->dst, arg->sargs, arg->sposz, arg->spos, 
-			arg->single, arg->sposz, XMLESC_NONE);
+			arg->dst, arg->sargs, arg->sposz, 
+			arg->sposz, arg->spos, arg->single, 
+			arg->sposz, XMLESC_NONE);
 	else
 		xmltextx(arg->f, arg->sargs[arg->spos].article, 
-			arg->dst, arg->sargs, arg->sposz, arg->spos, 
-			0, 1, XMLESC_NONE);
+			arg->dst, arg->sargs, arg->sposz, arg->sposz,
+			arg->spos, 0, 1, XMLESC_NONE);
 	arg->spos++;
 
 	for (attp = atts; *attp != NULL; attp += 2) 

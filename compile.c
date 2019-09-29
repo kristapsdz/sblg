@@ -56,7 +56,7 @@ template_end(void *dat, const XML_Char *s)
 	struct pargs	*arg = dat;
 
 	xmltextx(arg->f, arg->buf, arg->dst, 
-		arg->article, 1, 0, 0, 1, XMLESC_NONE);
+		arg->article, 1, 1, 0, 0, 1, XMLESC_NONE);
 	free(arg->buf);
 	arg->buf = NULL;
 	arg->bufsz = 0;
@@ -103,7 +103,7 @@ template_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	assert(arg->stack == 0);
 
 	xmltextx(arg->f, arg->buf, arg->dst, 
-		arg->article, 1, 0, 0, 1, XMLESC_NONE);
+		arg->article, 1, 1, 0, 0, 1, XMLESC_NONE);
 
 	free(arg->buf);
 	arg->buf = NULL;
@@ -149,7 +149,7 @@ template_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	xmltextx(arg->f, arg->article->article, arg->dst,
-		arg->article, 1, 0, 0, 1, XMLESC_NONE);
+		arg->article, 1, 1, 0, 0, 1, XMLESC_NONE);
 }
 
 /*
@@ -233,7 +233,7 @@ compile(XML_Parser p, const char *templ,
 	} 
 
 	xmltextx(arg.f, arg.buf, arg.dst, 
-		arg.article, 1, 0, 0, 1, XMLESC_NONE);
+		arg.article, 1, 1, 0, 0, 1, XMLESC_NONE);
 	fputc('\n', f);
 	rc = 1;
 out:

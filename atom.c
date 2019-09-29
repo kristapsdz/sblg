@@ -186,8 +186,8 @@ atomprint(const struct atom *arg)
 
 	if ((arg->entryfl & ENTRY_REPL)) {
 		xmltextx(arg->f, arg->entry, "atom.xml",
-			arg->sargs, arg->sposz, arg->spos,
-			arg->spos, arg->sposz, XMLESC_NONE);
+			arg->sargs, arg->sposz, arg->sposz, 
+			arg->spos, arg->spos, arg->sposz, XMLESC_NONE);
 		return;
 	}
 
@@ -211,8 +211,9 @@ atomprint(const struct atom *arg)
 			fputs("\t\t<link rel=\"alternate\" type="
 				"\"text/html\" " "href=\"", arg->f);
 			xmltextx(arg->f, arg->entryalt, "atom.xml", 
-				arg->sargs, arg->sposz, arg->spos, 
-				arg->spos, arg->sposz, XMLESC_ATTR);
+				arg->sargs, arg->sposz, arg->sposz, 
+				arg->spos, arg->spos, arg->sposz, 
+				XMLESC_ATTR);
 			fputs("\" />\n", arg->f);
 		} else if (!(arg->entryfl & ENTRY_STRIP)) {
 			fprintf(arg->f, "\t\t<link rel=\"alternate\" "
@@ -236,11 +237,11 @@ atomprint(const struct atom *arg)
 	      "\t\t\t<div xmlns=\"http://www.w3.org/1999/xhtml\">\n", arg->f);
 	if ((arg->entryfl & ENTRY_CONTENT)) {
 		xmltextx(arg->f, src->article, "atom.xml", 
-			arg->sargs, arg->sposz, arg->spos, 
+			arg->sargs, arg->sposz, arg->sposz, arg->spos, 
 			arg->spos, arg->sposz, XMLESC_NONE);
 	} else {
 		xmltextx(arg->f, src->aside, "atom.xml",
-			arg->sargs, arg->sposz, arg->spos, 
+			arg->sargs, arg->sposz, arg->sposz, arg->spos, 
 			arg->spos, arg->sposz, XMLESC_NONE);
 	}
 	fputs("</div>\n"

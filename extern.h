@@ -54,8 +54,8 @@ void	xmlopen(FILE *, const XML_Char *, ...);
 void	xmlopens(FILE *, const XML_Char *, const XML_Char **);
 void	xmlopensx(FILE *, const XML_Char *, const XML_Char **, 
 		const char *, const struct article *, size_t, size_t);
-void	xmltextx(FILE *f, const XML_Char *s, 
-		const char *, const struct article *, 
+void	xmltextx(FILE *f, const XML_Char *s, const char *, 
+		const struct article *, size_t,
 		size_t, size_t, size_t, size_t, enum xmlesc);
 
 void	hashtag(char ***, size_t *, const char *,

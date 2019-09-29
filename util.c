@@ -586,6 +586,9 @@ xmltextxtag(FILE *f, const struct article *art,
  * ${sblg-xxxxx} tags in the process.
  * Uses the array of articles "arts" total length "artsz", currently at
  * position "artpos".
+ * The "setsz" is set to the number of elements in a tagged set, limited
+ * to being called from a navigation having navtags.
+ * Otherwise, it's an alias for "artsz".
  * "Realpos" is the position in the shown articles (some may not be
  * shown due to tags), with total shown amount "realsz".
  * The "url" is the current file being written (naming "f").
@@ -593,8 +596,8 @@ xmltextxtag(FILE *f, const struct article *art,
  */
 void
 xmltextx(FILE *f, const XML_Char *s, const char *url, 
-	const struct article *arts, size_t artsz, size_t artpos, 
-	size_t realpos, size_t realsz, enum xmlesc esc)
+	const struct article *arts, size_t setsz, size_t artsz, 
+	size_t artpos, size_t realpos, size_t realsz, enum xmlesc esc)
 {
 	const char	*cp, *start, *end, *arg, *bufp;
 	char		 buf[32];
@@ -678,6 +681,9 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 		} else if (STRCMP("sblg-count", 10)) {
 			snprintf(buf, sizeof(buf), "%zu", realsz);
 			bufp = buf;
+		} else if (STRCMP("sblg-setcount", 13)) {
+			snprintf(buf, sizeof(buf), "%zu", setsz);
+			bufp = buf;
 		} else if (STRCMP("sblg-pos-frac", 13)) {
 			snprintf(buf, sizeof(buf), "%.3f", 
 				(realpos + 1) / (float)realsz);
@@ -758,6 +764,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-count", 10))
 			xmltextxescs(f, bufp, esc);
+		else if (STRCMP("sblg-setcount", 13))
+			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-pos-frac", 13))
 			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-abspos", 11))
@@ -800,7 +808,7 @@ xmlopensx(FILE *f, const XML_Char *s,
 		fputs(atts[0], f);
 		fputs("=\"", f);
 		xmltextx(f, atts[1], url, art, artsz, 
-			artpos, artpos, artsz, XMLESC_ATTR);
+			artsz, artpos, artsz, artsz, XMLESC_ATTR);
 		fputc('"', f);
 	}
 	if (htmlvoid(s))

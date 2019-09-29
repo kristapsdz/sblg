@@ -772,11 +772,13 @@ may be omitted.
 .Bl -tag -width -Ds
 .It Li ${sblg-abscount}
 The total number of articles.
-This is only valid in a
-.Li <nav data-sblg-nav="1">
-context, otherwise it always prints 1.
+This is only valid in
+.Li <nav data-sblg-nav="1"> ,
+otherwise it always prints 1.
 See also
-.Li ${sblg-count} .
+.Li ${sblg-count}
+and
+.Li ${sblg-setcount} .
 .It Li ${sblg-abspos}
 The position (from 1) of the article's position in the list of all
 articles.
@@ -817,11 +819,16 @@ language was specified on the article,
 becomes
 .Pa bar .
 .It Li ${sblg-count}
-The total number of articles that will be shown.
+The total number of articles that will be shown, i.e., taking into
+consideration the navigation length and offset.
 In standalone mode, this is always 1.
-In a blog
-.Li <nav>
-mode, it's the total number within the navigation.
+In
+.Li <nav data-sblg-nav="1"> ,
+it's the total number within the navigation.
+See also
+.Li ${sblg-abscount}
+and
+.Li ${sblg-setcount} .
 .It Li ${sblg-date}
 The publication date as YYYY-MM-DD (UTC).
 .It Li ${sblg-datetime}
@@ -930,6 +937,14 @@ is printed.
 This is useful in
 .Li class
 attributes to test whether a given key has been specified.
+.It Li ${sblg-setcount}
+In
+.Li <nav data-sblg-nav="1"> ,
+this is the number of articles matching any requested tags.
+See also
+.Li ${sblg-count}
+and
+.Li ${sblg-abscount} .
 .It Li ${sblg-source}
 The source file when passed for parsing.
 .It Li ${sblg-tags[|tagspec]}
