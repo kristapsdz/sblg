@@ -960,4 +960,22 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.5.8</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2019-10-28">2019-10-28</time>
+		</header>
+		<aside>
+			<p>
+				Add <code>data-sblg-const-img</code> variants of the existing
+				<code>data-sblg-img</code> and friends.
+				This behaves like implicitly grabbing from the first
+				<code>&lt;img&gt;</code> in that only the first invocation sets the
+				value.
+				The existing <code>data-sblg-img</code> attributes, on the other
+				hand, will overwrite previous invocations.
+			</p>
+		</aside>
+	</article>
 </articles>
