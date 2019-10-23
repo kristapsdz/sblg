@@ -247,6 +247,10 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 
 	for (attp = atts; *attp != NULL; attp += 2)
 		switch (sblg_lookup(*attp)) {
+		case SBLG_ATTR_CONST_ASIDE:
+			if ((arg->flags & PARSE_ASIDE))
+				break;
+			/* FALLTHROUGH */
 		case SBLG_ATTR_ASIDE:
 			free(arg->article->aside);
 			free(arg->article->asidetext);
@@ -257,6 +261,10 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 				strlen(arg->article->asidetext);
 			arg->flags |= PARSE_ASIDE;
 			break;
+		case SBLG_ATTR_CONST_AUTHOR:
+			if ((arg->flags & PARSE_ADDR))
+				break;
+			/* FALLTHROUGH */
 		case SBLG_ATTR_AUTHOR:
 			free(arg->article->author);
 			free(arg->article->authortext);
@@ -267,6 +275,10 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 				strlen(arg->article->author);
 			arg->flags |= PARSE_ADDR;
 			break;
+		case SBLG_ATTR_CONST_IMG:
+			if ((arg->flags & PARSE_IMG))
+				break;
+			/* FALLTHROUGH */
 		case SBLG_ATTR_IMG:
 			free(arg->article->img);
 			arg->article->img = xstrdup(attp[1]);
@@ -277,6 +289,10 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 				&arg->article->tagmapsz, attp[1],
 				NULL, 0, 0);
 			break;
+		case SBLG_ATTR_CONST_TITLE:
+			if ((arg->flags & PARSE_TITLE))
+				break;
+			/* FALLTHROUGH */
 		case SBLG_ATTR_TITLE:
 			free(arg->article->title);
 			free(arg->article->titletext);
@@ -287,6 +303,10 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 				strlen(arg->article->titletext);
 			arg->flags |= PARSE_TITLE;
 			break;
+		case SBLG_ATTR_CONST_DATETIME:
+			if ((arg->flags & PARSE_TIME))
+				break;
+			/* FALLTHROUGH */
 		case SBLG_ATTR_DATETIME:
 			if (string2tm(attp[1], &tm, 
 			    &arg->article->isdatetime) == NULL) {

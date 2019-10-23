@@ -296,6 +296,17 @@ the first
 is associated as the article's image.
 .El
 .Pp
+These are all set once: subsequent invocations will not override prior
+setting.
+See
+.Li data-sblg-aside ,
+.Li data-sblg-author ,
+.Li data-sblg-datetime ,
+.Li data-sblg-img ,
+and
+.Li data-sblg-title
+for explicitly setting or overriding these values.
+.Pp
 If unspecified, the default article title text (and mark-up) is
 .Qq Untitled article ,
 the default author text (and mark-up) is the
@@ -315,22 +326,32 @@ Sets the aside material as otherwise would be set from the first
 .Li <aside>
 element.
 It overrides the previously set aside.
+The alternative
+.Li data-sblg-const-aside
+only sets the aside if it has not yet been set.
 .It Li data-sblg-author=url
 Sets the author as otherwise would be set from the first
 .Li <address>
 element.
 It overrides the previously set author.
+The alternative
+.Li data-sblg-const-author
+only sets the author if it has not yet been set.
 .It Li data-sblg-datetime=datetime
 Overrides the first
 .Li <time>
 element.
 This must be YYYY-MM-DD or YYYY-MM-DDTH:MM:SSZ.
 It overrides the previously set date.
+The alternative
+.Li data-sblg-const-datetime
+only sets the date if it has not yet been set.
 .It Li data-sblg-img=url
-Overrides the first
-.Li <img>
-link to be the image associated with the article.
-It overrides the previously set image.
+Set the image associated with the article.
+It overrides any previously set image.
+The alternative
+.Li data-sblg-const-img
+only sets the image if it has not yet been set.
 .It Li data-sblg-lang=string
 May only be set on the
 .Li <article>
@@ -383,6 +404,9 @@ Sets the title as otherwise would be set in a
 .Li <hN>
 element.
 It overrides the previously set title.
+The alternative
+.Li data-sblg-const-title
+only sets the title if it has not yet been set.
 .El
 .Ss Standalone Template
 The standalone template file must be a well-formed XML file where the
