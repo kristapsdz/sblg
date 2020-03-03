@@ -51,11 +51,12 @@ IMAGES		 = template1.jpg \
 		   template4.jpg \
 		   template5.jpg \
 		   template6.jpg
+CFLAGS		+= `pkg-config --cflags expat`
 
 all: sblg sblg.a sblg.1
 
 sblg: $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS) -lexpat
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) `pkg-config --libs expat`
 
 sblg.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
