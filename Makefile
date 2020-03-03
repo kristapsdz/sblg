@@ -124,6 +124,21 @@ sblg.tar.gz:
 sblg.tar.gz.sha512: sblg.tar.gz
 	sha512 sblg.tar.gz >$@
 
+distcheck: sblg.tar.gz.sha512
+	mandoc -Tlint -Werror sblg.1
+	newest=`grep "<h1>" versions.xml | tail -n1 | sed 's![ 	]*!!g'` ; \
+	       [ "$$newest" == "<h1>$(VERSION)</h1>" ] || \
+		{ echo "Version $(VERSION) not newest in versions.xml" 1>&2 ; exit 1 ; }
+	rm -rf .distcheck
+	[ "`sha512 sblg.tar.gz`" = "`cat sblg.tar.gz.sha512`" ] || \
+ 		{ echo "Checksum does not match." 1>&2 ; exit 1 ; }
+	mkdir -p .distcheck
+	tar -zvxpf sblg.tar.gz -C .distcheck
+	( cd .distcheck/sblg-$(VERSION) && ./configure PREFIX=prefix )
+	( cd .distcheck/sblg-$(VERSION) && make )
+	( cd .distcheck/sblg-$(VERSION) && make install )
+	rm -rf .distcheck
+
 $(OBJS): sblg.h extern.h config.h version.h
 
 atom.xml $(HTMLS): sblg
@@ -166,6 +181,9 @@ clean:
 	( cd examples/brutalist && make clean )
 	( cd examples/photos-column && make clean )
 	( cd examples/photos-grid && make clean )
+
+regress:
+	# Do nothing.
 
 distclean: clean
 	rm -f Makefile.configure config.h config.log
