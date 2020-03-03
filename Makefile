@@ -62,12 +62,12 @@ sblg.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
 
 www: $(HTMLS) $(BUILT) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512 sblg
-	( cd examples/simple && make SBLG=../../sblg )
-	( cd examples/simple-frontpage && make SBLG=../../sblg )
-	( cd examples/retro && make SBLG=../../sblg )
-	( cd examples/brutalist && make SBLG=../../sblg )
-	( cd examples/photos-column && make SBLG=../../sblg )
-	( cd examples/photos-grid && make SBLG=../../sblg )
+	( cd examples/simple && $(MAKE) SBLG=../../sblg )
+	( cd examples/simple-frontpage && $(MAKE) SBLG=../../sblg )
+	( cd examples/retro && $(MAKE) SBLG=../../sblg )
+	( cd examples/brutalist && $(MAKE) SBLG=../../sblg )
+	( cd examples/photos-column && $(MAKE) SBLG=../../sblg )
+	( cd examples/photos-grid && $(MAKE) SBLG=../../sblg )
 
 sblg.1: sblg.in.1
 	sed "s!@SHAREDIR@!$(DATADIR)!g" sblg.in.1 >$@
@@ -80,12 +80,12 @@ installwww: www
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz.sha512
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots
-	( cd examples/simple && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/simple )
-	( cd examples/simple-frontpage && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/simple-frontpage )
-	( cd examples/retro && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/retro )
-	( cd examples/brutalist && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/brutalist )
-	( cd examples/photos-column && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/photos-column )
-	( cd examples/photos-grid && make installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/photos-grid )
+	( cd examples/simple && $(MAKE) installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/simple )
+	( cd examples/simple-frontpage && $(MAKE) installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/simple-frontpage )
+	( cd examples/retro && $(MAKE) installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/retro )
+	( cd examples/brutalist && $(MAKE) installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/brutalist )
+	( cd examples/photos-column && $(MAKE) installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/photos-column )
+	( cd examples/photos-grid && $(MAKE) installwww SBLG=../../sblg WWWDIR=$(WWWDIR)/examples/photos-grid )
 
 install: all
 	mkdir -p $(DESTDIR)$(BINDIR)
@@ -97,12 +97,12 @@ install: all
 	$(INSTALL_PROGRAM) sblg $(DESTDIR)$(BINDIR)
 	$(INSTALL_MAN) sblg.1 $(DESTDIR)$(MANDIR)/man1
 	$(INSTALL_DATA) schema.json $(DESTDIR)$(DATADIR)
-	( cd examples/simple && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/simple )
-	( cd examples/simple-frontpage && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/simple-frontpage )
-	( cd examples/retro && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/retro )
-	( cd examples/brutalist && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/brutalist )
-	( cd examples/photos-column && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/photos-column )
-	( cd examples/photos-grid && make install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/photos-grid )
+	( cd examples/simple && $(MAKE) install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/simple )
+	( cd examples/simple-frontpage && $(MAKE) install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/simple-frontpage )
+	( cd examples/retro && $(MAKE) install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/retro )
+	( cd examples/brutalist && $(MAKE) install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/brutalist )
+	( cd examples/photos-column && $(MAKE) install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/photos-column )
+	( cd examples/photos-grid && $(MAKE) install PREFIX=$(DESTDIR)$(EXAMPLEDIR)/photos-grid )
 
 sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/
@@ -113,31 +113,31 @@ sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/examples/photos-column
 	mkdir -p .dist/sblg-$(VERSION)/examples/photos-grid
 	mkdir -p .dist/sblg-$(VERSION)/examples/simple-frontpage
-	( cd examples/simple && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/simple )
-	( cd examples/simple-frontpage && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/simple-frontpage )
-	( cd examples/retro && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/retro )
-	( cd examples/brutalist && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/brutalist )
-	( cd examples/photos-column && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/photos-column )
-	( cd examples/photos-grid && make install PREFIX=../../.dist/sblg-$(VERSION)/examples/photos-grid )
+	( cd examples/simple && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/simple )
+	( cd examples/simple-frontpage && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/simple-frontpage )
+	( cd examples/retro && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/retro )
+	( cd examples/brutalist && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/brutalist )
+	( cd examples/photos-column && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/photos-column )
+	( cd examples/photos-grid && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/photos-grid )
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
 sblg.tar.gz.sha512: sblg.tar.gz
-	sha512 sblg.tar.gz >$@
+	openssl dgst -sha512 -hex sblg.tar.gz >$@
 
 distcheck: sblg.tar.gz.sha512
 	mandoc -Tlint -Werror sblg.in.1
 	newest=`grep "<h1>" versions.xml | tail -n1 | sed 's![ 	]*!!g'` ; \
-	       [ "$$newest" == "<h1>$(VERSION)</h1>" ] || \
+	       [ "$$newest" = "<h1>$(VERSION)</h1>" ] || \
 		{ echo "Version $(VERSION) not newest in versions.xml" 1>&2 ; exit 1 ; }
 	rm -rf .distcheck
-	[ "`sha512 sblg.tar.gz`" = "`cat sblg.tar.gz.sha512`" ] || \
+	[ "`openssl dgst -sha512 -hex sblg.tar.gz`" = "`cat sblg.tar.gz.sha512`" ] || \
  		{ echo "Checksum does not match." 1>&2 ; exit 1 ; }
 	mkdir -p .distcheck
 	tar -zvxpf sblg.tar.gz -C .distcheck
 	( cd .distcheck/sblg-$(VERSION) && ./configure PREFIX=prefix )
-	( cd .distcheck/sblg-$(VERSION) && make )
-	( cd .distcheck/sblg-$(VERSION) && make install )
+	( cd .distcheck/sblg-$(VERSION) && $(MAKE) )
+	( cd .distcheck/sblg-$(VERSION) && $(MAKE) install )
 	rm -rf .distcheck
 
 $(OBJS): sblg.h extern.h config.h version.h
@@ -176,12 +176,12 @@ atom.xml: versions.xml
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
 	rm -f version.h
-	( cd examples/simple && make clean )
-	( cd examples/simple-frontpage && make clean )
-	( cd examples/retro && make clean )
-	( cd examples/brutalist && make clean )
-	( cd examples/photos-column && make clean )
-	( cd examples/photos-grid && make clean )
+	( cd examples/simple && $(MAKE) clean )
+	( cd examples/simple-frontpage && $(MAKE) clean )
+	( cd examples/retro && $(MAKE) clean )
+	( cd examples/brutalist && $(MAKE) clean )
+	( cd examples/photos-column && $(MAKE) clean )
+	( cd examples/photos-grid && $(MAKE) clean )
 
 regress:
 	# Do nothing.
