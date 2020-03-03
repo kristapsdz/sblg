@@ -23,11 +23,11 @@ all: index.html atom.xml
 
 installwww: all
 	mkdir -p $(WWWDIR)
-	install -m 0444 atom.xml *.{html,css} photo[0-9*].jpg photo[0-9*]-thumb.jpg $(WWWDIR)
+	install -m 0444 atom.xml *.html *.css photo[0-9*].jpg photo[0-9*]-thumb.jpg $(WWWDIR)
 
 install:
 	mkdir -p $(PREFIX)
-	install -m 0444 Makefile atom-template.xml index.xml photo.xml *.{md,css} photo[1-8].jpg $(PREFIX)
+	install -m 0444 Makefile atom-template.xml index.xml photo.xml *.md *.css photo[1-8].jpg $(PREFIX)
 
 index.html: $(ARTICLES) index.xml photo.xml
 	sblg -o $@ -t index.xml $(ARTICLES)

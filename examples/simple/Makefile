@@ -17,11 +17,11 @@ all: index.html atom.xml
 
 installwww: all
 	mkdir -p $(WWWDIR)
-	install -m 0444 atom.xml *.{html,css,jpg} $(WWWDIR)
+	install -m 0444 atom.xml *.html *.css *.jpg $(WWWDIR)
 
 install:
 	mkdir -p $(PREFIX)
-	install -m 0444 Makefile atom-template.xml article*.xml template.xml *.{css,jpg,md} $(PREFIX)
+	install -m 0444 Makefile atom-template.xml article*.xml template.xml *.css *.jpg *.md $(PREFIX)
 
 index.html: $(ARTICLES) template.xml
 	$(SBLG) -s cmdline -t template.xml -L $(ARTICLES)
