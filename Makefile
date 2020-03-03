@@ -126,7 +126,7 @@ sblg.tar.gz.sha512: sblg.tar.gz
 	sha512 sblg.tar.gz >$@
 
 distcheck: sblg.tar.gz.sha512
-	mandoc -Tlint -Werror sblg.1
+	mandoc -Tlint -Werror sblg.in.1
 	newest=`grep "<h1>" versions.xml | tail -n1 | sed 's![ 	]*!!g'` ; \
 	       [ "$$newest" == "<h1>$(VERSION)</h1>" ] || \
 		{ echo "Version $(VERSION) not newest in versions.xml" 1>&2 ; exit 1 ; }
