@@ -51,12 +51,15 @@ IMAGES		 = template1.jpg \
 		   template4.jpg \
 		   template5.jpg \
 		   template6.jpg
-CFLAGS		+= `pkg-config --cflags expat`
+CFLAGS_EXPAT	!= pkg-config --cflags expat 2>/dev/null || echo ""
+LIBS_EXPAT	!= pkg-config --libs expat 2>/dev/null || echo "-lexpat"
+CFLAGS		+= $(CFLAGS_EXPAT)
+LDADD		+= $(LIBS_EXPAT)
 
 all: sblg sblg.a sblg.1
 
 sblg: $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS) `pkg-config --libs expat`
+	$(CC) -o $@ $(OBJS) $(LDFLAGS) $(LDADD)
 
 sblg.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
@@ -137,6 +140,7 @@ distcheck: sblg.tar.gz.sha512
 	tar -zvxpf sblg.tar.gz -C .distcheck
 	( cd .distcheck/sblg-$(VERSION) && ./configure PREFIX=prefix )
 	( cd .distcheck/sblg-$(VERSION) && $(MAKE) )
+	( cd .distcheck/sblg-$(VERSION) && $(MAKE) regress )
 	( cd .distcheck/sblg-$(VERSION) && $(MAKE) install )
 	rm -rf .distcheck
 
