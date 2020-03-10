@@ -25,10 +25,13 @@ h1				{ color: #fff;
 h1 span				{ color: #aaa; }
 body > nav div a		{ color: #eee; }
 body > nav a			{ color: #ccc; 
-				  border-bottom: 2px transparent; }
+				  border-bottom: 2px solid transparent; }
 body > nav a:hover		{ color: #eee; 
 				  border-bottom: 2px solid rgba(255, 255, 255, 0.8); }
-body > nav .nav			{ font-size: 85%; }
+body > nav .nav			{ font-size: 85%; 
+				  display: -webkit-box;
+				  display: -ms-flexbox;
+				  display: flex; }
 .templates			{ display: -webkit-box;
 				  display: -ms-flexbox;
 				  display: flex; }
@@ -55,6 +58,16 @@ body > nav a ~ .explain > span	{ display: none;
 #nav-rss:hover ~ .explain > #explain-rss,
 #nav-github:hover ~ .explain > #explain-github
 				{ display: inline; }
+#nav-status			{ -webkit-box-flex: 1;
+				          -ms-flex: 1;
+				              flex: 1;
+				  text-align: right; }
+#nav-status a			{ border: 3px solid rgba(255, 255, 255, 0.5);
+				  padding: 4pt 8pt; 
+				  transition: border linear 0.2s;
+				  border-radius: 4pt; }
+#nav-status a:hover		{ border: 3px solid rgba(255, 255, 255, 0.7);
+				  color: #fff; }
 #versions	 		{ background-color: #f8f8f8; 
 				  border-top: thin solid #eee;
 				  border-bottom: thin solid #eee; }
