@@ -978,4 +978,20 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.5.9</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2020-03-10">2020-03-10</time>
+		</header>
+		<aside>
+			<p>
+				Extensive portability work.
+				Internally switches to
+				<a href="https://man.openbsd.org/pkg-config.1">pkg-config(1)</a>
+				for detecting dependency locations.
+				Now builds and installs properly on most popular UNIX systems.
+			</p>
+		</aside>
+	</article>
 </articles>
