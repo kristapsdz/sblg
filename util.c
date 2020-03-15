@@ -200,7 +200,7 @@ mmap_open(const char *f, int *fd, char **buf, size_t *sz)
 	}
 
 	*sz = (size_t)st.st_size;
-	*buf = mmap(NULL, *sz, PROT_READ, MAP_FILE|MAP_SHARED, *fd, 0);
+	*buf = mmap(NULL, *sz, PROT_READ, MAP_SHARED, *fd, 0);
 
 	if (*buf == MAP_FAILED) {
 		warn("%s", f);
