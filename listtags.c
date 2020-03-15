@@ -97,7 +97,7 @@ dorlist(const struct article *sargs, size_t sargsz, int json, int lf)
 			if ((ep = hsearch(e, FIND)) == NULL) {
 				fq = xmalloc(sizeof(struct filenq));
 				TAILQ_INIT(fq);
-				e.data = fq;
+				e.data = (char *)fq;
 				copy = xstrdup(sargs[i].tagmap[j]);
 				e.key = copy;
 				if ((ep = hsearch(e, ENTER)) == NULL)
@@ -107,7 +107,7 @@ dorlist(const struct article *sargs, size_t sargsz, int json, int lf)
 				tn->fq = fq;
 				TAILQ_INSERT_TAIL(&tq, tn, entries);
 			}
-			fq = ep->data;
+			fq = (struct filenq *)ep->data;
 			fn = xmalloc(sizeof(struct filen));
 			fn->fn = sargs[i].src;
 			TAILQ_INSERT_TAIL(fq, fn, entries);

@@ -130,14 +130,14 @@ sblg.tar.gz.sha512: sblg.tar.gz
 
 distcheck: sblg.tar.gz.sha512
 	mandoc -Tlint -Werror sblg.in.1
-	newest=`grep "<h1>" versions.xml | tail -n1 | sed 's![ 	]*!!g'` ; \
+	newest=`grep "<h1>" versions.xml | tail -1 | sed 's![ 	]*!!g'` ; \
 	       [ "$$newest" = "<h1>$(VERSION)</h1>" ] || \
 		{ echo "Version $(VERSION) not newest in versions.xml" 1>&2 ; exit 1 ; }
 	rm -rf .distcheck
 	[ "`openssl dgst -sha512 -hex sblg.tar.gz`" = "`cat sblg.tar.gz.sha512`" ] || \
  		{ echo "Checksum does not match." 1>&2 ; exit 1 ; }
 	mkdir -p .distcheck
-	tar -zvxpf sblg.tar.gz -C .distcheck
+	( cd .distcheck && tar -zvxpf ../sblg.tar.gz )
 	( cd .distcheck/sblg-$(VERSION) && ./configure PREFIX=prefix )
 	( cd .distcheck/sblg-$(VERSION) && $(MAKE) )
 	( cd .distcheck/sblg-$(VERSION) && $(MAKE) regress )
