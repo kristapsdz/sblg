@@ -52,10 +52,15 @@ IMAGES		 = template1.jpg \
 		   template5.jpg \
 		   template6.jpg
 
+LDADD_PKG	!= pkg-config --libs expat 2>/dev/null || echo "-lexpat"
+CFLAGS_PKG 	!= pkg-config --cflags expat 2>/dev/null || echo ""
+LDADD		+= $(LDADD_PKG)
+CFLAGS		+= $(CFLAGS_PKG)
+
 all: sblg sblg.a sblg.1
 
 sblg: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(LDFLAGS) $(LDADD_EXPAT)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS) $(LDADD)
 
 sblg.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
