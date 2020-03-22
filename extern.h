@@ -17,6 +17,10 @@
 #ifndef EXTERN_H
 #define EXTERN_H
 
+#if !HAVE_EXPAT
+# error "expat is required for building
+#endif
+
 #include "sblg.h"
 
 __BEGIN_DECLS

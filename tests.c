@@ -40,6 +40,7 @@ main(void)
 }
 #endif /* TEST_CAPSICUM */
 #if TEST_ENDIAN_H
+#define _BSD_SOURCE
 #include <endian.h>
 
 int
@@ -77,6 +78,21 @@ main(void)
 	return 1;
 }
 #endif /* TEST_ERR */
+#if TEST_EXPAT
+#include <expat.h>
+
+int
+main(void)
+{
+	XML_Parser	p;
+
+	if ((p = XML_ParserCreate(NULL)) == NULL)
+		return 1;
+
+	XML_ParserFree(p);
+	return 0;
+}
+#endif /* TEST_EXPAT */
 #if TEST_EXPLICIT_BZERO
 #include <string.h>
 
@@ -457,6 +473,16 @@ main(void)
 	return !htole32(23);
 }
 #endif /* TEST_SYS_ENDIAN_H */
+#if TEST_SYS_MKDEV_H
+#include <sys/types.h>
+#include <sys/mkdev.h>
+
+int
+main(void)
+{
+	return !minor(0);
+}
+#endif /* TEST_SYS_MKDEV_H */
 #if TEST_SYS_QUEUE
 #include <sys/queue.h>
 #include <stddef.h>
@@ -487,6 +513,15 @@ main(void)
 	return 0;
 }
 #endif /* TEST_SYS_QUEUE */
+#if TEST_SYS_SYSMACROS_H
+#include <sys/sysmacros.h>
+
+int
+main(void)
+{
+	return !minor(0);
+}
+#endif /* TEST_SYS_SYSMACROS_H */
 #if TEST_SYS_TREE
 #include <sys/tree.h>
 #include <stdlib.h>
@@ -536,6 +571,17 @@ main(void)
 	return -1 != unveil(NULL, NULL);
 }
 #endif /* TEST_UNVEIL */
+#if TEST_WAIT_ANY
+#include <sys/wait.h>
+
+int
+main(void)
+{
+	int st;
+
+	return waitpid(WAIT_ANY, &st, WNOHANG) != -1;
+}
+#endif /* TEST_WAIT_ANY */
 #if TEST_ZLIB
 #include <stddef.h>
 #include <zlib.h>
