@@ -73,27 +73,27 @@
 				<a href="sblg.1.html">sblg(1)</a> pulls data from the articles and merges it into the templates.
 				This is usually orchestrated with a Makefile.
 				And that's it.
-				(You can write articles in any format&#8212;like Markdown&#8212;so
-				long as they can convert into a conforming XHTML document.)
+				<strong>
+					You can write articles in any format&#8212;like Markdown&#8212;so long it converts into XHTML.
+				</strong>
 			</p>
 			<p>
-				To get started, download <a href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
+				To get started, check if <span class="nm">sblg</span> is part of your system's package manager.
+				If it's not, download <a href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
 					href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, run <code class="prettyprint
 					lang-sh">./configure</code> then <code class="prettyprint lang-sh">make install</code>.
+			</p>
+			<p>
 				<nav data-sblg-nav="1" data-sblg-navxml="1" data-sblg-navsz="1" data-sblg-navtag="version">
 					The current version is <strong><span itemprop="softwareVersion">${sblg-titletext}</span></strong>,
 					released on
 					<strong><time itemprop="dateModified" datetime="${sblg-datetime}">${sblg-date}</time></strong>.
 				</nav>
-				Alternatively, use the <a href="https://github.com/kristapsdz/sblg">GitHub</a> repository or your operating
-				system's package manager (<a href="https://cvsweb.openbsd.org/cgi-bin/cvsweb/ports/www/sblg/">OpenBSD</a>, 
-				<a href="https://github.com/kristapsdz/homebrew-repo">Homebrew</a>, etc.).
-			</p>
-			<p>
 				<span class="nm">sblg</span> is an <a href="http://opensource.org/licenses/ISC"
 					rel="license">open source</a> ISO C utility that depends only on <a
 					href="http://expat.sourceforge.net/">libexpat</a>.
-				It is a <a href="https://www.bsd.lv">BSD.lv</a> project.
+				It is a <a href="https://www.bsd.lv">BSD.lv</a> project and runs on OpenBSD, NetBSD, FreeBSD, Mac OS X, Linux,
+				Solaris, and IllumOS.
 			</p>
 			<h3>
 				latest version
@@ -336,7 +336,7 @@
 			</p>
 		</section>
 		<footer>
-			&#169; 2013&#8211;2019, 
+			&#169; 2013&#8211;2020, 
 			<a itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person" rel="author" href="https://github.com/kristapsdz">
 				<span itemprop="name">Kristaps Dzonsons</span>
 			</a>
