@@ -1,3 +1,4 @@
+.PHONY: regress regress_rebuild
 .SUFFIXES: .xml .html .1.html .1 .md .dot .svg
 
 include Makefile.configure
@@ -188,8 +189,34 @@ clean:
 	( cd examples/photos-column && $(MAKE) clean )
 	( cd examples/photos-grid && $(MAKE) clean )
 
-regress:
-	# Do nothing.
+regress_rebuild: all
+	@for f in regress/standalone/*.in.xml ; do \
+		d=`dirname $$f` ; \
+		tf=`basename $$f .in.xml`.template.xml ; \
+		vf=`basename $$f .in.xml`.html ; \
+		echo "./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$d/$$vf" ; \
+		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$d/$$vf ; \
+	done 
+
+regress: all
+	@tmp=`mktemp` ; \
+	MALLOC_OPTIONS=S ; \
+	echo "=== standalone tests === " ; \
+	for f in regress/standalone/*.in.xml ; do \
+		d=`dirname $$f` ; \
+		tf=`basename $$f .in.xml`.template.xml ; \
+		vf=`basename $$f .in.xml`.html ; \
+		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$tmp ; \
+		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
+			echo "$$f... fail" ; \
+			set +e ; \
+			diff -u $$d/$$vf $$tmp ; \
+			rm -f $$tmp ; \
+			exit 1 ; \
+		} ; \
+		echo "$$f... ok" ; \
+	done ; \
+	rm -f $$tmp
 
 distclean: clean
 	rm -f Makefile.configure config.h config.log
