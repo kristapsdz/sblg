@@ -31,66 +31,50 @@
 .Sh DESCRIPTION
 The
 .Nm
-utility knits together XML articles and templates in a number of ways.
+utility merges XML articles and templates in a number of ways.
 .Bl -bullet
 .It
 Standalone mode
 .Pq Fl c
-links single articles with a template with an article stub, which is
-filled in with the article.
+merges a single article's content and metadata into a template.
 For example,
-.Qq sblg -c foo.xml bar.xml
-creates
-.Pa foo.html
-and
-.Pa bar.html
-from a template populated by the
+.Qq sblg -o- -c foo.xml
+merges
 .Pa foo.xml
-and
-.Pa bar.xml
-article contents, respectively.
+into the template
+.Pa article-template.xml .
 .It
-Blog mode (default) links multiple articles with a template consisting
-of articles and navigation stubs.
+Blog mode (the default) merges multiple articles' content and metadata
+into a template.
 For example,
-.Qq sblg -o foo.html bar.html baz.html
-links
-.Pa bar.html
+.Qq sblg -o- bar.xml baz.xml
+merges
+.Pa bar.xml
 and
-.Pa baz.html
-into
-.Pa foo.html
-from a template.
-.It
-Atom mode
-.Pq Fl a
-links multiple articles with an Atom feed template.
-.It
-JSON mode
-.Pq Fl j
-formats all articles as a JSON feed.
+.Pa baz.xml
+into the template
+.Pa blog-template.xml .
 .It
 Combined mode
 .Pq Fl C
-links multiple articles in standalone style, i.e., multiple navigation
-stubs, a single article stub.
+links multiple articles' content and metadata in standalone style.
 For example,
-.Qq sblg -o foo.html -C bar.html baz.html bar.html
-will show only
-.Pa bar.html
-in the article list of
-.Pa foo.html ,
-but both
-.Pa bar.html
-and
-.Pa baz.html
-in its navigation.
-You can also use
+.Qq sblg -o- -C bar.xml baz.xml
+will show content for only
+.Pa bar.xml,
+but metadata for both inputs.
+The similar
 .Fl L
-to run the process for each input file (much faster).
+flags
+runs the process for each input file without reparsing.
 .It
-Tag-listing mode with
-.Fl l .
+Atom mode
+.Pq Fl a
+merges multiple articles into an Atom feed template.
+.It
+JSON mode
+.Pq Fl j
+merges all articles into a JSON feed.
 .El
 .Pp
 By default,
@@ -130,7 +114,7 @@ If the
 .Fl j
 flag is specified, this is JSON formatted.
 .It Fl j
-JSON output mode.
+JSON instead of XML output mode.
 This behaves as in blog mode, but outputs JSON instead of XML.
 If
 .Fl l
@@ -247,7 +231,7 @@ tree within the article is considered.
 .Ss Article Input
 Article input files consist of XML fragments or whole documents.
 They usually consist of the following within the document:
-.Bd -literal
+.Bd -literal -offset indent
 <article data-sblg-article="1">
   <header>
     <h1>Article Name</h1>
@@ -414,7 +398,7 @@ first
 .Li <article data-sblg-article="1">
 element is replaced by the article text.
 All of this element's children are removed.
-.Bd -literal
+.Bd -literal -offset indent
 <body>
   <header>This consists of a single blog entry.</header>
   <article>This is kept.</article>
@@ -458,7 +442,7 @@ tags are used for displaying full articles, while
 .Li <nav>
 tags are used for displaying navigation to articles, such as just their
 titles, dates, and links.
-.Bd -literal
+.Bd -literal -offset indent
 <body>
   <header>This consists of two blog entries.</header>
   <nav data-sblg-nav="1" />
@@ -578,7 +562,7 @@ may be used anywhere in the document template and refer to the current
 article unless within a navigation element, in which case the symbol
 resolves to the currently-printed article.
 In the given example,
-.Bd -literal
+.Bd -literal -offset indent
 <body>
   <header>This consists of two blog entries.</header>
   <nav data-sblg-nav="1" />
@@ -608,7 +592,7 @@ The template may contain pre-existing entries.
 .Pp
 The following is a minimal template: anything less will not conform to
 the Atom specification:
-.Bd -literal
+.Bd -literal -offset indent
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <link href="http://example.org" />
@@ -745,7 +729,7 @@ Let
 and
 .Pa source2.xml
 be input files with a variety of tags.
-.Bd -literal
+.Bd -literal -offset indent
 [
  {"src": "source1.xml",
   "tags": ["tag1","tag2"]},
@@ -757,7 +741,7 @@ be input files with a variety of tags.
 If, however,
 .Fl r
 is also specified, the reverse format is used:
-.Bd -literal
+.Bd -literal -offset indent
 [
  {"tag": "tag1",
   "srcs": ["source1.xml","source2.xml"]},
