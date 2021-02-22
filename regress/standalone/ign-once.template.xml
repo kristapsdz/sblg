@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<header>This consists of a single blog entry.</header>
+		<article>This is kept.</article>
+		<article data-sblg-article="1" data-sblg-ign-once="1">This is not removed.</article>
+		<article data-sblg-article="1">This is removed.</article>
+		<footer>Something.</footer>
+	</body>
+</html>
