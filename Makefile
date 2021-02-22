@@ -194,6 +194,13 @@ regress_rebuild: all
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
+		echo "./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$d/$$vf" ; \
+		./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$d/$$vf ; \
+	done 
+	@for f in regress/blog/*.in.xml ; do \
+		d=`dirname $$f` ; \
+		tf=`basename $$f .in.xml`.template.xml ; \
+		vf=`basename $$f .in.xml`.html ; \
 		echo "./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$d/$$vf" ; \
 		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$d/$$vf ; \
 	done 
@@ -203,6 +210,21 @@ regress: all
 	MALLOC_OPTIONS=S ; \
 	echo "=== standalone tests === " ; \
 	for f in regress/standalone/*.in.xml ; do \
+		d=`dirname $$f` ; \
+		tf=`basename $$f .in.xml`.template.xml ; \
+		vf=`basename $$f .in.xml`.html ; \
+		./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$tmp ; \
+		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
+			echo "$$f... fail" ; \
+			set +e ; \
+			diff -u $$d/$$vf $$tmp ; \
+			rm -f $$tmp ; \
+			exit 1 ; \
+		} ; \
+		echo "$$f... ok" ; \
+	done ; \
+	echo "=== blog tests === " ; \
+	for f in regress/blog/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \

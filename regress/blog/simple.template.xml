@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<header>This consists of two blog entries.</header>
+		<nav data-sblg-nav="1" />
+		<article data-sblg-article="1" />
+		<article data-sblg-article="1" />
+		<footer>Something.</footer>
+	</body>
+</html>

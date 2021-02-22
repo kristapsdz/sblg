@@ -7,7 +7,7 @@
 		<header>This consists of a single blog entry.</header>
 		<article>This is kept.</article>
 		<article data-sblg-article="1">This is removed.</article>
-		<article data-sblg-article="1">This is removed.</article>
+		<article data-sblg-article="1">This is also removed.</article>
 		<footer>Something.</footer>
 	</body>
 </html>
