@@ -124,6 +124,11 @@ sblg.tar.gz:
 	( cd examples/brutalist && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/brutalist )
 	( cd examples/photos-column && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/photos-column )
 	( cd examples/photos-grid && $(MAKE) install PREFIX=../../.dist/sblg-$(VERSION)/examples/photos-grid )
+	mkdir -p .dist/sblg-$(VERSION)/regress
+	mkdir -p .dist/sblg-$(VERSION)/regress/standalone
+	mkdir -p .dist/sblg-$(VERSION)/regress/blog
+	install -m 0644 regress/standalone/*.html regress/standalone/*.xml .dist/sblg-$(VERSION)/regress/standalone
+	install -m 0644 regress/blog/*.html regress/blog/*.xml .dist/sblg-$(VERSION)/regress/blog
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
