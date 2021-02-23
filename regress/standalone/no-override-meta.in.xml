@@ -29,7 +29,7 @@
 	<p>
 		Test date: ${sblg-date}.
 		Test datetime: ${sblg-datetime}.
-		Test datetime-fmt: ${sblg-datetime-fmt|%v}.
+		Don't do datetime-fmt: it's in localtime.
 	</p>
 	<p>
 		Test aside: ${sblg-aside}.
