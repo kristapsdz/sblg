@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<article data-sblg-article="1" data-sblg-articletag="foo"> </article>
+		<article data-sblg-article="1" data-sblg-articletag="bar"> </article>
+		<article data-sblg-article="1" data-sblg-articletag="foo"> </article>
+	</body>
+</html>
