@@ -5,7 +5,8 @@
 		<meta charset="utf-8" /> 
 		<title>sblg: static blog utility</title>
 		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="sblg version feed" />
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css" 
+		 integrity="sha256-gsmEoJAws/Kd3CjuOQzLie5Q3yshhvmo7YNtBG7aaEY=" crossorigin="anonymous" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
 		<link rel="stylesheet" href="https://bsd.lv/css/style.css" />
 		<link rel="stylesheet" href="index.css" />
@@ -57,8 +58,7 @@
 			<p class="intro">
 				<span itemprop="name" class="nm">sblg</span> is 
 				<span itemprop="description">a utility for creating static blogs</span>. 
-				It knits together articles with templates to generate static HTML
-				files, Atom feeds, and JSON files.
+				It merges articles into templates to generate static HTML files, Atom feeds, and JSON files.
 				It's built for use with 
 				<a href="https://man.openbsd.org/make.1">make(1)</a>.
 				No PHP, no database: just a simple 
