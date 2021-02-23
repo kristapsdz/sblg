@@ -1,17 +1,20 @@
 <div>
 	<article data-sblg-article="1" data-sblg-tags="xyzzy">
+		<time datetime="2013-06-29">29 June, 2013</time>
 		<h1>xyzzy</h1>
 		<p>
 			tagged with xyzzy
 		</p>
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="foo">
+		<time datetime="2013-06-29">29 June, 2013</time>
 		<h1>foo</h1>
 		<p>
 			tagged with foo
 		</p>
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="bar">
+		<time datetime="2013-06-29">29 June, 2013</time>
 		<h1>bar</h1>
 		<p>
 			tagged with bar

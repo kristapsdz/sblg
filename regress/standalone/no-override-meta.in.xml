@@ -1,0 +1,42 @@
+
+<article data-sblg-article="1">
+	<header>
+		<h1>Article <i>Name</i></h1>
+		<h1>Shouldn't replace Article <i>Name</i></h1>
+		<address>Author <i>Name</i></address>
+		<address>Shouldn't replace Author <i>Name</i></address>
+		<time datetime="2013-06-29">29 June, 2013</time>
+	</header>
+	<time datetime="2013-05-05">05 May, 2013</time>
+	<aside>
+		This is used as the feed <b>abstract</b>.
+	</aside>
+	<aside>
+		Shouldn't replace abstract.
+	</aside>
+	<p>
+		This is the <img src="foo.jpg" alt="An image for the feed" />.
+		This is not the <img src="bar.jpg" alt="An image for the feed" />.
+	</p>
+	<p>
+		Test name: ${sblg-title}.
+		Test name text: ${sblg-titletext}.
+	</p>
+	<p>
+		Test author: ${sblg-author}.
+		Test author text: ${sblg-authortext}.
+	</p>
+	<p>
+		Test date: ${sblg-date}.
+		Test datetime: ${sblg-datetime}.
+		Test datetime-fmt: ${sblg-datetime-fmt|%v}.
+	</p>
+	<p>
+		Test aside: ${sblg-aside}.
+		Test aside text: ${sblg-asidetext}.
+	</p>
+	<p>
+		Test image: ${sblg-img}.
+	</p>
+</article>
+

@@ -194,6 +194,7 @@ regress_rebuild: all
 	for f in regress/standalone/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
+		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
 		./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$tmp ; \
 		[ -f $$d/$$vf ] || { \
@@ -214,6 +215,7 @@ regress_rebuild: all
 	for f in regress/blog/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
+		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
 		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$tmp ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
@@ -235,6 +237,7 @@ regress: all
 	for f in regress/standalone/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
+		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
 		./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$tmp ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
@@ -250,6 +253,7 @@ regress: all
 	for f in regress/blog/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
+		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
 		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$tmp ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
