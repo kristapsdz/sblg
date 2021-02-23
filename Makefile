@@ -196,7 +196,7 @@ regress_rebuild: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$tmp ; \
+		./sblg -o- -t $$d/$$tf -c $$f >$$tmp ; \
 		[ -f $$d/$$vf ] || { \
 			echo "$$f... creating" ; \
 			cp $$tmp $$d/$$vf ; \
@@ -217,7 +217,7 @@ regress_rebuild: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$tmp ; \
+		./sblg -o- -t $$d/$$tf $$f >$$tmp ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... replacing" ; \
 			set +e ; \
@@ -239,7 +239,7 @@ regress: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$tmp ; \
+		./sblg -o- -t $$d/$$tf -c $$f >$$tmp ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... fail" ; \
 			set +e ; \
@@ -255,7 +255,7 @@ regress: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$tmp ; \
+		./sblg -o- -t $$d/$$tf $$f >$$tmp ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... fail" ; \
 			set +e ; \

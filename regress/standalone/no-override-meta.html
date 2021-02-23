@@ -1,56 +1,59 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Test</title>
-</head>
-<body>
-  <header>
-    This consists of a single blog entry.
-  </header>
-  <article>
-    This is kept.
-  </article>
-  <article data-sblg-article="1">
-    Also kept.
-  </article>
-  <article data-sblg-article="1">
-    <header>
-      <h1>Article <i>Name</i></h1>
-      <h1>Shouldn't replace Article <i>Name</i></h1>
-      <address>
-        Author <i>Name</i>
-      </address>
-      <address>
-        Shouldn't replace Author <i>Name</i>
-      </address><time datetime="2013-06-29">29 June, 2013</time>
-    </header><time datetime="2013-05-05">05 May, 2013</time>
-    <aside>
-      This is used as the feed <b>abstract</b>.
-    </aside>
-    <aside>
-      Shouldn't replace abstract.
-    </aside>
-    <p>This is the <img src="foo.jpg" alt="An image for the feed">.
-    This is not the <img src="bar.jpg" alt=
-    "An image for the feed">.</p>
-    <p>Test name: Article <i>Name</i>. Test name text: Article
-    Name.</p>
-    <p>Test author: Author <i>Name</i>. Test author text: Author
-    Name.</p>
-    <p>Test date: 2013-06-29. Test datetime: 2013-06-29T00:00:00Z.
-    Test datetime-fmt: 29-Jun-2013.</p>
-    <p>Test aside: This is used as the feed <b>abstract</b>. . Test
-    aside text: This is used as the feed abstract. .</p>
-    <p>Test image: foo.jpg.</p>
-  </article>
-  <article data-sblg-article="1">
-    This is not removed.
-  </article>
-  <article data-sblg-article="1">
-    This is also not removed.
-  </article>
-  <footer>
-    Something.
-  </footer>
-</body>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
+		<header>This consists of a single blog entry.</header>
+		<article>This is kept.</article>
+		<article data-sblg-article="1">Also kept.</article>
+		<article data-sblg-article="1">
+	<header>
+		<h1>Article <i>Name</i></h1>
+		<h1>Shouldn't replace Article <i>Name</i></h1>
+		<address>Author <i>Name</i></address>
+		<address>Shouldn't replace Author <i>Name</i></address>
+		<time datetime="2013-06-29">29 June, 2013</time>
+	</header>
+	<time datetime="2013-05-05">05 May, 2013</time>
+	<aside>
+		This is used as the feed <b>abstract</b>.
+	</aside>
+	<aside>
+		Shouldn't replace abstract.
+	</aside>
+	<p>
+		This is the <img src="foo.jpg" alt="An image for the feed"/>.
+		This is not the <img src="bar.jpg" alt="An image for the feed"/>.
+	</p>
+	<p>
+		Test name: Article <i>Name</i>.
+		Test name text: Article Name.
+	</p>
+	<p>
+		Test author: Author <i>Name</i>.
+		Test author text: Author Name.
+	</p>
+	<p>
+		Test date: 2013-06-29.
+		Test datetime: 2013-06-29T00:00:00Z.
+		Test datetime-fmt: 29-Jun-2013.
+	</p>
+	<p>
+		Test aside: 
+		This is used as the feed <b>abstract</b>.
+	.
+		Test aside text: 
+		This is used as the feed abstract.
+	.
+	</p>
+	<p>
+		Test image: foo.jpg.
+	</p>
+</article>
+		<article data-sblg-article="1">This is not removed.</article>
+		<article data-sblg-article="1">This is also not removed.</article>
+		<footer>Something.</footer>
+	</body>
 </html>
+
