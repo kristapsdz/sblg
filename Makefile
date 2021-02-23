@@ -190,20 +190,43 @@ clean:
 	( cd examples/photos-grid && $(MAKE) clean )
 
 regress_rebuild: all
-	@for f in regress/standalone/*.in.xml ; do \
+	@tmp=`mktemp` ; \
+	for f in regress/standalone/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		echo "./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$d/$$vf" ; \
-		./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$d/$$vf ; \
-	done 
-	@for f in regress/blog/*.in.xml ; do \
+		./sblg -o- -t $$d/$$tf -c $$f | tidy -iq --tidy-mark no >$$tmp ; \
+		[ -f $$d/$$vf ] || { \
+			echo "$$f... creating" ; \
+			cp $$tmp $$d/$$vf ; \
+			continue ; \
+		} ; \
+		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
+			echo "$$f... replacing" ; \
+			set +e ; \
+			diff -u $$d/$$vf $$tmp ; \
+			set -e ; \
+			cp $$tmp $$d/$$vf ; \
+			continue ; \
+		} ; \
+		echo "$$f... same" ; \
+	done ; \
+	for f in regress/blog/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		echo "./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$d/$$vf" ; \
-		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$d/$$vf ; \
-	done 
+		./sblg -o- -t $$d/$$tf $$f | tidy -iq --tidy-mark no >$$tmp ; \
+		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
+			echo "$$f... replacing" ; \
+			set +e ; \
+			diff -u $$d/$$vf $$tmp ; \
+			set -e ; \
+			cp $$tmp $$d/$$vf ; \
+			continue ; \
+		} ; \
+		echo "$$f... same" ; \
+	done ; \
+	rm -f $$tmp
 
 regress: all
 	@tmp=`mktemp` ; \
