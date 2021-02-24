@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
+		<header>This consists of a single blog entry.</header>
+		<article>This is kept.</article>
+		<article data-sblg-article="1">Also kept.</article>
+		<article data-sblg-article="1">
+	<header>
+		<h1>Article <i>Name</i></h1>
+		<address>Author <i>Name</i></address>
+		<time datetime="2013-06-29T00:00:00Z">29 June, 2013</time>
+	</header>
+	<aside>
+		This is used as the feed <b>abstract</b>.
+	</aside>
+	<p>
+		This is the <img src="foo.jpg" alt="An image for the feed"/>.
+	</p>
+	<meta data-sblg-title="Article Name 2"/>
+	<meta data-sblg-author="Article Author 2"/>
+	<meta data-sblg-datetime="2019-06-29T00:00:00Z"/>
+	<meta data-sblg-aside="This is used as the feed abstract 2"/>
+	<meta data-sblg-img="foo2.jpg"/>
+	<p>
+		Test name: Article Name 2.
+		Test name text: Article Name 2.
+	</p>
+	<p>
+		Test author: Article Author 2.
+		Test author text: Article Author 2.
+	</p>
+	<p>
+		Test date: 2019-06-29.
+		Test datetime: 2019-06-29T00:00:00Z.
+		Don't do datetime-fmt because it's in localtime.
+	</p>
+	<p>
+		Test aside: This is used as the feed abstract 2.
+		Test aside text: This is used as the feed abstract 2.
+	</p>
+	<p>
+		Test image: foo2.jpg.
+	</p>
+</article>
+		<article data-sblg-article="1">This is not removed.</article>
+		<article data-sblg-article="1">This is also not removed.</article>
+		<footer>Something.</footer>
+	</body>
+</html>
+

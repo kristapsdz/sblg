@@ -1,0 +1,34 @@
+
+<article data-sblg-article="1">
+	<meta data-sblg-title="Article Name" />
+	<meta data-sblg-author="Article Author" />
+	<meta data-sblg-datetime="2013-06-29T00:00:00Z" />
+	<meta data-sblg-aside="This is used as the feed abstract" />
+	<meta data-sblg-img="foo.jpg" />
+	<meta data-sblg-const-title="moo" />
+	<meta data-sblg-const-author="moo" />
+	<meta data-sblg-const-datetime="2016-06-29T00:00:00Z" />
+	<meta data-sblg-const-aside="mooo" />
+	<meta data-sblg-const-img="bar.jpg" />
+	<p>
+		Test name: ${sblg-title}.
+		Test name text: ${sblg-titletext}.
+	</p>
+	<p>
+		Test author: ${sblg-author}.
+		Test author text: ${sblg-authortext}.
+	</p>
+	<p>
+		Test date: ${sblg-date}.
+		Test datetime: ${sblg-datetime}.
+		Don't do datetime-fmt because it's in localtime.
+	</p>
+	<p>
+		Test aside: ${sblg-aside}.
+		Test aside text: ${sblg-asidetext}.
+	</p>
+	<p>
+		Test image: ${sblg-img}.
+	</p>
+</article>
+

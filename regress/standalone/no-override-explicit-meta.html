@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
+		<header>This consists of a single blog entry.</header>
+		<article>This is kept.</article>
+		<article data-sblg-article="1">Also kept.</article>
+		<article data-sblg-article="1">
+	<meta data-sblg-title="Article Name"/>
+	<meta data-sblg-author="Article Author"/>
+	<meta data-sblg-datetime="2013-06-29T00:00:00Z"/>
+	<meta data-sblg-aside="This is used as the feed abstract"/>
+	<meta data-sblg-img="foo.jpg"/>
+	<meta data-sblg-const-title="moo"/>
+	<meta data-sblg-const-author="moo"/>
+	<meta data-sblg-const-datetime="2016-06-29T00:00:00Z"/>
+	<meta data-sblg-const-aside="mooo"/>
+	<meta data-sblg-const-img="bar.jpg"/>
+	<p>
+		Test name: Article Name.
+		Test name text: Article Name.
+	</p>
+	<p>
+		Test author: Article Author.
+		Test author text: Article Author.
+	</p>
+	<p>
+		Test date: 2013-06-29.
+		Test datetime: 2013-06-29T00:00:00Z.
+		Don't do datetime-fmt because it's in localtime.
+	</p>
+	<p>
+		Test aside: This is used as the feed abstract.
+		Test aside text: This is used as the feed abstract.
+	</p>
+	<p>
+		Test image: foo.jpg.
+	</p>
+</article>
+		<article data-sblg-article="1">This is not removed.</article>
+		<article data-sblg-article="1">This is also not removed.</article>
+		<footer>Something.</footer>
+	</body>
+</html>
+
