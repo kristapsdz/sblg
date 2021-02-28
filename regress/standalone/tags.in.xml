@@ -7,7 +7,7 @@
 			Last: ${sblg-last-base} (tags.in)
 			Last: ${sblg-last-stripbase} (tags.in)
 			Last: ${sblg-last-striplangbase} (tags.in)
-			Position: ${sblg-pos} (${sblg-count}, ${sblg-setcount}) (1, 1, 1)
+			Position: ${sblg-pos} (${sblg-count}, ${sblg-setcount}, ${sblg-abscount}) (1, 1, 1)
 			Position: ${sblg-pos-frac} (1)
 			Position: ${sblg-pos-pct} (100%)
 			Next: ${sblg-next-base} (tags.in)
@@ -22,23 +22,7 @@
 	</article>
 	<article data-sblg-article="1">
 		<p>
-			SHOULD NOT APPEAR. First: ${sblg-first-base} (tags.in)
-			SHOULD NOT APPEAR. First: ${sblg-first-stripbase} (tags.in)
-			SHOULD NOT APPEAR. First: ${sblg-first-striplangbase} (tags.in)
-			SHOULD NOT APPEAR. Last: ${sblg-last-base} (tags.in)
-			SHOULD NOT APPEAR. Last: ${sblg-last-stripbase} (tags.in)
-			SHOULD NOT APPEAR. Last: ${sblg-last-striplangbase} (tags.in)
-			SHOULD NOT APPEAR. Position: ${sblg-pos} (${sblg-count}, ${sblg-setcount}) (1, 1, 1)
-			SHOULD NOT APPEAR. Position: ${sblg-pos-frac} (1)
-			SHOULD NOT APPEAR. Position: ${sblg-pos-pct} (100%)
-			SHOULD NOT APPEAR. Next: ${sblg-next-base} (tags.in)
-			SHOULD NOT APPEAR. Next: ${sblg-next-stripbase} (tags.in)
-			SHOULD NOT APPEAR. Next: ${sblg-next-striplangbase} (tags.in)
-			SHOULD NOT APPEAR. Last: ${sblg-prev-base} (tags.in)
-			SHOULD NOT APPEAR. Last: ${sblg-prev-stripbase} (tags.in)
-			SHOULD NOT APPEAR. Last: ${sblg-prev-striplangbase} (tags.in)
-			SHOULD NOT APPEAR. Input: ${sblg-source} (tags.in.xml)
-			SHOULD NOT APPEAR. Output: ${sblg-url} (should be empty)
+			SHOULD NOT APPEAR.
 		</p>
 	</article>
 </articles>
