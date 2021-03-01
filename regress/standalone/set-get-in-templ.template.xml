@@ -6,19 +6,13 @@
 	<body>
 		<header>This consists of a single blog entry.</header>
 		<article>This is kept.</article>
-		<article data-sblg-article="1">Also kept.</article>
-		<article data-sblg-article="1" data-sblg-set-foo="bar">
-	baz baz
-	sblg-has-foo sblg-has-foo
-	<meta data-sblg-set-foo="baz"/>
-	baz baz
-	sblg-has-foo sblg-has-foo
-	 -empty-
-	 -empty-
-</article>
+		<article data-sblg-article="1" data-sblg-ign-once="1">Also kept.</article>
+		<article data-sblg-article="1">This is removed.</article>
 		<article data-sblg-article="1">This is not removed.</article>
 		<article data-sblg-article="1">This is also not removed.</article>
+		<meta data-sblg-set-foo="this should be ignored" />
+		${sblg-get|foo} baz
+		${sblg-has|foo} sblg-has-foo
 		<footer>Something.</footer>
 	</body>
 </html>
-

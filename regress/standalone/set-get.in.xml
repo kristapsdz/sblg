@@ -1,10 +1,10 @@
 <article data-sblg-article="1" data-sblg-set-foo="bar">
-	${sblg-get|foo}
-	${sblg-has|foo}
+	${sblg-get|foo} baz
+	${sblg-has|foo} sblg-has-foo
 	<meta data-sblg-set-foo="baz" />
-	${sblg-get|foo}
-	${sblg-has|foo}
-	${sblg-get|xyzzy}
-	${sblg-has|xyzzy}
+	${sblg-get|foo} baz
+	${sblg-has|foo} sblg-has-foo
+	${sblg-get|xyzzy} -empty-
+	${sblg-has|xyzzy} -empty-
 </article>
 

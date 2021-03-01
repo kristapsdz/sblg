@@ -244,7 +244,7 @@ regress: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf -c $$f >$$tmp ; \
+		./sblg -o- -t $$d/$$tf -c $$f >$$tmp 2>/dev/null ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... fail" ; \
 			set +e ; \
@@ -260,7 +260,7 @@ regress: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf $$f >$$tmp ; \
+		./sblg -o- -t $$d/$$tf $$f >$$tmp 2>/dev/null ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... fail" ; \
 			set +e ; \
