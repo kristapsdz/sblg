@@ -1,0 +1,41 @@
+<articles>
+	<article data-sblg-article="1">
+		<header>
+			<h1>Article <i>Name</i></h1>
+			<address>Author <i>Name</i></address>
+			<time datetime="2013-06-29T00:00:00Z">29 June, 2013</time>
+		</header>
+		<aside>
+			This is used as the feed <b>abstract</b>.
+		</aside>
+		<p>
+			This is the <img src="foo.jpg" alt="An image for the feed" />.
+		</p>
+		<p>
+			Test name: ${sblg-title}.
+			Test name text: ${sblg-titletext}.
+		</p>
+		<p>
+			Test author: ${sblg-author}.
+			Test author text: ${sblg-authortext}.
+		</p>
+		<p>
+			Test date: ${sblg-date}.
+			Test datetime: ${sblg-datetime}.
+			Don't do datetime-fmt because it's in localtime.
+		</p>
+		<p>
+			Test aside: ${sblg-aside}.
+			Test aside text: ${sblg-asidetext}.
+		</p>
+		<p>
+			Test image: ${sblg-img}.
+		</p>
+	</article>
+	<article data-sblg-article="1">
+		<h1>NO SHOW</h1>
+		<p>
+			<img src="NOSHOW.jpg" />
+		</p>
+	</article>
+</articles>

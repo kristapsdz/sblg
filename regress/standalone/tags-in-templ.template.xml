@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
+		<header>This consists of a single blog entry.</header>
+		<article>This is kept.</article>
+		<article data-sblg-article="1" data-sblg-ign-once="1">Also kept.</article>
+		<article data-sblg-article="1">This is removed.</article>
+		<article data-sblg-article="1">This is not removed.</article>
+		<article data-sblg-article="1">This is also not removed.</article>
+		<p>
+			Test name: ${sblg-title}.
+			Test name text: ${sblg-titletext}.
+		</p>
+		<p>
+			Test author: ${sblg-author}.
+			Test author text: ${sblg-authortext}.
+		</p>
+		<p>
+			Test date: ${sblg-date}.
+			Test datetime: ${sblg-datetime}.
+			Don't do datetime-fmt because it's in localtime.
+		</p>
+		<p>
+			Test aside: ${sblg-aside}.
+			Test aside text: ${sblg-asidetext}.
+		</p>
+		<p>
+			Test image: ${sblg-img}.
+		</p>
+		<footer>Something.</footer>
+	</body>
+</html>

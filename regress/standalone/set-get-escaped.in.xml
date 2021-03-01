@@ -1,0 +1,5 @@
+<article data-sblg-article="1" data-sblg-set-foo="foo bar baz">
+	${sblg-get|foo}
+	${sblg-get-escaped|foo}
+</article>
+
