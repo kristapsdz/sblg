@@ -317,6 +317,10 @@ tsearch(struct parse *arg, const XML_Char *s, const XML_Char **atts)
 			arg->flags |= PARSE_TIME;
 			arg->article->time = timegm(&tm);
 			break;
+		case SBLG_ATTR_SOURCE:
+			free(arg->article->src);
+			arg->article->src = xstrdup(attp[1]);
+			break;
 		default:
 			if (strncasecmp(*attp, "data-sblg-set-", 14))
 				break;

@@ -65,6 +65,7 @@ enum	sblgtag {
 	SBLG_ATTR_NAVXML,
 	SBLG_ATTR_PERMLINK,
 	SBLG_ATTR_SORT,
+	SBLG_ATTR_SOURCE,
 	SBLG_ATTR_STRIPLINK,
 	SBLG_ATTR_TAGS,
 	SBLG_ATTR_TITLE,
@@ -104,8 +105,8 @@ enum	sblgtag {
  * All strings are NUL-terminated.
  */
 struct	article {
-	char	 	*src; /* source filename */
-	char	 	*stripsrc; /* source filename w/o directory */
+	char	 	 *src; /* source filename */
+	char	 	 *stripsrc; /* source filename w/o directory */
 	char		 *base; /* src w/o suffix */
 	char		 *stripbase; /* fname w/o suffix */
 	char		 *striplangbase; /* stripbase w/o langs */

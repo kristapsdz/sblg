@@ -73,6 +73,7 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "data-sblg-navxml", SBLG_ATTR_NAVXML },
 	{ NULL, "data-sblg-permlink", SBLG_ATTR_PERMLINK },
 	{ NULL, "data-sblg-sort", SBLG_ATTR_SORT },
+	{ NULL, "data-sblg-source", SBLG_ATTR_SOURCE },
 	{ NULL, "data-sblg-striplink", SBLG_ATTR_STRIPLINK },
 	{ NULL, "data-sblg-tags", SBLG_ATTR_TAGS },
 	{ NULL, "data-sblg-title", SBLG_ATTR_TITLE },
