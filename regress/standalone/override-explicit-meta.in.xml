@@ -1,4 +1,3 @@
-
 <article data-sblg-article="1">
 	<header>
 		<h1>Article <i>Name</i></h1>
@@ -13,28 +12,21 @@
 	</p>
 	<meta data-const-sblg-title="Article Name 2" />
 	<meta data-const-sblg-author="Article Author 2" />
-	<meta data-const-sblg-datetime="2019-06-29T00:00:00Z" />
+	<meta data-const-sblg-datetime="2019-06-28T00:00:00Z" />
 	<meta data-const-sblg-aside="This is used as the feed abstract 2" />
 	<meta data-const-sblg-img="foo2.jpg" />
 	<p>
-		Test name: ${sblg-title}.
-		Test name text: ${sblg-titletext}.
-	</p>
-	<p>
-		Test author: ${sblg-author}.
-		Test author text: ${sblg-authortext}.
-	</p>
-	<p>
-		Test date: ${sblg-date}.
-		Test datetime: ${sblg-datetime}.
+		${sblg-title} = Article <i>Name</i>
+		${sblg-titletext} = Article Name
+		${sblg-author} = Author <i>Name</i>
+		${sblg-authortext} = Author Name
+		${sblg-date} = 2013-06-29
+		${sblg-datetime} = 2013-06-29T00:00:00Z
 		Don't do datetime-fmt because it's in localtime.
-	</p>
-	<p>
-		Test aside: ${sblg-aside}.
-		Test aside text: ${sblg-asidetext}.
-	</p>
-	<p>
-		Test image: ${sblg-img}.
+		${sblg-img} = foo.jpg
+		${sblg-aside} = This is used as the feed <b>abstract</b>.
+		${sblg-asidetext} = This is used as the feed abstract.
+		${sblg-source} = regress/standalone/override-explicit-meta.in.xml
 	</p>
 </article>
 
