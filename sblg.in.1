@@ -79,9 +79,8 @@ merges all articles into a JSON feed.
 .Pp
 By default,
 .Nm
-operates in blog mode as if
-.Qq sblg -o blog.html -t blog-template.xml ...
-were specified.
+operates in blog mode with template
+.Pa blog-template.xml .
 Its arguments are as follows:
 .Bl -tag -width Ds
 .It Fl a
@@ -374,6 +373,9 @@ or
 .Li last .
 If multiple articles have the same sort override, they are ordered in
 the natural way.
+.It Li data-sblg-source=file
+Set the source filename associated with the article.
+It overrides the implicit value set from the actual file.
 .It Li data-sblg-tags=string
 This tag may be specified on any element within the article and consists
 of space-separated tag names.
@@ -806,8 +808,9 @@ The article's author with markup.
 .It Li ${sblg-authortext}
 The article's author, textual parts only
 .It Li ${sblg-base}
-The full filename (including directory) with the last suffix part
-chopped off.
+Same as
+.Li ${sblg-source}
+but with the last suffix part chopped off.
 For example,
 .Pa foo/bar.xml
 becomes
@@ -865,7 +868,8 @@ There are also
 and
 .Li ${sblg-first-striplangbase}
 variants.
-.Pq See Li ${sblg-base} .
+See
+.Li ${sblg-base} .
 .It Li ${sblg-last-base}
 The last (oldest) base name in the list of articles.
 There are also
@@ -873,7 +877,8 @@ There are also
 and
 .Li ${sblg-last-striplangbase}
 variants.
-.Pq See Li ${sblg-base} .
+See 
+.Li ${sblg-base} .
 .It Li ${sblg-next-base}
 The next base name when chronologically ordered from newest to oldest,
 wrapping back to the beginning for the last.
@@ -882,7 +887,8 @@ There are also
 and
 .Li ${sblg-next-striplangbase}
 variants.
-.Pq See Li ${sblg-base} .
+See
+.Li ${sblg-base} .
 .It Li ${sblg-next-has}
 Prints
 .Li sblg-next-has
@@ -913,7 +919,8 @@ There are also
 and
 .Li ${sblg-prev-striplangbase}
 variants.
-.Pq See Li ${sblg-base} .
+See
+.Li ${sblg-base} .
 .It Li ${sblg-prev-has}
 Prints
 .Li sblg-prev-has
@@ -956,7 +963,7 @@ See also
 and
 .Li ${sblg-abscount} .
 .It Li ${sblg-source}
-The source file when passed for parsing.
+The source file associated with the article.
 .It Li ${sblg-tags[|tagspec]}
 List of unique tags in the article, optionally filtered by those having
 the prefix
