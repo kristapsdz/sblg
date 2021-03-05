@@ -463,6 +463,24 @@ article_end(void *dat, const XML_Char *s)
 	XML_SetElementHandler(arg->p, input_begin, NULL);
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 
+	if (arg->article->src == NULL)
+		arg->article->src = xstrdup(arg->src);
+
+	arg->article->base = xstrdup(arg->article->src);
+
+	if ((cp = strrchr(arg->article->src, '/')) == NULL) {
+		arg->article->stripbase = xstrdup(arg->article->src);
+		arg->article->stripsrc = xstrdup(arg->article->src);
+	} else {
+		arg->article->stripbase = xstrdup(cp + 1);
+		arg->article->stripsrc = xstrdup(cp + 1);
+	}
+
+	if ((cp = strrchr(arg->article->src, '/')) == NULL)
+		arg->article->striplangbase = xstrdup(arg->article->src);
+	else
+		arg->article->striplangbase = xstrdup(cp + 1);
+
 	if ((cp = strrchr(arg->article->base, '.')) != NULL)
 		if (strchr(cp, '/') == NULL)
 			*cp = '\0';
@@ -547,21 +565,6 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	memset(arg->article, 0, sizeof(struct article));
 
 	arg->article->order = *arg->articlesz;
-	arg->article->src = arg->src;
-	arg->article->base = xstrdup(arg->src);
-
-	if ((cp = strrchr(arg->src, '/')) == NULL) {
-		arg->article->stripbase = xstrdup(arg->src);
-		arg->article->stripsrc = arg->src;
-	} else {
-		arg->article->stripbase = xstrdup(cp + 1);
-		arg->article->stripsrc = cp + 1;
-	}
-
-	if ((cp = strrchr(arg->src, '/')) == NULL)
-		arg->article->striplangbase = xstrdup(arg->src);
-	else
-		arg->article->striplangbase = xstrdup(cp + 1);
 
 	for (attp = atts; *attp != NULL; attp += 2) 
 		switch (sblg_lookup(*attp)) {

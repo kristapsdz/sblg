@@ -178,6 +178,8 @@ article_free(struct article *p)
 
 	free(p->img);
 	free(p->base);
+	free(p->src);
+	free(p->stripsrc);
 	free(p->stripbase);
 	free(p->striplangbase);
 	free(p->title);

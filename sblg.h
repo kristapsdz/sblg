@@ -104,8 +104,8 @@ enum	sblgtag {
  * All strings are NUL-terminated.
  */
 struct	article {
-	const char	 *src; /* source filename */
-	const char	 *stripsrc; /* source filename w/o directory */
+	char	 	*src; /* source filename */
+	char	 	*stripsrc; /* source filename w/o directory */
 	char		 *base; /* src w/o suffix */
 	char		 *stripbase; /* fname w/o suffix */
 	char		 *striplangbase; /* stripbase w/o langs */
