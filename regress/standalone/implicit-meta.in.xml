@@ -22,6 +22,7 @@
 		${sblg-aside} = This is used as the feed <b>abstract</b>.
 		${sblg-asidetext} = This is used as the feed abstract.
 		${sblg-source} = regress/standalone/implicit-meta.in.xml
+		${sblg-real} = regress/standalone/implicit-meta.in.xml
 	</p>
 </article>
 

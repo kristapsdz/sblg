@@ -1,27 +1,30 @@
 <articles>
 	<article data-sblg-article="1">
 		<p>
-			first-base: ${sblg-first-base} (tags.in)
-			first-stripbase: ${sblg-first-stripbase} (tags.in)
-			first-striplangbase: ${sblg-first-striplangbase} (tags.in)
-			last-base: ${sblg-last-base} (tags.in)
-			last-stripbase: ${sblg-last-stripbase} (tags.in)
-			last-striplangbase: ${sblg-last-striplangbase} (tags.in)
-			count: ${sblg-count} (1)
-			setcount: ${sblg-setcount} (1)
-			abspos: ${sblg-abspos}  (1)
-			abscount: ${sblg-abscount} (1)
-			pos: ${sblg-pos}  (1)
-			pos-frac: ${sblg-pos-frac} (1)
-			pos-pct: ${sblg-pos-pct}  (100)
-			next-base: ${sblg-next-base} (tags.in)
-			next-stripbase: ${sblg-next-stripbase} (tags.in)
-			nest-striplangbase: ${sblg-next-striplangbase} (tags.in)
-			prev-base: ${sblg-prev-base} (tags.in)
-			prev-stripbase: ${sblg-prev-stripbase} (tags.in)
-			prev-striplangbase: ${sblg-prev-striplangbase} (tags.in)
-			source: ${sblg-source} (tags.in.xml)
-			url: ${sblg-url} (should be empty)
+			${sblg-first-base} = regress/standalone/tags.in
+			${sblg-first-stripbase} = tags.in
+			${sblg-first-striplangbase} = tags.in
+			${sblg-last-base} = regress/standalone/tags.in
+			${sblg-last-stripbase} = tags.in
+			${sblg-last-striplangbase} = tags.in
+			${sblg-count} = 1
+			${sblg-setcount} = 1
+			${sblg-abspos}  = 1
+			${sblg-abscount} = 1
+			${sblg-pos}  = 1
+			${sblg-pos-frac} = 1
+			${sblg-pos-pct}  = 100
+			${sblg-next-base} = regress/standalone/tags.in
+			${sblg-next-stripbase} = tags.in
+			${sblg-next-striplangbase} = tags.in
+			${sblg-prev-base} = regress/standalone/tags.in
+			${sblg-prev-stripbase} = tags.in
+			${sblg-prev-striplangbase} = tags.in
+			${sblg-source} = regress/standalone/tags.in.xml
+			${sblg-real} = regress/standalone/tags.in.xml
+			${sblg-realbase} = regress/standalone/tags.in
+			${sblg-striprealbase} = tags.in
+			${sblg-url} = should be empty
 		</p>
 	</article>
 	<article data-sblg-article="1">
