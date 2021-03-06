@@ -189,6 +189,11 @@ article_free(struct article *p)
 	free(p->aside);
 	free(p->asidetext);
 	free(p->article);
+	free(p->real);
+	free(p->stripreal);
+	free(p->realbase);
+	free(p->striprealbase);
+	free(p->striplangrealbase);
 
 	for (i = 0; i < p->tagmapsz; i++)
 		free(p->tagmap[i]);

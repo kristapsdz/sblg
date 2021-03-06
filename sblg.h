@@ -105,10 +105,15 @@ enum	sblgtag {
  * All strings are NUL-terminated.
  */
 struct	article {
+	char	 	 *real; /* real filename */
+	char	 	 *stripreal; /* real filename w/o directory */
+	char		 *realbase; /* real w/o suffix */
+	char		 *striprealbase; /* realbase w/o suffix */
+	char		 *striplangrealbase; /* striprealbase w/o langs */
 	char	 	 *src; /* source filename */
 	char	 	 *stripsrc; /* source filename w/o directory */
 	char		 *base; /* src w/o suffix */
-	char		 *stripbase; /* fname w/o suffix */
+	char		 *stripbase; /* base w/o suffix */
 	char		 *striplangbase; /* stripbase w/o langs */
 	char		 *title; /* title */
 	size_t		  titlesz; /* length of title */

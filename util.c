@@ -704,6 +704,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 
 		if (STRCMP("sblg-base", 9))
 			xmltextxescs(f, arts[artpos].base, esc);
+		else if (STRCMP("sblg-realbase", 13))
+			xmltextxescs(f, arts[artpos].realbase, esc);
 		else if (STRCMP("sblg-get", 8))
 			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-get-escaped", 16))
@@ -715,8 +717,12 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			xmltextxtag(f, &arts[artpos], arg, argsz, esc);
 		else if (STRCMP("sblg-stripbase", 14))
 			xmltextxescs(f, arts[artpos].stripbase, esc);
+		else if (STRCMP("sblg-striprealbase", 18))
+			xmltextxescs(f, arts[artpos].striprealbase, esc);
 		else if (STRCMP("sblg-striplangbase", 18))
 			xmltextxescs(f, arts[artpos].striplangbase, esc);
+		else if (STRCMP("sblg-striplangrealbase", 22))
+			xmltextxescs(f, arts[artpos].striplangrealbase, esc);
 		else if (STRCMP("sblg-first-base", 15))
 			xmltextxescs(f, arts[0].base, esc);
 		else if (STRCMP("sblg-first-stripbase", 20))
@@ -758,6 +764,8 @@ xmltextx(FILE *f, const XML_Char *s, const char *url,
 			xmltextxescs(f, arts[artpos].authortext, esc);
 		else if (STRCMP("sblg-source", 11))
 			xmltextxescs(f, arts[artpos].src, esc);
+		else if (STRCMP("sblg-real", 9))
+			xmltextxescs(f, arts[artpos].real, esc);
 		else if (STRCMP("sblg-date", 9))
 			xmltextxescs(f, bufp, esc);
 		else if (STRCMP("sblg-datetime", 13))

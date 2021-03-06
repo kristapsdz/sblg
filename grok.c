@@ -467,8 +467,12 @@ article_end(void *dat, const XML_Char *s)
 	XML_SetElementHandler(arg->p, input_begin, NULL);
 	XML_SetDefaultHandlerExpand(arg->p, NULL);
 
+	/* Set source to "real" by default. */
+
 	if (arg->article->src == NULL)
 		arg->article->src = xstrdup(arg->src);
+
+	/* Configure the "base" value and its derivatives. */
 
 	arg->article->base = xstrdup(arg->article->src);
 
@@ -495,6 +499,36 @@ article_end(void *dat, const XML_Char *s)
 		if (strchr(cp, '/') == NULL)
 			*cp = '\0';
 
+	/* Configure the "real" value and its derivatives. */
+
+	arg->article->real = xstrdup(arg->src);
+	arg->article->realbase = xstrdup(arg->article->real);
+
+	if ((cp = strrchr(arg->article->real, '/')) == NULL) {
+		arg->article->striprealbase = xstrdup(arg->article->real);
+		arg->article->stripreal = xstrdup(arg->article->real);
+	} else {
+		arg->article->striprealbase = xstrdup(cp + 1);
+		arg->article->stripreal = xstrdup(cp + 1);
+	}
+
+	if ((cp = strrchr(arg->article->real, '/')) == NULL)
+		arg->article->striplangrealbase = xstrdup(arg->article->real);
+	else
+		arg->article->striplangrealbase = xstrdup(cp + 1);
+
+	if ((cp = strrchr(arg->article->realbase, '.')) != NULL)
+		if (strchr(cp, '/') == NULL)
+			*cp = '\0';
+	if ((cp = strrchr(arg->article->striprealbase, '.')) != NULL)
+		if (strchr(cp, '/') == NULL)
+			*cp = '\0';
+	if ((cp = strrchr(arg->article->striplangrealbase, '.')) != NULL)
+		if (strchr(cp, '/') == NULL)
+			*cp = '\0';
+
+	/* Configure title. */
+
 	if (arg->article->title == NULL) {
 		assert(arg->article->titletext == NULL);
 		arg->article->title = xstrdup("Untitled article");
@@ -503,6 +537,9 @@ article_end(void *dat, const XML_Char *s)
 		arg->article->titletextsz = 
 			strlen(arg->article->titletext);
 	}
+
+	/* Configure author. */
+
 	if (arg->article->author == NULL) {
 		assert(arg->article->authortext == NULL);
 		arg->article->author = xstrdup("Untitled author");
@@ -511,6 +548,9 @@ article_end(void *dat, const XML_Char *s)
 		arg->article->authortextsz = 
 			strlen(arg->article->authortext);
 	}
+
+	/* Configure datetime. */
+
 	if (arg->article->time == 0) {
 		arg->article->isdatetime = 1;
 		if (fstat(arg->fd, &st) == -1)
@@ -518,6 +558,9 @@ article_end(void *dat, const XML_Char *s)
 		else
 			arg->article->time = st.st_ctime;
 	}
+
+	/* Configure aside. */
+
 	if (arg->article->aside == NULL) {
 		assert(arg->article->asidetext == NULL);
 		arg->article->aside = xstrdup("");
