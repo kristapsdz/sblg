@@ -807,6 +807,11 @@ The article's first aside, textual parts only.
 The article's author with markup.
 .It Li ${sblg-authortext}
 The article's author, textual parts only
+.It Li ${sblg-realbase}
+Like
+.Li ${sblg-base} ,
+and having the same sub-types, except deriving from
+.Li ${sblg-real} .
 .It Li ${sblg-base}
 Same as
 .Li ${sblg-source}
@@ -962,6 +967,11 @@ See also
 .Li ${sblg-count}
 and
 .Li ${sblg-abscount} .
+.It Li ${sblg-real}
+The article's actual source file.
+See
+.Li ${sblg-source}
+for an overridable source indicator.
 .It Li ${sblg-source}
 The source file associated with the article.
 .It Li ${sblg-tags[|tagspec]}
