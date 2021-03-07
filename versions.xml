@@ -1011,9 +1011,9 @@
 	</article>
 	<article data-sblg-article="1" data-sblg-tags="version">
 		<header>
-			<h1>0.5.10</h1>
+			<h1>0.5.11</h1>
 			<address>Kristaps Dzonsons</address>
-			<time datetime="2021-02-23">2021-02-23</time>
+			<time datetime="2021-03-07">2021-03-07</time>
 		</header>
 		<aside>
 			<p>
@@ -1022,6 +1022,10 @@
 				and add a large regression suite for testing behaviour of the system.
 				This is run by <code>make regress</code> and requires no additional
 				utilities to run (beyond <code>diff</code>).
+			</p>
+			<p>
+				Allow <code>${sblg-source}</code> to be overridden and provide
+				<code>${sblg-real}</code> for the actual file.
 			</p>
 		</aside>
 	</article>
