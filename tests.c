@@ -16,6 +16,51 @@ main(void)
 	return (arc4random() + 1) ? 0 : 1;
 }
 #endif /* TEST_ARC4RANDOM */
+#if TEST_BLOWFISH
+#include <sys/types.h>
+#include <blf.h>
+#include <string.h>
+
+int
+main(void)
+{
+	blf_ctx c;
+	char    key[] = "AAAAA";
+	char    key2[] = "abcdefghijklmnopqrstuvwxyz";
+
+	u_int32_t data[10];
+	u_int32_t data2[] =
+	{0x424c4f57l, 0x46495348l};
+
+	u_int16_t i;
+
+	/* First test */
+	for (i = 0; i < 10; i++)
+		data[i] = i;
+
+	blf_key(&c, (u_int8_t *) key, 5);
+	blf_enc(&c, data, 5);
+	{
+		u_int32_t *d;
+		u_int16_t i;
+
+		d = data;
+		for (i = 0; i < 5; i++) {
+			Blowfish_encipher(&c, d, d + 1);
+			d += 2;
+		}
+	}
+
+
+	blf_dec(&c, data, 1);
+	blf_dec(&c, data + 2, 4);
+
+
+	blf_enc(&c, data2, 1);
+	blf_dec(&c, data2, 1);
+	return 0;
+}
+#endif /* TEST_BLOWFISH */
 #if TEST_B64_NTOP
 #include <netinet/in.h>
 #include <resolv.h>
@@ -40,9 +85,9 @@ main(void)
 }
 #endif /* TEST_CAPSICUM */
 #if TEST_CRYPT
-#if defined(__linux__)
-# define _GNU_SOURCE /* old glibc */
+#if defined(__linux__) || defined(__wasi__)
 # define _DEFAULT_SOURCE /* new glibc */
+# define _XOPEN_SOURCE /* old glibc */
 #endif
 #if defined(__sun)
 # ifndef _XOPEN_SOURCE /* SunOS already defines */
@@ -63,8 +108,25 @@ int main(void)
 	return v == NULL;
 }
 #endif /* TEST_CRYPT */
+#if TEST_CRYPT_NEWHASH
+#include <unistd.h>
+
+int
+main(void)
+{
+	const char	*v = "password";
+	char		 hash[128];
+
+	if (crypt_newhash(v, "bcrypt,a", hash, sizeof(hash)) == -1)
+		return 1;
+	if (crypt_checkpass(v, hash) == -1)
+		return 1;
+
+	return 0;
+}
+#endif /* TEST_CRYPT_NEWHASH */
 #if TEST_ENDIAN_H
-#ifdef __linux__
+#if defined(__linux__) || defined(__wasi__)
 # define _DEFAULT_SOURCE
 #endif
 #include <endian.h>
@@ -195,6 +257,45 @@ main(void)
 	return 0;
 }
 #endif /* TEST_INFTIM */
+#if TEST_LANDLOCK
+#include <linux/landlock.h>
+#include <linux/prctl.h>
+#include <stdlib.h>
+#include <sys/prctl.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+#include <stdint.h>
+
+#ifndef landlock_create_ruleset
+static inline int landlock_create_ruleset(const struct landlock_ruleset_attr *const attr,
+	const size_t size, const __u32 flags)
+{
+	return syscall(__NR_landlock_create_ruleset, attr, size, flags);
+}
+#endif
+
+#ifndef landlock_restrict_self
+static inline int landlock_restrict_self(const int ruleset_fd,
+	const __u32 flags)
+{
+	return syscall(__NR_landlock_restrict_self, ruleset_fd, flags);
+}
+#endif
+
+int
+main(void)
+{
+	uint64_t mask = LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_WRITE_FILE;
+	struct landlock_ruleset_attr rules = {
+		.handled_access_fs = mask
+	};
+	int fd = landlock_create_ruleset(&rules, sizeof(rules), 0);
+
+	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
+		return 1;
+	return landlock_restrict_self(fd, 0) ? 1 : 0;
+}
+#endif /* TEST_LANDLOCK */
 #if TEST_LIB_SOCKET
 #include <sys/socket.h>
 
@@ -235,7 +336,7 @@ main(void)
 }
 #endif /* TEST_MEMMEM */
 #if TEST_MEMRCHR
-#if defined(__linux__) || defined(__MINT__)
+#if defined(__linux__) || defined(__MINT__) || defined(__wasi__)
 #define _GNU_SOURCE	/* See test-*.c what needs this. */
 #endif
 #include <string.h>
@@ -287,6 +388,21 @@ main(void)
 	return !OSSwapHostToLittleInt32(23);
 }
 #endif /* TEST_OSBYTEORDER_H */
+#if TEST_PASSWORD_LEN
+/*
+ * Linux doesn't  have this.
+ */
+
+#include <pwd.h>
+#include <stdio.h>
+
+int
+main(void)
+{
+	printf("_PASSWORD_LEN is defined to be %ld\n", (long)_PASSWORD_LEN);
+	return 0;
+}
+#endif /* TEST_PASSWORD_LEN */
 #if TEST_PATH_MAX
 /*
  * POSIX allows PATH_MAX to not be defined, see
@@ -385,6 +501,17 @@ main(void)
 	return(-1 == rc);
 }
 #endif /* TEST_SANDBOX_INIT */
+#if TEST_SCAN_SCALED
+#include <util.h>
+
+int
+main(void)
+{
+	char *cinput = (char *)"1.5K", buf[FMT_SCALED_STRSIZE];
+	long long ninput = 10483892, result;
+	return scan_scaled(cinput, &result) == 0;
+}
+#endif /* TEST_SCAN_SCALED */
 #if TEST_SECCOMP_FILTER
 #include <sys/prctl.h>
 #include <linux/seccomp.h>
@@ -663,6 +790,36 @@ main(void)
 }
 
 #endif /* TEST_SYS_TREE */
+#if TEST_TERMIOS
+#include <sys/ioctl.h>
+#include <string.h> /* memset */
+#include <termios.h>
+
+int
+main(void)
+{
+	struct winsize	 size;
+
+	memset(&size, 0, sizeof(struct winsize));
+	if (ioctl(1, TIOCGWINSZ, &size) == -1)
+		return 72;
+	return size.ws_col;
+}
+#endif /* TEST_TERMIOS */
+#if TEST_TIMINGSAFE_BCMP
+#include <string.h>
+
+int main(void)
+{
+	const char *a = "foo", *b = "bar";
+
+	if (timingsafe_bcmp(a, b, 2) &&
+	    timingsafe_memcmp(a, b, 2))
+		return 1;
+
+	return 0;
+}
+#endif /* TEST_TIMINGSAFE_BCMP */
 #if TEST_UNVEIL
 #include <unistd.h>
 
