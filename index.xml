@@ -91,7 +91,7 @@
 				</nav>
 				<span class="nm">sblg</span> is an <a href="http://opensource.org/licenses/ISC"
 					rel="license">open source</a> ISO C utility that depends only on <a
-					href="http://expat.sourceforge.net/">libexpat</a>.
+					href="https://libexpat.github.io/">libexpat</a>.
 				It is a <a href="https://www.bsd.lv">BSD.lv</a> project and runs on OpenBSD, NetBSD, FreeBSD, Mac OS X, Linux,
 				Solaris, and IllumOS.
 			</p>
