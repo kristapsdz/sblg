@@ -1,6 +1,5 @@
-/*	$Id$ */
 /*
- * Copyright (c) 2016--2017 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -44,25 +43,25 @@ json_quoted(const char *cp, FILE *f)
 	fputc('"', f);
 	while ((c = *cp++) != '\0')
 		switch (c) {
-		case ('"'):
-		case ('\\'):
-		case ('/'):
+		case '"':
+		case '\\':
+		case '/':
 			fputc('\\', f);
 			fputc(c, f);
 			break;
-		case ('\b'):
+		case '\b':
 			fputs("\\b", f);
 			break;
-		case ('\f'):
+		case '\f':
 			fputs("\\f", f);
 			break;
-		case ('\n'):
+		case '\n':
 			fputs("\\n", f);
 			break;
-		case ('\r'):
+		case '\r':
 			fputs("\\r", f);
 			break;
-		case ('\t'):
+		case '\t':
 			fputs("\\t", f);
 			break;
 		default:
@@ -111,21 +110,33 @@ json_textxml(const char *key,
 }
 
 static void
-json_textlist(const char *key, char **tags, size_t tagsz, FILE *f)
+json_textlist(const char *key, char **tags, size_t tagsz, FILE *f,
+    int object)
 {
 	size_t	 i;
 	
-	json_quoted("tags", f);
+	json_quoted(key, f);
 	fputc(':', f);
-	fputc('[', f);
 
-	for (i = 0; i < tagsz; i++) {
-		if (i > 0)
-			fputc(',', f);
-		json_quoted(tags[i], f);
+	if (object) {
+		fputc('{', f);
+		for (i = 0; i < tagsz - 1; i += 2) {
+			if (i > 0)
+				fputc(',', f);
+			json_quoted(tags[i], f);
+			fputc(':', f);
+			json_quoted(tags[i + 1], f);
+		}
+		fputc('}', f);
+	} else {
+		fputc('[', f);
+		for (i = 0; i < tagsz; i++) {
+			if (i > 0)
+				fputc(',', f);
+			json_quoted(tags[i], f);
+		}
+		fputc(']', f);
 	}
-
-	fputc(']', f);
 }
 
 /*
@@ -189,7 +200,10 @@ json(XML_Parser p, int sz, char *src[], const char *dst, enum asort asort)
 			sargs[j].article, f);
 		fputc(',', f);
 		json_textlist("tags", sargs[j].tagmap, 
-			sargs[j].tagmapsz, f);
+			sargs[j].tagmapsz, f, 0);
+		fputc(',', f);
+		json_textlist("keys", sargs[j].setmap,
+			sargs[j].setmapsz, f, 1);
 		fputc('}', f);
 		if (j < sargsz - 1)
 			fputc(',', f);
