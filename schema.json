@@ -62,6 +62,10 @@
 					"items": {
 						"type": "string"
 					}
+				},
+				"keys": {
+					"type": "object",
+					"description": "Keywords set by articles"
 				}
 			}
 		},
