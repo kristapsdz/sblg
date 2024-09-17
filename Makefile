@@ -270,6 +270,16 @@ regress: all
 		} ; \
 		echo "$$f... ok" ; \
 	done ; \
+	echo "=== JSON tests === " ; \
+	./sblg -o- -j regress/json/*.xml | jq | grep -v '"version":' > $$tmp ; \
+	diff $$tmp regress/json/expect.json || { \
+		echo "regress/json/expect.json... fail" ; \
+		set +e ; \
+		diff -u $$tmp regress/json/expect.json ; \
+		rm -f $$tmp ; \
+		exit 1 ; \
+	} ; \
+	echo "regress/json/expect.json... ok" ; \
 	rm -f $$tmp
 
 distclean: clean

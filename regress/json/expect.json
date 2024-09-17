@@ -1,0 +1,62 @@
+{
+  "articles": [
+    {
+      "src": "regress/json/article1.xml",
+      "base": "regress/json/article1",
+      "stripbase": "article1",
+      "striplangbase": "article1",
+      "time": 1404086400,
+      "title": {
+        "text": "test1",
+        "xml": "test1"
+      },
+      "aside": {
+        "text": "",
+        "xml": ""
+      },
+      "author": {
+        "text": "Kristaps1",
+        "xml": "Kristaps1"
+      },
+      "article": {
+        "xml": "<article data-sblg-article=\"1\" data-sblg-tags=\"howto\" data-sblg-set-foo=\"bar\">\n\t<header>\n\t\t<h2>test1</h2>\n\t\t<div>\n\t\t\t<address>Kristaps1</address>\n\t\t\t<time datetime=\"2014-06-30\">30 June, 2014</time>\n\t\t</div>\n\t</header>\n\t<div>\n\t\tHello, world.\n\t</div>\n</article>"
+      },
+      "tags": [
+        "howto"
+      ],
+      "keys": {
+        "foo": "bar"
+      }
+    },
+    {
+      "src": "regress/json/article2.xml",
+      "base": "regress/json/article2",
+      "stripbase": "article2",
+      "striplangbase": "article2",
+      "time": 1372550400,
+      "title": {
+        "text": "test",
+        "xml": "test"
+      },
+      "aside": {
+        "text": "\n\t\tBoop.\n\t",
+        "xml": "\n\t\tBoop.\n\t"
+      },
+      "author": {
+        "text": "Kristaps",
+        "xml": "Kristaps"
+      },
+      "article": {
+        "xml": "<article data-sblg-article=\"1\" data-sblg-tags=\"howto shmowto\" data-sblg-set-foo=\"baz\">\n\t<header>\n\t\t<h2>test</h2>\n\t\t<div>\n\t\t\t<address>Kristaps</address>\n\t\t\t<time datetime=\"2013-06-30\">30 June, 2013</time>\n\t\t</div>\n\t</header>\n\t<aside>\n\t\tBoop.\n\t</aside>\n\t<div data-sblg-set-bar=\"xyzzy\">\n\t\tHello, world.\n\t</div>\n</article>"
+      },
+      "tags": [
+        "howto",
+        "shmowto"
+      ],
+      "keys": {
+        "foo": "baz",
+        "bar": "xyzzy"
+      }
+    }
+  ]
+}

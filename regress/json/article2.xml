@@ -1,0 +1,15 @@
+<article data-sblg-article="1" data-sblg-tags="howto shmowto" data-sblg-set-foo="baz">
+	<header>
+		<h2>test</h2>
+		<div>
+			<address>Kristaps</address>
+			<time datetime="2013-06-30">30 June, 2013</time>
+		</div>
+	</header>
+	<aside>
+		Boop.
+	</aside>
+	<div data-sblg-set-bar="xyzzy">
+		Hello, world.
+	</div>
+</article>
