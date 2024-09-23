@@ -118,7 +118,9 @@ json_textlist(const char *key, char **tags, size_t tagsz, FILE *f,
 	json_quoted(key, f);
 	fputc(':', f);
 
-	if (object) {
+	if (object && tagsz == 0) {
+		fputs("{}", f);
+	} else if (object) {
 		fputc('{', f);
 		for (i = 0; i < tagsz - 1; i += 2) {
 			if (i > 0)
