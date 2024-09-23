@@ -46,12 +46,6 @@
 					<span id="explain-rss">Atom feed</span>
 					<span id="explain-github">GitHub repository</span>
 				</span>
-				<span id="nav-status">
-					<a href="https://kristaps.bsd.lv/cgi-bin/minci.cgi/index.html?project-name=sblg">
-						<i class="fa fa-tachometer fa-fw"></i>
-						Build Status
-					</a>
-				</span>
 			</div>
 		</nav>
 		<section class="text">

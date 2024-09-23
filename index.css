@@ -1,7 +1,6 @@
 body, html			{ height: 100%;
 				  margin: 0; }
 body				{ font-family: 'Alegreya Sans', sans-serif; }
-a				{ text-decoration: none; }
 figure				{ text-align: center;
 				  margin: 0; }
 figure img			{ width: 98%; 
@@ -18,26 +17,17 @@ h4				{ font-size: 15pt;
 				  font-variant: small-caps; }
 body > nav			{ background-color: #336699;
 				  padding: 4rem 0 1rem 0; }
-body > nav div			{ color: #aaa; }
+body > nav div			{ color: #ccc; }
 h1				{ color: #fff; 
 				  font-weight: inherit;
 				  font-size: 200%; }
-h1 span				{ color: #aaa; }
+h1 span				{ color: #ccc; }
 body > nav div a		{ color: #eee; }
-body > nav a			{ color: #ccc; 
-				  border-bottom: 2px solid transparent; }
-body > nav a:hover		{ color: #eee; 
-				  border-bottom: 2px solid rgba(255, 255, 255, 0.8); }
+body > nav a			{ color: #fff; }
 body > nav .nav			{ font-size: 85%; 
-				  display: -webkit-box;
-				  display: -ms-flexbox;
 				  display: flex; }
-.templates			{ display: -webkit-box;
-				  display: -ms-flexbox;
-				  display: flex; }
-.templates > figure		{ -webkit-box-flex: 1;
-				          -ms-flex: 1;
-				              flex: 1;
+.templates			{ display: flex; }
+.templates > figure		{ flex: 1;
 				  padding: 1rem; }
 .templates figcaption		{ text-align: center;
 				  font-size: smaller;
@@ -51,23 +41,13 @@ section .intro			{ font-size: 125%;
 				  line-height: 1.4em; }
 body > nav .explain		{ margin-left: 12pt; }
 body > nav a ~ .explain > span	{ display: none; 
-			   	  color: #aaa; }
+			   	  color: #fff; }
 #nav-gears:hover ~ .explain > #explain-gears,
 #nav-lock:hover ~ .explain > #explain-lock,
 #nav-file:hover ~ .explain > #explain-file,
 #nav-rss:hover ~ .explain > #explain-rss,
 #nav-github:hover ~ .explain > #explain-github
 				{ display: inline; }
-#nav-status			{ -webkit-box-flex: 1;
-				          -ms-flex: 1;
-				              flex: 1;
-				  text-align: right; }
-#nav-status a			{ border: 3px solid rgba(255, 255, 255, 0.5);
-				  padding: 4pt 8pt; 
-				  transition: border linear 0.2s;
-				  border-radius: 4pt; }
-#nav-status a:hover		{ border: 3px solid rgba(255, 255, 255, 0.7);
-				  color: #fff; }
 #versions	 		{ background-color: #f8f8f8; 
 				  border-top: thin solid #eee;
 				  border-bottom: thin solid #eee; }
