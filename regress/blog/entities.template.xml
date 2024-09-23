@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>&dollar; foo</title>
+	</head>
+	<body>
+		<header>This consi&dollar; foo of two blog entries.</header>
+		<nav data-sblg-nav="1" />
+		<article data-sblg-article="1" />
+		<article data-sblg-article="1" />
+		<footer>&dollar; foo.</footer>
+	</body>
+</html>
