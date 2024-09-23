@@ -722,8 +722,6 @@ This white-list is defined by the W3C's Feed Validator.
 can produce JSON with the
 .Fl j
 flag.
-The schema is documented in
-.Pa @SHAREDIR@/schema.json .
 If
 .Fl l
 is specified, the output schema is simply an array as follows.
@@ -1005,15 +1003,12 @@ version as
 .Li xx.yy.zz .
 .El
 .Sh FILES
+The following files are installed in
+.Pa @SHAREDIR@ .
 .Bl -tag -width Ds
-.It Pa article-template.xml
-Default template for creating articles with
-.Fl c .
-.It Pa atom-template.xml
-Default template for creating atom feeds with
-.Fl a .
-.It Pa blog-template.xml
-Default template for creating a front page.
+.It Pa schema.json
+JSON schema for output generated with
+.Fl j .
 .El
 .Sh EXIT STATUS
 .Ex -std
