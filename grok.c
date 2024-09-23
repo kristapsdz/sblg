@@ -1,6 +1,5 @@
-/*	$Id$ */
 /*
- * Copyright (c) 2013, 2014, 2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>
+ * Copyright (c) Kristaps Dzonsons <kristaps@bsd.lv>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -34,6 +33,14 @@
 
 #include "extern.h"
 
+enum	textmode {
+	TEXT_ARTICLE,
+	TEXT_TITLE,
+	TEXT_ADDR,
+	TEXT_ASIDE,
+	TEXT_NONE,
+};
+
 struct	parse {
 	XML_Parser	  p;
 	struct article	 *article; /* article being parsed */
@@ -50,6 +57,7 @@ struct	parse {
 	int		  fd; /* underlying descriptor */
 	const char	 *src; /* underlying file */
 	const char	**wl; /* whitelist of attributes */
+	enum textmode	  textmode; /* mode to accept text */
 };
 
 static void article_begin(void *, const XML_Char *, const XML_Char **);
@@ -112,48 +120,51 @@ string2tm(const char *cp, struct tm *tm, int *datetime)
 }
 
 static void
-article_text(void *dat, const XML_Char *s, int len)
+text(void *dat, const XML_Char *s, int len)
 {
 	struct parse	*arg = dat;
+
+	switch (arg->textmode) {
+	case TEXT_NONE:
+		return;
+	case TEXT_TITLE:
+		xmlstrtext(&arg->article->title, 
+			&arg->article->titlesz, s, len);
+		xmlstrtext(&arg->article->titletext, 
+			&arg->article->titletextsz, s, len);
+		break;
+	case TEXT_ADDR:
+		xmlstrtext(&arg->article->author, 
+			&arg->article->authorsz, s, len);
+		xmlstrtext(&arg->article->authortext, 
+			&arg->article->authortextsz, s, len);
+		break;
+	case TEXT_ASIDE:
+		xmlstrtext(&arg->article->aside, 
+			&arg->article->asidesz, s, len);
+		xmlstrtext(&arg->article->asidetext, 
+			&arg->article->asidetextsz, s, len);
+		break;
+	default:
+		break;
+	}
 
 	xmlstrtext(&arg->article->article, 
 		&arg->article->articlesz, s, len);
 }
 
 static void
-title_text(void *dat, const XML_Char *s, int len)
+entity(void *dat, const XML_Char *entity, int is_parameter_entity)
 {
-	struct parse	*arg = dat;
+	/* Ignore this argument. */
 
-	xmlstrtext(&arg->article->title, 
-		&arg->article->titlesz, s, len);
-	xmlstrtext(&arg->article->titletext, 
-		&arg->article->titletextsz, s, len);
-	article_text(dat, s, len);
-}
+	(void)is_parameter_entity; 
 
-static void
-addr_text(void *dat, const XML_Char *s, int len)
-{
-	struct parse	*arg = dat;
+	/* Pass through as text. */
 
-	xmlstrtext(&arg->article->author, 
-		&arg->article->authorsz, s, len);
-	xmlstrtext(&arg->article->authortext, 
-		&arg->article->authortextsz, s, len);
-	article_text(dat, s, len);
-}
-
-static void
-aside_text(void *dat, const XML_Char *s, int len)
-{
-	struct parse	*arg = dat;
-
-	xmlstrtext(&arg->article->aside, 
-		&arg->article->asidesz, s, len);
-	xmlstrtext(&arg->article->asidetext, 
-		&arg->article->asidetextsz, s, len);
-	article_text(dat, s, len);
+	text(dat, "&", 1);
+	text(dat, entity, strlen(entity));
+	text(dat, ";", 1);
 }
 
 static void
@@ -171,7 +182,7 @@ title_end(void *dat, const XML_Char *s)
 	case SBLG_ELEM_H4:
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
-		XML_SetDefaultHandlerExpand(arg->p, article_text);
+		arg->textmode = TEXT_ARTICLE;
 		break;
 	default:
 		xmlstrclose(&arg->article->title, 
@@ -190,7 +201,7 @@ aside_end(void *dat, const XML_Char *s)
 	if (sblg_lookup(s) == SBLG_ELEM_ASIDE && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
-		XML_SetDefaultHandlerExpand(arg->p, article_text);
+		arg->textmode = TEXT_ARTICLE;
 	} else
 		xmlstrclose(&arg->article->aside, 
 			&arg->article->asidesz, s);
@@ -207,7 +218,7 @@ addr_end(void *dat, const XML_Char *s)
 	if (sblg_lookup(s) == SBLG_ELEM_ADDRESS && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, 
 			article_begin, article_end);
-		XML_SetDefaultHandlerExpand(arg->p, article_text);
+		arg->textmode = TEXT_ARTICLE;
 	} else
 		xmlstrclose(&arg->article->author, 
 			&arg->article->authorsz, s);
@@ -343,7 +354,6 @@ title_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	tsearch(arg, s, atts);
 }
 
-
 static void
 addr_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
@@ -394,7 +404,7 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			return;
 		arg->stack++;
 		arg->flags |= PARSE_ASIDE;
-		XML_SetDefaultHandlerExpand(arg->p, aside_text);
+		arg->textmode = TEXT_ASIDE;
 		XML_SetElementHandler(arg->p, aside_begin, aside_end);
 		break;
 	case SBLG_ELEM_IMG:
@@ -430,8 +440,8 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->flags |= PARSE_ADDR;
 		assert(arg->stack == 0);
 		arg->stack++;
+		arg->textmode = TEXT_ADDR;
 		XML_SetElementHandler(arg->p, addr_begin, addr_end);
-		XML_SetDefaultHandlerExpand(arg->p, addr_text);
 		break;
 	case SBLG_ELEM_H1:
 	case SBLG_ELEM_H2:
@@ -440,8 +450,8 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		if ((arg->flags & PARSE_TITLE))
 			return;
 		arg->flags |= PARSE_TITLE;
+		arg->textmode = TEXT_TITLE;
 		XML_SetElementHandler(arg->p, title_begin, title_end);
-		XML_SetDefaultHandlerExpand(arg->p, title_text);
 		break;
 	case SBLG_ELEM_ARTICLE:
 		arg->gstack++;
@@ -464,8 +474,8 @@ article_end(void *dat, const XML_Char *s)
 	if (sblg_lookup(s) != SBLG_ELEM_ARTICLE || --arg->gstack > 0) 
 		return;
 
+	arg->textmode = TEXT_NONE;
 	XML_SetElementHandler(arg->p, input_begin, NULL);
-	XML_SetDefaultHandlerExpand(arg->p, NULL);
 
 	/* Set source to "real" by default. */
 
@@ -645,12 +655,11 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		}
 
 	arg->gstack = 1;
+	arg->textmode = TEXT_ARTICLE;
 
 	xmlstropen(&arg->article->article, 
 		&arg->article->articlesz, s, atts, arg->wl);
 	XML_SetElementHandler(arg->p, article_begin, article_end);
-	XML_SetDefaultHandlerExpand(arg->p, article_text);
-
 	tsearch(arg, s, atts);
 }
 
@@ -683,10 +692,18 @@ sblg_parse(XML_Parser p, const char *src,
 	parse.p = p;
 	parse.fd = fd;
 	parse.wl = wl;
+	parse.textmode = TEXT_NONE;
 
 	XML_ParserReset(p, NULL);
+
+	XML_SetDefaultHandlerExpand(p, text);
 	XML_SetStartElementHandler(p, input_begin);
+	XML_SetSkippedEntityHandler(p, entity);
 	XML_SetUserData(p, &parse);
+
+	/* Required for entities. */
+
+	XML_UseForeignDTD(p, XML_TRUE);
 
 	if ((st = XML_Parse(p, buf, (int)sz, 1)) != XML_STATUS_OK)
 		logerr(&parse);
