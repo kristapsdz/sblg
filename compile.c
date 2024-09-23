@@ -1,6 +1,5 @@
-/*	$Id$ */
 /*
- * Copyright (c) 2013--2015, 2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -30,6 +29,11 @@
 
 #include "extern.h"
 
+enum	textmode {
+	TEXT_TMPL,
+	TEXT_NONE,
+};
+
 struct	pargs {
 	const char	*src; /* template file */
 	const char	*dst; /* output file (or empty) */
@@ -40,14 +44,35 @@ struct	pargs {
 	char		*buf; /* buffer for text */
 	size_t		 bufsz; /* buffer size */
 	size_t		 bufmax; /* buffer maximum size */
+	enum textmode	 textmode; /* mode to accept text */
 };
 
 static void
-template_text(void *dat, const XML_Char *s, int len)
+text(void *dat, const XML_Char *s, int len)
 {
 	struct pargs	*arg = dat;
 
-	xmlstrtext(&arg->buf, &arg->bufsz, s, len);
+	switch (arg->textmode) {
+	case TEXT_TMPL:
+		xmlstrtext(&arg->buf, &arg->bufsz, s, len);
+		break;
+	default:
+		break;
+	}
+}
+
+static void
+entity(void *dat, const XML_Char *entity, int is_parameter_entity)
+{
+	/* Ignore this argument. */
+
+	(void)is_parameter_entity; 
+
+	/* Pass through as text. */
+
+	text(dat, "&", 1);
+	text(dat, entity, strlen(entity));
+	text(dat, ";", 1);
 }
 
 static void
@@ -86,7 +111,7 @@ article_end(void *dat, const XML_Char *s)
 
 	if (sblg_lookup(s) == SBLG_ELEM_ARTICLE && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, NULL, NULL);
-		XML_SetDefaultHandlerExpand(arg->p, template_text);
+		arg->textmode = TEXT_TMPL;
 	}
 }
 
@@ -146,8 +171,8 @@ template_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	 */
 
 	arg->stack++;
+	arg->textmode = TEXT_NONE;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
-	XML_SetDefaultHandlerExpand(arg->p, NULL);
 	xmltextx(arg->f, arg->article->article, arg->dst,
 		arg->article, 1, 1, 0, 0, 1, XMLESC_NONE);
 }
@@ -218,11 +243,14 @@ compile(XML_Parser p, const char *templ,
 	arg.src = src;
 	arg.dst = strcmp(out, "-") ? out : NULL;
 	arg.p = p;
+	arg.textmode = TEXT_TMPL;
 
 	XML_ParserReset(p, NULL);
 	XML_SetElementHandler(p, template_begin, template_end);
-	XML_SetDefaultHandlerExpand(p, template_text);
+	XML_SetSkippedEntityHandler(p, entity);
+	XML_SetDefaultHandlerExpand(p, text);
 	XML_SetUserData(p, &arg);
+	XML_UseForeignDTD(p, XML_TRUE);
 
 	if (XML_Parse(p, buf, (int)sz, 1) != XML_STATUS_OK) {
 		warnx("%s:%zu:%zu: %s", templ, 

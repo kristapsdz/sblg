@@ -30,6 +30,12 @@
 
 #include "extern.h"
 
+enum	textmode {
+	TEXT_NAV,
+	TEXT_TMPL,
+	TEXT_NONE,
+};
+
 struct	linkall {
 	FILE		 *f; /* open template file */
 	const char	 *src; /* template file */
@@ -53,19 +59,43 @@ struct	linkall {
 	size_t		  navsz; /* nav buffer length */
 	char		 *buf; /* buffer for text */
 	size_t		  bufsz; /* buffer size */
+	enum textmode	  textmode; /* mode to accept text */
 };
 
 static void tmpl_begin(void *, const XML_Char *, const XML_Char **);
 
 static void
-tmpl_text(void *dat, const XML_Char *s, int len)
+text(void *dat, const XML_Char *s, int len)
 {
 	struct linkall	*arg = dat;
 
-	if (arg->single != -1)
-		xmlstrtext(&arg->buf, &arg->bufsz, s, len);
-	else
-		fprintf(arg->f, "%.*s", len, s);
+	switch (arg->textmode) {
+	case TEXT_TMPL:
+		if (arg->single != -1)
+			xmlstrtext(&arg->buf, &arg->bufsz, s, len);
+		else
+			fprintf(arg->f, "%.*s", len, s);
+		break;
+	case TEXT_NAV:
+		xmlstrtext(&arg->nav, &arg->navsz, s, len);
+		break;
+	default:
+		break;
+	}
+}
+
+static void
+entity(void *dat, const XML_Char *entity, int is_parameter_entity)
+{
+	/* Ignore this argument. */
+
+	(void)is_parameter_entity; 
+
+	/* Pass through as text. */
+
+	text(dat, "&", 1);
+	text(dat, entity, strlen(entity));
+	text(dat, ";", 1);
 }
 
 static void
@@ -92,14 +122,6 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	struct linkall	*arg = dat;
 
 	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ARTICLE);
-}
-
-static void
-nav_text(void *dat, const XML_Char *s, int len)
-{
-	struct linkall	*arg = dat;
-
-	xmlstrtext(&arg->nav, &arg->navsz, s, len);
 }
 
 static void
@@ -148,8 +170,8 @@ nav_end(void *dat, const XML_Char *s)
 		return;
 	}
 
+	arg->textmode = TEXT_TMPL;
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-	XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
 
 	/* Only open the <ul> if we're printing HTML content. */
 
@@ -261,7 +283,7 @@ article_end(void *dat, const XML_Char *s)
 
 	if (sblg_lookup(s) == SBLG_ELEM_ARTICLE && --arg->stack == 0) {
 		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		XML_SetDefaultHandlerExpand(arg->p, tmpl_text);
+		arg->textmode = TEXT_TMPL;
 	}
 }
 
@@ -348,8 +370,8 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			xmlopens(arg->f, s, atts);
 
 		arg->stack++;
+		arg->textmode = TEXT_NAV;
 		XML_SetElementHandler(arg->p, nav_begin, nav_end);
-		XML_SetDefaultHandlerExpand(arg->p, nav_text);
 		return;
 	case SBLG_ELEM_ARTICLE:
 		break;
@@ -416,7 +438,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		 * we receive a matching one.
 		 */
 		arg->stack++;
-		XML_SetDefaultHandlerExpand(arg->p, NULL);
+		arg->textmode = TEXT_NONE;
 		XML_SetElementHandler(arg->p, article_begin, article_end);
 		return;
 	}
@@ -424,7 +446,7 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	/* First throw away children, then push out the article. */
 
 	arg->stack++;
-	XML_SetDefaultHandlerExpand(arg->p, NULL);
+	arg->textmode = TEXT_NONE;
 	XML_SetElementHandler(arg->p, article_begin, article_end);
 
 	/* Echo the formatted text of the article. */
@@ -508,6 +530,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	larg.dst = strcmp(dst, "-") ? dst : NULL;
 	larg.f = f;
 	larg.single = -1;
+	larg.textmode = TEXT_TMPL;
 
 	if (force != NULL) {
 		for (j = 0; j < sargsz; j++)
@@ -526,9 +549,11 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	/* Run the XML parser on the template. */
 
 	XML_ParserReset(p, NULL);
-	XML_SetDefaultHandlerExpand(p, tmpl_text);
+	XML_SetDefaultHandlerExpand(p, text);
+	XML_SetSkippedEntityHandler(p, entity);
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 	XML_SetUserData(p, &larg);
+	XML_UseForeignDTD(p, XML_TRUE);
 
 	if (XML_Parse(p, buf, (int)ssz, 1) != XML_STATUS_OK) {
 		warnx("%s:%zu:%zu: %s", templ, 
@@ -626,13 +651,16 @@ linkall_r(XML_Parser p, const char *templ,
 		larg.single = j;
 		larg.spos = j;
 		larg.ssposz = j + 1;
+		larg.textmode = TEXT_TMPL;
 
 		/* Run the XML parser on the template. */
 
 		XML_ParserReset(p, NULL);
-		XML_SetDefaultHandlerExpand(p, tmpl_text);
+		XML_SetSkippedEntityHandler(p, entity);
+		XML_SetDefaultHandlerExpand(p, text);
 		XML_SetElementHandler(p, tmpl_begin, tmpl_end);
 		XML_SetUserData(p, &larg);
+		XML_UseForeignDTD(p, XML_TRUE);
 
 		if (XML_Parse(p, buf, (int)ssz, 1) != XML_STATUS_OK) {
 			warnx("%s:%zu:%zu: %s", templ, 
