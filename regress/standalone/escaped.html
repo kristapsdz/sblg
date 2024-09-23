@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
+		<header>This consists of a single blog entry.</header>
+		<article>This is kept.</article>
+		<article data-sblg-article="1">Also kept.</article>
+		<article data-sblg-article="1">
+	<meta data-sblg-title="Article Name"/>
+	<meta data-sblg-author="Article Author"/>
+	<meta data-sblg-datetime="2013-06-29T00:00:00Z"/>
+	<meta data-sblg-aside="This is used as the feed abstract"/>
+	<meta data-sblg-source="path/to/a/file.xml"/>
+	<meta data-sblg-real="NO OVERRIDING THSI VALUE"/>
+	<meta data-sblg-img="foo.jpg"/>
+	<p>
+		Article Name = Article Name
+		Article Name = Article Name
+		&#x0024;{sblg-title} = As-is.
+		&#36;{sblg-title} = As-is.
+	</p>
+</article>
+		<article data-sblg-article="1">This is not removed.</article>
+		<article data-sblg-article="1">This is also not removed.</article>
+		<footer>Something.</footer>
+	</body>
+</html>
+

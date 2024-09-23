@@ -1,0 +1,16 @@
+<article data-sblg-article="1">
+	<meta data-sblg-title="Article Name" />
+	<meta data-sblg-author="Article Author" />
+	<meta data-sblg-datetime="2013-06-29T00:00:00Z" />
+	<meta data-sblg-aside="This is used as the feed abstract" />
+	<meta data-sblg-source="path/to/a/file.xml" />
+	<meta data-sblg-real="NO OVERRIDING THSI VALUE" />
+	<meta data-sblg-img="foo.jpg" />
+	<p>
+		${sblg-title} = Article Name
+		${sblg-titletext} = Article Name
+		&#x0024;{sblg-title} = As-is.
+		&#36;{sblg-title} = As-is.
+	</p>
+</article>
+

@@ -1,6 +1,5 @@
-.\"	$Id$
 .\"
-.\" Copyright (c) 2013--2017, 2019 Kristaps Dzonsons <kristaps@bsd.lv>
+.\" Copyright (c) Kristaps Dzonsons <kristaps@bsd.lv>
 .\"
 .\" Permission to use, copy, modify, and distribute this software for any
 .\" purpose with or without fee is hereby granted, provided that the above
@@ -781,6 +780,15 @@ Some symbols accept optional arguments, which have the format
 Here,
 .Li \&|argument
 may be omitted.
+.Pp
+Be careful in using tag symbols: the contents are copied directly, so if
+specifying a value within an HTML attribute that has a double-quote, the
+attribute will be prematurely closed.
+.Pp
+To prevent regular text with
+.Li ${...}
+from being processed, escape one or more character, such as
+.Li &#x0024{...} .
 .Bl -tag -width -Ds
 .It Li ${sblg-abscount}
 The total number of articles.
@@ -996,10 +1004,6 @@ The current
 version as
 .Li xx.yy.zz .
 .El
-.Pp
-Be careful in using these: the contents are copied directly, so if
-specifying a value within an HTML attribute that has a double-quote, the
-attribute will be prematurely closed.
 .Sh FILES
 .Bl -tag -width Ds
 .It Pa article-template.xml
