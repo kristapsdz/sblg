@@ -3,6 +3,9 @@
 
 include Makefile.configure
 
+WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
+sinclude Makefile.local
+
 VERSION 	 = 0.5.11
 OBJS		 = compats.o \
 		   main.o \
@@ -36,7 +39,6 @@ HTMLS 		 = archive.html \
 CSSS 		 = index.css
 DATADIR	 	 = $(SHAREDIR)/sblg
 EXAMPLEDIR	 = $(DATADIR)/examples
-WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 DOTAR 		 = Makefile \
 		   $(SRCS) \
 		   sblg.in.1 \
