@@ -47,7 +47,8 @@ DOTAR 		 = Makefile \
 		   extern.h
 BUILT		 = index1.svg \
 		   index2.svg \
-		   index3.svg
+		   index3.svg \
+		   index4.svg
 IMAGES		 = template1.jpg \
 		   template2.jpg \
 		   template3.jpg \

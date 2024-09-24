@@ -42,6 +42,7 @@ section .intro			{ font-size: 125%;
 body > nav .explain		{ margin-left: 12pt; }
 body > nav a ~ .explain > span	{ display: none; 
 			   	  color: #fff; }
+#nav-npm:hover ~ .explain > #explain-npm,
 #nav-gears:hover ~ .explain > #explain-gears,
 #nav-lock:hover ~ .explain > #explain-lock,
 #nav-file:hover ~ .explain > #explain-file,

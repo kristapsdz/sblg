@@ -5,8 +5,8 @@
 		<meta charset="utf-8" /> 
 		<title>sblg: static blog utility</title>
 		<link rel="alternate" href="atom.xml" type="application/atom+xml" title="sblg version feed" />
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css" 
-		 integrity="sha256-gsmEoJAws/Kd3CjuOQzLie5Q3yshhvmo7YNtBG7aaEY=" crossorigin="anonymous" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css"
+		 integrity="sha256-XoaMnoYC5TH6/+ihMEnospgm0J1PM/nioxbOUdnM8HY=" crossorigin="anonymous" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
 		<link rel="stylesheet" href="https://bsd.lv/css/style.css" />
 		<link rel="stylesheet" href="index.css" />
@@ -39,12 +39,14 @@
 				<a id="nav-file" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
 				<a id="nav-rss" href="atom.xml"><i class="fa fa-fw fa-rss"></i></a>
 				<a id="nav-github" href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
+				<a id="nav-npm" href="https://www.npmjs.com/package/sblg"><i class="fa fa-fw fa-nodejs"></i></a>
 				<span class="explain">
 					<span id="explain-gears">Download source</span>
 					<span id="explain-lock">Download checksum</span>
 					<span id="explain-file">Source archive</span>
 					<span id="explain-rss">Atom feed</span>
 					<span id="explain-github">GitHub repository</span>
+					<span id="explain-npm">NPM repository</span>
 				</span>
 			</div>
 		</nav>
@@ -328,6 +330,23 @@
 				So there's also a mode (<code><b>-L</b></code>) for producing one output for each input, given all inputs.
 				These uses the default suffix mapping of replacing <code>.xml</code> with <code>.html</code> in the output.
 			</p>
+			<h4>
+				json/atom mode
+			</h4>
+			<figure>
+				<img src="index4.svg" alt="JSON/Atom mode graph" />
+			</figure>
+			<p>
+				To export all articles into a JSON file or Atom feed, use their
+				<code><b>-j</b></code> or <code><b>-a</b></code> flags, respectively.
+				The JSON file is documented with a JSON schema distributed with the system.
+				A TypeScript definition of the exported type is also available on 
+				<a href="https://www.npmjs.com">npm</a> as the
+				<a href="https://www.npmjs.com/package/sblg">sblg</a> package.
+			</p>
+			<div class="prettyprint">
+				<pre class="prettyprint lang-sh">% npm i sblg --save-dev</pre>
+			</div>
 		</section>
 		<footer>
 			&#169; 2013&#8211;2020, 

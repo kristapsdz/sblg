@@ -1,0 +1,9 @@
+digraph {
+	a1 -> t1;
+	a2 -> t1;
+	a3 -> t1;
+	a1[label="article1.xml"];
+	a2[label="article2.xml"];
+	a3[label="article3.xml"];
+	t1[label="JSON/Atom"];
+}
