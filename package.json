@@ -1,0 +1,20 @@
+{
+	"name": "sblg",
+	"version": "0.5.12",
+	"description": "sblg is a utility for creating static blogs.  It merges articles into templates, generating static HTML files, Atom feeds, and JSON files.  It's built for use with `make`-style build environments.",
+	"homepage": "https://kristaps.bsd.lv/sblg",
+	"contributors": [
+		{
+			"name": "Kristaps Dz",
+			"githubUsername": "kristapsdz",
+			"url": "https://github.com/kristapsdz"
+		}
+	],
+	"scripts": {},
+	"main": "",
+	"types": "index.d.ts",
+	"license": "ISC",
+	"files": [
+		"index.d.ts"
+	]
+}
