@@ -6,7 +6,7 @@ include Makefile.configure
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 sinclude Makefile.local
 
-VERSION 	 = 0.5.11
+VERSION 	 = 0.5.12
 OBJS		 = compats.o \
 		   main.o \
 		   compile.o \
