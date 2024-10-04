@@ -130,8 +130,10 @@ sblg.tar.gz:
 	mkdir -p .dist/sblg-$(VERSION)/regress
 	mkdir -p .dist/sblg-$(VERSION)/regress/standalone
 	mkdir -p .dist/sblg-$(VERSION)/regress/blog
+	mkdir -p .dist/sblg-$(VERSION)/regress/json
 	install -m 0644 regress/standalone/*.html regress/standalone/*.xml .dist/sblg-$(VERSION)/regress/standalone
 	install -m 0644 regress/blog/*.html regress/blog/*.xml .dist/sblg-$(VERSION)/regress/blog
+	install -m 0644 regress/json/*.xml regress/json/*.json .dist/sblg-$(VERSION)/regress/json
 	( cd .dist/ && tar zcf ../$@ ./ )
 	rm -rf .dist/
 
