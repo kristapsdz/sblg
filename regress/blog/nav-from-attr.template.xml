@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<div data-sblg-nav="1" data-sblg-navcontent="1">
+			<div>
+				<time datetime="${sblg-datetime}">
+					${sblg-datetime-fmt}
+				</time>: ${sblg-titletext}
+			</div>
+			${sblg-aside}
+		</div>
+	</body>
+</html>

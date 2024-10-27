@@ -1,6 +1,5 @@
-/*	$Id$ */
 /*
- * Copyright (c) 2013--2019 Kristaps Dzonsons <kristaps@bsd.lv>,
+ * Copyright (c) Kristaps Dzonsons <kristaps@bsd.lv>,
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -46,6 +45,7 @@ struct	linkall {
 	size_t		  sposz; /* size of sargs */
 	size_t		  ssposz;  /* number of sargs to show */
 	size_t		  stack; /* temporary: tag stack size */
+	char		 *stacktag; /* tag starting nav/article or NULL */
 	size_t		  navstart; /* temporary: nav items to show */
 	size_t		  navlen; /* temporary: nav items to show */
 	char		**navtags; /* list of navtags to query */
@@ -121,15 +121,24 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct linkall	*arg = dat;
 
-	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ARTICLE);
+	assert(arg->stacktag != NULL);
+	arg->stack += strcmp(s, arg->stacktag) == 0;
 }
 
+/*
+ * Called on content within a navigation block, which is usually invoked
+ * as <nav data-sblg-nav="1">.  Keeps track of how many nested elements
+ * of the same type as that which started the navigation block (usually
+ * <nav>) are in play.  See nav_end() for when the navigation block
+ * might end.
+ */
 static void
 nav_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct linkall	*arg = dat;
 
-	arg->stack += (sblg_lookup(s) == SBLG_ELEM_NAV);
+	assert(arg->stacktag != NULL);
+	arg->stack += strcmp(s, arg->stacktag) == 0;
 	xmlstropen(&arg->nav, &arg->navsz, s, atts, NULL);
 }
 
@@ -156,6 +165,11 @@ tagfind(char **tags, size_t tagsz, char **tagmap, size_t tagmapsz)
 	return 0;
 }
 
+/*
+ * See if the navigation block should end, which happens when meeting a
+ * non-nested close element of the same type which opened the navigation
+ * block, usually <nav>.  See nav_begin().
+ */
 static void
 nav_end(void *dat, const XML_Char *s)
 {
@@ -165,10 +179,13 @@ nav_end(void *dat, const XML_Char *s)
 	int		 rc;
 	struct article	*sv = NULL;
 
-	if (sblg_lookup(s) != SBLG_ELEM_NAV || --arg->stack != 0) {
+	assert(arg->stacktag != NULL);
+	if (strcmp(s, arg->stacktag) != 0 || --arg->stack != 0) {
 		xmlstrclose(&arg->nav, &arg->navsz, s);
 		return;
 	}
+
+	/* Closing out... */
 
 	arg->textmode = TEXT_TMPL;
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
@@ -256,10 +273,12 @@ nav_end(void *dat, const XML_Char *s)
 
 	if (!arg->navxml) {
 		xmlclose(arg->f, "ul");
-		xmlclose(arg->f, s);
+		xmlclose(arg->f, arg->stacktag);
 	}
 
+	free(arg->stacktag);
 	free(arg->nav);
+	arg->stacktag = NULL;
 	arg->nav = NULL;
 	arg->navsz = 0;
 
@@ -281,10 +300,14 @@ article_end(void *dat, const XML_Char *s)
 {
 	struct linkall	*arg = dat;
 
-	if (sblg_lookup(s) == SBLG_ELEM_ARTICLE && --arg->stack == 0) {
-		XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
-		arg->textmode = TEXT_TMPL;
-	}
+	assert(arg->stacktag != NULL);
+	if (strcmp(s, arg->stacktag) != 0 || --arg->stack != 0)
+		return;
+
+	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
+	arg->textmode = TEXT_TMPL;
+	free(arg->stacktag);
+	arg->stacktag = NULL;
 }
 
 static void
@@ -295,8 +318,15 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	const XML_Char	 *sort = NULL;
 	char		**tags = NULL;
 	size_t		  i, tagsz = 0;
+	int		  start_nav = 0, start_article = 0;
 
 	assert(arg->stack == 0);
+
+	/*
+	 * If in -C or -L mode, flush the output collected so far.
+	 * Otherwise, disregard it---it surrounds what we're interested
+	 * in.
+	 */
 
 	if (arg->single != -1) {
 		xmltextx(arg->f, arg->buf, arg->dst, 
@@ -308,17 +338,30 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->bufsz = 0;
 	}
 
-	switch (sblg_lookup(s)) {
-	case SBLG_ELEM_NAV:
-		for (attp = atts; *attp != NULL; attp += 2) 
-			if (sblg_lookup(*attp) == SBLG_ATTR_NAV)
-				break;
+	/*
+	 * Whether to start an article or nav.  Articles start if we
+	 * have a data-sblg-article attribute.  Navigation on any
+	 * element with a data-sblg-nav attribute.
+	 */
 
-		if (*attp == NULL || !xmlbool(attp[1])) {
-			xmlopens(arg->f, s, atts);
-			return;
+	for (attp = atts; *attp != NULL; attp += 2) {
+		if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLE &&
+		    xmlbool(attp[1])) {
+			start_article = 1;
+			assert(arg->stacktag == NULL);
+			arg->stacktag = xstrdup(s);
+			break;
 		}
+		if (sblg_lookup(*attp) == SBLG_ATTR_NAV &&
+		    xmlbool(attp[1])) {
+			start_nav = 1;
+			assert(arg->stacktag == NULL);
+			arg->stacktag = xstrdup(s);
+			break;
+		}
+	}
 
+	if (start_nav) {
 		arg->navuse = 0;
 		arg->navsort = ASORT_DATE;
 		arg->usesort = 0;
@@ -372,108 +415,93 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->stack++;
 		arg->textmode = TEXT_NAV;
 		XML_SetElementHandler(arg->p, nav_begin, nav_end);
-		return;
-	case SBLG_ELEM_ARTICLE:
-		break;
-	default:
+	} else if (start_article) {
+		/*
+		 * If we have data-sblg-ign-once, then ignore the current
+		 * invocation and remove the data-sblg-ign-once.
+		 */
+
+		for (attp = atts; *attp != NULL; attp += 2) 
+			if (sblg_lookup(*attp) == SBLG_ATTR_IGN_ONCE &&
+			    xmlbool(attp[1])) {
+				xmlopens(arg->f, s, atts);
+				return;
+			}
+
+		/*
+		 * See if we should only output certain tags.
+		 * To accomplish this, we first parse the requested tags in
+		 * "articletag" into an array of tags.
+		 * This attribute may happen multiple times.
+		 */
+
+		for (attp = atts; *attp != NULL; attp += 2)
+			if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLETAG)
+				hashtag(&tags, &tagsz, attp[1],
+					arg->sargs, arg->sposz, arg->single);
+
+		/* Look for the next article mathing the given tag. */
+
+		for ( ; arg->spos < arg->ssposz; arg->spos++)
+			if (tagfind(tags, tagsz, 
+			    arg->sargs[arg->spos].tagmap,
+			    arg->sargs[arg->spos].tagmapsz))
+				break;
+
+		for (i = 0; i < tagsz; i++)
+			free(tags[i]);
+		free(tags);
+
+		if (arg->spos >= arg->ssposz) {
+			/*
+			 * We have no articles left to show.
+			 * Just continue throwing away this article element til
+			 * we receive a matching one.
+			 */
+			arg->stack++;
+			arg->textmode = TEXT_NONE;
+			XML_SetElementHandler(arg->p, article_begin, article_end);
+			return;
+		}
+
+		/* First throw away children, then push out the article. */
+
+		arg->stack++;
+		arg->textmode = TEXT_NONE;
+		XML_SetElementHandler(arg->p, article_begin, article_end);
+
+		/* Echo the formatted text of the article. */
+
+		if (arg->single != -1)
+			xmltextx(arg->f, arg->sargs[arg->spos].article, 
+				arg->dst, arg->sargs, arg->sposz, 
+				arg->sposz, arg->spos, arg->single, 
+				arg->sposz, XMLESC_NONE);
+		else
+			xmltextx(arg->f, arg->sargs[arg->spos].article, 
+				arg->dst, arg->sargs, arg->sposz, arg->sposz,
+				arg->spos, 0, 1, XMLESC_NONE);
+		arg->spos++;
+
+		for (attp = atts; *attp != NULL; attp += 2) 
+			if (sblg_lookup(*attp) == SBLG_ATTR_PERMLINK &&
+			    xmlbool(attp[1])) {
+				xmlopen(arg->f, "div", 
+					"data-sblg-permlink", "1", NULL);
+				xmlopen(arg->f, "a", "href", 
+					arg->sargs[arg->spos - 1].src, NULL);
+				fputs("permanent link", arg->f);
+				xmlclose(arg->f, "a");
+				xmlclose(arg->f, "div");
+				fputc('\n', arg->f);
+			}
+	} else {
 		if (arg->single != -1)
 			xmlopensx(arg->f, s, atts, arg->dst,
 				arg->sargs, arg->sposz, arg->single);
 		else
 			xmlopens(arg->f, s, atts);
-		return;
 	}
-
-	/* Check for <article data-sblg-article>. */
-
-	for (attp = atts; *attp != NULL; attp += 2) 
-		if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLE)
-			break;
-
-	if (*attp == NULL || !xmlbool(attp[1])) {
-		xmlopens(arg->f, s, atts);
-		return;
-	}
-
-	/*
-	 * If we have data-sblg-ign-once, then ignore the current
-	 * invocation and remove the data-sblg-ign-once.
-	 */
-
-	for (attp = atts; *attp != NULL; attp += 2) 
-		if (sblg_lookup(*attp) == SBLG_ATTR_IGN_ONCE &&
-		    xmlbool(attp[1])) {
-			xmlopens(arg->f, s, atts);
-			return;
-		}
-
-	/*
-	 * See if we should only output certain tags.
-	 * To accomplish this, we first parse the requested tags in
-	 * "articletag" into an array of tags.
-	 * This attribute may happen multiple times.
-	 */
-
-	for (attp = atts; *attp != NULL; attp += 2)
-		if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLETAG)
-			hashtag(&tags, &tagsz, attp[1],
-				arg->sargs, arg->sposz, arg->single);
-
-	/* Look for the next article mathing the given tag. */
-
-	for ( ; arg->spos < arg->ssposz; arg->spos++)
-		if (tagfind(tags, tagsz, 
-		    arg->sargs[arg->spos].tagmap,
-		    arg->sargs[arg->spos].tagmapsz))
-			break;
-
-	for (i = 0; i < tagsz; i++)
-		free(tags[i]);
-	free(tags);
-
-	if (arg->spos >= arg->ssposz) {
-		/*
-		 * We have no articles left to show.
-		 * Just continue throwing away this article element til
-		 * we receive a matching one.
-		 */
-		arg->stack++;
-		arg->textmode = TEXT_NONE;
-		XML_SetElementHandler(arg->p, article_begin, article_end);
-		return;
-	}
-
-	/* First throw away children, then push out the article. */
-
-	arg->stack++;
-	arg->textmode = TEXT_NONE;
-	XML_SetElementHandler(arg->p, article_begin, article_end);
-
-	/* Echo the formatted text of the article. */
-
-	if (arg->single != -1)
-		xmltextx(arg->f, arg->sargs[arg->spos].article, 
-			arg->dst, arg->sargs, arg->sposz, 
-			arg->sposz, arg->spos, arg->single, 
-			arg->sposz, XMLESC_NONE);
-	else
-		xmltextx(arg->f, arg->sargs[arg->spos].article, 
-			arg->dst, arg->sargs, arg->sposz, arg->sposz,
-			arg->spos, 0, 1, XMLESC_NONE);
-	arg->spos++;
-
-	for (attp = atts; *attp != NULL; attp += 2) 
-		if (sblg_lookup(*attp) == SBLG_ATTR_PERMLINK &&
-		    xmlbool(attp[1])) {
-			xmlopen(arg->f, "div", 
-				"data-sblg-permlink", "1", NULL);
-			xmlopen(arg->f, "a", "href", 
-				arg->sargs[arg->spos - 1].src, NULL);
-			fputs("permanent link", arg->f);
-			xmlclose(arg->f, "a");
-			xmlclose(arg->f, "div");
-			fputc('\n', arg->f);
-		}
 }
 
 /*
@@ -531,6 +559,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	larg.f = f;
 	larg.single = -1;
 	larg.textmode = TEXT_TMPL;
+	larg.stacktag = NULL;
 
 	if (force != NULL) {
 		for (j = 0; j < sargsz; j++)
@@ -652,6 +681,7 @@ linkall_r(XML_Parser p, const char *templ,
 		larg.spos = j;
 		larg.ssposz = j + 1;
 		larg.textmode = TEXT_TMPL;
+		larg.stacktag = NULL;
 
 		/* Run the XML parser on the template. */
 
@@ -688,6 +718,7 @@ out:
 	free(larg.navtags);
 	free(larg.nav);
 	free(larg.buf);
+	free(larg.stacktag);
 	free(dst);
 	return rc;
 }
