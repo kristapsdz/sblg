@@ -209,7 +209,7 @@ regress_rebuild: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf -c $$f >$$tmp ; \
+		TZ=GMT ./sblg -o- -t $$d/$$tf -c $$f >$$tmp ; \
 		[ -f $$d/$$vf ] || { \
 			echo "$$f... creating" ; \
 			cp $$tmp $$d/$$vf ; \
@@ -230,7 +230,7 @@ regress_rebuild: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf $$f >$$tmp ; \
+		TZ=GMT ./sblg -o- -t $$d/$$tf $$f >$$tmp ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... replacing" ; \
 			set +e ; \
@@ -295,7 +295,7 @@ regress: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf -c $$f >$$tmp 2>/dev/null ; \
+		TZ=GMT ./sblg -o- -t $$d/$$tf -c $$f >$$tmp 2>/dev/null ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... fail" ; \
 			set +e ; \
@@ -311,7 +311,7 @@ regress: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		./sblg -o- -t $$d/$$tf $$f >$$tmp 2>/dev/null ; \
+		TZ=GMT ./sblg -o- -t $$d/$$tf $$f >$$tmp 2>/dev/null ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... fail" ; \
 			set +e ; \
@@ -322,7 +322,7 @@ regress: all
 		echo "$$f... ok" ; \
 	done ; \
 	echo "=== JSON tests === " ; \
-	./sblg -o- -j regress/json/*.xml | jq | grep -v '"version":' > $$tmp ; \
+	TZ=GMT ./sblg -o- -j regress/json/*.xml | jq | grep -v '"version":' > $$tmp ; \
 	diff $$tmp regress/json/expect.json || { \
 		echo "regress/json/expect.json... fail" ; \
 		set +e ; \
