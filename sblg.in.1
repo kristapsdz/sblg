@@ -123,12 +123,9 @@ for details.
 .It Fl C Ar file
 Like
 .Fl c ,
-but creating a blog with a single
-.Li <article data-sblg-article="1">
-for the
+but creating a blog from the article in
 .Ar file
-while using the remaining arguments are other files used in
-.Li <nav data-sblg-nav="1"> .
+with the remaining files being articles used for navigation.
 .It Fl L
 Like
 .Fl C ,
@@ -428,22 +425,27 @@ for a list of symbols that will be replaced if found in attribute value
 or textual contexts.
 These may occur anywhere in the template document.
 .Ss Blog Template
-The blog template file must also be a well-formed XML file where each
-.Li <article data-sblg-article="1">
-element is replaced by ordered (by default, newest to oldest) article
+The blog template file must also be a well-formed XML.
+Elements with a
+.Li data-sblg-article="1"
+attribute, usually on
+.Li <article>
+elements, are replaced by ordered (by default, newest to oldest) article
 contents.
 If there aren't enough articles, the element is removed.
-Furthermore,
-.Li <nav data-sblg-nav="1">
-elements are replaced by the same list of articles within an
+.Pp
+Elements with a
+.Li data-sblg-nav="1"
+attribute, usually on
+.Li <nav>
+elements, are replaced by the same list of articles within an
 unordered list.
 .Pp
-Usually, the
-.Li <article>
-tags are used for displaying full articles, while
-.Li <nav>
-tags are used for displaying navigation to articles, such as just their
-titles, dates, and links.
+If an element has both attributes, only the first is recognised.
+.Pp
+Usually, the article elements are used for displaying full articles,
+while the navigation elements are used for displaying navigation to
+articles, such as just their titles, dates, and links.
 .Bd -literal -offset indent
 <body>
   <header>This consists of two blog entries.</header>
@@ -1101,11 +1103,6 @@ is valid, while
 .Li <foo bar>
 is not.
 .Pp
-Since input is recognised as XML and
-.Em not
-HTML5, special characters must be specified as unicode code-point
-numbers and not HTML element names.
-For example, you must use
-.Li &#8230;
-instead of
-.Li &hellip; .
+HTML entity names with attributes, e.g.
+.Li <a title="foo&hellip;"> ,
+are not properly passed to output.
