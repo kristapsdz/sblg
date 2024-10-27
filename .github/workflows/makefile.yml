@@ -6,9 +6,10 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Install dependencies
-      run: sudo apt-get install -y bmake
+      run: sudo apt-get install -y bmake valgrind
     - name: Configure
       run: |
         cat /etc/os-release
         ./configure
         bmake regress
+        bmake valgrind

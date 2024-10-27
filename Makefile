@@ -60,6 +60,8 @@ LDADD_PKG	!= pkg-config --libs expat 2>/dev/null || echo "-lexpat"
 CFLAGS_PKG 	!= pkg-config --cflags expat 2>/dev/null || echo ""
 LDADD		+= $(LDADD_PKG)
 CFLAGS		+= $(CFLAGS_PKG)
+VALGRIND	 = valgrind
+VALGRIND_ARGS	 = -q --leak-check=full --leak-resolution=high --show-reachable=yes
 
 all: sblg sblg.a sblg.1
 
@@ -191,6 +193,7 @@ atom.xml: versions.xml
 
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
+	rm -f *.gcno *.gcov *.gcda
 	rm -f version.h
 	( cd examples/simple && $(MAKE) clean )
 	( cd examples/simple-frontpage && $(MAKE) clean )
@@ -238,6 +241,49 @@ regress_rebuild: all
 		} ; \
 		echo "$$f... same" ; \
 	done ; \
+	rm -f $$tmp
+
+valgrind: all
+	@tmp=`mktemp` ; \
+	for f in regress/standalone/*.in.xml ; do \
+		d=`dirname $$f` ; \
+		tf=`basename $$f .in.xml`.template.xml ; \
+		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
+		vf=`basename $$f .in.xml`.html ; \
+		$(VALGRIND) $(VALGRIND_ARGS) --log-file=$$tmp \
+			./sblg -o- -t $$d/$$tf -c $$f 2>&1 >/dev/null ; \
+		[ ! -s $$tmp ] || { \
+			echo "$$f... fail" ; \
+			cat $$tmp ; \
+			rm -f $$tmp ; \
+			exit 1 ; \
+		} ; \
+		echo "$$f... ok" ; \
+	done ; \
+	for f in regress/blog/*.in.xml ; do \
+		d=`dirname $$f` ; \
+		tf=`basename $$f .in.xml`.template.xml ; \
+		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
+		vf=`basename $$f .in.xml`.html ; \
+		$(VALGRIND) $(VALGRIND_ARGS) --log-file=$$tmp \
+			./sblg -o- -t $$d/$$tf $$f 2>&1 >/dev/null ; \
+		[ ! -s $$tmp ] || { \
+			echo "$$f... fail" ; \
+			cat $$tmp ; \
+			rm -f $$tmp ; \
+			exit 1 ; \
+		} ; \
+		echo "$$f... ok" ; \
+	done ; \
+	$(VALGRIND) $(VALGRIND_ARGS) --log-file=$$tmp \
+		./sblg -o- -j regress/json/*.xml 2>&1 >/dev/null ; \
+	[ ! -s $$tmp ] || { \
+		echo "regress/json/\*.xml... fail" ; \
+		cat $$tmp ; \
+		rm -f $$tmp ; \
+		exit 1 ; \
+	} ; \
+	echo "regress/json/\*.xml... ok" ; \
 	rm -f $$tmp
 
 regress: all
@@ -289,3 +335,23 @@ regress: all
 
 distclean: clean
 	rm -f Makefile.configure config.h config.log
+
+coverage.xml:
+	$(MAKE) clean
+	CC=gcc CFLAGS="--coverage" ./configure LDFLAGS="--coverage"
+	$(MAKE) regress
+	( echo '<?xml version="1.0" encoding="UTF-8" ?>'; \
+	  echo '<article data-sblg-article="1" data-sblg-tags="coverage">'; \
+	  echo '<aside>'; \
+	  echo '<div class="coverage-table">' ; \
+	  for f in $(OBJS) ; do \
+	  	src=$$(basename $$f .o).c ; \
+		link=https://github.com/kristapsdz/sblg/blob/master/$$src ; \
+		pct=$$(gcov -H $$src | grep 'Lines executed' | head -n1 | \
+			cut -d ":" -f 2 | cut -d "%" -f 1) ; \
+	  	echo "<a href=\"$$link\">$$src</a><span>$$pct%</span>" ; \
+	  done ; \
+	  echo "</div>"; \
+	  echo "</aside>"; \
+	  echo "</article>"; \
+	) >$@
