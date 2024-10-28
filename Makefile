@@ -209,7 +209,7 @@ regress_rebuild: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		TZ=GMT ./sblg -o- -t $$d/$$tf -c $$f >$$tmp ; \
+		TZ=GMT ./sblg -o- -t $$d/$$tf -c $$f >$$tmp 2>/dev/null ; \
 		[ -f $$d/$$vf ] || { \
 			echo "$$f... creating" ; \
 			cp $$tmp $$d/$$vf ; \
@@ -230,7 +230,12 @@ regress_rebuild: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		TZ=GMT ./sblg -o- -t $$d/$$tf $$f >$$tmp ; \
+		TZ=GMT ./sblg -o- -t $$d/$$tf $$f >$$tmp 2>/dev/null ; \
+		[ -f $$d/$$vf ] || { \
+			echo "$$f... creating" ; \
+			cp $$tmp $$d/$$vf ; \
+			continue ; \
+		} ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... replacing" ; \
 			set +e ; \
@@ -240,6 +245,28 @@ regress_rebuild: all
 			continue ; \
 		} ; \
 		echo "$$f... same" ; \
+	done ; \
+	for tf in regress/blog/*.template.xml ; do \
+		d=`dirname $$tf` ; \
+		f=`basename $$tf .template.xml`.in.xml ; \
+		[ ! -f $$d/$$f ] || continue ; \
+		f=$$d/simple.in.xml ; \
+		vf=`basename $$tf .template.xml`.html ; \
+		TZ=GMT ./sblg -o- -t $$tf $$f >$$tmp 2>/dev/null ; \
+		[ -f $$d/$$vf ] || { \
+			echo "$$tf... creating" ; \
+			cp $$tmp $$d/$$vf ; \
+			continue ; \
+		} ; \
+		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
+			echo "$$tf... replacing" ; \
+			set +e ; \
+			diff -u $$d/$$vf $$tmp ; \
+			set -e ; \
+			cp $$tmp $$d/$$vf ; \
+			continue ; \
+		} ; \
+		echo "$$tf... same" ; \
 	done ; \
 	rm -f $$tmp
 
@@ -275,6 +302,22 @@ valgrind: all
 		} ; \
 		echo "$$f... ok" ; \
 	done ; \
+	for tf in regress/blog/*.template.xml ; do \
+		d=`dirname $$tf` ; \
+		f=`basename $$tf .template.xml`.in.xml ; \
+		[ ! -f $$d/$$f ] || continue ; \
+		f=$$d/simple.in.xml ; \
+		vf=`basename $$tf .template.xml`.html ; \
+		$(VALGRIND) $(VALGRIND_ARGS) --log-file=$$tmp \
+	       		./sblg -o- -t $$tf $$f >$$tmp 2>&1 >/dev/null ; \
+		[ ! -s $$tmp ] || { \
+			echo "$$tf... fail" ; \
+			cat $$tmp ; \
+			rm -f $$tmp ; \
+			exit 1 ; \
+		} ; \
+		echo "$$tf... ok" ; \
+	done ; \
 	$(VALGRIND) $(VALGRIND_ARGS) --log-file=$$tmp \
 		./sblg -o- -j regress/json/*.xml 2>&1 >/dev/null ; \
 	[ ! -s $$tmp ] || { \
@@ -288,8 +331,6 @@ valgrind: all
 
 regress: all
 	@tmp=`mktemp` ; \
-	MALLOC_OPTIONS=S ; \
-	echo "=== standalone tests === " ; \
 	for f in regress/standalone/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
@@ -305,7 +346,6 @@ regress: all
 		} ; \
 		echo "$$f... ok" ; \
 	done ; \
-	echo "=== blog tests === " ; \
 	for f in regress/blog/*.in.xml ; do \
 		d=`dirname $$f` ; \
 		tf=`basename $$f .in.xml`.template.xml ; \
@@ -321,7 +361,22 @@ regress: all
 		} ; \
 		echo "$$f... ok" ; \
 	done ; \
-	echo "=== JSON tests === " ; \
+	for tf in regress/blog/*.template.xml ; do \
+		d=`dirname $$tf` ; \
+		f=`basename $$tf .template.xml`.in.xml ; \
+		[ ! -f $$d/$$f ] || continue ; \
+		f=$$d/simple.in.xml ; \
+		vf=`basename $$tf .template.xml`.html ; \
+		TZ=GMT ./sblg -o- -t $$tf $$f >$$tmp 2>/dev/null ; \
+		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
+			echo "$$tf... fail" ; \
+			set +e ; \
+			diff -u $$d/$$vf $$tmp ; \
+			rm -f $$tmp ; \
+			exit 1 ; \
+		} ; \
+		echo "$$tf... ok" ; \
+	done ; \
 	TZ=GMT ./sblg -o- -j regress/json/*.xml | jq | grep -v '"version":' > $$tmp ; \
 	diff $$tmp regress/json/expect.json || { \
 		echo "regress/json/expect.json... fail" ; \

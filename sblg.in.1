@@ -493,15 +493,69 @@ element.
 The navigation element may contain several attributes.
 .Bl -tag -width Ds
 .It Li data-sblg-navcontent=boolean
-If true, reproduces the mark-up content of the
-.Li <nav>
-within an unordered list item for each article shown, replacing
+Deprecated alias for respective content and element styles
+.Ar list-keep
+and
+.Ar keep
+if true,
+.Ar list-summarise
+and
+.Ar keep
+if false.
+.It Li data-sblg-navstyle-content=style
+Style for formatting articles into the content of the navigation
+element.
+May be
+.Ar keep ,
+to output the content per-article and perform
 .Sx Tag Symbols
-for the current article.
-If not true,
-.Nm
-populates an unordered list with article title text in a link and the
-publication date.
+substitution;
+.Ar summarise
+or
+.Ar summarize ,
+to discard content and output the article time followed by a link to the
+article;
+.Ar list-keep ,
+same as
+.Ar keep
+except surrounding each article with
+.Li <li>
+and all articles with
+.Li <ul> ;
+or
+.Ar list-summarise ,
+or
+.Ar list-summarize ,
+same as
+.Ar summarise
+except surrounding each article with
+.Li <li>
+and all articles with
+.Li <ul> .
+If not given or unknown, defaults to
+.Ar list-summarise .
+.It Li data-sblg-navstyle-element=style
+Style for the navigation element.
+May be
+.Ar keep ,
+to output the element as-is once around all articles;
+.Ar keep-strip ,
+to output the element without attributes once around all articles;
+.Ar repeat-strip ,
+to output the element without attributes around each article
+.Po
+if the content styles are
+.Ar list-keep
+or
+.Ar list-summarise ,
+the element is output within the
+.Li li
+.Pc ;
+or
+.Ar discard
+to suppress output.
+If not given or unknown, defaults to
+.Ar keep .
 .It Li data-sblg-navsort=sort
 Overrides the global search order given with
 .Fl s .
@@ -543,17 +597,15 @@ or
 mode to use the current article's set data as part of a string, e.g.,
 .Li location-${sblg-get|location} .
 .It Li data-sblg-navxml=boolean
-Like
-.Li data-sblg-navcontent ,
-but without the surrounding list elements.
-The
-.Li data-sblg-navxml
-attribute does not print any additional
-.Li <nav> ,
-.Li <ul> ,
-or
-.Li <li>
-HTML tags and can be used to generate custom XML files, such as sitemaps.
+Deprecated alias for respective content and element styles
+.Ar keep
+and
+.Ar discard
+if true,
+.Ar list-summarise
+and
+.Ar keep
+if false.
 .El
 .Ss Combined Template
 This is identical to the

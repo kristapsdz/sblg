@@ -65,12 +65,14 @@ static	struct htab htabs[SBLGTAG_NONE] = {
 	{ NULL, "data-sblg-img", SBLG_ATTR_IMG },
 	{ NULL, "data-sblg-lang", SBLG_ATTR_LANG },
 	{ NULL, "data-sblg-nav", SBLG_ATTR_NAV },
-	{ NULL, "data-sblg-navcontent", SBLG_ATTR_NAVCONTENT },
+	{ NULL, "data-sblg-navcontent", SBLG_ATTR_NAVCONTENT }, /* DEPRECATED */
 	{ NULL, "data-sblg-navsort", SBLG_ATTR_NAVSORT },
 	{ NULL, "data-sblg-navstart", SBLG_ATTR_NAVSTART },
+	{ NULL, "data-sblg-navstyle-content", SBLG_ATTR_NAVSTYLE_CONTENT },
+	{ NULL, "data-sblg-navstyle-element", SBLG_ATTR_NAVSTYLE_ELEMENT },
 	{ NULL, "data-sblg-navsz", SBLG_ATTR_NAVSZ },
 	{ NULL, "data-sblg-navtag", SBLG_ATTR_NAVTAG },
-	{ NULL, "data-sblg-navxml", SBLG_ATTR_NAVXML },
+	{ NULL, "data-sblg-navxml", SBLG_ATTR_NAVXML }, /* DEPRECATED */
 	{ NULL, "data-sblg-permlink", SBLG_ATTR_PERMLINK },
 	{ NULL, "data-sblg-sort", SBLG_ATTR_SORT },
 	{ NULL, "data-sblg-source", SBLG_ATTR_SOURCE },

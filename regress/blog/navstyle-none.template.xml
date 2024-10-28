@@ -4,7 +4,9 @@
 		<title></title>
 	</head>
 	<body>
-		<nav data-sblg-nav="1" data-sblg-navcontent="1"><ul><li></li></ul></nav>
+		<div data-sblg-nav="1">
+			${sblg-datetime-fmt}
+			${sblg-aside}
+		</div>
 	</body>
 </html>
-

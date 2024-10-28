@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<div data-sblg-nav="1" data-sblg-navstyle-element="discard">
+			${sblg-datetime-fmt}
+			${sblg-aside}
+		</div>
+	</body>
+</html>

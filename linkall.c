@@ -35,6 +35,27 @@ enum	textmode {
 	TEXT_NONE,
 };
 
+/*
+ * How the navigation tag (e.g., <nav data-sblg-nav="1">) is handled
+ * when filling in navigation entries.
+ */
+enum	navelem {
+	NAVELEM_KEEP_STRIP, /* keep element but strip attributes */
+	NAVELEM_REPEAT_STRIP, /* repeat element per article but strip */
+	NAVELEM_KEEP, /* keep element as-is */
+	NAVELEM_DISCARD, /* discard element */
+};
+
+/*
+ * How navigation entries are filled in to the navigation tag.
+ */
+enum	navformat {
+	NAVFORMAT_KEEP, /* keep content and replace symbols */
+	NAVFORMAT_SUMMARISE, /* summarise content */
+	NAVFORMAT_LIST_SUMMARISE, /* summarise within ul/li */
+	NAVFORMAT_LIST_KEEP, /* keep within ul/li */
+};
+
 struct	linkall {
 	FILE		 *f; /* open template file */
 	const char	 *src; /* template file */
@@ -50,10 +71,10 @@ struct	linkall {
 	size_t		  navlen; /* temporary: nav items to show */
 	char		**navtags; /* list of navtags to query */
 	size_t		  navtagsz; /* size of navtags list */
-	int		  navuse; /* use navigation contents */
 	enum asort	  navsort; /* override sort order */
+	enum navelem	  navelem;
+	enum navformat	  navformat;
 	int		  usesort; /* whether to use navsort */
-	int		  navxml; /* don't print html elements */
 	ssize_t		  single; /* page index in -C/-L mode */
 	char		 *nav; /* temporary: nav buffer */
 	size_t		  navsz; /* nav buffer length */
@@ -190,14 +211,6 @@ nav_end(void *dat, const XML_Char *s)
 	arg->textmode = TEXT_TMPL;
 	XML_SetElementHandler(arg->p, tmpl_begin, tmpl_end);
 
-	/* Only open the <ul> if we're printing HTML content. */
-
-	if (!arg->navxml) {
-		fputc('\n', arg->f);
-		xmlopen(arg->f, "ul", NULL);
-		fputc('\n', arg->f);
-	}
-
 	if (arg->usesort) {
 		sv = arg->sargs;
 		arg->sargs = calloc(arg->sposz, sizeof(struct article));
@@ -243,38 +256,43 @@ nav_end(void *dat, const XML_Char *s)
 		if (rc == 0)
 			continue;
 
-		if (arg->navxml) {
-			xmltextx(arg->f, arg->nav, arg->dst,
-				arg->sargs, setsz, arg->sposz, k, i, 
-				count, XMLESC_NONE);
-		} else if (!arg->navuse || arg->navsz == 0) {
+		if (arg->navformat == NAVFORMAT_LIST_SUMMARISE ||
+		    arg->navformat == NAVFORMAT_LIST_KEEP)
+			xmlopen(arg->f, "li", NULL);
+		if (arg->navelem == NAVELEM_REPEAT_STRIP)
+			xmlopen(arg->f, arg->stacktag, NULL);
+
+		if (arg->navformat == NAVFORMAT_LIST_SUMMARISE ||
+		    arg->navformat == NAVFORMAT_SUMMARISE) {
 			(void)strftime(buf, sizeof(buf), "%Y-%m-%d", 
 				gmtime(&arg->sargs[k].time));
-			xmlopen(arg->f, "li", NULL);
 			fputs(buf, arg->f);
 			fputs(": ", arg->f);
 			xmlopen(arg->f, "a", "href", 
 				arg->sargs[k].src, NULL);
 			fputs(arg->sargs[k].titletext, arg->f);
 			xmlclose(arg->f, "a");
-			xmlclose(arg->f, "li");
-			fputc('\n', arg->f);
-		} else {
-			xmlopen(arg->f, "li", NULL);
-			xmltextx(arg->f, arg->nav, arg->dst, 
+		} else
+			xmltextx(arg->f, arg->nav, arg->dst,
 				arg->sargs, setsz, arg->sposz, k, i, 
 				count, XMLESC_NONE);
+
+		if (arg->navelem == NAVELEM_REPEAT_STRIP)
+			xmlclose(arg->f, arg->stacktag);
+		if (arg->navformat == NAVFORMAT_LIST_SUMMARISE ||
+		    arg->navformat == NAVFORMAT_LIST_KEEP)
 			xmlclose(arg->f, "li");
-		}
 
 		if (++i >= arg->navlen)
 			break;
 	}
 
-	if (!arg->navxml) {
+	if (arg->navformat == NAVFORMAT_LIST_SUMMARISE ||
+	    arg->navformat == NAVFORMAT_LIST_KEEP)
 		xmlclose(arg->f, "ul");
+	if (arg->navelem == NAVELEM_KEEP ||
+	    arg->navelem == NAVELEM_KEEP_STRIP)
 		xmlclose(arg->f, arg->stacktag);
-	}
 
 	free(arg->stacktag);
 	free(arg->nav);
@@ -362,19 +380,27 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	}
 
 	if (start_nav) {
-		arg->navuse = 0;
 		arg->navsort = ASORT_DATE;
 		arg->usesort = 0;
-		arg->navxml = 0;
 		arg->navlen = arg->sposz;
 		arg->navstart = 0;
+		arg->navelem = NAVELEM_KEEP;
+		arg->navformat = NAVFORMAT_LIST_SUMMARISE;
 
 		for (attp = atts; *attp != NULL; attp += 2)
 			switch (sblg_lookup(*attp)) {
-			case SBLG_ATTR_NAVSZ:
-				arg->navlen = atoi(attp[1]);
-				if (arg->navlen > (size_t)arg->sposz)
-					arg->navlen = arg->sposz;
+			case SBLG_ATTR_NAVCONTENT:
+				/* DEPRECATED */
+				if (xmlbool(attp[1])) {
+					arg->navformat = NAVFORMAT_LIST_KEEP;
+					arg->navelem = NAVELEM_KEEP;
+				} else {
+					arg->navformat = NAVFORMAT_LIST_SUMMARISE;
+					arg->navelem = NAVELEM_KEEP;
+				}
+				break;
+			case SBLG_ATTR_NAVSORT:
+				sort = attp[1];
 				break;
 			case SBLG_ATTR_NAVSTART:
 				arg->navstart = atoi(attp[1]);
@@ -383,19 +409,49 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				if (arg->navstart)
 					arg->navstart--;
 				break;
-			case SBLG_ATTR_NAVCONTENT:
-				arg->navuse = xmlbool(attp[1]);
+			case SBLG_ATTR_NAVSTYLE_CONTENT:
+				if (strcmp(attp[1], "keep") == 0)
+					arg->navformat = NAVFORMAT_KEEP;
+				else if (strcmp(attp[1], "summarise") == 0)
+					arg->navformat = NAVFORMAT_SUMMARISE;
+				else if (strcmp(attp[1], "summarize") == 0)
+					arg->navformat = NAVFORMAT_SUMMARISE;
+				else if (strcmp(attp[1], "list-keep") == 0)
+					arg->navformat = NAVFORMAT_LIST_KEEP;
+				else 
+					arg->navformat = NAVFORMAT_LIST_SUMMARISE;
 				break;
-			case SBLG_ATTR_NAVXML:
-				arg->navxml = xmlbool(attp[1]);
+			case SBLG_ATTR_NAVSTYLE_ELEMENT:
+				if (strcmp(attp[1], "keep-strip") == 0)
+					arg->navelem = NAVELEM_KEEP_STRIP;
+				else if (strcmp(attp[1], "repeat-strip") == 0)
+					arg->navelem = NAVELEM_REPEAT_STRIP;
+				else if (strcmp(attp[1], "repeat-strip") == 0)
+					arg->navelem = NAVELEM_REPEAT_STRIP;
+				else if (strcmp(attp[1], "discard") == 0)
+					arg->navelem = NAVELEM_DISCARD;
+				else
+					arg->navelem = NAVELEM_KEEP;
+				break;
+			case SBLG_ATTR_NAVSZ:
+				arg->navlen = atoi(attp[1]);
+				if (arg->navlen > (size_t)arg->sposz)
+					arg->navlen = arg->sposz;
 				break;
 			case SBLG_ATTR_NAVTAG:
 				hashtag(&arg->navtags, 
 					&arg->navtagsz, attp[1],
 					arg->sargs, arg->sposz, arg->single);
 				break;
-			case SBLG_ATTR_NAVSORT:
-				sort = attp[1];
+			case SBLG_ATTR_NAVXML:
+				/* DEPRECATED */
+				if (xmlbool(attp[1])) {
+					arg->navformat = NAVFORMAT_KEEP;
+					arg->navelem = NAVELEM_DISCARD;
+				} else {
+					arg->navformat = NAVFORMAT_LIST_SUMMARISE;
+					arg->navelem = NAVELEM_KEEP;
+				}
 				break;
 			default:
 				break;
@@ -409,12 +465,17 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 				arg->usesort = 0;
 		}
 
-		if (!arg->navxml)
-			xmlopens(arg->f, s, atts);
-
 		arg->stack++;
 		arg->textmode = TEXT_NAV;
 		XML_SetElementHandler(arg->p, nav_begin, nav_end);
+
+		if (arg->navelem == NAVELEM_KEEP_STRIP)
+			xmlopen(arg->f, s, NULL);
+		else if (arg->navelem == NAVELEM_KEEP)
+			xmlopens(arg->f, s, atts);
+		if (arg->navformat == NAVFORMAT_LIST_SUMMARISE ||
+		    arg->navformat == NAVFORMAT_LIST_KEEP)
+			xmlopen(arg->f, "ul", NULL);
 	} else if (start_article) {
 		/*
 		 * If we have data-sblg-ign-once, then ignore the current

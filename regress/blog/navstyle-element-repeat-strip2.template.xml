@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<ul>
+			<li data-sblg-nav="1" data-sblg-navstyle-element="repeat-strip" data-sblg-navstyle-content="keep">
+				${sblg-datetime-fmt}
+				${sblg-aside}
+			</li>
+		</ul>
+	</body>
+</html>
