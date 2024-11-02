@@ -30,7 +30,7 @@
 			</div>
 			<div class="text">
 				<h1>
-					sblg <span>&#8211; static blog utility</span>
+					sblg <span>&mdash; static blog utility</span>
 				</h1>
 			</div>
 			<div class="nav text">
@@ -52,51 +52,45 @@
 		</nav>
 		<section class="text">
 			<p class="intro">
-				<span itemprop="name" class="nm">sblg</span> is 
-				<span itemprop="description">a utility for creating static blogs</span>. 
-				It merges articles into templates to generate static HTML files, Atom feeds, and JSON files.
-				It's built for use with 
-				<a href="https://man.openbsd.org/make.1">make(1)</a>.
-				No PHP, no database: just a simple 
-				<span itemprop="operatingSystem">UNIX</span> tool for pulling data
-				from articles and populating templates.
+				<span itemprop="name" class="nm">sblg</span> is
+				<span itemprop="description">a utility for creating static blogs</span>.  It merges articles into templates to
+				generate static HTML files, Atom feeds, and JSON files.  It's built for use with 
+				<a href="https://man.openbsd.org/make.1">make</a>.  No PHP, no database: just a simple 
+				<span itemprop="operatingSystem">UNIX</span> tool for pulling data from articles and populating templates.
 			</p>
 			<p>
 				How does it work?
+				You write your HTML (really XHTML) articles and templates.  <a href="sblg.1.html">sblg</a> pulls data from
+				the articles and merges it into the templates.  This is usually orchestrated with a Makefile.  And that's it.
+				<strong>You can write articles in any format &mdash; like Markdown &mdash; so long it converts into XHTML.</strong>
 			</p>
 			<p>
-				You write your HTML (really XHTML) articles and templates. 
-				<a href="sblg.1.html">sblg(1)</a> pulls data from the articles and merges it into the templates.
-				This is usually orchestrated with a Makefile.
-				And that's it.
-				<strong>
-					You can write articles in any format&#8212;like Markdown&#8212;so long it converts into XHTML.
-				</strong>
+				To get started, check if <span class="nm">sblg</span> is part of your system's package manager.  If it's not,
+				download <a href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a href="snapshots/sblg.tar.gz.sha512">SHA512</a>),
+				decompress, run <code class="prettyprint lang-sh">./configure</code>,
+				optionally <code class="prettyprint lang-sh">make regress</code>,
+				then <code class="prettyprint lang-sh">make install</code>.
 			</p>
 			<p>
-				To get started, check if <span class="nm">sblg</span> is part of your system's package manager.
-				If it's not, download <a href="snapshots/sblg.tar.gz">sblg.tar.gz</a> (<a
-					href="snapshots/sblg.tar.gz.sha512">SHA512</a>), decompress, run <code class="prettyprint
-					lang-sh">./configure</code> then <code class="prettyprint lang-sh">make install</code>.
-			</p>
-			<p>
-				<nav data-sblg-nav="1" data-sblg-navxml="1" data-sblg-navsz="1" data-sblg-navtag="version">
-					The current version is <strong><span itemprop="softwareVersion">${sblg-titletext}</span></strong>,
-					released on
+				<div data-sblg-nav="1" data-sblg-navsz="1" data-sblg-navtag="version" data-sblg-navstyle-element="discard"
+				 data-sblg-navstyle-content="keep">
+					The current version is
+					<strong itemprop="softwareVersion">${sblg-titletext}</strong>, released on
 					<strong><time itemprop="dateModified" datetime="${sblg-datetime}">${sblg-date}</time></strong>.
-				</nav>
-				<span class="nm">sblg</span> is an <a href="http://opensource.org/licenses/ISC"
-					rel="license">open source</a> ISO C utility that depends only on <a
-					href="https://libexpat.github.io/">libexpat</a>.
+				</div>
+				<span class="nm">sblg</span> is an
+				<a href="http://opensource.org/licenses/ISC" rel="license">open source</a> ISO C utility that depends only on 
+				<a href="https://libexpat.github.io/">libexpat</a>.
 				It is a <a href="https://www.bsd.lv">BSD.lv</a> project and runs on OpenBSD, NetBSD, FreeBSD, Mac OS X, Linux,
 				Solaris, and IllumOS.
 			</p>
-			<h3>
-				latest version
-			</h3>
 		</section>
 		<section id="versions">
-			<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1" data-sblg-navsz="1" class="text">
+			<h3 class="text">
+				latest version
+			</h3>
+			<div data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navstyle-element="keep" data-sblg-navstyle-content="keep"
+			 data-sblg-navsz="1" class="text">
 				<div>
 					<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>: 
 					version ${sblg-titletext}
@@ -104,26 +98,22 @@
 				<div>
 					${sblg-aside}
 				</div>
-			</nav>
+				<div>
+					<i class="fa fa-clock-o"></i>
+					<a href="archive.html">See all versions</a>
+				</div>
+			</div>
 		</section>
 		<section class="text">
-			<div class="seeall">
-				(<a href="archive.html">See all versions</a>.)
-			</div>
 			<h3>
 				output modes
 			</h3>
 			<p>
-				There are three basic ways of populating templates:
-				<i>standalone</i> mode, which pastes a single article into a
-				template; <i>blog</i> mode, which pastes multiple
-				articles&#8212;like a blog front page; and <i>combined</i>,
-				which does both.
-				Blog mode can merge entire articles as well as just article snippets
-				and metadata for navigation and summary purposes.
-				(That's what this page does with its version notes.)
-				You can also do specialty modes of Atom and JSON feeds&#8212;also
-				part of this page.
+				There are three basic ways of populating templates: <i>standalone</i> mode, which pastes a single article into a
+				template; <i>blog</i> mode, which pastes multiple articles&mdash;like a blog front page; and <i>combined</i>,
+				which does both.  Blog mode can merge entire articles as well as just article snippets and metadata for
+				navigation and summary purposes.  (That's what this page does with its version notes.) You can also do specialty
+				modes of Atom and JSON feeds&mdash;also part of this page.
 			</p>
 			<p>
 				The following templates illustrate <i>blog</i> and <i>combined</i>
@@ -131,7 +121,7 @@
 				These are also used in the templates installed with the system, all
 				of which are responsive, have feeds, etc.
 			</p>
-			<div class="templates">
+			<div id="templates">
 				<figure>
 					<a href="examples/simple/index.html"><img src="template1.jpg" alt="" /></a>
 					<figcaption>
@@ -144,8 +134,6 @@
 						Simple <a href="examples/simple-frontpage/index.html">front-page</a> template.
 					</figcaption>
 				</figure>
-			</div>
-			<div class="templates">
 				<figure>
 					<a href="examples/retro/index.html"><img src="template3.jpg" alt="" /></a>
 					<figcaption>
@@ -159,8 +147,6 @@
 						<a href="examples/brutalist/index.html">front-page</a> style and Markdown.
 					</figcaption>
 				</figure>
-			</div>
-			<div class="templates">
 				<figure>
 					<a href="examples/photos-column/index.html"><img src="template5.jpg" alt="" /></a>
 					<figcaption>
@@ -179,7 +165,7 @@
 				</figure>
 			</div>
 			<h4>
-				standalone mode
+				output modes: standalone mode
 			</h4>
 			<figure>
 				<img src="index1.svg" alt="standalone mode graph" />
@@ -187,7 +173,7 @@
 			<p>
 				Articles are just content within the <code class="prettyprint lang-html">&lt;article
 					data-sblg-article="1"&gt;</code> tag of an HTML (or really XML) document.
-				<a href="sblg.1.html">sblg(1)</a> pulls articles and article metadata for populating navigation
+				<a href="sblg.1.html">sblg</a> pulls articles and article metadata for populating navigation
 				elements and article elements in the templates.
 				Some important values, such as the document title, are extracted and may be filled in to the template.
 				You can also set custom variables, such as <q>foo</q> in the following example article.
@@ -231,38 +217,35 @@
 &lt;/html&gt;</pre>
 			</div>
 			<p>
-				There are all sorts of things documented in <a href="sblg.1.html">sblg(1)</a> that templates can fill in as
-				extracted from article text.
-				In the above example, a variable is used in the <code class="prettyprint lang-html">&lt;title&gt;</code> element
-				and expands to the title in the source <code class="prettyprint lang-html">&lt;h1&gt;</code> element.
+				There are all sorts of things documented in <a href="sblg.1.html">sblg</a> that templates can fill in as
+				extracted from article text.  In the above example, a variable is used in the
+				<code class="prettyprint lang-html">&lt;title&gt;</code> element and expands to the title in the source
+				<code class="prettyprint lang-html">&lt;h1&gt;</code> element.
 			</p>
 			<div class="prettyprint">
+				<a class="btn" href="example1.html">view results</a>
 				<pre class="prettyprint lang-sh">% sblg -t template.xml -c example.xml</pre>
 			</div>
-			<div class="button">
-				<a class="res" href="example1.html">view results <i class="fa fa-fw fa-chevron-right"></i></a>
-			</div>
 			<p>
-				This works well for putting simple documents into a template.
-				But what if we want to have these documents relate to each other, or have a single document relate to multiple
-				articles?
-				That's where blog mode comes into play.
+				This works well for putting simple documents into a template.  But what if we want to have these documents
+				relate to each other, or have a single document relate to multiple articles?  That's where blog mode comes into
+				play.
 			</p>
 			<h4>
-				blog mode
+				output modes: blog mode
 			</h4>
 			<figure>
 				<img src="index2.svg" alt="blog mode graph" />
 			</figure>
 			<p>
-				Blog mode is similar to standalone; however, you can also specify <code
-					class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> to fill in meta-data
-				from all articles passed into the command.
+				Blog mode is similar to standalone; however, you can also specify 
+				<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> to fill in meta-data from all articles
+				passed into the command.
 				And unlike in standalone mode, you can't willy-nilly use <code class="prettyprint lang-sh">${sblg-title}</code>
 				variables in the global template scope, as it's not clear to which article they'd refer.
-				The <code class="prettyprint lang-html">&lt;article&gt;</code> elements will be filled in with articles&#8212;as
-				many as you stipulate&#8212;there, as in the navigation, you can use the <code class="prettyprint
-					lang-sh">${sblg-title}</code> for the currently-printed article.
+				The <code class="prettyprint lang-html">&lt;article&gt;</code> elements will be filled in with articles &mdash;
+				as many as you stipulate &mdash; there, as in the navigation, you can use the 
+				<code class="prettyprint lang-sh">${sblg-title}</code> for the currently-printed article.
 			</p>
 			<div class="prettyprint">
 				<pre class="prettyprint lang-html">&lt;!DOCTYPE html&gt;
@@ -276,17 +259,12 @@
 &lt;/html&gt;</pre>
 			</div>
 			<p>
-				A Makefile makes this easy.
-				Simply let individual HTML articles be built with <code>-c</code>
-				from a template and source XML.
-				Then let the main blog page be built from all source XML and a
-				different template.
+				A Makefile makes this easy.  Simply let individual HTML articles be built with <code>-c</code> from a template
+				and source XML.  Then let the main blog page be built from all source XML and a different template.
 			</p>
 			<div class="prettyprint">
+				<a class="btn" href="example2.html">view results</a>
 				<pre class="prettyprint lang-sh">% sblg -t template.xml example1.xml example2.xml</pre>
-			</div>
-			<div class="button">
-				<a class="res" href="example2.html">view results <i class="fa fa-fw fa-chevron-right"></i></a>
 			</div>
 			<p>
 				In most blogs, however, one wants both a main blogroll page and each
@@ -295,7 +273,7 @@
 				individual articles may also have navigation to all others.
 			</p>
 			<h4>
-				combined mode
+				output modes: combined mode
 			</h4>
 			<figure>
 				<img class="larger" src="index3.svg" alt="combined mode graph" />
@@ -320,10 +298,8 @@
 				Combined mode works well with blog mode: combined for individual articles, blog for for landing page.
 			</p>
 			<div class="prettyprint">
+				<a class="btn" href="example3.html">view results</a>
 				<pre class="prettyprint lang-sh">% sblg -t template.xml -C article1.xml article1.xml article2.xml</pre>
-			</div>
-			<div class="button">
-				<a class="res" href="example3.html">view results <i class="fa fa-fw fa-chevron-right"></i></a>
 			</div>
 			<p>
 				For larger numbers of pages in combined mode, the cost of recompiling for each output can be quite high.
@@ -331,7 +307,7 @@
 				These uses the default suffix mapping of replacing <code>.xml</code> with <code>.html</code> in the output.
 			</p>
 			<h4>
-				json/atom mode
+				output modes: json/atom mode
 			</h4>
 			<figure>
 				<img src="index4.svg" alt="JSON/Atom mode graph" />
@@ -344,12 +320,13 @@
 				<a href="https://www.npmjs.com">npm</a> as the
 				<a href="https://www.npmjs.com/package/sblg">sblg</a> package.
 			</p>
-			<div class="prettyprint">
-				<pre class="prettyprint lang-sh">% npm i sblg --save-dev</pre>
-			</div>
+			<p>
+				Use <code class="prettyprint lang-sh">npm i sblg --save-dev</code> to interface your TypeScript with a
+				<a href="sblg.1.html">sblg</a> blog.
+			</p>
 		</section>
 		<footer>
-			&#169; 2013&#8211;2020, 
+			&copy;
 			<a itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person" rel="author" href="https://github.com/kristapsdz">
 				<span itemprop="name">Kristaps Dzonsons</span>
 			</a>

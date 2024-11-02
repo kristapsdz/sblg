@@ -6,14 +6,11 @@ figure				{ text-align: center;
 figure img			{ width: 98%; 
 				  max-width: 450px; }
 figure img.larger		{ max-width: 800px; }
-h3				{ font-size: 18pt;
+h3				{ font-size: 24pt;
 				  font-weight: 500;
-				  font-variant: small-caps;
-				  margin-top: 3rem;
-				  text-align: center; }
-h4				{ font-size: 15pt;
+				  font-variant: small-caps; }
+h4				{ font-size: 18pt;
 				  font-weight: 500;
-				  text-align: center;
 				  font-variant: small-caps; }
 body > nav			{ background-color: #336699;
 				  padding: 4rem 0 1rem 0; }
@@ -26,18 +23,19 @@ body > nav div a		{ color: #eee; }
 body > nav a			{ color: #fff; }
 body > nav .nav			{ font-size: 85%; 
 				  display: flex; }
-.templates			{ display: flex; }
-.templates > figure		{ flex: 1;
+#templates			{ display: grid;
+				  grid-template-columns: 1fr 1fr 1fr;
+				  gap: 1rem; }
+#templates > figure		{ flex: 1;
 				  padding: 1rem; }
-.templates figcaption		{ text-align: center;
+#templates figcaption		{ text-align: center;
 				  font-size: smaller;
 				  opacity: 0.8; }
-.templates img			{ width: 100%;
+#templates img			{ width: 100%;
 				  box-shadow: 0 0 2px #ccc; }
 section				{ color: #333; }
 section .intro			{ font-size: 125%; 
 				  color: #000;
-				  margin-bottom: 2em;
 				  line-height: 1.4em; }
 body > nav .explain		{ margin-left: 12pt; }
 body > nav a ~ .explain > span	{ display: none; 
@@ -51,21 +49,17 @@ body > nav a ~ .explain > span	{ display: none;
 				{ display: inline; }
 #versions	 		{ background-color: #f8f8f8; 
 				  border-top: thin solid #eee;
+				  padding-bottom: 1rem;
 				  border-bottom: thin solid #eee; }
 #versions time			{ font-weight: 500;
 				  color: #000; }
-#versions ul			{ list-style-type: none; 
-				  padding: 0; }
-#versions p			{ margin: 0.5rem 0; }
-#versions li + li		{ padding-top: 1rem; }
+#versions .fa			{ font-size: smaller; }
 strong, b			{ font-weight: 500; }
 code, .prettyprint		{ font-size: 75%; }
 pre.prettyprint			{ border: none !important;
+				  display: inline-block;
 				  line-height: 1.4em; }
 .prettyprint a > *		{ color: blue !important; }
-.prettyprint + .button		{ margin-top: -0.5rem; }
-.seeall				{ text-align: center; 
-				  padding-top: 1rem; }
 footer				{ padding: 3rem 0;
 				  font-size: 90%;
 				  color: #666;
@@ -73,19 +67,12 @@ footer				{ padding: 3rem 0;
 footer a			{ color: #000; 
 				  border-bottom: thin transparent; }
 footer a:hover			{ border-bottom: thin solid rgba(0, 0, 0, 0.5); }
-.res				{ font-size: 80%;
-				  display: inline-block;
-				  padding: 0.5rem 1rem; 
-				  margin-top: 0.5rem;
-				  border-radius: 1rem;
+.btn				{ display: inline-block;
+				  padding: 0.25rem 0.5rem; 
+				  border-radius: 0.5rem;
 				  font-weight: 500;
 				  color: #fff;
 				  background-color: #336699; }
-.res i.fa			{ font-size: 60%; 
-				  font-weight: 400;
-				  padding-left: 0.5rem;
-				  color: #ddd; }
-
 
 @media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
   div.prettyprint		{ overflow: hidden; }
