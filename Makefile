@@ -4,6 +4,9 @@
 include Makefile.configure
 
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
+# If this command not found, the JSON test is skipped.
+JQ		 = jq
+
 sinclude Makefile.local
 
 VERSION 	 = 0.5.12
@@ -377,15 +380,23 @@ regress: all
 		} ; \
 		echo "$$tf... ok" ; \
 	done ; \
-	TZ=GMT ./sblg -o- -j regress/json/*.xml | jq | grep -v '"version":' > $$tmp ; \
-	diff $$tmp regress/json/expect.json || { \
-		echo "regress/json/expect.json... fail" ; \
-		set +e ; \
-		diff -u $$tmp regress/json/expect.json ; \
-		rm -f $$tmp ; \
-		exit 1 ; \
-	} ; \
-	echo "regress/json/expect.json... ok" ; \
+	set +e ; \
+	jq=`command -v $(JQ) 2>/dev/null` ; \
+	set -e ; \
+	if [ -n "$$jq" ]; then \
+		TZ=GMT ./sblg -o- -j regress/json/*.xml | $$jq | \
+			grep -v '"version":' > $$tmp ; \
+		diff $$tmp regress/json/expect.json || { \
+			echo "regress/json/expect.json... fail" ; \
+			set +e ; \
+			diff -u $$tmp regress/json/expect.json ; \
+			rm -f $$tmp ; \
+			exit 1 ; \
+		} ; \
+		echo "regress/json/expect.json... ok" ; \
+	else \
+		echo "regress/json/expect.json... skipping" ; \
+	fi ; \
 	rm -f $$tmp
 
 distclean: clean
