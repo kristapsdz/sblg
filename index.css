@@ -55,12 +55,17 @@ body > nav a ~ .explain > span	{ display: none;
 				  color: #000; }
 #versions .fa			{ font-size: smaller; }
 strong, b			{ font-weight: 500; }
-code, .prettyprint		{ font-size: 75%; }
+div.prettyprint			{ overflow-x: hidden;
+				  background-color: #f8f8f8; 
+				  border-radius: 4pt;
+				  padding: 0 0.5rem; }
+pre.prettyprint			{ overflow-x: auto; }
+code				{ font-size: 75%; }
 pre.prettyprint			{ border: none !important;
-				  display: inline-block;
+				  font-size: 75%;
 				  line-height: 1.4em; }
 .prettyprint a > *		{ color: blue !important; }
-footer				{ padding: 3rem 0;
+footer				{ padding: 3rem 0 1rem 0;
 				  font-size: 90%;
 				  color: #666;
 				  text-align: center; }
@@ -74,9 +79,14 @@ footer a:hover			{ border-bottom: thin solid rgba(0, 0, 0, 0.5); }
 				  color: #fff;
 				  background-color: #336699; }
 
-@media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
-  div.prettyprint		{ overflow: hidden; }
+@media (width < 768px) {
   body > nav			{ padding: 1rem 0 0.5rem 0; }
   h1				{ font-size: 125%; }
   article .intro		{ font-size: 110%; }
+  #templates			{ grid-template-columns: 1fr 1fr;
+	  			  gap: 0.5rem; }
+}
+
+@media (width < 512px) {
+  #templates			{ grid-template-columns: 1fr; }
 }
