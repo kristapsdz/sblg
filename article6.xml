@@ -1,6 +1,6 @@
 <article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
-		<h2>Tips and Tricks: Tag Indexes</h2>
+		<h2>How do I work with tags?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2014-08-02">02 August, 2014</time></div>
 	</header>
 	<aside>How to make tag indexes and clouds.  (Don't use clouds: they're ridiculous.)</aside>
@@ -8,19 +8,17 @@
 		Tags are useful for organising your content.
 		As of version 0.1.1, you can specify tags for each article as follows:
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-html">&lt;article data-sblg-article="1" data-sblg-tags="foo bar"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;header&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;h1&gt;Title&lt;/h1&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;address&gt;Kristaps Dzonsons&lt;/address&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;time datetime="2013-01-01"&gt;1 January, 2013&lt;/time&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;/header&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;aside&gt;</code>
-		<code class="prettyprint lang-html dtab">The article's &lt;b&gt;summary&lt;/b&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;/aside&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;code data-sblg-tags="baz"&gt;Mu.&lt;/code&gt;</code>
-		<code class="prettyprint lang-html">&lt;/article&gt;</code>
-	</p>
+	<pre class="prettyprint lang-html">&lt;article data-sblg-article="1" data-sblg-tags="foo bar"&gt;
+  &lt;header&gt;
+    &lt;h1&gt;Title&lt;/h1&gt;
+    &lt;address&gt;Kristaps Dzonsons&lt;/address&gt;
+    &lt;time datetime="2013-01-01"&gt;1 January, 2013&lt;/time&gt;
+  &lt;/header&gt;
+  &lt;aside&gt;
+    The article's &lt;b&gt;summary&lt;/b&gt;
+  &lt;/aside&gt;
+  &lt;code data-sblg-tags="baz"&gt;Mu.&lt;/code&gt;
+&lt;/article&gt;</pre>
 	<p>
 		The <code class="prettyprint lang-html">&lt;article data-sblg-tags=""&gt;</code> attribute indicates the tags of an article.  In
 		this article's case, that's <code>foo</code>, <code>bar</code>, and <code>baz</code>.
@@ -30,9 +28,7 @@
 		Once you've added the tags, you can use them when generating <code class="prettyprint lang-html">&lt;nav&gt;</code> entries in
 		the blog amalgation.  This is used in the <a href="index.html">index.html</a> page of this site.
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navtag="foo" /&gt;</code>
-	</p>
+	<pre class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navtag="foo" /&gt;</pre>
 	<p>
 		The above navigation element will only display entries with the <code>foo</code> tag.
 		If you have multiple space-separated words in the <code>data-sblg-navtag</code> attribute, it will <q>OR</q> them together when

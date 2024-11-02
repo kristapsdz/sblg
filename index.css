@@ -49,7 +49,7 @@ body > nav a ~ .explain > span	{ display: none;
 				{ display: inline; }
 #versions	 		{ background-color: #f8f8f8; 
 				  border-top: thin solid #eee;
-				  padding-bottom: 1rem;
+				  padding-top: 1rem;
 				  border-bottom: thin solid #eee; }
 #versions time			{ font-weight: 500;
 				  color: #000; }

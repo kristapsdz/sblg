@@ -1,6 +1,6 @@
 <article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
-		<h2>Tips and Tricks: Tag Symbols</h2>
+		<h2>How do I use tag symbols?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2015-05-23">23 May, 2015</time></div>
 	</header>
 	<aside>Tips and tricks for using sblg: using tag symbols.</aside>
@@ -15,9 +15,7 @@
 		Tags are even more useful in combined mode described in <a href="sblg.1.html">sblg(1)</a>, which is how this file
 		was created:
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-sh">% sblg -o article9.html -C article9.xml article1.xml ... article9.xml</code>
-	</p>
+	<pre class="prettyprint lang-sh">% sblg -o article9.html -C article9.xml article1.xml ... article9.xml</pre>
 	<p>
 		<strong>Note</strong>: using this invocation is the same reason why the permanent link below this page doesn't work properly!
 		(This is described in <a href="sblg.1.html">sblg(1)</a>, and is a known caveat to be solved later.)

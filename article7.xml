@@ -1,6 +1,6 @@
 <article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
-		<h2>Tips and Tricks: Fancy Navigation</h2>
+		<h2>How do I customise article navigation?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2014-08-15">15 August, 2014</time></div>
 	</header>
 	<aside>Tips and tricks for using sblg: custom navigation.</aside>
@@ -11,26 +11,22 @@
 	<p>
 		Prior to this, navigation looked as follows after being run through the system:
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;ul&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;li&gt;date: &lt;a href="source"&gt;title&lt;/a&gt;&lt;/li&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;/ul&gt;</code>
-		<code class="prettyprint lang-html">&lt;/nav&gt;</code>
-	</p>
+	<pre class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;date: &lt;a href="source"&gt;title&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
 	<p>
 		Now, one can specify the <code class="code">&lt;nav data-sblg-navcontent="1"&gt;</code> attribute and allow the
 		element's contents be filled in with keyword substitution.
 		Using, for example, the <code class="code">${sblg-base}</code> parameter, you can have a custom navigation entry consisting of an
 		image or otherwise!
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navcontent="1"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;a href="&#36;{sblg-base}.html"&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;figure&gt;&lt;img src="&#36;{sblg-base}.png" /&gt;&lt;figcaption&gt;&#36;{sblg-title}&lt;/figcaption&gt;&lt;/figure&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;/a&gt;</code>
-		<code class="prettyprint lang-html">&lt;/nav&gt;</code>
-	</p>
+	<pre class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navcontent="1"&gt;
+  &lt;a href="&#36;{sblg-base}.html"&gt;
+    &lt;figure&gt;&lt;img src="&#36;{sblg-base}.png" /&gt;&lt;figcaption&gt;&#36;{sblg-title}&lt;/figcaption&gt;&lt;/figure&gt;
+  &lt;/a&gt;
+&lt;/nav&gt;</pre>
 	<p>
 		This will have navigation consist of a list of figures with images set to the filename base.
 	</p>

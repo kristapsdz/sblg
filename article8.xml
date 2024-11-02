@@ -1,6 +1,6 @@
 <article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
-		<h2>Tips and Tricks: Open Graph</h2>
+		<h2>How do I integrate with Open Graph?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2014-08-16">16 August, 2014</time></div>
 	</header>
 	<aside>Tips and tricks for using sblg: adding Open Graph meta tags.</aside>
@@ -13,12 +13,10 @@
 		Open Graph, as described at <a href="http://ogp.me/">ogp.me</a>, works by decorating <code class="prettyprint
 			lang-html">&lt;meta&gt;</code> tags in the HTML head with certain attributes, e.g.,
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-html">&lt;head prefix="og: http://ogp.me/ns#"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:key" content="value" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;title&gt;My Blog Page&lt;/title&gt;</code>
-		<code class="prettyprint lang-html">&lt;/head&gt;</code>
-	</p>
+	<pre class="prettyprint lang-html">&lt;head prefix="og: http://ogp.me/ns#"&gt;
+  &lt;meta property="og:key" content="value" /&gt;
+  &lt;title&gt;My Blog Page&lt;/title&gt;
+&lt;/head&gt;</pre>
 	<p>
 		You can see all sorts of tags on <a href="http://ogp.me/">ogp.me</a>, but let's specifically consider Facebook's <a
 			href="https://developers.facebook.com/docs/opengraph">Open Graph</a> specification.
@@ -28,48 +26,40 @@
 		call <code>bar.xml</code>.
 		What follows is a fragment of such a template:
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-html">&lt;head prefix="og: http://ogp.me/ns#"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:url" content="&#36;{sblg-url}" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:description" content="&#36;{sblg-asidetext}" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:title" content="&#36;{sblg-titletext}" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;title&gt;My Blog Page&lt;/title&gt;</code>
-		<code class="prettyprint lang-html">&lt;/head&gt;</code>
-	</p>
+	<pre class="prettyprint lang-html">&lt;head prefix="og: http://ogp.me/ns#"&gt;
+  &lt;meta property="og:url" content="&#36;{sblg-url}" /&gt;
+  &lt;meta property="og:description" content="&#36;{sblg-asidetext}" /&gt;
+  &lt;meta property="og:title" content="&#36;{sblg-titletext}" /&gt;
+  &lt;title&gt;My Blog Page&lt;/title&gt;
+&lt;/head&gt;</pre>
 	<p>
 		Note that I'm using <q>asidetext</q> and <q>titletext</q>, otherwise this would incorporate HTML tags as well.
 		Next, make sure your page (let's call it <code>foo.xml</code>) has the appropriate data.
 		Below is a full article, if an uninteresting one.
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;header&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;h1&gt;My Title&lt;/h1&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;aside&gt;A description of my article.&lt;/aside&gt;</code>
-		<code class="prettyprint lang-html dtab">&lt;time datetime="2014-01-01"&gt;<wbr />2014-01-01<wbr />&lt;/time&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;/header&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;p&gt;</code>
-		<code class="prettyprint lang-html dtab">Some sort of text.</code>
-		<code class="prettyprint lang-html tab">&lt;/p&gt;</code>
-		<code class="prettyprint lang-html">&lt;/article&gt;</code>
-	</p>
+	<pre class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;
+  &lt;header&gt;
+    &lt;h1&gt;My Title&lt;/h1&gt;
+    &lt;aside&gt;A description of my article.&lt;/aside&gt;
+    &lt;time datetime="2014-01-01"&gt;2014-01-01&lt;/time&gt;
+  &lt;/header&gt;
+  &lt;p&gt;
+    Some sort of text.
+  &lt;/p&gt;
+&lt;/article&gt;</pre>
 	<p>
 		Now, when you run <span class="nm">sblg</span>, it will fill in these values with your article's data.
 		You need to use either <b>-c</b> or <b>-C</b> mode in generating your output (and explicitly specify an output filename).
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-sh">% sblg -c -o article.html -t bar.xml foo.xml</code>
-	</p>
+	<pre class="prettyprint lang-sh">% sblg -c -o article.html -t bar.xml foo.xml</pre>
 	<p>
 		That's it!
 		Your Open Graph parameters have now been filled from the article content.
 	</p>
-	<p class="code">
-		<code class="prettyprint lang-html">&lt;head prefix="og: http://ogp.me/ns#"&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:url" content="article.html" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:description" content="A description of my article." /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;meta property="og:title" content="My Title" /&gt;</code>
-		<code class="prettyprint lang-html tab">&lt;title&gt;My Blog Page&lt;/title&gt;</code>
-		<code class="prettyprint lang-html">&lt;/head&gt;</code>
-	</p>
+	<pre class="prettyprint lang-html">&lt;head prefix="og: http://ogp.me/ns#"&gt;
+  &lt;meta property="og:url" content="article.html" /&gt;
+  &lt;meta property="og:description" content="A description of my article." /&gt;
+  &lt;meta property="og:title" content="My Title" /&gt;
+  &lt;title&gt;My Blog Page&lt;/title&gt;
+&lt;/head&gt;</pre>
 </article>

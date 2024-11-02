@@ -8,40 +8,19 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
 		<link rel="stylesheet" href="article.css" />
-		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+		<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 	</head>
 	<body>
 		<header>
 			<h1>
 				<a href="index.html">sblg</a>
-				<span>&#8211; static blog utility</span>
+				<span>&mdash; static blog utility</span>
 			</h1>
 		</header>
-		<div class="version">
-			<div>
-				<nav data-sblg-nav="1" data-sblg-navxml="1" data-sblg-navsz="1" data-sblg-navtag="version">
-					<span>v${sblg-titletext}, ${sblg-date}</span>
-				</nav>
-				<a title="Source package" href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
-				<a title="Source fingerprint" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
-				<a title="Source archive" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
-				<a title="Version feed" href="atom.xml"><i class="fa fa-rss"></i></a>
-				<a title="Source repository" href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
-			</div>
-		</div>
-		<section>
-			<p class="intro">
-				This is an example of an individual article.
-				It consists of a template (<a href="article.xml">article.xml</a>) merged with article contents.
-			</p>
-			<article data-sblg-article="1" data-sblg-permlink="0">
-				<article>
-					This will go away.
-				</article>
-			</article>
-		</section>
+		<article data-sblg-article="1" data-sblg-permlink="0">
+		</article>
 		<footer>
-			&#169; 2013&#8211;2019 <a rel="author" href="https://github.com/kristapsdz">Kristaps Dzonsons</a>
+			&copy; <a rel="author" href="https://github.com/kristapsdz">Kristaps Dzonsons</a>
 		</footer>
 	</body>
 </html>

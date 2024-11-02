@@ -1,6 +1,6 @@
 <article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
-		<h2>What about feeds?</h2>
+		<h2>How do I generate Atom feeds?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-06-29">29 June, 2013</time></div>
 	</header>
 	<aside>How to use the Atom feed feature.</aside>
@@ -16,19 +16,17 @@
 	<p>
 		This site has a dummy <a href="atom.xml">atom.xml</a> for each of this page's <q>articles</q>.
 	</p>
-	<p class="code">
-		<code class="prettyprint">&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>
-		<code class="prettyprint">&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;</code>
-		<code class="prettyprint tab">&lt;title&gt;sblg Example Feed&lt;/title&gt;</code>
-		<code class="prettyprint tab">&lt;link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" /&gt;</code>
-		<code class="prettyprint tab">&lt;link href="http://kristaps.bsd.lv/sblg" /&gt;</code>
-		<code class="prettyprint tab">&lt;id data-sblg-id="1" /&gt;</code>
-		<code class="prettyprint tab">&lt;updated data-sblg-updated="1" /&gt;</code>
-		<code class="prettyprint tab">&lt;entry data-sblg-entry="1" /&gt;</code>
-		<code class="prettyprint tab">&lt;entry data-sblg-entry="1" /&gt;</code>
-		<code class="prettyprint tab">&lt;entry data-sblg-entry="1" /&gt;</code>
-		<code class="prettyprint">&lt;/feed&gt;</code>
-	</p>
+	<pre class="prettyprint lang-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+  &lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+  &lt;title&gt;sblg Example Feed&lt;/title&gt;
+  &lt;link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" /&gt;
+  &lt;link href="http://kristaps.bsd.lv/sblg" /&gt;
+  &lt;id data-sblg-id="1" /&gt;
+  &lt;updated data-sblg-updated="1" /&gt;
+  &lt;entry data-sblg-entry="1" /&gt;
+  &lt;entry data-sblg-entry="1" /&gt;
+  &lt;entry data-sblg-entry="1" /&gt;
+&lt;/feed&gt;</pre>
 	<p>
 		Filled-in entries consist of <code class="prettyprint lang-html">&lt;title&gt;</code>, <code class="prettyprint
 			lang-html">&lt;id&gt;</code>, <code class="prettyprint lang-html">&lt;updated&gt;</code>,
@@ -37,17 +35,15 @@
 		HTML article summary, or the full article if so specified.  See the <a href="sblg.1.html">sblg(1)</a> manual for details.
 		Or making it shorter&#8230;
 	</p>
-	<p class="code">
-		<code class="prettyprint">&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>
-		<code class="prettyprint">&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;</code>
-		<code class="prettyprint tab">&lt;title&gt;sblg Example Feed&lt;/title&gt;</code>
-		<code class="prettyprint tab">&lt;link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" /&gt;</code>
-		<code class="prettyprint tab">&lt;link href="http://kristaps.bsd.lv/sblg" /&gt;</code>
-		<code class="prettyprint tab">&lt;id data-sblg-id="1" /&gt;</code>
-		<code class="prettyprint tab">&lt;updated data-sblg-updated="1" /&gt;</code>
-		<code class="prettyprint tab">&lt;entry data-sblg-forall="1" data-sblg-entry="1" /&gt;</code>
-		<code class="prettyprint">&lt;/feed&gt;</code>
-	</p>
+	<pre class="prettyprint lang-xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+  &lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+  &lt;title&gt;sblg Example Feed&lt;/title&gt;
+  &lt;link href="http://kristaps.bsd.lv/sblg/atom.xml" rel="self" /&gt;
+  &lt;link href="http://kristaps.bsd.lv/sblg" /&gt;
+  &lt;id data-sblg-id="1" /&gt;
+  &lt;updated data-sblg-updated="1" /&gt;
+  &lt;entry data-sblg-forall="1" data-sblg-entry="1" /&gt;
+&lt;/feed&gt;</pre>
 	<p>
 		Remember to link to the feed in your <a href="index.xml">blog template</a> or <a href="article.xml">article template</a> file!
 	</p>

@@ -87,24 +87,50 @@
 				Solaris, and IllumOS.
 			</p>
 		</section>
-		<section id="versions">
+		<section>
 			<h3 class="text">
 				latest version
 			</h3>
 			<div data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navstyle-element="keep" data-sblg-navstyle-content="keep"
-			 data-sblg-navsz="1" class="text">
-				<div>
+			 data-sblg-navsz="1" id="versions"> 
+				<div class="text">
 					<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>: 
 					version ${sblg-titletext}
 				</div>
-				<div>
+				<div class="text">
 					${sblg-aside}
 				</div>
-				<div>
-					<i class="fa fa-clock-o"></i>
-					<a href="archive.html">See all versions</a>
-				</div>
 			</div>
+			<p class="text">
+				<i class="fa fa-exclamation-circle"></i>
+				The latest versions above are produced in a <code class="prettyprint lang-html">data-sblg-nav="1"</code>
+				element limited to one article with the <code>version</code> navigation tag.
+				The <a href="archive.html">version history</a>, generated from
+				<a href="https://github.com/kristapsdz/sblg/blob/master/version.xml">version.xml</a> source,
+				has each version within an <code class="prettyprint lang-html">&lt;article&gt;</code> with this tag, so the
+				newest appears as shown in the
+				<a href="https://github.com/kristapsdz/sblg/blob/master/index.xml">index.xml</a> source.
+			</p>
+		</section>
+		<section class="text">
+			<h3>
+				faq
+			</h3>
+			<ul>
+				<li data-sblg-nav="1" data-sblg-navtag="howto" data-sblg-navsort="cmdline" data-sblg-navstyle-content="keep"
+				 data-sblg-navstyle-element="repeat-strip">
+					<a href="${sblg-base}.html">${sblg-title}</a>
+				</li>
+			</ul>
+			<p>
+				<i class="fa fa-exclamation-circle"></i>
+				The FAQ consists of articles with the navigation tag <code>howto</code> formatted with
+				<a href="sblg.1.html">sblg</a> then passed into a
+				<code class="prettyprint lang-html">data-sblg-nav="1"</code> element in the
+				<a href="https://github.com/kristapsdz/sblg/blob/master/index.xml">index.xml</a> source.
+				The Markdown file is translated into XML in the
+				<a href="https://github.com/kristapsdz/sblg/blob/master/Makefile">Makefile</a>.
+			</p>
 		</section>
 		<section class="text">
 			<h3>
@@ -318,8 +344,6 @@
 				A TypeScript definition of the exported type is also available on 
 				<a href="https://www.npmjs.com">npm</a> as the
 				<a href="https://www.npmjs.com/package/sblg">sblg</a> package.
-			</p>
-			<p>
 				Use <code class="prettyprint lang-sh">npm i sblg --save-dev</code> to interface your TypeScript with a
 				<a href="sblg.1.html">sblg</a> blog.
 			</p>

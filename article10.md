@@ -1,7 +1,4 @@
-date: 2016-12-07
-title: Using Markdown
-
-# Using Markdown
+# How do I use Markdown?
 
 You can also use
 [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)

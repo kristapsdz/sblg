@@ -4,8 +4,6 @@
 include Makefile.configure
 
 WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
-# If this command not found, the JSON test is skipped.
-JQ		 = jq
 
 sinclude Makefile.local
 
@@ -47,8 +45,21 @@ DOTAR 		 = Makefile \
 		   sblg.in.1 \
 		   sblg.h \
 		   schema.json \
-		   extern.h
-BUILT		 = index1.svg \
+		   extern.h \
+		   article.css \
+		   article.xml \
+		   article1.xml \
+		   article2.xml \
+		   article4.xml \
+		   article5.xml \
+		   article6.xml \
+		   article7.xml \
+		   article8.xml \
+		   article9.xml \
+		   article10.md
+BUILT		 = article.css \
+		   article10.md \
+		   index1.svg \
 		   index2.svg \
 		   index3.svg \
 		   index4.svg
@@ -58,11 +69,22 @@ IMAGES		 = template1.jpg \
 		   template4.jpg \
 		   template5.jpg \
 		   template6.jpg
+ARTICLES	 = article1.html \
+		   article2.html \
+		   article4.html \
+		   article5.html \
+		   article6.html \
+		   article7.html \
+		   article8.html \
+		   article9.html \
+		   article10.html
 
 LDADD_PKG	!= pkg-config --libs expat 2>/dev/null || echo "-lexpat"
 CFLAGS_PKG 	!= pkg-config --cflags expat 2>/dev/null || echo ""
 LDADD		+= $(LDADD_PKG)
 CFLAGS		+= $(CFLAGS_PKG)
+# If this command not found, the JSON test is skipped.
+JQ		 = jq
 VALGRIND	 = valgrind
 VALGRIND_ARGS	 = -q --leak-check=full --leak-resolution=high --show-reachable=yes
 
@@ -74,7 +96,7 @@ sblg: $(OBJS)
 sblg.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
 
-www: $(HTMLS) $(BUILT) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512 sblg
+www: $(HTMLS) $(ARTICLES) $(BUILT) $(ATOM) sblg.tar.gz sblg.tar.gz.sha512 sblg
 	( cd examples/simple && $(MAKE) SBLG=../../sblg )
 	( cd examples/simple-frontpage && $(MAKE) SBLG=../../sblg )
 	( cd examples/retro && $(MAKE) SBLG=../../sblg )
@@ -88,7 +110,7 @@ sblg.1: sblg.in.1
 installwww: www
 	mkdir -p $(WWWDIR)
 	mkdir -p $(WWWDIR)/snapshots
-	install -m 0444 Makefile $(BUILT) $(IMAGES) $(ATOM) $(HTMLS) $(CSSS) $(WWWDIR)
+	install -m 0444 Makefile $(BUILT) $(IMAGES) $(ATOM) $(HTMLS) $(CSSS) $(ARTICLES) $(WWWDIR)
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz
 	install -m 0444 sblg.tar.gz.sha512 $(WWWDIR)/snapshots/sblg-$(VERSION).tar.gz.sha512
 	install -m 0444 sblg.tar.gz $(WWWDIR)/snapshots
@@ -163,15 +185,17 @@ distcheck: sblg.tar.gz.sha512
 
 $(OBJS): sblg.h extern.h config.h version.h
 
-atom.xml $(HTMLS): sblg
+$(ARTICLES): article.xml
+
+atom.xml $(HTMLS) $(ARTICLES): sblg
 
 atom.xml: atom-template.xml
 
 version.h: Makefile
 	echo "#define VERSION \"$(VERSION)\"" >$@
 
-index.html: index.xml versions.xml
-	./sblg -o- -t index.xml versions.xml >$@
+index.html: index.xml versions.xml $(ARTICLES)
+	./sblg -o- -t index.xml versions.xml $(ARTICLES) >$@
 
 archive.html: archive.xml versions.xml
 	./sblg -o- -t archive.xml versions.xml >$@
@@ -191,8 +215,17 @@ atom.xml: versions.xml
 .1.1.html:
 	mandoc -Ostyle=https://bsd.lv/css/mandoc.css -Thtml $< >$@
 
+.xml.html:
+	./sblg -t article.xml -o $@ -c $<
+
 .dot.svg:
 	dot -Tsvg $< | xsltproc --novalid notugly.xsl - >$@
+
+.md.xml:
+	( echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" ; \
+	  echo "<article data-sblg-article=\"1\" data-sblg-tags=\"howto\">" ; \
+	  lowdown $< ; \
+	  echo "</article>" ; ) >$@
 
 clean:
 	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1

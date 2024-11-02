@@ -7,12 +7,11 @@ body				{ color: #333;
 				  font-weight: 400; }
 a				{ text-decoration: none; }
 aside				{ display: none; }
-address				{ display: inline; 
-				  font-style: normal; }
-body > section			{ width: 66rem;
+body > article			{ width: 66rem;
 				  max-width: 98%;
 				  margin-left: auto;
 				  margin-right: auto; }
+body > header			{ background-color: #336699; }
 body > footer			{ padding: 2em 0; 
 				  text-align: center;
 				  font-size: 90%;
@@ -20,62 +19,42 @@ body > footer			{ padding: 2em 0;
 body > footer a			{ color: #444; }
 body > footer a:hover		{ color: #000; }
 .intro				{ opacity: 0.75; }
-pre				{ overflow: hidden; }
-pre, code			{ font-size: 75%; }
-p.code				{ background-color: #eeeeee;
-				  border-radius: 0.5rem;
-				  overflow: hidden;
-				  padding: 0.5rem;
-				  border: thin dashed #cccccc; }
+p.code,
+pre				{ overflow-x: hidden;
+				  background-color: #f8f8f8; 
+				  border-radius: 4pt;
+				  padding: 0.5rem !important;
+			  	  overflow-x: auto;
+				  border: none !important;
+				  font-size: 75%; }
+pre				{ line-height: 1.4em; }
+code				{ font-size: 75%; }
+.prettyprint a > *		{ color: blue !important; }
 p.code > code.tab		{ padding-left: 4ex; }
 p.code > code.dtab		{ padding-left: 8ex; }
-p.code > code			{ display: block; }
+p.code > code			{ display: block;
+				  font-size: 100%; }
+pre:not(.prettyprint) > code	{ font-size: 100%; }
 .name				{ font-weight: 500; }
-body > header			{ padding: 1.4rem 0;
-				  color: #dddddd;
-				  background-color: #336699; }
 strong, b			{ font-weight: 500; }
-body > header h1		{ color: #aaa;
-				  font-size: 180%;
+body > header h1		{ color: #ccc;
+				  font-size: 200%;
 				  font-weight: inherit; 
+				  padding: 1rem 0;
 			  	  width: 66rem;
 				  max-width: 98%;
-				  margin-left: auto;
-				  margin-right: auto; }
+				  margin: 0 auto; }
 body > header h1 a		{ color: #fff; }
-body > header div		{ display: inline; }
 article[data-sblg-article]	{ margin-top: 2rem; } 
 article[data-sblg-article] header
-				{ text-align: center;
-				  margin: 3rem 0; }
+				{ text-align: center; }
 article[data-sblg-article] h1,
 article[data-sblg-article] header h2
 				{ font-weight: 500;
-				  margin-bottom: 0.25rem;
 				  font-size: 125%; }
-article[data-sblg-article] h1	{ text-align: center;
-				  margin: 3rem auto; }
-article[data-sblg-article] header address,
-article[data-sblg-article] header time
-				{ color: #000; 
-				  font-weight: 500; }
-.noshow				{ display: none; }
-div.version			{ color: #333333;
-				  background-color: #dddddd;
-				  border-bottom: thin solid #ccc;
-				  padding: 0.5rem 0; }
-div.version > div		{ width: 66rem;
-				  margin: 0 auto;
-				  max-width: 98%; }
-div.version > div span		{ border-right: thin solid #aaaaaa; 
-				  margin-right: 0.75ex; 
-				  padding-right: 1ex; }
-div.version > div > a		{ color: #333;  
-				  padding: 0 0.5ex; }
-div.version > div > a:hover	{ color: #000; }
-nav[data-sblg-nav] ul		{ list-style-type: none; 
-				  margin: 0; 
-				  padding: 0; }
+article[data-sblg-article] h1	{ text-align: center; }
+article[data-sblg-article] header > div
+				{ display: none; }
 
 @media only screen and (max-width: 768px), only screen and (max-device-width: 768px) {
  body > header h1		{ font-size: 150%;

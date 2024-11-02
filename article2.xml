@@ -1,6 +1,6 @@
 <article data-sblg-article="1" data-sblg-tags="howto">
 	<header>
-		<h2>How does it work?</h2>
+		<h2>How do I integrate into a Makefile?</h2>
 		<div>Posted by <address>Kristaps Dzonsons</address> on <time datetime="2013-07-01">01 July, 2013</time></div>
 	</header>
 	<aside>How sblg merges articles into a blog.</aside>
@@ -10,20 +10,20 @@
 		Click on file links to see the sequence&#8212;you'll get the point.
 	</p>
 	<p class="code">
-		<code class="prettyprint">all: <a href="index.html">index.html</a></code>
-		<code class="prettyprint"><a href="index.html">index.html</a>: 
+		<code>all: <a href="index.html">index.html</a></code>
+		<code><a href="index.html">index.html</a>: 
 			<a href="index.xml">index.xml</a></code>
-		<code class="prettyprint"><a href="article1.html">article1.html</a> 
+		<code><a href="article1.html">article1.html</a> 
 			<a href="article2.html">article2.html</a>: 
 			<a href="article.xml">article.xml</a></code>
-		<code class="prettyprint"><a href="index.html">index.html</a>: 
+		<code><a href="index.html">index.html</a>: 
 			<a href="article1.html">article1.html</a>
 			<a href="article2.html">article2.html</a></code>
-		<code class="prettyprint tab">sblg -o $@
+		<code class="tab">sblg -o $@
 			<a href="article1.html">article1.html</a>
 			<a href="article2.html">article2.html</a></code>
-		<code class="prettyprint">.xml.html:</code>
-		<code class="prettyprint tab">sblg -c -o $@ $&lt;</code>
+		<code>.xml.html:</code>
+		<code class="tab">sblg -c -o $@ $&lt;</code>
 	</p>
 	<p>
 		Or in words, first build individual articles from a <a href="article.xml">template</a>  with <code class="prettyprint
@@ -40,20 +40,19 @@
 		This allows the rules to be run in parallel.
 	</p>
 	<p class="code">
-		<code class="prettyprint"><a href="index.html">index.html</a>: 
+		<code><a href="index.html">index.html</a>: 
 			<a href="article1.xml">article1.xml</a>
 			<a href="article2.xml">article2.xml</a></code>
-		<code class="prettyprint tab">sblg -o $@
+		<code class="tab">sblg -o $@
 			<a href="article1.xml">article1.xml</a>
 			<a href="article2.xml">article2.xml</a></code>
-		<code class="prettyprint">.xml.html:</code>
+		<code>.xml.html:</code>
 		<code class="prettyprint tab">sblg -c -o $@ $&lt;</code>
 	</p>
 	<p>
 		Why do I do it like this?
-		I prefer building articles individually, versioning the source with <a
-			href="https://en.wikipedia.org/wiki/Concurrent_Versions_System">CVS</a>, alongside templates for individual and linked
-		articles.
+		I prefer building articles individually, versioning the source with <a href="https://git-scm.com/">git</a>,
+		alongside templates for individual and linked articles.
 		I let <span class="name">sblg</span> do the work of putting it all together.
 		Since most of my articles involve, for example, images built from <a href="http://gnuplot.info">gnuplot</a> graphs, I already
 		use Makefiles already to manage dependencies.
