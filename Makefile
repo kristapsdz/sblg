@@ -37,7 +37,8 @@ HTMLS 		 = archive.html \
 		   example3.html \
 		   index.html \
 		   sblg.1.html
-CSSS 		 = index.css
+CSSS 		 = article.css \
+		   index.css
 DATADIR	 	 = $(SHAREDIR)/sblg
 EXAMPLEDIR	 = $(DATADIR)/examples
 DOTAR 		 = Makefile \
@@ -57,8 +58,7 @@ DOTAR 		 = Makefile \
 		   article8.xml \
 		   article9.xml \
 		   article10.md
-BUILT		 = article.css \
-		   article10.md \
+BUILT		 = article10.xml \
 		   index1.svg \
 		   index2.svg \
 		   index3.svg \
@@ -228,7 +228,7 @@ atom.xml: versions.xml
 	  echo "</article>" ; ) >$@
 
 clean:
-	rm -f sblg $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
+	rm -f sblg $(ARTICLES) $(ATOM) $(OBJS) $(HTMLS) $(BUILT) sblg.tar.gz sblg.tar.gz.sha512 sblg.1
 	rm -f *.gcno *.gcov *.gcda
 	rm -f version.h
 	( cd examples/simple && $(MAKE) clean )
