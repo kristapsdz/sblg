@@ -9,41 +9,27 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Alegreya+Sans:400,400italic,500" />
 		<link rel="stylesheet" href="https://bsd.lv/css/style.css" />
 		<link rel="stylesheet" href="article.css" />
-		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 	</head>
 	<body>
 		<header>
 			<h1>
 				<a href="index.html">sblg</a>
-				<span>&#8211; simple off-line blog utility</span>
+				<span>&mdash; simple off-line blog utility</span>
 			</h1>
 		</header>
-		<div class="version">
-			<div>
-				<nav data-sblg-nav="1" data-sblg-navxml="1" data-sblg-navsz="1" data-sblg-navtag="version">
-					<span>Version ${sblg-titletext}, ${sblg-date}</span>
-				</nav>
-				<a title="Source package" href="snapshots/sblg.tar.gz"><i class="fa fa-gears"></i></a>
-				<a title="Source fingerprint" href="snapshots/sblg.tar.gz.sha512"><i class="fa fa-lock"></i></a>
-				<a title="Source archive" href="snapshots"><i class="fa fa-fw fa-file-o"></i></a>
-				<a title="Version feed" href="atom.xml"><i class="fa fa-rss"></i></a>
-				<a title="Source repository" href="https://github.com/kristapsdz/sblg"><i class="fa fa-fw fa-github"></i></a>
-			</div>
-		</div>
-		<section>
-			<nav data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1">
+		<article>
+			<div data-sblg-nav="1" data-sblg-navtag="version" data-sblg-navcontent="1">
 				<div>
-					<i class="fa fa-clock-o"></i> 
 					<time datetime="${sblg-datetime}">${sblg-datetime-fmt}</time>: 
 					version ${sblg-titletext}
 				</div>
 				<div>
 					${sblg-aside}
 				</div>
-			</nav>
-		</section>
+			</div>
+		</article>
 		<footer>
-			&#169; 2013&#8211;2017 <a rel="author" href="https://github.com/kristapsdz">Kristaps Dzonsons</a>
+			&copy; <a rel="author" href="https://github.com/kristapsdz">Kristaps Dzonsons</a>
 		</footer>
 	</body>
 </html>

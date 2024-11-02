@@ -1037,24 +1037,56 @@
 		</header>
 		<aside>
 			<p>
-				Document how to esape tag symbols: use the HTML entity instead of
-				the dollar character (e.g., <code>&amp;dollar;{TOKEN}</code>).
+				Document how to esape tag symbols: use the HTML entity
+				instead of the dollar character (e.g.,
+				<code>&amp;dollar;{TOKEN}</code>).
 			</p>
 			<p>
-				This brought to attention a long-standing issue: that HTML entities
-				were discarded.  Modify the parser to allow for HTML entities (e.g.,
-				&amp;dollar;) and pass them through as text without validation.
-				This significantly improves workflow that has well-formed HTML that
-				would not pass through libexpat without a DTD parsed for the entities.
-				<strong>HTML entities in attributes will still not work</strong>.
+				This brought to attention a long-standing issue: that HTML
+				entities were discarded.  Modify the parser to allow for
+				HTML entities (e.g., &amp;dollar;) and pass them through
+				as text without validation.  This significantly improves
+				workflow that has well-formed HTML that would not pass
+				through libexpat without a DTD parsed for the entities.
+				<strong>HTML entities in attributes will still not
+					work</strong>.
 			</p>
 			<p>
 				Pass keywords specified in the input (e.g., as
-				<code>data-sblg-set-foo=bar</code>) into the JSON output in the
-				<code>keys</code> record property.
-				The JSON output may now be consumed in TypeScript systems with a
-				package uploaded to <a href="https://www.npmjs.com">npm</a>:
+				<code>data-sblg-set-foo=bar</code>) into the JSON output
+				in the <code>keys</code> record property.
+				The JSON output may now be consumed in TypeScript systems
+				with a package uploaded to 
+				<a href="https://www.npmjs.com">npm</a>:
 				<a href="https://www.npmjs.com/package/sblg">sblg</a>.
+			</p>
+		</aside>
+	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.6.0</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2024-11-02">2024-11-02</time>
+		</header>
+		<aside>
+			<p>
+				Improve interface for blog templates (all existing
+				functionality is retained).  Foremost, elements no longer
+				need to be <code>&lt;nav&gt;</code> or
+				<code>&lt;article&gt;</code> to trigger querying for
+				navigation or article template blocks
+				(<code>data-sblg-nav</code> and
+				<code>data-sblg-article</code>, respectively).
+			</p>
+			<p>
+				Second, introduce
+				<code>data-sblg-navstyle-content</code> and
+				<code>data-sblg-navstyle-element</code>,
+				which allow for several different ways of formatting the
+				navigation content.  The old
+				<code>data-sblg-navcontent</code> and
+				<code>data-sblg-navxml</code> are deprecated, but will not
+				ever be removed.
 			</p>
 		</aside>
 	</article>
