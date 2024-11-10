@@ -1,0 +1,17 @@
+<div>
+	<div data-sblg-article="1" data-sblg-tags="xyzzy">
+		<p>
+			tagged with xyzzy
+		</p>
+	</div>
+	<article data-sblg-article="1" data-sblg-tags="foo">
+		<p>
+			tagged with foo
+		</p>
+	</article>
+	<span data-sblg-article="1" data-sblg-tags="bar">
+		<p>
+			tagged with bar
+		</p>
+	</span>
+</div>

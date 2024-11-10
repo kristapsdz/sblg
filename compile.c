@@ -45,6 +45,7 @@ struct	pargs {
 	size_t		 bufsz; /* buffer size */
 	size_t		 bufmax; /* buffer maximum size */
 	enum textmode	 textmode; /* mode to accept text */
+	char		*stacktag; /* tag starting article or NULL */
 };
 
 static void
@@ -97,7 +98,8 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct pargs	*arg = dat;
 
-	arg->stack += (sblg_lookup(s) == SBLG_ELEM_ARTICLE);
+	assert(arg->stacktag != NULL);
+	arg->stack += strcmp(s, arg->stacktag) == 0;
 }
 
 /*
@@ -109,10 +111,14 @@ article_end(void *dat, const XML_Char *s)
 {
 	struct pargs	*arg = dat;
 
-	if (sblg_lookup(s) == SBLG_ELEM_ARTICLE && --arg->stack == 0) {
-		XML_SetElementHandler(arg->p, NULL, NULL);
-		arg->textmode = TEXT_TMPL;
-	}
+	assert(arg->stacktag != NULL);
+	if (strcmp(s, arg->stacktag) != 0 || --arg->stack != 0)
+		return;
+
+	free(arg->stacktag);
+	arg->stacktag = NULL;
+	arg->textmode = TEXT_TMPL;
+	XML_SetElementHandler(arg->p, NULL, NULL);
 }
 
 /*
@@ -124,6 +130,7 @@ template_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 {
 	struct pargs	 *arg = dat;
 	const XML_Char	**attp;
+	int		  start_article = 0;
 
 	assert(arg->stack == 0);
 
@@ -134,19 +141,16 @@ template_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	arg->buf = NULL;
 	arg->bufsz = 0;
 
-	if (sblg_lookup(s) != SBLG_ELEM_ARTICLE) {
-		xmlopensx(arg->f, s, atts, 
-			arg->dst, arg->article, 1, 0);
-		return;
-	}
-
-	/* Check for <article data-sblg-article>. */
+	/* Look for the true-valued data-sblg-article.  */
 
 	for (attp = atts; *attp != NULL; attp += 2)
-		if (sblg_lookup(*attp) == SBLG_ATTR_ARTICLE)
+		if (sblg_lookup(attp[0]) == SBLG_ATTR_ARTICLE &&
+		    xmlbool(attp[1])) {
+			start_article = 1;
 			break;
+		}
 
-	if (*attp == NULL || !xmlbool(attp[1])) {
+	if (!start_article) {
 		xmlopensx(arg->f, s, atts, 
 			arg->dst, arg->article, 1, 0);
 		return;
@@ -163,6 +167,9 @@ template_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 			xmlopens(arg->f, s, atts);
 			return;
 		}
+
+	assert(arg->stacktag == NULL);
+	arg->stacktag = xstrdup(s);
 
 	/*
 	 * If we encounter an <article data-sblg-article>, then echo
@@ -244,6 +251,7 @@ compile(XML_Parser p, const char *templ,
 	arg.dst = strcmp(out, "-") ? out : NULL;
 	arg.p = p;
 	arg.textmode = TEXT_TMPL;
+	arg.stacktag = NULL;
 
 	XML_ParserReset(p, NULL);
 	XML_SetElementHandler(p, template_begin, template_end);
@@ -271,6 +279,7 @@ out:
 	sblg_free(sargs, sargsz);
 	free(out);
 	free(arg.buf);
+	free(arg.stacktag);
 	return rc;
 }
 

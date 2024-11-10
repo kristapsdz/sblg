@@ -1079,7 +1079,13 @@
 				<code>data-sblg-article</code>, respectively).
 			</p>
 			<p>
-				Second, introduce
+				Similarly, article sources and standalone templates no
+				longer require <code>&lt;article&gt;</code> elements to 
+				trigger scanning for article content: the 
+				<code>data-sblg-article</code> attribute suffices.
+			</p>
+			<p>
+				Introduce
 				<code>data-sblg-navstyle-content</code> and
 				<code>data-sblg-navstyle-element</code>,
 				which allow for several different ways of formatting the
