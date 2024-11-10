@@ -245,9 +245,11 @@ They usually consist of the following within the document:
 .Pp
 When processed with
 .Nm ,
-all data outside of the
-.Li <article data-sblg-article="1">
-element is discarded.
+all data outside of the element with the
+.Li data-sblg-article="1"
+attribute, usually an
+.Li <article>
+element, is discarded.
 Then the article is scanned for the following:
 .Bl -bullet
 .It
@@ -292,10 +294,6 @@ the default author text (and mark-up) is the
 .Qq Unknown author ,
 the publication time is set to the document's file-system creation time,
 the abstract is left empty, and the image is empty.
-.Pp
-All content is recorded in case the
-.Li data-sblg-content
-Boolean value is used in an Atom feed.
 .Pp
 There are a number of special attributes that are recognised in the
 input file.
@@ -459,7 +457,8 @@ articles, such as just their titles, dates, and links.
 Article templates may contain several attributes.
 .Bl -tag -width Ds
 .It Li data-sblg-article=boolean
-If set to true, the contents are replaced with the input article.
+If set to true, the contents (including the element itself) are replaced
+with the input article.
 .It Li data-sblg-articletag=string
 If an
 .Li <article data-sblg-article="1">

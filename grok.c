@@ -58,6 +58,7 @@ struct	parse {
 	const char	 *src; /* underlying file */
 	const char	**wl; /* whitelist of attributes */
 	enum textmode	  textmode; /* mode to accept text */
+	char		 *stacktag; /* tag starting nav/article or NULL */
 };
 
 static void article_begin(void *, const XML_Char *, const XML_Char **);
@@ -398,6 +399,9 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		&arg->article->articlesz, s, atts, arg->wl);
 	tsearch(arg, s, atts);
 
+	assert(arg->stacktag != NULL);
+	arg->gstack += strcmp(s, arg->stacktag) == 0;
+
 	switch (sblg_lookup(s)) {
 	case SBLG_ELEM_ASIDE:
 		if ((arg->flags & PARSE_ASIDE))
@@ -453,9 +457,6 @@ article_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 		arg->textmode = TEXT_TITLE;
 		XML_SetElementHandler(arg->p, title_begin, title_end);
 		break;
-	case SBLG_ELEM_ARTICLE:
-		arg->gstack++;
-		break;
 	default:
 		break;
 	}
@@ -471,9 +472,12 @@ article_end(void *dat, const XML_Char *s)
 	xmlstrclose(&arg->article->article,
 		&arg->article->articlesz, s);
 
-	if (sblg_lookup(s) != SBLG_ELEM_ARTICLE || --arg->gstack > 0) 
+	assert(arg->stacktag != NULL);
+	if (strcmp(s, arg->stacktag) != 0 || --arg->gstack != 0)
 		return;
 
+	free(arg->stacktag);
+	arg->stacktag = NULL;
 	arg->textmode = TEXT_NONE;
 	XML_SetElementHandler(arg->p, input_begin, NULL);
 
@@ -591,20 +595,23 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
 	char		  c;
 	size_t		  sz;
 	const XML_Char	**attp;
+	int		  start_article = 0;
 
 	assert(arg->gstack == 0);
 	assert(arg->stack == 0);
 
-	if (sblg_lookup(s) != SBLG_ELEM_ARTICLE)
-		return;
-
 	/* Look for the true-valued data-sblg-article.  */
 
 	for (attp = atts; *attp != NULL; attp += 2)
-		if (sblg_lookup(attp[0]) == SBLG_ATTR_ARTICLE)
+		if (sblg_lookup(attp[0]) == SBLG_ATTR_ARTICLE &&
+		    xmlbool(attp[1])) {
+			start_article = 1;
+			assert(arg->stacktag == NULL);
+			arg->stacktag = xstrdup(s);
 			break;
+		}
 
-	if (*attp == NULL || !xmlbool(attp[1]))
+	if (!start_article)
 		return;
 
 	/* We have an article: allocates its bits. */
@@ -693,6 +700,7 @@ sblg_parse(XML_Parser p, const char *src,
 	parse.fd = fd;
 	parse.wl = wl;
 	parse.textmode = TEXT_NONE;
+	parse.stacktag = NULL;
 
 	XML_ParserReset(p, NULL);
 
@@ -709,5 +717,6 @@ sblg_parse(XML_Parser p, const char *src,
 		logerr(&parse);
 
 	mmap_close(fd, buf, sz);
+	free(parse.stacktag);
 	return (st == XML_STATUS_OK);
 }
