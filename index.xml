@@ -101,16 +101,20 @@
 					${sblg-aside}
 				</div>
 			</div>
-			<p class="text">
-				<i class="fa fa-exclamation-circle"></i>
-				The latest versions above are produced in a <code class="prettyprint lang-html">data-sblg-nav="1"</code>
-				element limited to one article with the <code>version</code> navigation tag.
-				The <a href="archive.html">version history</a>, generated from
-				<a href="https://github.com/kristapsdz/sblg/blob/master/version.xml">version.xml</a> source,
-				has each version within an <code class="prettyprint lang-html">&lt;article&gt;</code> with this tag, so the
-				newest appears as shown in the
-				<a href="https://github.com/kristapsdz/sblg/blob/master/index.xml">index.xml</a> source.
-			</p>
+			<div class="text note">
+				<div>
+					<i class="fa fa-exclamation-circle"></i>
+				</div>
+				<div>
+					The latest versions above are produced in a <code class="prettyprint lang-html">data-sblg-nav="1"</code>
+					element limited to one article with the <code>version</code> navigation tag.
+					The <a href="archive.html">version history</a>, generated from
+					<a href="https://github.com/kristapsdz/sblg/blob/master/version.xml">version.xml</a> source,
+					has each version within an <code class="prettyprint lang-html">&lt;article&gt;</code> with this tag, so
+					the newest appears as shown in the
+					<a href="https://github.com/kristapsdz/sblg/blob/master/index.xml">index.xml</a> source.
+				</div>
+			</div>
 		</section>
 		<section class="text">
 			<h3>
@@ -122,15 +126,19 @@
 					<a href="${sblg-base}.html">${sblg-title}</a>
 				</li>
 			</ul>
-			<p>
-				<i class="fa fa-exclamation-circle"></i>
-				The FAQ consists of articles with the navigation tag <code>howto</code> formatted with
-				<a href="sblg.1.html">sblg</a> then passed into a
-				<code class="prettyprint lang-html">data-sblg-nav="1"</code> element in the
-				<a href="https://github.com/kristapsdz/sblg/blob/master/index.xml">index.xml</a> source.
-				The Markdown file is translated into XML in the
-				<a href="https://github.com/kristapsdz/sblg/blob/master/Makefile">Makefile</a>.
-			</p>
+			<div class="note">
+				<div>
+					<i class="fa fa-exclamation-circle"></i>
+				</div>
+				<div>
+					The FAQ consists of articles with the navigation tag <code>howto</code> formatted with
+					<a href="sblg.1.html">sblg</a> then passed into a
+					<code class="prettyprint lang-html">data-sblg-nav="1"</code> element in the
+					<a href="https://github.com/kristapsdz/sblg/blob/master/index.xml">index.xml</a> source.
+					The Markdown file is translated into XML in the
+					<a href="https://github.com/kristapsdz/sblg/blob/master/Makefile">Makefile</a>.
+				</div>
+			</div>
 		</section>
 		<section class="text">
 			<h3>
