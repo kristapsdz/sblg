@@ -87,6 +87,7 @@ CFLAGS		+= $(CFLAGS_PKG)
 JQ		 = jq
 VALGRIND	 = valgrind
 VALGRIND_ARGS	 = -q --leak-check=full --leak-resolution=high --show-reachable=yes
+REGRESS_ENV	 = TZ=GMT LC_ALL=en_US
 
 all: sblg sblg.a sblg.1
 
@@ -245,7 +246,7 @@ regress_rebuild: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		TZ=GMT ./sblg -o- -t $$d/$$tf -c $$f >$$tmp 2>/dev/null ; \
+		${REGRESS_ENV} ./sblg -o- -t $$d/$$tf -c $$f >$$tmp 2>/dev/null ; \
 		[ -f $$d/$$vf ] || { \
 			echo "$$f... creating" ; \
 			cp $$tmp $$d/$$vf ; \
@@ -266,7 +267,7 @@ regress_rebuild: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		TZ=GMT ./sblg -o- -t $$d/$$tf $$f >$$tmp 2>/dev/null ; \
+		${REGRESS_ENV} ./sblg -o- -t $$d/$$tf $$f >$$tmp 2>/dev/null ; \
 		[ -f $$d/$$vf ] || { \
 			echo "$$f... creating" ; \
 			cp $$tmp $$d/$$vf ; \
@@ -288,7 +289,7 @@ regress_rebuild: all
 		[ ! -f $$d/$$f ] || continue ; \
 		f=$$d/simple.in.xml ; \
 		vf=`basename $$tf .template.xml`.html ; \
-		TZ=GMT ./sblg -o- -t $$tf $$f >$$tmp 2>/dev/null ; \
+		TZ${REGRESS_ENV}GMT ./sblg -o- -t $$tf $$f >$$tmp 2>/dev/null ; \
 		[ -f $$d/$$vf ] || { \
 			echo "$$tf... creating" ; \
 			cp $$tmp $$d/$$vf ; \
@@ -372,7 +373,7 @@ regress: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		TZ=GMT ./sblg -o- -t $$d/$$tf -c $$f >$$tmp 2>/dev/null ; \
+		${REGRESS_ENV} ./sblg -o- -t $$d/$$tf -c $$f >$$tmp 2>/dev/null ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... fail" ; \
 			set +e ; \
@@ -387,7 +388,7 @@ regress: all
 		tf=`basename $$f .in.xml`.template.xml ; \
 		[ -f $$d/$$tf ] || tf=simple.template.xml ; \
 		vf=`basename $$f .in.xml`.html ; \
-		TZ=GMT ./sblg -o- -t $$d/$$tf $$f >$$tmp 2>/dev/null ; \
+		${REGRESS_ENV} ./sblg -o- -t $$d/$$tf $$f >$$tmp 2>/dev/null ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$f... fail" ; \
 			set +e ; \
@@ -403,7 +404,7 @@ regress: all
 		[ ! -f $$d/$$f ] || continue ; \
 		f=$$d/simple.in.xml ; \
 		vf=`basename $$tf .template.xml`.html ; \
-		TZ=GMT ./sblg -o- -t $$tf $$f >$$tmp 2>/dev/null ; \
+		${REGRESS_ENV} ./sblg -o- -t $$tf $$f >$$tmp 2>/dev/null ; \
 		diff $$tmp $$d/$$vf 2>/dev/null 1>&2 || { \
 			echo "$$tf... fail" ; \
 			set +e ; \
@@ -417,7 +418,7 @@ regress: all
 	jq=`command -v $(JQ) 2>/dev/null` ; \
 	set -e ; \
 	if [ -n "$$jq" ]; then \
-		TZ=GMT ./sblg -o- -j regress/json/*.xml | $$jq | \
+		${REGRESS_ENV} ./sblg -o- -j regress/json/*.xml | $$jq | \
 			grep -v '"version":' > $$tmp ; \
 		diff $$tmp regress/json/expect.json || { \
 			echo "regress/json/expect.json... fail" ; \
