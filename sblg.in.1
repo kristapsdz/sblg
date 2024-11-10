@@ -73,7 +73,7 @@ merges multiple articles into an Atom feed template.
 .It
 JSON mode
 .Pq Fl j
-merges all articles into a JSON feed.
+merges all articles into a JSON object.
 .El
 .Pp
 By default,
@@ -215,17 +215,9 @@ Otherwise, multiple input files are merged into a single blog.
 .El
 .Pp
 All input must be well-formed XML.
-(Element names and attributes are case-sensitive.)
-HTML is assumed only with the default suffix re-write rule for
-.Fl c
-without
-.Fl o .
-Input articles may be XML fragments or full documents: only the
-.Li <article data-sblg-article="1">
-tree within the article is considered.
+Element names and attributes are case-sensitive.
 .Ss Article Input
-Article input files consist of XML fragments or whole documents.
-They usually consist of the following within the document:
+Article input files consist of the following within the document:
 .Bd -literal -offset indent
 <article data-sblg-article="1">
   <header>
@@ -243,13 +235,11 @@ They usually consist of the following within the document:
 </article>
 .Ed
 .Pp
-When processed with
-.Nm ,
-all data outside of the element with the
+All content outside of the element with the
 .Li data-sblg-article="1"
 attribute, usually an
-.Li <article>
-element, is discarded.
+.Li <article> ,
+is discarded.
 Then the article is scanned for the following:
 .Bl -bullet
 .It
@@ -389,11 +379,11 @@ The alternative
 only sets the title if it has not yet been set.
 .El
 .Ss Standalone Template
-The standalone template file must be a well-formed XML file where the
-first
-.Li <article data-sblg-article="1">
-element is replaced by the article text.
-All of this element's children are removed.
+The standalone template file replaces the first element with the
+.Li data-sblg-article="1"
+attribute, usually an
+.Li <article> ,
+with the article contents.
 .Bd -literal -offset indent
 <body>
   <header>This consists of a single blog entry.</header>
@@ -409,10 +399,10 @@ Article templates may contain the following attributes:
 If set to true, the contents are replaced with the input article.
 This only happens once: subsequent elements are ignored.
 .It Li data-sblg-ign-once=boolean
-If an
-.Li <article data-sblg-article="1">
-element contains this set to true, the element is not processed as an
-article and the
+If an element has the
+.Li data-sblg-article="1"
+attribute set to true, the element is not processed as an article and
+the
 .Li data-sblg-ign-once
 attribute is removed.
 .El
@@ -423,20 +413,18 @@ for a list of symbols that will be replaced if found in attribute value
 or textual contexts.
 These may occur anywhere in the template document.
 .Ss Blog Template
-The blog template file must also be a well-formed XML.
-Elements with a
+The blog template replaces elements with the
 .Li data-sblg-article="1"
-attribute, usually on
-.Li <article>
-elements, are replaced by ordered (by default, newest to oldest) article
-contents.
+attribute, usually
+.Li <article> ,
+with ordered (by default, newest to oldest) article contents.
 If there aren't enough articles, the element is removed.
 .Pp
 Elements with a
 .Li data-sblg-nav="1"
-attribute, usually on
-.Li <nav>
-elements, are replaced by the same list of articles within an
+attribute, usually
+.Li <nav> ,
+are replaced by the same list of articles within an
 unordered list.
 .Pp
 If an element has both attributes, only the first is recognised.
@@ -460,9 +448,9 @@ Article templates may contain several attributes.
 If set to true, the contents (including the element itself) are replaced
 with the input article.
 .It Li data-sblg-articletag=string
-If an
-.Li <article data-sblg-article="1">
-element contains this, limit displayed articles to those matching the
+If an element with the
+.Li data-sblg-article="1"
+attribute contains this, limit displayed articles to those matching the
 space-separated tags or
 .Li ${sblg-get|xxx}
 when in
@@ -472,21 +460,21 @@ or
 mode.
 This scans for tags from the current article in the list of articles.
 .It Li data-sblg-ign-once=boolean
-If an
-.Li <article data-sblg-article="1">
-element contains this set to true, the element is not processed as an
+If an element with the
+.Li data-sblg-article="1"
+attribute has this set to true, the element is not processed as an
 article and the
 .Li data-sblg-ign-once
 attribute is removed.
 .It Li data-sblg-permlink=boolean
-If an
-.Li <article data-sblg-article="1">
-element contains this set to true, a permanent link to the article's
-input filename is emitted after the
-.Li <article data-sblg-article="1">
-within a
+If an element with the
+.Li data-sblg-article="1"
+attribute has this set to true, a permanent link to the article's input
+filename is emitted within a
 .Li <div data-sblg-permlink="1">
-element.
+element after the element with the
+.Li data-sblg-article="1"
+attribute.
 .El
 .Pp
 The navigation element may contain several attributes.
@@ -578,9 +566,7 @@ You can specify multiple space-separated tags, for instance,
 will search for foo or bar.
 Tags to be matched against are extracted from the space-separated
 .Li data-sblg-tags
-element of each article's topmost
-.Li <article>
-element.
+element of each article's topmost element.
 Escape spaces with a backslash
 .Pq Dq \e
 if you have spaces in the tag name, e.g.,
@@ -721,9 +707,9 @@ and
 If
 .Li <entry data-sblg-entry="1">
 contains this set to true, the article's contents (everything
-within the
-.Li <article data-sblg-article="1"> )
-are inlined within the
+within the element having the
+.Li data-sblg-article="1"
+attribute) are inlined within the
 .Li <content>
 element with type
 .Li html .
