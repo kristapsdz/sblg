@@ -573,18 +573,18 @@ tmpl_begin(void *dat, const XML_Char *s, const XML_Char **atts)
  * Return zero on fatal error, non-zero on success.
  */
 int
-linkall(XML_Parser p, const char *templ, const char *force, 
-	int sz, char *src[], const char *dst, enum asort asort)
+linkall(XML_Parser p, const char *templ, const char *force, int sz,
+    char *src[], const char *dst, enum asort asort)
 {
 	char		*buf = NULL;
 	size_t		 j, ssz = 0;
 	int		 i, fd = -1, rc = 0;
 	FILE		*f = stdout;
-	struct linkall	 larg;
+	struct linkall	 arg;
 	struct article	*sargs = NULL;
 	size_t		 sargsz = 0;
 
-	memset(&larg, 0, sizeof(struct linkall));
+	memset(&arg, 0, sizeof(struct linkall));
 
 	/* Grok all article data and sort by date. */
 
@@ -612,24 +612,24 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	 * shown, then find it in our arguments.
 	 */
 
-	larg.sargs = sargs;
-	larg.sposz = larg.ssposz = sargsz;
-	larg.p = p;
-	larg.src = templ;
-	larg.dst = strcmp(dst, "-") ? dst : NULL;
-	larg.f = f;
-	larg.single = -1;
-	larg.textmode = TEXT_TMPL;
-	larg.stacktag = NULL;
+	arg.sargs = sargs;
+	arg.sposz = arg.ssposz = sargsz;
+	arg.p = p;
+	arg.src = templ;
+	arg.dst = strcmp(dst, "-") ? dst : NULL;
+	arg.f = f;
+	arg.single = -1;
+	arg.textmode = TEXT_TMPL;
+	arg.stacktag = NULL;
 
 	if (force != NULL) {
 		for (j = 0; j < sargsz; j++)
 			if (strcmp(force, sargs[j].src) == 0)
 				break;
 		if (j < sargsz) {
-			larg.single = j;
-			larg.spos = j;
-			larg.ssposz = j + 1;
+			arg.single = j;
+			arg.spos = j;
+			arg.ssposz = j + 1;
 		} else {
 			warnx("%s: not in input list", force);
 			goto out;
@@ -642,7 +642,7 @@ linkall(XML_Parser p, const char *templ, const char *force,
 	XML_SetDefaultHandlerExpand(p, text);
 	XML_SetSkippedEntityHandler(p, entity);
 	XML_SetElementHandler(p, tmpl_begin, tmpl_end);
-	XML_SetUserData(p, &larg);
+	XML_SetUserData(p, &arg);
 	XML_UseForeignDTD(p, XML_TRUE);
 
 	if (XML_Parse(p, buf, (int)ssz, 1) != XML_STATUS_OK) {
@@ -660,11 +660,11 @@ out:
 	mmap_close(fd, buf, ssz);
 	if (f != NULL && f != stdout)
 		fclose(f);
-	for (j = 0; j < larg.navtagsz; j++)
-		free(larg.navtags[j]);
-	free(larg.navtags);
-	free(larg.nav);
-	free(larg.buf);
+	for (j = 0; j < arg.navtagsz; j++)
+		free(arg.navtags[j]);
+	free(arg.navtags);
+	free(arg.nav);
+	free(arg.buf);
 	return rc;
 }
 
@@ -675,19 +675,19 @@ out:
  * Return zero on fatal error, non-zero on success.
  */
 int
-linkall_r(XML_Parser p, const char *templ, 
-	int sz, char *src[], enum asort asort)
+linkall_r(XML_Parser p, const char *templ, int sz, char *src[],
+    enum asort asort)
 {
 	char		*buf = NULL, *dst = NULL;
 	size_t		 j, ssz = 0, wsz;
 	int		 i, fd = -1, rc = 0;
 	FILE		*f = NULL;
-	struct linkall	 larg;
+	struct linkall	 arg;
 	struct article	*sargs = NULL;
 	size_t		 sargsz = 0;
 	const char	*cp;
 
-	memset(&larg, 0, sizeof(struct linkall));
+	memset(&arg, 0, sizeof(struct linkall));
 
 	/* 
 	 * Grok all article data then sort.
@@ -732,17 +732,17 @@ linkall_r(XML_Parser p, const char *templ,
 			goto out;
 		} 
 
-		larg.sargs = sargs;
-		larg.sposz = sargsz;
-		larg.p = p;
-		larg.src = templ;
-		larg.dst = dst;
-		larg.f = f;
-		larg.single = j;
-		larg.spos = j;
-		larg.ssposz = j + 1;
-		larg.textmode = TEXT_TMPL;
-		larg.stacktag = NULL;
+		arg.sargs = sargs;
+		arg.sposz = sargsz;
+		arg.p = p;
+		arg.src = templ;
+		arg.dst = dst;
+		arg.f = f;
+		arg.single = j;
+		arg.spos = j;
+		arg.ssposz = j + 1;
+		arg.textmode = TEXT_TMPL;
+		arg.stacktag = NULL;
 
 		/* Run the XML parser on the template. */
 
@@ -750,7 +750,7 @@ linkall_r(XML_Parser p, const char *templ,
 		XML_SetSkippedEntityHandler(p, entity);
 		XML_SetDefaultHandlerExpand(p, text);
 		XML_SetElementHandler(p, tmpl_begin, tmpl_end);
-		XML_SetUserData(p, &larg);
+		XML_SetUserData(p, &arg);
 		XML_UseForeignDTD(p, XML_TRUE);
 
 		if (XML_Parse(p, buf, (int)ssz, 1) != XML_STATUS_OK) {
@@ -774,12 +774,12 @@ out:
 	mmap_close(fd, buf, ssz);
 	if (f != NULL)
 		fclose(f);
-	for (j = 0; j < larg.navtagsz; j++)
-		free(larg.navtags[j]);
-	free(larg.navtags);
-	free(larg.nav);
-	free(larg.buf);
-	free(larg.stacktag);
+	for (j = 0; j < arg.navtagsz; j++)
+		free(arg.navtags[j]);
+	free(arg.navtags);
+	free(arg.nav);
+	free(arg.buf);
+	free(arg.stacktag);
 	free(dst);
 	return rc;
 }

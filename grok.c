@@ -58,7 +58,7 @@ struct	parse {
 	const char	 *src; /* underlying file */
 	const char	**wl; /* whitelist of attributes */
 	enum textmode	  textmode; /* mode to accept text */
-	char		 *stacktag; /* tag starting nav/article or NULL */
+	char		 *stacktag; /* tag starting article or NULL */
 };
 
 static void article_begin(void *, const XML_Char *, const XML_Char **);
@@ -679,44 +679,44 @@ input_begin(void *dat, const XML_Char *s, const XML_Char **atts)
  * failure, allocation error, parse error, etc.).
  */
 int
-sblg_parse(XML_Parser p, const char *src,
-	struct article **arg, size_t *argsz, const char **wl)
+sblg_parse(XML_Parser p, const char *src, struct article **articles,
+    size_t *articlesz, const char **wl)
 {
 	char		*buf;
 	size_t		 sz;
 	int		 fd;
-	struct parse	 parse;
+	struct parse	 arg;
 	enum XML_Status	 st;
 
-	memset(&parse, 0, sizeof(struct parse));
+	memset(&arg, 0, sizeof(struct parse));
 
 	if (!mmap_open(src, &fd, &buf, &sz))
 		return 0;
 
-	parse.articles = arg;
-	parse.articlesz = argsz;
-	parse.src = src;
-	parse.p = p;
-	parse.fd = fd;
-	parse.wl = wl;
-	parse.textmode = TEXT_NONE;
-	parse.stacktag = NULL;
+	arg.articles = articles;
+	arg.articlesz = articlesz;
+	arg.src = src;
+	arg.p = p;
+	arg.fd = fd;
+	arg.wl = wl;
+	arg.textmode = TEXT_NONE;
+	arg.stacktag = NULL;
 
 	XML_ParserReset(p, NULL);
 
 	XML_SetDefaultHandlerExpand(p, text);
 	XML_SetStartElementHandler(p, input_begin);
 	XML_SetSkippedEntityHandler(p, entity);
-	XML_SetUserData(p, &parse);
+	XML_SetUserData(p, &arg);
 
 	/* Required for entities. */
 
 	XML_UseForeignDTD(p, XML_TRUE);
 
 	if ((st = XML_Parse(p, buf, (int)sz, 1)) != XML_STATUS_OK)
-		logerr(&parse);
+		logerr(&arg);
 
 	mmap_close(fd, buf, sz);
-	free(parse.stacktag);
+	free(arg.stacktag);
 	return (st == XML_STATUS_OK);
 }
