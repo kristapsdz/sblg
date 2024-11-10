@@ -28,7 +28,7 @@
 		Once you've added the tags, you can use them when generating <code class="prettyprint lang-html">&lt;nav&gt;</code> entries in
 		the blog amalgation.  This is used in the <a href="index.html">index.html</a> page of this site.
 	</p>
-	<pre class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navtag="foo" /&gt;</pre>
+	<pre class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navtag="foo"&gt;&lt;/nav&gt;</pre>
 	<p>
 		The above navigation element will only display entries with the <code>foo</code> tag.
 		If you have multiple space-separated words in the <code>data-sblg-navtag</code> attribute, it will <q>OR</q> them together when

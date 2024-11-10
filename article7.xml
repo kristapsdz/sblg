@@ -24,7 +24,10 @@
 	</p>
 	<pre class="prettyprint lang-html">&lt;nav data-sblg-nav="1" data-sblg-navcontent="1"&gt;
   &lt;a href="&#36;{sblg-base}.html"&gt;
-    &lt;figure&gt;&lt;img src="&#36;{sblg-base}.png" /&gt;&lt;figcaption&gt;&#36;{sblg-title}&lt;/figcaption&gt;&lt;/figure&gt;
+    &lt;figure&gt;
+      &lt;img src="&#36;{sblg-base}.png" /&gt;
+      &lt;figcaption&gt;&#36;{sblg-title}&lt;/figcaption&gt;
+    &lt;/figure&gt;
   &lt;/a&gt;
 &lt;/nav&gt;</pre>
 	<p>

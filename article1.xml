@@ -21,7 +21,8 @@
     &lt;code&gt;Mu.&lt;/code&gt;
 &lt;/article&gt;</pre>
 	<p>
-		An article is any <code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code> Boolean attribute.  The
+		An article is any element with the <code class="prettyprint lang-html">data-sblg-article="1"</code> Boolean attribute, usually
+		<code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code>.  The
 		article publication time is parsed from the first <code class="prettyprint lang-html">&lt;time datetime=""&gt;</code> first
 		<code class="prettyprint lang-html">&lt;header&gt;</code>.
 		The title is parsed from the first <code class="prettyprint lang-html">&lt;hn&gt;</code> tag (where <var>n</var> = 1&#8211;4),
@@ -32,18 +33,17 @@
 		Furthermore, the first <code class="prettyprint lang-html">&lt;aside&gt;</code> is used for the <a href="article4.html">Atom</a> summary.
 	</p>
 	<p>
-		Articles are linked into a front page as follows (and omitting the surrounding HTML stuff):
+		Articles are linked into a front page template as follows (and omitting the surrounding HTML stuff):
 	</p>
 	<pre class="prettyprint lang-html">&lt;body&gt;
-  &lt;nav data-sblg-nav="1" data-sblg-navsz="1" /&gt;
-  &lt;article data-sblg-article="1" /&gt;
-  &lt;article data-sblg-article="1" /&gt;
+  &lt;nav data-sblg-nav="1" data-sblg-navsz="1"&gt;&lt;/nav&gt;
+  &lt;article data-sblg-article="1"&gt;&lt;/article&gt;
 &lt;/body&gt;</pre>
 	<p>
-		Here, the <code class="prettyprint lang-html">&lt;article&gt;</code> is replaced by ordered article data, with a little
-		<q>permanent link</q> thing following.  
-		The <code class="prettyprint lang-html">&lt;nav&gt;</code> is replaced by newest-first blog posting history.  The rest is up to
-		you.
+		Here, the <code class="prettyprint lang-html">&lt;article data-sblg-article="1"&gt;</code> is replaced by ordered article data,
+		with a little <q>permanent link</q> thing following.  
+		The <code class="prettyprint lang-html">&lt;nav data-sblg-nav="1"&gt;</code> is replaced by newest-first blog posting history.
+		The rest is up to you.
 		The <a href="sblg.1.html">sblg(1)</a> manual contains all the details.
 	</p>
 </article>
