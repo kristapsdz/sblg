@@ -82,6 +82,9 @@ footer				{ padding: 3rem 0 1rem 0;
 				  border-radius: 0.25rem;
 				  padding: 0 0.25rem; }
 .note > :last-child		{ flex: 1; }
+.coverage-table			{ display: grid;
+				  gap: 0 1rem;
+				  grid-template-columns: auto auto; }
 
 @media (width < 768px) {
   body > nav			{ padding: 1rem 0 0.5rem 0; }
@@ -89,6 +92,7 @@ footer				{ padding: 3rem 0 1rem 0;
   article .intro		{ font-size: 110%; }
   #templates			{ grid-template-columns: 1fr 1fr;
 	  			  gap: 0.5rem; }
+  .coverage-table		{ grid-template-columns: 1fr auto; }
 }
 
 @media (width < 512px) {

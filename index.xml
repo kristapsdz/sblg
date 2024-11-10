@@ -356,6 +356,24 @@
 				<a href="sblg.1.html">sblg</a> blog.
 			</p>
 		</section>
+		<section class="text">
+			<h3>
+				contributing
+			</h3>
+			<p>
+				There are many ways to contribute to <span class="nm">sblg</span>, especially if you have a specific usage case
+				you'd like to see supported.  The easiest is just to fork the repository on
+				<a href="https://github.com/kristapsdz/sblg">github</a>, add your feature, and make a pull request.
+				If you're looking for smaller ways to help, grep for
+				<code>TODO</code>, <code>FIXME</code>, or even <code>XXX</code> in the code for missing bits.
+				Lastly, the test coverage can certainly be improved by adding tests:
+			</p>
+			<div data-sblg-article="1" data-sblg-articletag="coverage"></div>
+			<p>
+				To improve these numbers, new tests may be written in the regression directory that exercise the file whose
+				coverage you'd like to increase.  Please e-mail me or contact me on GitHub for details.
+			</p>
+		</section>
 		<footer>
 			&copy;
 			<a itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person" rel="author" href="https://github.com/kristapsdz">

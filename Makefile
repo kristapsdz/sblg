@@ -196,7 +196,7 @@ version.h: Makefile
 	echo "#define VERSION \"$(VERSION)\"" >$@
 
 index.html: index.xml versions.xml $(ARTICLES)
-	./sblg -o- -t index.xml versions.xml $(ARTICLES) >$@
+	./sblg -o- -t index.xml versions.xml coverage.xml $(ARTICLES) >$@
 
 archive.html: archive.xml versions.xml
 	./sblg -o- -t archive.xml versions.xml >$@
@@ -436,11 +436,11 @@ regress: all
 distclean: clean
 	rm -f Makefile.configure config.h config.log
 
-coverage.xml:
+coverage.xml::
 	$(MAKE) clean
 	CC=gcc CFLAGS="--coverage" ./configure LDFLAGS="--coverage"
 	$(MAKE) regress
-	( echo '<?xml version="1.0" encoding="UTF-8" ?>'; \
+	@( echo '<?xml version="1.0" encoding="UTF-8" ?>'; \
 	  echo '<article data-sblg-article="1" data-sblg-tags="coverage">'; \
 	  echo '<aside>'; \
 	  echo '<div class="coverage-table">' ; \
@@ -450,6 +450,7 @@ coverage.xml:
 		pct=$$(gcov -H $$src | grep 'Lines executed' | head -n1 | \
 			cut -d ":" -f 2 | cut -d "%" -f 1) ; \
 	  	echo "<a href=\"$$link\">$$src</a><span>$$pct%</span>" ; \
+		echo "$$src: $$pct%" 1>&2 ; \
 	  done ; \
 	  echo "</div>"; \
 	  echo "</aside>"; \

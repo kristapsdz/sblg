@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<article data-sblg-article="1" data-sblg-tags="coverage">
+<aside>
+<div class="coverage-table">
+<a href="https://github.com/kristapsdz/sblg/blob/master/compats.c">compats.c</a><span>1.80%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/main.c">main.c</a><span>46.46%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/compile.c">compile.c</a><span>77.78%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/linkall.c">linkall.c</a><span>64.89%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/grok.c">grok.c</a><span>87.29%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/util.c">util.c</a><span>72.22%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/atom.c">atom.c</a><span>0.00%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/article.c">article.c</a><span>28.57%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/json.c">json.c</a><span>89.55%</span>
+<a href="https://github.com/kristapsdz/sblg/blob/master/listtags.c">listtags.c</a><span>0.00%</span>
+</div>
+</aside>
+</article>
