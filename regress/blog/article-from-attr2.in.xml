@@ -1,15 +1,15 @@
 <div>
-	<div data-sblg-article="1" data-sblg-tags="xyzzy">
+	<div data-sblg-article="1" data-sblg-tags="xyzzy" data-sblg-datetime="2024-11-10">
 		<p>
 			tagged with xyzzy
 		</p>
 	</div>
-	<article data-sblg-article="1" data-sblg-tags="foo">
+	<article data-sblg-article="1" data-sblg-tags="foo" data-sblg-datetime="2024-11-10">
 		<p>
 			tagged with foo
 		</p>
 	</article>
-	<span data-sblg-article="1" data-sblg-tags="bar">
+	<span data-sblg-article="1" data-sblg-tags="bar" data-sblg-datetime="2024-11-10">
 		<p>
 			tagged with bar
 		</p>
