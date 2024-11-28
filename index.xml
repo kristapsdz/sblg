@@ -72,6 +72,8 @@
 				<code class="prettyprint lang-sh">make valgrind</code> if <a href="https://valgrind.org/">valgrind</a> is
 				installed (you should also have <a href="https://jqlang.github.io/jq/">jq</a> installed),
 				then <code class="prettyprint lang-sh">make install</code>.
+				Systems with ancient <code>make</code> (like Mac OS X) will need to use <code>bmake</code> or update their
+				version of <code>make</code> to modern times.
 			</p>
 			<p>
 				<div data-sblg-nav="1" data-sblg-navsz="1" data-sblg-navtag="version" data-sblg-navstyle-element="discard"
