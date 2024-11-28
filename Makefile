@@ -7,7 +7,7 @@ WWWDIR		 = /var/www/vhosts/kristaps.bsd.lv/htdocs/sblg
 
 sinclude Makefile.local
 
-VERSION 	 = 0.6.0
+VERSION 	 = 0.6.1
 OBJS		 = compats.o \
 		   main.o \
 		   compile.o \

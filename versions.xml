@@ -1096,4 +1096,22 @@
 			</p>
 		</aside>
 	</article>
+	<article data-sblg-article="1" data-sblg-tags="version">
+		<header>
+			<h1>0.6.1</h1>
+			<address>Kristaps Dzonsons</address>
+			<time datetime="2024-11-28">2024-11-28</time>
+		</header>
+		<aside>
+			<p>
+				Bug-fix a regression test that was erroneously failing.
+			</p>
+			<p>
+				Specify that Mac OS X users should use <code>bmake</code>
+				or brew-installed GNU make instead of the ancient
+				<code>make</code> distributed with (at least) Sonoma, GNU
+				make 3.81, released 2006.
+			</p>
+		</aside>
+	</article>
 </articles>
